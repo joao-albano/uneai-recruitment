@@ -1,30 +1,47 @@
 
-import React, { useState } from 'react';
-import { DataProvider } from '@/context/DataContext';
+import React, { useState, useEffect } from 'react';
+import { DataProvider, useData } from '@/context/DataContext';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
 import ScheduleView from '@/components/scheduling/ScheduleView';
 
-const SchedulePage: React.FC = () => {
+// Page content component
+const SchedulePageContent: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { students, generateDemoData } = useData();
+  
+  // Generate demo data if needed
+  useEffect(() => {
+    if (students.length === 0) {
+      console.log("Generating demo data for schedule page");
+      generateDemoData();
+    }
+  }, [students.length, generateDemoData]);
   
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
   
   return (
-    <DataProvider>
-      <div className="min-h-screen flex w-full">
-        <Sidebar isOpen={sidebarOpen} onClose={toggleSidebar} />
+    <div className="min-h-screen flex w-full">
+      <Sidebar isOpen={sidebarOpen} onClose={toggleSidebar} />
+      
+      <div className="flex-1 flex flex-col">
+        <Header toggleSidebar={toggleSidebar} />
         
-        <div className="flex-1 flex flex-col">
-          <Header toggleSidebar={toggleSidebar} />
-          
-          <main className="flex-1 p-6">
-            <ScheduleView />
-          </main>
-        </div>
+        <main className="flex-1 p-6">
+          <ScheduleView />
+        </main>
       </div>
+    </div>
+  );
+};
+
+// Wrapper with DataProvider
+const SchedulePage: React.FC = () => {
+  return (
+    <DataProvider>
+      <SchedulePageContent />
     </DataProvider>
   );
 };

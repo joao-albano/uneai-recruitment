@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Check, ChevronLeft, ChevronRight, Clock, Edit, MoreVertical, Plus, Trash, Users, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,12 +14,27 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { useData } from '@/context/DataContext';
+import { useLocation } from 'react-router-dom';
 
 const ScheduleView: React.FC = () => {
-  const { students, schedules, addSchedule, updateScheduleStatus } = useData();
+  const { students, schedules, addSchedule, updateScheduleStatus, generateDemoData } = useData();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showAddDialog, setShowAddDialog] = useState(false);
   const { toast } = useToast();
+  const location = useLocation();
+  
+  // Generate demo data if needed
+  useEffect(() => {
+    if (students.length === 0) {
+      console.log("Generating demo data for scheduling");
+      generateDemoData();
+    }
+    
+    // Check if there's a studentId in the location state and open dialog if present
+    if (location.state?.studentId) {
+      setShowAddDialog(true);
+    }
+  }, [students.length, generateDemoData, location.state]);
   
   // Format month and year for the calendar header
   const formattedMonthYear = selectedDate.toLocaleDateString('pt-BR', {
@@ -160,6 +175,9 @@ const ScheduleView: React.FC = () => {
       schedule.date.getDate() === day
     ).length;
   };
+  
+  // Pre-select student from location state if available
+  const preSelectedStudentId = location.state?.studentId || '';
   
   return (
     <div className="animate-fade-in">
@@ -483,29 +501,33 @@ const ScheduleView: React.FC = () => {
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
                 <Label htmlFor="studentId">Aluno</Label>
-                <Select name="studentId" required>
-                  <SelectTrigger>
+                <Select name="studentId" defaultValue={preSelectedStudentId} required>
+                  <SelectTrigger id="studentId" className="w-full bg-background">
                     <SelectValue placeholder="Selecione um aluno" />
                   </SelectTrigger>
-                  <SelectContent>
-                    {students
-                      .filter(student => student.riskLevel !== 'low')
-                      .sort((a, b) => {
-                        // Sort by risk level (high risk first)
-                        if (a.riskLevel === 'high' && b.riskLevel !== 'high') return -1;
-                        if (a.riskLevel !== 'high' && b.riskLevel === 'high') return 1;
-                        return a.name.localeCompare(b.name);
-                      })
-                      .map(student => (
-                        <SelectItem key={student.id} value={student.id}>
-                          {student.name}
-                          {student.riskLevel === 'high' && (
-                            <Badge className="ml-2 bg-red-500 text-[10px]">
-                              Alto risco
-                            </Badge>
-                          )}
-                        </SelectItem>
-                      ))}
+                  <SelectContent position="popper" className="w-full max-h-[200px] overflow-auto z-[100] bg-background">
+                    {students.length > 0 ? (
+                      students
+                        .filter(student => student.riskLevel !== 'low')
+                        .sort((a, b) => {
+                          // Sort by risk level (high risk first)
+                          if (a.riskLevel === 'high' && b.riskLevel !== 'high') return -1;
+                          if (a.riskLevel !== 'high' && b.riskLevel === 'high') return 1;
+                          return a.name.localeCompare(b.name);
+                        })
+                        .map(student => (
+                          <SelectItem key={student.id} value={student.id} className="flex items-center justify-between">
+                            <span>{student.name}</span>
+                            {student.riskLevel === 'high' && (
+                              <Badge className="ml-2 bg-red-500 text-[10px]">
+                                Alto risco
+                              </Badge>
+                            )}
+                          </SelectItem>
+                        ))
+                    ) : (
+                      <SelectItem value="loading" disabled>Carregando alunos...</SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -516,13 +538,14 @@ const ScheduleView: React.FC = () => {
                   <Input
                     type="date"
                     name="date"
+                    id="date"
                     min={new Date().toISOString().split('T')[0]}
                     required
                   />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="time">Horário</Label>
-                  <Input type="time" name="time" required />
+                  <Input type="time" name="time" id="time" required />
                 </div>
               </div>
               
@@ -530,6 +553,7 @@ const ScheduleView: React.FC = () => {
                 <Label htmlFor="notes">Anotações</Label>
                 <Textarea
                   name="notes"
+                  id="notes"
                   placeholder="Detalhes sobre o atendimento..."
                   className="min-h-[80px]"
                 />
