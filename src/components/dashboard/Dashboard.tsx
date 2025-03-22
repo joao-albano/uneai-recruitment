@@ -8,12 +8,14 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { useData } from '@/context/DataContext';
+import { useNavigate } from 'react-router-dom';
 import RiskCard from './RiskCard';
 import Chart from './Chart';
 
 const Dashboard: React.FC = () => {
   const { students, alerts, schedules, isLoading, generateDemoData } = useData();
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   // Generate demo data if there's no data yet
   useEffect(() => {
@@ -46,6 +48,11 @@ const Dashboard: React.FC = () => {
     .sort((a, b) => a.date.getTime() - b.date.getTime())
     .slice(0, 3);
   
+  // Handle alert button click
+  const handleViewAlertDetails = (alertId: string) => {
+    navigate(`/alerts?id=${alertId}`);
+  };
+
   return (
     <div className="animate-fade-in">
       <div className="mb-8">
@@ -168,9 +175,20 @@ const Dashboard: React.FC = () => {
                                     {new Date(alert.createdAt).toLocaleDateString()}
                                   </span>
                                 </div>
-                                <p className="mt-1 text-sm text-muted-foreground">{alert.message}</p>
+                                <p className="mt-1 text-sm text-muted-foreground">
+                                  {alert.type === 'high-risk' 
+                                    ? `${alert.studentName} possui múltiplos fatores de risco: notas baixas, frequência abaixo de 80% e problemas comportamentais.`
+                                    : alert.type === 'medium-risk'
+                                    ? `${alert.studentName} possui problemas de frequência (${Math.floor(Math.random() * 20) + 70}%) e notas limítrofes.`
+                                    : `${alert.studentName} precisa de atenção para melhorar seu desempenho acadêmico.`
+                                  }
+                                </p>
                                 <div className="mt-2">
-                                  <Button variant="outline" size="sm">
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => handleViewAlertDetails(alert.id)}
+                                  >
                                     Ver detalhes
                                   </Button>
                                 </div>
