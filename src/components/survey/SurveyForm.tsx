@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ClipboardCheck, Send } from 'lucide-react';
+import { ClipboardCheck, Send, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -34,8 +35,9 @@ type FormValues = z.infer<typeof formSchema>;
 const SurveyForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
   const { toast } = useToast();
-  const { students, addSurvey, addAlert } = useData();
+  const { students, addSurvey, addAlert, sendWhatsAppSurvey } = useData();
   
   // Initialize the form
   const form = useForm<FormValues>({
@@ -60,10 +62,20 @@ const SurveyForm: React.FC = () => {
       if (student) {
         form.setValue('studentId', student.id);
         form.setValue('studentName', student.name);
+        
+        // Pre-fill parent information if available
+        if (student.parentName) {
+          form.setValue('parentName', student.parentName);
+        }
+        if (student.parentContact) {
+          form.setValue('parentContact', student.parentContact);
+        }
       }
     } else {
       form.setValue('studentId', '');
       form.setValue('studentName', '');
+      form.setValue('parentName', '');
+      form.setValue('parentContact', '');
     }
   };
   
@@ -106,6 +118,33 @@ const SurveyForm: React.FC = () => {
       setIsSubmitting(false);
       setFormSubmitted(true);
     }, 1500);
+  };
+
+  const handleSendWhatsApp = () => {
+    const studentId = form.getValues('studentId');
+    if (!studentId) {
+      toast({
+        title: 'Selecione um aluno',
+        description: 'É necessário selecionar um aluno para enviar a pesquisa.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setSendingWhatsApp(true);
+    
+    // Call the function to send WhatsApp survey
+    sendWhatsAppSurvey(studentId);
+    
+    // Show success toast
+    toast({
+      title: 'Pesquisa enviada via WhatsApp',
+      description: 'A pesquisa foi enviada para o número de contato do responsável.',
+    });
+    
+    setTimeout(() => {
+      setSendingWhatsApp(false);
+    }, 2000);
   };
   
   const startNewSurvey = () => {
@@ -152,6 +191,27 @@ const SurveyForm: React.FC = () => {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <div className="space-y-4">
+                  <div className="flex justify-end">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={handleSendWhatsApp}
+                      disabled={sendingWhatsApp || !form.getValues('studentId')}
+                    >
+                      {sendingWhatsApp ? (
+                        <>
+                          <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
+                          Enviando...
+                        </>
+                      ) : (
+                        <>
+                          <MessageSquare className="mr-2 h-4 w-4" />
+                          Enviar via WhatsApp
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                
                   <div className="grid gap-4 sm:grid-cols-2">
                     <FormField
                       control={form.control}
@@ -400,4 +460,3 @@ const SurveyForm: React.FC = () => {
 };
 
 export default SurveyForm;
-

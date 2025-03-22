@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 // Define types for our data
@@ -11,6 +10,8 @@ export type StudentData = {
   behavior: number;
   riskLevel?: 'low' | 'medium' | 'high';
   actionItems?: string[];
+  parentName?: string;
+  parentContact?: string;
 };
 
 export type SurveyData = {
@@ -57,6 +58,7 @@ type DataContextType = {
   markAlertActionTaken: (id: string) => void;
   updateScheduleStatus: (id: string, status: 'scheduled' | 'completed' | 'canceled') => void;
   generateDemoData: () => void;
+  sendWhatsAppSurvey: (studentId: string) => void;
 };
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -98,11 +100,40 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     );
   };
 
-  // Function to generate demo data for testing
+  const sendWhatsAppSurvey = (studentId: string) => {
+    const student = students.find(s => s.id === studentId);
+    if (!student || !student.parentContact) return;
+    
+    const message = `Olá ${student.parentName}, gostaríamos de fazer uma pesquisa sobre ${student.name}. Por favor, responda as seguintes perguntas:
+    1. A família mudou de residência nos últimos 6 meses?
+    2. O aluno relatou episódios de bullying ou tratamento inadequado?
+    3. Como você avalia a integração social do aluno na escola? (1-5)
+    4. Com que frequência o aluno enfrenta dificuldades para chegar à escola?
+    5. Alguma observação adicional?`;
+    
+    console.log(`Simulando envio de WhatsApp para ${student.parentName}: ${student.parentContact}`);
+    console.log(message);
+    
+    addAlert({
+      id: `whatsapp-${Date.now()}`,
+      studentId: student.id,
+      studentName: student.name,
+      studentClass: student.class,
+      type: 'survey-requested',
+      message: `Pesquisa diagnóstica enviada via WhatsApp para ${student.parentName} (${student.parentContact}).`,
+      createdAt: new Date(),
+      read: false,
+      actionTaken: false,
+    });
+    
+    setTimeout(() => {
+      console.log(`Simulação: ${student.parentName} visualizou a mensagem.`);
+    }, 3000);
+  };
+
   const generateDemoData = () => {
     setIsLoading(true);
     
-    // Create some demo students
     const demoStudents: StudentData[] = [
       {
         id: '1',
@@ -112,7 +143,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         attendance: 75,
         behavior: 3,
         riskLevel: 'high',
-        actionItems: ['Contact parents', 'Schedule counseling']
+        actionItems: ['Contact parents', 'Schedule counseling'],
+        parentName: 'Roberto Silva',
+        parentContact: '(11) 98765-4321'
       },
       {
         id: '2',
@@ -122,7 +155,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         attendance: 92,
         behavior: 4,
         riskLevel: 'low',
-        actionItems: ['Monitor performance']
+        actionItems: ['Monitor performance'],
+        parentName: 'Marta Santos',
+        parentContact: '(11) 91234-5678'
       },
       {
         id: '3',
@@ -132,7 +167,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         attendance: 81,
         behavior: 2,
         riskLevel: 'medium',
-        actionItems: ['Academic support', 'Behavior intervention']
+        actionItems: ['Academic support', 'Behavior intervention'],
+        parentName: 'Paulo Oliveira',
+        parentContact: '(11) 99876-5432'
       },
       {
         id: '4',
@@ -141,7 +178,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         grade: 8.5,
         attendance: 96,
         behavior: 5,
-        riskLevel: 'low'
+        riskLevel: 'low',
+        parentName: 'Luisa Pereira',
+        parentContact: '(11) 98123-4567'
       },
       {
         id: '5',
@@ -151,7 +190,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         attendance: 68,
         behavior: 3,
         riskLevel: 'high',
-        actionItems: ['Parent meeting', 'Academic intervention']
+        actionItems: ['Parent meeting', 'Academic intervention'],
+        parentName: 'Fernando Costa',
+        parentContact: '(11) 99123-8765'
       },
       {
         id: '6',
@@ -160,7 +201,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         grade: 6.9,
         attendance: 88,
         behavior: 4,
-        riskLevel: 'low'
+        riskLevel: 'low',
+        parentName: 'Joana Martins',
+        parentContact: '(11) 97654-3210'
       },
       {
         id: '7',
@@ -170,7 +213,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         attendance: 79,
         behavior: 3,
         riskLevel: 'medium',
-        actionItems: ['Academic support']
+        actionItems: ['Academic support'],
+        parentName: 'Ricardo Lima',
+        parentContact: '(11) 96543-2109'
       },
       {
         id: '8',
@@ -179,11 +224,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         grade: 7.8,
         attendance: 93,
         behavior: 4,
-        riskLevel: 'low'
+        riskLevel: 'low',
+        parentName: 'Cristina Alves',
+        parentContact: '(11) 95432-1098'
       }
     ];
     
-    // Create some demo alerts
     const demoAlerts: AlertItem[] = [
       {
         id: '1',
@@ -192,7 +238,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         studentClass: '9A',
         type: 'high-risk',
         message: 'Ana Silva has multiple risk factors: low grades, attendance below 80%, and behavioral issues.',
-        createdAt: new Date(Date.now() - 86400000 * 2), // 2 days ago
+        createdAt: new Date(Date.now() - 86400000 * 2),
         read: false,
         actionTaken: false
       },
@@ -203,7 +249,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         studentClass: '9C',
         type: 'high-risk',
         message: 'Elena Costa has critical attendance issues (68%) and failing grades.',
-        createdAt: new Date(Date.now() - 86400000), // 1 day ago
+        createdAt: new Date(Date.now() - 86400000),
         read: false,
         actionTaken: false
       },
@@ -217,16 +263,15 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         createdAt: new Date(),
         read: false,
         actionTaken: false
-      },
+      }
     ];
     
-    // Create some demo schedules
     const demoSchedules: ScheduleItem[] = [
       {
         id: '1',
         studentId: '1',
         studentName: 'Ana Silva',
-        date: new Date(Date.now() + 86400000), // tomorrow
+        date: new Date(Date.now() + 86400000),
         agentName: 'Coord. Mariana',
         status: 'scheduled',
         notes: 'Discuss attendance and academic performance'
@@ -235,14 +280,13 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         id: '2',
         studentId: '5',
         studentName: 'Elena Costa',
-        date: new Date(Date.now() + 86400000 * 3), // 3 days from now
+        date: new Date(Date.now() + 86400000 * 3),
         agentName: 'Coord. Mariana',
         status: 'scheduled',
         notes: 'Parent meeting to address attendance issues'
       }
     ];
     
-    // Set the demo data
     setStudents(demoStudents);
     setAlerts(demoAlerts);
     setSchedules(demoSchedules);
@@ -265,7 +309,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     markAlertAsRead,
     markAlertActionTaken,
     updateScheduleStatus,
-    generateDemoData
+    generateDemoData,
+    sendWhatsAppSurvey
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
