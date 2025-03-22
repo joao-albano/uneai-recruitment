@@ -20,7 +20,7 @@ const DashboardPage: React.FC = () => {
         <div className="flex-1 flex flex-col">
           <Header toggleSidebar={toggleSidebar} />
           
-          <main className="flex-1 p-6">
+          <main className="flex-1 p-6 overflow-auto">
             <Dashboard />
           </main>
         </div>

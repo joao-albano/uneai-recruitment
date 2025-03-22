@@ -52,6 +52,17 @@ const Dashboard: React.FC = () => {
   const handleViewAlertDetails = (alertId: string) => {
     navigate(`/alerts?id=${alertId}`);
   };
+  
+  // Função para lidar com o clique no botão "Ver detalhes" da turma
+  const handleViewClassDetails = (className: string) => {
+    navigate(`/students?class=${className}`);
+    
+    // Informar o usuário sobre a navegação
+    toast({
+      title: `Turma ${className}`,
+      description: `Visualizando todos os alunos da turma ${className}`,
+    });
+  };
 
   return (
     <div className="animate-fade-in">
@@ -304,7 +315,12 @@ const Dashboard: React.FC = () => {
                           </div>
                         </div>
                         
-                        <Button variant="outline" className="w-full mt-4" size="sm">
+                        <Button 
+                          variant="outline" 
+                          className="w-full mt-4" 
+                          size="sm"
+                          onClick={() => handleViewClassDetails(className)}
+                        >
                           Ver detalhes
                         </Button>
                       </CardContent>
