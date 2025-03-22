@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ThemeProvider } from "./context/ThemeContext";
 import Index from "./pages/Index";
 import DashboardPage from "./pages/DashboardPage";
 import UploadPage from "./pages/UploadPage";
@@ -51,94 +52,96 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<LoginPage />} />
-          
-          {/* Protected Routes */}
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/upload" 
-            element={
-              <ProtectedRoute>
-                <UploadPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/alerts" 
-            element={
-              <ProtectedRoute>
-                <AlertsPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/survey" 
-            element={
-              <ProtectedRoute>
-                <SurveyPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/schedule" 
-            element={
-              <ProtectedRoute>
-                <SchedulePage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/students" 
-            element={
-              <ProtectedRoute>
-                <StudentsPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/profile" 
-            element={
-              <ProtectedRoute>
-                <ProfilePage />
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* Admin Routes - Only accessible to admin users */}
-          <Route 
-            path="/settings" 
-            element={
-              <AdminRoute>
-                <SettingsPage />
-              </AdminRoute>
-            } 
-          />
-          <Route 
-            path="/users" 
-            element={
-              <AdminRoute>
-                <UsersPage />
-              </AdminRoute>
-            } 
-          />
-          
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <ThemeProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<LoginPage />} />
+            
+            {/* Protected Routes */}
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/upload" 
+              element={
+                <ProtectedRoute>
+                  <UploadPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/alerts" 
+              element={
+                <ProtectedRoute>
+                  <AlertsPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/survey" 
+              element={
+                <ProtectedRoute>
+                  <SurveyPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/schedule" 
+              element={
+                <ProtectedRoute>
+                  <SchedulePage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/students" 
+              element={
+                <ProtectedRoute>
+                  <StudentsPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Admin Routes - Only accessible to admin users */}
+            <Route 
+              path="/settings" 
+              element={
+                <AdminRoute>
+                  <SettingsPage />
+                </AdminRoute>
+              } 
+            />
+            <Route 
+              path="/users" 
+              element={
+                <AdminRoute>
+                  <UsersPage />
+                </AdminRoute>
+              } 
+            />
+            
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
