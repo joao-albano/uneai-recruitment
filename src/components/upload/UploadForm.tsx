@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Upload, FileText, X, AlertTriangle, CheckCircle2, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,7 @@ import { useData } from '@/context/DataContext';
 import { parseCSV, parseExcel, downloadTemplate, ValidationError } from '@/utils/validations';
 import { processStudentData } from '@/utils/riskCalculator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { StudentData } from '@/context/DataContext';
 
 const UploadForm: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -89,12 +89,12 @@ const UploadForm: React.FC = () => {
     try {
       // Process the file based on its type
       const fileType = file.name.split('.').pop()?.toLowerCase();
-      let result: { data: any[], errors: ValidationError[] };
+      let result: { data: StudentData[], errors: ValidationError[] };
       
       if (fileType === 'csv') {
         // Process CSV file
         const text = await file.text();
-        result = parseCSV(text);
+        result = await parseCSV(text);
       } else {
         // Process Excel file
         result = await parseExcel(file);

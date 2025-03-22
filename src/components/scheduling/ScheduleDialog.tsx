@@ -9,10 +9,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 
+// Changed to match StudentData by making riskLevel optional
 interface Student {
   id: string;
   name: string;
-  riskLevel: string;
+  riskLevel?: string;
 }
 
 interface ScheduleDialogProps {

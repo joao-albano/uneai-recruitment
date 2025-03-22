@@ -1,3 +1,4 @@
+
 import { StudentData } from "../context/DataContext";
 
 export type ValidationError = {
@@ -234,7 +235,8 @@ export const parseCSV = async (text: string): Promise<{ data: StudentData[], err
         if (propertyName === 'grade' || propertyName === 'attendance' || propertyName === 'behavior') {
           studentData[propertyName] = parseFloat(value);
         } else {
-          studentData[propertyName as keyof StudentData] = value as any;
+          // Fixed the type issue by using type assertion with proper typing
+          studentData[propertyName as keyof StudentData] = value as unknown as any;
         }
       }
     }
