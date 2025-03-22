@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, Check, ChevronLeft, ChevronRight, Clock, Edit, MoreVertical, Plus, Trash, Users, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,7 @@ const ScheduleView: React.FC = () => {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const { toast } = useToast();
   const location = useLocation();
+  const formRef = useRef<HTMLFormElement>(null);
   
   // Generate demo data if needed
   useEffect(() => {
@@ -118,6 +119,11 @@ const ScheduleView: React.FC = () => {
       title: 'Atendimento agendado',
       description: `Agendado para ${scheduleDate.toLocaleDateString()} às ${scheduleDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`
     });
+    
+    // Reset the form
+    if (formRef.current) {
+      formRef.current.reset();
+    }
     
     // Close dialog
     setShowAddDialog(false);
@@ -497,7 +503,7 @@ const ScheduleView: React.FC = () => {
             </DialogDescription>
           </DialogHeader>
           
-          <form onSubmit={handleScheduleSubmit}>
+          <form onSubmit={handleScheduleSubmit} ref={formRef}>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
                 <Label htmlFor="studentId">Aluno</Label>
