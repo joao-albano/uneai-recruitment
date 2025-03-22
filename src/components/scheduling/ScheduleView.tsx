@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, Check, ChevronLeft, ChevronRight, Clock, Edit, MoreVertical, Plus, Trash, Users, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,9 +23,7 @@ const ScheduleView: React.FC = () => {
   const location = useLocation();
   const formRef = useRef<HTMLFormElement>(null);
   
-  // Filter students who already have active appointments
   const studentsWithoutSchedules = students.filter(student => {
-    // Check if student already has an active (scheduled) appointment
     return !schedules.some(
       schedule => 
         schedule.studentId === student.id && 
@@ -185,7 +182,6 @@ const ScheduleView: React.FC = () => {
     return null;
   };
   
-  // Get pre-selected student, but only if they don't already have a scheduled appointment
   const preSelectedStudentId = location.state?.studentId || '';
   const canSelectPreSelectedStudent = !schedules.some(
     schedule => 
@@ -479,7 +475,11 @@ const ScheduleView: React.FC = () => {
                 <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
                   <div 
                     className="h-full bg-primary rounded-full"
-                    style={{ width: '60%' }}
+                    style={{ 
+                      width: schedules.length > 0 
+                        ? `${(schedules.filter(s => s.status === 'scheduled').length / schedules.length) * 100}%` 
+                        : '0%' 
+                    }}
                   />
                 </div>
               </div>
@@ -494,7 +494,11 @@ const ScheduleView: React.FC = () => {
                 <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
                   <div 
                     className="h-full bg-green-500 rounded-full"
-                    style={{ width: '30%' }}
+                    style={{ 
+                      width: schedules.filter(s => s.status === 'completed').length > 0 
+                        ? `${(schedules.filter(s => s.status === 'completed').length / schedules.length) * 100}%` 
+                        : '0%' 
+                    }}
                   />
                 </div>
               </div>
@@ -509,7 +513,11 @@ const ScheduleView: React.FC = () => {
                 <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
                   <div 
                     className="h-full bg-red-500 rounded-full"
-                    style={{ width: '10%' }}
+                    style={{ 
+                      width: schedules.filter(s => s.status === 'canceled').length > 0 
+                        ? `${(schedules.filter(s => s.status === 'canceled').length / schedules.length) * 100}%` 
+                        : '0%' 
+                    }}
                   />
                 </div>
               </div>

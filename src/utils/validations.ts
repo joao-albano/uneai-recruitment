@@ -66,150 +66,118 @@ export const validateStudentData = (
     errors.push({
       row: rowIndex,
       column: 'comportamento',
-      message: 'Avaliação de comportamento é obrigatória'
+      message: 'Comportamento é obrigatório'
     });
   } else if (isNaN(data.behavior) || data.behavior < 1 || data.behavior > 5) {
     errors.push({
       row: rowIndex,
       column: 'comportamento',
-      message: 'Comportamento deve ser avaliado de 1 a 5'
+      message: 'Comportamento deve ser um número entre 1 e 5'
     });
   }
 
-  // Validate additional fields for parent information
-  if (!data.parentName) {
+  // Validate parent name if provided
+  if (data.parentName !== undefined && typeof data.parentName !== 'string') {
     errors.push({
       row: rowIndex,
-      column: 'responsavel',
-      message: 'Nome do responsável é obrigatório'
+      column: 'nome_responsavel',
+      message: 'Nome do responsável deve ser texto'
     });
   }
 
-  if (!data.parentContact) {
-    errors.push({
-      row: rowIndex,
-      column: 'contato',
-      message: 'Contato do responsável é obrigatório'
-    });
-  } else if (!data.parentContact.match(/^\(\d{2}\)\s\d{4,5}-\d{4}$/)) {
-    errors.push({
-      row: rowIndex,
-      column: 'contato',
-      message: 'Formato de contato inválido. Use o formato (XX) XXXXX-XXXX'
-    });
+  // Validate parent contact if provided
+  if (data.parentContact !== undefined) {
+    const phonePattern = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
+    if (typeof data.parentContact !== 'string' || !phonePattern.test(data.parentContact)) {
+      errors.push({
+        row: rowIndex,
+        column: 'contato_responsavel',
+        message: 'Contato do responsável deve seguir o formato (99) 99999-9999'
+      });
+    }
+  }
+
+  // Risk level validation (if provided)
+  if (data.riskLevel !== undefined) {
+    const validRiskLevels = ['low', 'medium', 'high'];
+    if (typeof data.riskLevel !== 'string' || !validRiskLevels.includes(data.riskLevel as string)) {
+      errors.push({
+        row: rowIndex,
+        column: 'nivel_risco',
+        message: 'Nível de risco deve ser low, medium ou high'
+      });
+    }
   }
 
   return errors;
 };
 
-// Function to parse CSV data
-export const parseCSV = (csvText: string): { 
-  data: Partial<StudentData>[];
-  errors: ValidationError[];
-} => {
-  const lines = csvText.split('\n');
-  const headers = lines[0].split(',').map(header => header.trim().toLowerCase());
-  
-  // Map Portuguese headers to English property names
-  const headerMap: Record<string, keyof StudentData> = {
+// Function to convert Excel column headers to our expected property names
+export const mapHeadersToProperties = (headers: string[]): Record<string, string> => {
+  const headerMap: Record<string, string> = {
+    // Portuguese headers
     'nome': 'name',
     'turma': 'class',
     'nota': 'grade',
     'frequencia': 'attendance',
     'comportamento': 'behavior',
-    'responsavel': 'parentName',
-    'contato': 'parentContact'
+    'nivel_risco': 'riskLevel',
+    'acoes': 'actionItems',
+    'nome_responsavel': 'parentName',
+    'contato_responsavel': 'parentContact',
+    
+    // English headers (fallback)
+    'name': 'name',
+    'class': 'class',
+    'grade': 'grade',
+    'attendance': 'attendance',
+    'behavior': 'behavior',
+    'risk_level': 'riskLevel',
+    'actions': 'actionItems',
+    'parent_name': 'parentName',
+    'parent_contact': 'parentContact'
   };
-  
-  const requiredColumns = ['nome', 'turma', 'nota', 'frequencia', 'comportamento', 'responsavel', 'contato'];
-  const missingColumns = requiredColumns.filter(col => !headers.includes(col));
-  
-  const errors: ValidationError[] = [];
-  
-  // Check if all required columns are present
-  if (missingColumns.length > 0) {
-    errors.push({
-      row: 0,
-      column: missingColumns.join(', '),
-      message: `Colunas obrigatórias ausentes: ${missingColumns.join(', ')}`
-    });
-    return { data: [], errors };
-  }
-  
-  // Parse data rows
-  const data: Partial<StudentData>[] = [];
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (line === '') continue;
-    
-    const values = line.split(',').map(value => value.trim());
-    const rowData: Partial<StudentData> = {};
-    
-    // Map CSV values to student data properties using the header map
-    headers.forEach((header, index) => {
-      const propName = headerMap[header];
-      if (propName) {
-        if (propName === 'grade' || propName === 'attendance' || propName === 'behavior') {
-          rowData[propName] = parseFloat(values[index]);
-        } else {
-          rowData[propName] = values[index];
-        }
-      }
-    });
-    
-    // Add a unique ID
-    rowData.id = `${i}`;
-    
-    // Validate the row
-    const rowErrors = validateStudentData(rowData, i);
-    if (rowErrors.length > 0) {
-      errors.push(...rowErrors);
+
+  return headers.reduce((acc, header, index) => {
+    const normalizedHeader = header.toLowerCase().trim();
+    if (headerMap[normalizedHeader]) {
+      acc[index] = headerMap[normalizedHeader];
     }
-    
-    data.push(rowData);
-  }
-  
-  return { data, errors };
+    return acc;
+  }, {} as Record<string, string>);
 };
 
-// Function to parse Excel data
-export const parseExcel = async (file: File): Promise<{
-  data: Partial<StudentData>[];
-  errors: ValidationError[];
-}> => {
-  // For MVP, we'll convert Excel to CSV and use the parseCSV function
-  // This is a placeholder for actual Excel parsing which would require a library
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      // Simulate CSV conversion by assuming a simple format
-      const csvText = e.target?.result as string;
-      const result = parseCSV(csvText);
-      resolve(result);
-    };
-    reader.readAsText(file);
-  });
+// Header validation function
+export const validateHeaders = (headers: string[]): boolean => {
+  const requiredHeaders = [
+    'nome', 'turma', 'nota', 'frequencia', 'comportamento'
+  ];
+  
+  const normalizedHeaders = headers.map(h => h.toLowerCase().trim());
+  
+  return requiredHeaders.every(required => 
+    normalizedHeaders.includes(required) || 
+    // Check English equivalents too
+    normalizedHeaders.includes(
+      required === 'nome' ? 'name' :
+      required === 'turma' ? 'class' :
+      required === 'nota' ? 'grade' :
+      required === 'frequencia' ? 'attendance' :
+      required === 'comportamento' ? 'behavior' :
+      required
+    )
+  );
 };
 
-// Function to download a CSV template
-export const downloadTemplate = () => {
-  const headers = ['nome', 'turma', 'nota', 'frequencia', 'comportamento', 'responsavel', 'contato'];
-  const csvContent = [
-    headers.join(','),
-    'João Silva,9A,7.5,85,4,Roberto Silva,(11) 98765-4321',
-    'Maria Oliveira,9A,6.8,92,3,Paulo Oliveira,(11) 97654-3210',
-    'Pedro Santos,9B,5.5,78,2,Ana Santos,(11) 96543-2109'
-  ].join('\n');
-  
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  
-  const url = URL.createObjectURL(blob);
-  link.setAttribute('href', url);
-  link.setAttribute('download', 'modelo_alunos.csv');
-  link.style.visibility = 'hidden';
-  
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+// Get the expected format of the Excel file
+export const getExcelFormat = (): { headers: string[]; description: string } => {
+  return {
+    headers: [
+      'Nome', 'Turma', 'Nota', 'Frequencia', 'Comportamento', 
+      'Nivel_Risco', 'Acoes', 'Nome_Responsavel', 'Contato_Responsavel'
+    ],
+    description: 'O arquivo deve conter as colunas: Nome, Turma, Nota (0-10), Frequência (0-100), ' +
+      'Comportamento (1-5), Nível de Risco (low, medium, high), Ações, Nome do Responsável, ' +
+      'e Contato do Responsável (formato (99) 99999-9999)'
+  };
 };
