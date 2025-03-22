@@ -18,16 +18,16 @@ export const validateStudentData = (
   if (!data.name) {
     errors.push({
       row: rowIndex,
-      column: 'name',
-      message: 'Student name is required'
+      column: 'nome',
+      message: 'Nome do aluno é obrigatório'
     });
   }
 
   if (!data.class) {
     errors.push({
       row: rowIndex,
-      column: 'class',
-      message: 'Class is required'
+      column: 'turma',
+      message: 'Turma é obrigatória'
     });
   }
 
@@ -35,14 +35,14 @@ export const validateStudentData = (
   if (data.grade === undefined || data.grade === null) {
     errors.push({
       row: rowIndex,
-      column: 'grade',
-      message: 'Grade is required'
+      column: 'nota',
+      message: 'Nota é obrigatória'
     });
   } else if (isNaN(data.grade) || data.grade < 0 || data.grade > 10) {
     errors.push({
       row: rowIndex,
-      column: 'grade',
-      message: 'Grade must be a number between 0 and 10'
+      column: 'nota',
+      message: 'Nota deve ser um número entre 0 e 10'
     });
   }
 
@@ -50,14 +50,14 @@ export const validateStudentData = (
   if (data.attendance === undefined || data.attendance === null) {
     errors.push({
       row: rowIndex,
-      column: 'attendance',
-      message: 'Attendance is required'
+      column: 'frequencia',
+      message: 'Frequência é obrigatória'
     });
   } else if (isNaN(data.attendance) || data.attendance < 0 || data.attendance > 100) {
     errors.push({
       row: rowIndex,
-      column: 'attendance',
-      message: 'Attendance must be a percentage between 0 and 100'
+      column: 'frequencia',
+      message: 'Frequência deve ser uma porcentagem entre 0 e 100'
     });
   }
 
@@ -65,14 +65,37 @@ export const validateStudentData = (
   if (data.behavior === undefined || data.behavior === null) {
     errors.push({
       row: rowIndex,
-      column: 'behavior',
-      message: 'Behavior rating is required'
+      column: 'comportamento',
+      message: 'Avaliação de comportamento é obrigatória'
     });
   } else if (isNaN(data.behavior) || data.behavior < 1 || data.behavior > 5) {
     errors.push({
       row: rowIndex,
-      column: 'behavior',
-      message: 'Behavior must be rated from 1 to 5'
+      column: 'comportamento',
+      message: 'Comportamento deve ser avaliado de 1 a 5'
+    });
+  }
+
+  // Validate additional fields for parent information
+  if (!data.parentName) {
+    errors.push({
+      row: rowIndex,
+      column: 'responsavel',
+      message: 'Nome do responsável é obrigatório'
+    });
+  }
+
+  if (!data.parentContact) {
+    errors.push({
+      row: rowIndex,
+      column: 'contato',
+      message: 'Contato do responsável é obrigatório'
+    });
+  } else if (!data.parentContact.match(/^\(\d{2}\)\s\d{4,5}-\d{4}$/)) {
+    errors.push({
+      row: rowIndex,
+      column: 'contato',
+      message: 'Formato de contato inválido. Use o formato (XX) XXXXX-XXXX'
     });
   }
 
@@ -87,7 +110,18 @@ export const parseCSV = (csvText: string): {
   const lines = csvText.split('\n');
   const headers = lines[0].split(',').map(header => header.trim().toLowerCase());
   
-  const requiredColumns = ['name', 'class', 'grade', 'attendance', 'behavior'];
+  // Map Portuguese headers to English property names
+  const headerMap: Record<string, keyof StudentData> = {
+    'nome': 'name',
+    'turma': 'class',
+    'nota': 'grade',
+    'frequencia': 'attendance',
+    'comportamento': 'behavior',
+    'responsavel': 'parentName',
+    'contato': 'parentContact'
+  };
+  
+  const requiredColumns = ['nome', 'turma', 'nota', 'frequencia', 'comportamento', 'responsavel', 'contato'];
   const missingColumns = requiredColumns.filter(col => !headers.includes(col));
   
   const errors: ValidationError[] = [];
@@ -97,7 +131,7 @@ export const parseCSV = (csvText: string): {
     errors.push({
       row: 0,
       column: missingColumns.join(', '),
-      message: `Missing required columns: ${missingColumns.join(', ')}`
+      message: `Colunas obrigatórias ausentes: ${missingColumns.join(', ')}`
     });
     return { data: [], errors };
   }
@@ -111,13 +145,16 @@ export const parseCSV = (csvText: string): {
     const values = line.split(',').map(value => value.trim());
     const rowData: Partial<StudentData> = {};
     
-    // Map CSV values to student data properties
+    // Map CSV values to student data properties using the header map
     headers.forEach((header, index) => {
-      if (header === 'name') rowData.name = values[index];
-      else if (header === 'class') rowData.class = values[index];
-      else if (header === 'grade') rowData.grade = parseFloat(values[index]);
-      else if (header === 'attendance') rowData.attendance = parseFloat(values[index]);
-      else if (header === 'behavior') rowData.behavior = parseInt(values[index]);
+      const propName = headerMap[header];
+      if (propName) {
+        if (propName === 'grade' || propName === 'attendance' || propName === 'behavior') {
+          rowData[propName] = parseFloat(values[index]);
+        } else {
+          rowData[propName] = values[index];
+        }
+      }
     });
     
     // Add a unique ID
@@ -156,12 +193,12 @@ export const parseExcel = async (file: File): Promise<{
 
 // Function to download a CSV template
 export const downloadTemplate = () => {
-  const headers = ['name', 'class', 'grade', 'attendance', 'behavior'];
+  const headers = ['nome', 'turma', 'nota', 'frequencia', 'comportamento', 'responsavel', 'contato'];
   const csvContent = [
     headers.join(','),
-    'João Silva,9A,7.5,85,4',
-    'Maria Oliveira,9A,6.8,92,3',
-    'Pedro Santos,9B,5.5,78,2'
+    'João Silva,9A,7.5,85,4,Roberto Silva,(11) 98765-4321',
+    'Maria Oliveira,9A,6.8,92,3,Paulo Oliveira,(11) 97654-3210',
+    'Pedro Santos,9B,5.5,78,2,Ana Santos,(11) 96543-2109'
   ].join('\n');
   
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -169,7 +206,7 @@ export const downloadTemplate = () => {
   
   const url = URL.createObjectURL(blob);
   link.setAttribute('href', url);
-  link.setAttribute('download', 'template_alunos.csv');
+  link.setAttribute('download', 'modelo_alunos.csv');
   link.style.visibility = 'hidden';
   
   document.body.appendChild(link);

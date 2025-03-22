@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useData } from '@/context/DataContext';
 import { parseCSV, parseExcel, downloadTemplate, ValidationError } from '@/utils/validations';
 import { processStudentData } from '@/utils/riskCalculator';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const UploadForm: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -16,6 +17,7 @@ const UploadForm: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [showColumnInfo, setShowColumnInfo] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { setStudents, addAlert } = useData();
@@ -155,6 +157,20 @@ const UploadForm: React.FC = () => {
     setIsProcessing(false);
   };
   
+  const toggleColumnInfo = () => {
+    setShowColumnInfo(!showColumnInfo);
+  };
+  
+  const requiredColumns = [
+    { name: 'nome', description: 'Nome completo do aluno', example: 'João Silva' },
+    { name: 'turma', description: 'Turma do aluno', example: '9A' },
+    { name: 'nota', description: 'Nota média (0-10)', example: '7.5' },
+    { name: 'frequencia', description: 'Porcentagem de presença (0-100)', example: '85' },
+    { name: 'comportamento', description: 'Avaliação de comportamento (1-5)', example: '4' },
+    { name: 'responsavel', description: 'Nome do responsável', example: 'Roberto Silva' },
+    { name: 'contato', description: 'Telefone do responsável', example: '(11) 98765-4321' },
+  ];
+  
   return (
     <Card className="w-full max-w-3xl mx-auto animate-scale-in">
       <CardHeader>
@@ -165,6 +181,39 @@ const UploadForm: React.FC = () => {
       </CardHeader>
       
       <CardContent className="space-y-4">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={toggleColumnInfo} 
+          className="mb-2 text-xs"
+        >
+          {showColumnInfo ? 'Ocultar informações das colunas' : 'Exibir informações das colunas'}
+        </Button>
+        
+        {showColumnInfo && (
+          <div className="border rounded-md p-4 bg-muted/30 mb-4">
+            <h3 className="text-sm font-medium mb-2">Colunas obrigatórias para a planilha:</h3>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-1/4">Coluna</TableHead>
+                  <TableHead className="w-2/4">Descrição</TableHead>
+                  <TableHead className="w-1/4">Exemplo</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {requiredColumns.map((column) => (
+                  <TableRow key={column.name}>
+                    <TableCell className="font-medium">{column.name}</TableCell>
+                    <TableCell>{column.description}</TableCell>
+                    <TableCell className="text-muted-foreground">{column.example}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+        
         <div 
           className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
             isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/20'
@@ -208,7 +257,7 @@ const UploadForm: React.FC = () => {
                   className="h-auto p-0"
                   onClick={() => downloadTemplate()}
                 >
-                  Baixe um template <Download className="h-3 w-3 ml-1" />
+                  Baixe um modelo <Download className="h-3 w-3 ml-1" />
                 </Button>
               </p>
             </div>
