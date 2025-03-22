@@ -108,8 +108,6 @@ const ScheduleView: React.FC = () => {
     if (formRef.current) {
       formRef.current.reset();
     }
-    
-    setShowAddDialog(false);
   };
   
   const markCompleted = (id: string) => {
@@ -593,3 +591,4 @@ const ScheduleView: React.FC = () => {
 };
 
 export default ScheduleView;
+
