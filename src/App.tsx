@@ -11,6 +11,7 @@ import AlertsPage from "./pages/AlertsPage";
 import SurveyPage from "./pages/SurveyPage";
 import SchedulePage from "./pages/SchedulePage";
 import StudentsPage from "./pages/StudentsPage";
+import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/survey" element={<SurveyPage />} />
           <Route path="/schedule" element={<SchedulePage />} />
           <Route path="/students" element={<StudentsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
