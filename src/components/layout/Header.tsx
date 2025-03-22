@@ -103,10 +103,15 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
               <User className="mr-2 h-4 w-4" />
               <span>Meu Perfil</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/settings')}>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Configurações</span>
-            </DropdownMenuItem>
+            
+            {/* Only show Settings menu item if user is admin */}
+            {user.role === 'admin' && (
+              <DropdownMenuItem onClick={() => navigate('/settings')}>
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Configurações</span>
+              </DropdownMenuItem>
+            )}
+            
             {user.role === 'admin' && (
               <DropdownMenuItem onClick={() => navigate('/users')}>
                 <UserCog className="mr-2 h-4 w-4" />

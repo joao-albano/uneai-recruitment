@@ -26,9 +26,27 @@ const isAuthenticated = () => {
   return true;
 };
 
+// In a real app, this would come from authentication state
+const isAdmin = () => {
+  // This is just a mock implementation - in a real app this would
+  // check user roles from a token or user data
+  return true;
+};
+
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return isAuthenticated() ? <>{children}</> : <Navigate to="/login" />;
+};
+
+// Admin route component - only accessible to admins
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  // First check if authenticated, then check if admin
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" />;
+  }
+  
+  // If authenticated but not admin, redirect to dashboard
+  return isAdmin() ? <>{children}</> : <Navigate to="/dashboard" />;
 };
 
 const App = () => (
@@ -91,14 +109,6 @@ const App = () => (
             } 
           />
           <Route 
-            path="/settings" 
-            element={
-              <ProtectedRoute>
-                <SettingsPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
             path="/profile" 
             element={
               <ProtectedRoute>
@@ -106,14 +116,25 @@ const App = () => (
               </ProtectedRoute>
             } 
           />
+          
+          {/* Admin Routes - Only accessible to admin users */}
+          <Route 
+            path="/settings" 
+            element={
+              <AdminRoute>
+                <SettingsPage />
+              </AdminRoute>
+            } 
+          />
           <Route 
             path="/users" 
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <UsersPage />
-              </ProtectedRoute>
+              </AdminRoute>
             } 
           />
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import { useData } from '@/context/DataContext';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -22,6 +23,14 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  // In a real app, this would come from authentication state
+  const user = {
+    name: 'Admin',
+    email: 'admin@escola.edu',
+    role: 'admin', // 'admin' or 'user'
+    initials: 'AD'
+  };
+
   return (
     <aside 
       className={cn(
@@ -121,18 +130,21 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <span>Alunos</span>
             </NavLink>
             
-            <NavLink 
-              to="/settings" 
-              className={({isActive}) => cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors", 
-                isActive 
-                  ? "bg-primary text-primary-foreground" 
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              <Settings className="h-5 w-5" />
-              <span>Configurações</span>
-            </NavLink>
+            {/* Only show Settings link if user is admin */}
+            {user.role === 'admin' && (
+              <NavLink 
+                to="/settings" 
+                className={({isActive}) => cn(
+                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors", 
+                  isActive 
+                    ? "bg-primary text-primary-foreground" 
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+              >
+                <Settings className="h-5 w-5" />
+                <span>Configurações</span>
+              </NavLink>
+            )}
           </div>
         </nav>
       </ScrollArea>
