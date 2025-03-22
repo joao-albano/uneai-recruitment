@@ -87,7 +87,8 @@ const UpcomingSchedules: React.FC<UpcomingSchedulesProps> = ({
                     </div>
                     {schedule.notes && (
                       <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
-                        {schedule.notes}
+                        {schedule.notes.replace(/Discuss attendance and academic performance/g, "Discussão sobre frequência e desempenho acadêmico")
+                                      .replace(/Parent meeting to address attendance issues/g, "Reunião com os pais para tratar questões de frequência")}
                       </p>
                     )}
                   </div>
