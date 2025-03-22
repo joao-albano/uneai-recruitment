@@ -1,4 +1,3 @@
-
 import { StudentData } from "../context/DataContext";
 
 export type ValidationError = {
@@ -180,4 +179,139 @@ export const getExcelFormat = (): { headers: string[]; description: string } => 
       'Comportamento (1-5), Nível de Risco (low, medium, high), Ações, Nome do Responsável, ' +
       'e Contato do Responsável (formato (99) 99999-9999)'
   };
+};
+
+// Function to parse CSV files
+export const parseCSV = async (text: string): Promise<{ data: StudentData[], errors: ValidationError[] }> => {
+  const lines = text.split('\n').filter(line => line.trim() !== '');
+  
+  if (lines.length === 0) {
+    return { data: [], errors: [{ row: 0, column: 'file', message: 'O arquivo está vazio' }] };
+  }
+
+  // Extract headers from the first line
+  const headers = lines[0].split(',').map(h => h.trim());
+
+  // Validate headers
+  if (!validateHeaders(headers)) {
+    return { 
+      data: [], 
+      errors: [{ 
+        row: 0, 
+        column: 'headers', 
+        message: 'Cabeçalhos necessários estão faltando' 
+      }] 
+    };
+  }
+
+  const headerMap = mapHeadersToProperties(headers);
+  const data: StudentData[] = [];
+  const errors: ValidationError[] = [];
+
+  // Process each row
+  for (let i = 1; i < lines.length; i++) {
+    const rowIndex = i;
+    const values = lines[i].split(',').map(v => v.trim());
+    
+    if (values.length !== headers.length) {
+      errors.push({
+        row: rowIndex,
+        column: 'format',
+        message: 'Número de colunas não corresponde ao número de cabeçalhos'
+      });
+      continue;
+    }
+
+    // Map values to student data object
+    const studentData: Partial<StudentData> = {};
+    
+    for (let j = 0; j < headers.length; j++) {
+      const propertyName = headerMap[j];
+      
+      if (propertyName) {
+        const value = values[j];
+        
+        if (propertyName === 'grade' || propertyName === 'attendance' || propertyName === 'behavior') {
+          studentData[propertyName] = parseFloat(value);
+        } else {
+          studentData[propertyName as keyof StudentData] = value as any;
+        }
+      }
+    }
+
+    // Validate the student data
+    const rowErrors = validateStudentData(studentData, rowIndex);
+    
+    if (rowErrors.length > 0) {
+      errors.push(...rowErrors);
+    } else {
+      // Add ID if not present
+      if (!studentData.id) {
+        studentData.id = `student-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      }
+      
+      data.push(studentData as StudentData);
+    }
+  }
+
+  return { data, errors };
+};
+
+// Function to parse Excel files
+export const parseExcel = async (file: File): Promise<{ data: StudentData[], errors: ValidationError[] }> => {
+  try {
+    // Since we can't directly parse Excel files in the browser without a library,
+    // we'll simulate it by reading it as text (Note: in a real app, you'd use a library like xlsx)
+    const text = await file.text();
+    
+    // For this simulation, we'll treat the Excel file as a CSV by assuming it's been exported as CSV
+    return parseCSV(text);
+    
+    // In a real implementation, you would:
+    // 1. Use a library like xlsx to parse the Excel file
+    // 2. Convert the parsed data to the format expected by your app
+    // 3. Validate the data using validateStudentData
+    // 4. Return the data and any validation errors
+  } catch (error) {
+    console.error('Error parsing Excel file:', error);
+    return { 
+      data: [], 
+      errors: [{ 
+        row: 0, 
+        column: 'file', 
+        message: 'Erro ao processar arquivo Excel' 
+      }] 
+    };
+  }
+};
+
+// Function to download a template file
+export const downloadTemplate = (): void => {
+  const { headers } = getExcelFormat();
+  
+  // Create CSV content
+  const csvContent = [
+    // Headers row
+    headers.join(','),
+    // Example row
+    'João da Silva,9A,7.5,85,4,medium,"Acompanhamento semanal","Maria da Silva","(11) 98765-4321"',
+    // Empty row for user to fill
+    'Nome do Aluno,Turma,0.0,0,1,low,"Ações necessárias","Nome do Responsável","(99) 99999-9999"'
+  ].join('\n');
+
+  // Create a blob from the CSV content
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  
+  // Create a download link
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  
+  link.setAttribute('href', url);
+  link.setAttribute('download', 'modelo_alunos.csv');
+  link.style.visibility = 'hidden';
+  
+  // Add to document, trigger download, and clean up
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
