@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, Check, ChevronLeft, ChevronRight, Clock, Edit, MoreVertical, Plus, Trash, Users, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,54 +23,46 @@ const ScheduleView: React.FC = () => {
   const location = useLocation();
   const formRef = useRef<HTMLFormElement>(null);
   
-  // Generate demo data if needed
   useEffect(() => {
     if (students.length === 0) {
       console.log("Generating demo data for scheduling");
       generateDemoData();
     }
     
-    // Check if there's a studentId in the location state and open dialog if present
     if (location.state?.studentId) {
       setShowAddDialog(true);
     }
   }, [students.length, generateDemoData, location.state]);
   
-  // Format month and year for the calendar header
   const formattedMonthYear = selectedDate.toLocaleDateString('pt-BR', {
     month: 'long',
     year: 'numeric',
   });
   
-  // Get days in current month
   const daysInMonth = new Date(
     selectedDate.getFullYear(),
     selectedDate.getMonth() + 1,
     0
   ).getDate();
   
-  // Get first day of month
   const firstDayOfMonth = new Date(
     selectedDate.getFullYear(),
     selectedDate.getMonth(),
     1
   ).getDay();
   
-  // Function to navigate to previous month
   const previousMonth = () => {
     setSelectedDate(
       new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1)
     );
   };
   
-  // Function to navigate to next month
   const nextMonth = () => {
     setSelectedDate(
       new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1)
     );
   };
   
-  // Function to handle new scheduling
   const handleScheduleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -81,7 +72,6 @@ const ScheduleView: React.FC = () => {
     const time = formData.get('time') as string;
     const notes = formData.get('notes') as string;
     
-    // Validate inputs
     if (!studentId || !date || !time) {
       toast({
         title: 'Campos obrigatórios',
@@ -91,16 +81,13 @@ const ScheduleView: React.FC = () => {
       return;
     }
     
-    // Find student name
     const student = students.find(s => s.id === studentId);
     if (!student) return;
     
-    // Create date object from inputs
     const [year, month, day] = date.split('-').map(Number);
     const [hours, minutes] = time.split(':').map(Number);
     const scheduleDate = new Date(year, month - 1, day, hours, minutes);
     
-    // Create schedule object
     const newSchedule = {
       id: `schedule-${Date.now()}`,
       studentId,
@@ -111,25 +98,20 @@ const ScheduleView: React.FC = () => {
       notes,
     };
     
-    // Add schedule
     addSchedule(newSchedule);
     
-    // Show success toast
     toast({
       title: 'Atendimento agendado',
       description: `Agendado para ${scheduleDate.toLocaleDateString()} às ${scheduleDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`
     });
     
-    // Reset the form
     if (formRef.current) {
       formRef.current.reset();
     }
     
-    // Close dialog
     setShowAddDialog(false);
   };
   
-  // Function to mark a schedule as completed
   const markCompleted = (id: string) => {
     updateScheduleStatus(id, 'completed');
     toast({
@@ -138,7 +120,6 @@ const ScheduleView: React.FC = () => {
     });
   };
   
-  // Function to cancel a schedule
   const cancelSchedule = (id: string) => {
     updateScheduleStatus(id, 'canceled');
     toast({
@@ -147,13 +128,11 @@ const ScheduleView: React.FC = () => {
     });
   };
   
-  // Get schedules for the current month
   const currentMonthSchedules = schedules.filter(schedule => 
     schedule.date.getMonth() === selectedDate.getMonth() &&
     schedule.date.getFullYear() === selectedDate.getFullYear()
   );
   
-  // Get schedules for today
   const today = new Date();
   const todaySchedules = schedules.filter(schedule => 
     schedule.date.getDate() === today.getDate() &&
@@ -162,27 +141,39 @@ const ScheduleView: React.FC = () => {
     schedule.status === 'scheduled'
   ).sort((a, b) => a.date.getTime() - b.date.getTime());
   
-  // Get upcoming schedules (future dates)
   const upcomingSchedules = schedules.filter(schedule => 
     schedule.date > today &&
     schedule.status === 'scheduled'
   ).sort((a, b) => a.date.getTime() - b.date.getTime()).slice(0, 5);
   
-  // Function to check if there are schedules on a specific day
   const hasSchedulesOnDay = (day: number) => {
     return currentMonthSchedules.some(schedule => 
       schedule.date.getDate() === day
     );
   };
   
-  // Function to get count of schedules on a specific day
   const getScheduleCountForDay = (day: number) => {
     return currentMonthSchedules.filter(schedule => 
       schedule.date.getDate() === day
     ).length;
   };
   
-  // Pre-select student from location state if available
+  const getScheduleStatusForDay = (day: number) => {
+    const daySchedules = currentMonthSchedules.filter(schedule => 
+      schedule.date.getDate() === day
+    );
+    
+    if (daySchedules.some(s => s.status === 'scheduled')) {
+      return 'scheduled';
+    } else if (daySchedules.some(s => s.status === 'completed')) {
+      return 'completed';
+    } else if (daySchedules.some(s => s.status === 'canceled')) {
+      return 'canceled';
+    }
+    
+    return null;
+  };
+  
   const preSelectedStudentId = location.state?.studentId || '';
   
   return (
@@ -195,7 +186,6 @@ const ScheduleView: React.FC = () => {
       </div>
       
       <div className="grid gap-8 md:grid-cols-5">
-        {/* Calendar column */}
         <div className="md:col-span-3 space-y-4">
           <Card className="shadow-md">
             <CardHeader className="pb-3">
@@ -217,21 +207,17 @@ const ScheduleView: React.FC = () => {
               </div>
             </CardHeader>
             <CardContent>
-              {/* Calendar grid */}
               <div className="grid grid-cols-7 gap-1">
-                {/* Days of the week */}
                 {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(day => (
                   <div key={day} className="text-center text-sm font-medium p-2">
                     {day}
                   </div>
                 ))}
                 
-                {/* Empty cells for days of the previous month */}
                 {Array.from({ length: firstDayOfMonth }).map((_, i) => (
                   <div key={`empty-${i}`} className="p-2 text-center text-muted-foreground" />
                 ))}
                 
-                {/* Days of the current month */}
                 {Array.from({ length: daysInMonth }).map((_, i) => {
                   const day = i + 1;
                   const isToday = 
@@ -240,21 +226,45 @@ const ScheduleView: React.FC = () => {
                     selectedDate.getFullYear() === today.getFullYear();
                   
                   const hasSchedules = hasSchedulesOnDay(day);
+                  const scheduleCount = getScheduleCountForDay(day);
+                  const scheduleStatus = getScheduleStatusForDay(day);
+                  
+                  let dayClasses = `
+                    relative p-2 text-center transition-colors hover:bg-muted/50 rounded-lg
+                    ${isToday ? 'font-bold' : ''}
+                  `;
+                  
+                  let badgeClasses = "text-[10px] h-4 min-w-4 flex items-center justify-center";
+                  
+                  if (hasSchedules) {
+                    if (isToday) {
+                      dayClasses += ' bg-primary/15 hover:bg-primary/20';
+                    } else {
+                      dayClasses += ' bg-primary/5 hover:bg-primary/10';
+                    }
+                    
+                    if (scheduleStatus === 'scheduled') {
+                      badgeClasses += ' bg-blue-100 text-blue-700 border border-blue-300';
+                    } else if (scheduleStatus === 'completed') {
+                      badgeClasses += ' bg-green-100 text-green-700 border border-green-300';
+                    } else if (scheduleStatus === 'canceled') {
+                      badgeClasses += ' bg-red-100 text-red-700 border border-red-300';
+                    }
+                  } else if (isToday) {
+                    dayClasses += ' bg-muted/30';
+                  }
                   
                   return (
                     <div 
                       key={`day-${day}`} 
-                      className={`
-                        relative p-2 text-center transition-colors hover:bg-muted/50 rounded-md
-                        ${isToday ? 'bg-primary/10 font-bold' : ''}
-                      `}
+                      className={dayClasses}
                     >
-                      <span>{day}</span>
+                      <span className={`${isToday ? 'text-primary' : ''}`}>{day}</span>
                       
                       {hasSchedules && (
                         <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2">
-                          <Badge variant="outline" className="text-[10px] h-4 bg-primary/10">
-                            {getScheduleCountForDay(day)}
+                          <Badge variant="outline" className={badgeClasses}>
+                            {scheduleCount}
                           </Badge>
                         </div>
                       )}
@@ -264,9 +274,15 @@ const ScheduleView: React.FC = () => {
               </div>
             </CardContent>
             <CardFooter className="justify-between">
-              <div className="flex items-center gap-2">
-                <div className="h-3 w-3 rounded-full bg-primary/10" />
-                <span className="text-xs text-muted-foreground">Hoje</span>
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-3 w-3 rounded-full bg-muted/50" />
+                  <span className="text-xs text-muted-foreground">Hoje</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-3 w-3 rounded-full bg-blue-100 border border-blue-300" />
+                  <span className="text-xs text-muted-foreground">Agendado</span>
+                </div>
               </div>
               <Button variant="outline" size="sm" onClick={() => setShowAddDialog(true)}>
                 <Plus className="mr-1 h-3.5 w-3.5" />
@@ -352,7 +368,6 @@ const ScheduleView: React.FC = () => {
           </Card>
         </div>
         
-        {/* Sidebar column */}
         <div className="md:col-span-2 space-y-4">
           <Card className="shadow-md">
             <CardHeader>
@@ -493,7 +508,6 @@ const ScheduleView: React.FC = () => {
         </div>
       </div>
       
-      {/* Add Schedule Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -516,7 +530,6 @@ const ScheduleView: React.FC = () => {
                       students
                         .filter(student => student.riskLevel !== 'low')
                         .sort((a, b) => {
-                          // Sort by risk level (high risk first)
                           if (a.riskLevel === 'high' && b.riskLevel !== 'high') return -1;
                           if (a.riskLevel !== 'high' && b.riskLevel === 'high') return 1;
                           return a.name.localeCompare(b.name);

@@ -8,15 +8,15 @@ import ScheduleView from '@/components/scheduling/ScheduleView';
 // Page content component
 const SchedulePageContent: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { students, generateDemoData } = useData();
+  const { students, schedules, generateDemoData } = useData();
   
   // Generate demo data if needed
   useEffect(() => {
-    if (students.length === 0) {
+    if (students.length === 0 || schedules.length === 0) {
       console.log("Generating demo data for schedule page");
       generateDemoData();
     }
-  }, [students.length, generateDemoData]);
+  }, [students.length, schedules.length, generateDemoData]);
   
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);

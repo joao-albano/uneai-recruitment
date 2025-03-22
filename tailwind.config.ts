@@ -67,6 +67,12 @@ export default {
 					low: '#10B981',
 					medium: '#F59E0B',
 					high: '#EF4444',
+				},
+				schedule: {
+					default: '#E5DEFF',
+					scheduled: '#D3E4FD',
+					completed: '#F2FCE2',
+					canceled: '#FFDEE2'
 				}
 			},
 			borderRadius: {
