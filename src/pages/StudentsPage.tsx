@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { DataProvider, useData } from '@/context/DataContext';
 import Header from '@/components/layout/Header';
@@ -29,28 +28,41 @@ import {
   AlertTriangle,
   MoreHorizontal,
   Calendar,
-  FileText,
-  ArrowUpDown
+  ArrowUpDown,
+  Filter,
+  X
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
-// Main students component
 const StudentsContent: React.FC = () => {
   const { students, alerts, generateDemoData } = useData();
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [sortKey, setSortKey] = useState<'name' | 'riskLevel' | 'grade' | 'attendance'>('name');
   const navigate = useNavigate();
-
-  // Generate demo data if needed
+  const location = useLocation();
+  const { toast } = useToast();
+  
+  const searchParams = new URLSearchParams(location.search);
+  const classFilter = searchParams.get('class');
+  
   useEffect(() => {
     if (students.length === 0) {
       console.log("Gerando dados de demonstração para estudantes");
       generateDemoData();
     }
   }, [students.length, generateDemoData]);
+  
+  useEffect(() => {
+    if (classFilter) {
+      toast({
+        title: `Turma ${classFilter}`,
+        description: `Visualizando alunos da turma ${classFilter}`,
+      });
+    }
+  }, [classFilter, toast]);
 
-  // Get student risk color
   const getRiskColor = (riskLevel?: 'low' | 'medium' | 'high') => {
     switch(riskLevel) {
       case 'high':
@@ -64,7 +76,6 @@ const StudentsContent: React.FC = () => {
     }
   };
 
-  // Get risk text in Portuguese
   const getRiskText = (riskLevel?: 'low' | 'medium' | 'high') => {
     switch(riskLevel) {
       case 'high':
@@ -78,7 +89,6 @@ const StudentsContent: React.FC = () => {
     }
   };
 
-  // Functions to handle sorting
   const toggleSort = (key: 'name' | 'riskLevel' | 'grade' | 'attendance') => {
     if (sortKey === key) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -88,8 +98,11 @@ const StudentsContent: React.FC = () => {
     }
   };
 
-  // Function to sort students
-  const sortedStudents = [...students].sort((a, b) => {
+  const filteredStudents = classFilter 
+    ? students.filter(student => student.class === classFilter)
+    : students;
+
+  const sortedStudents = [...filteredStudents].sort((a, b) => {
     let comparison = 0;
     
     if (sortKey === 'name') {
@@ -108,21 +121,22 @@ const StudentsContent: React.FC = () => {
     return sortOrder === 'asc' ? comparison : -comparison;
   });
 
-  // Navigate to student alerts
   const handleViewAlerts = (studentId: string) => {
     const studentAlert = alerts.find(alert => alert.studentId === studentId);
     
     if (studentAlert) {
       navigate(`/alerts?id=${studentAlert.id}`);
     } else {
-      // If no alert exists, show all alerts
       navigate('/alerts');
     }
   };
 
-  // Navigate to schedule page
   const handleSchedule = (studentId: string) => {
     navigate('/schedule', { state: { studentId } });
+  };
+
+  const clearClassFilter = () => {
+    navigate('/students');
   };
 
   return (
@@ -133,10 +147,31 @@ const StudentsContent: React.FC = () => {
       
       <Card>
         <CardHeader>
-          <CardTitle>Lista de Alunos</CardTitle>
-          <CardDescription>
-            Lista de todos os alunos cadastrados no sistema com seus respectivos níveis de risco.
-          </CardDescription>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle>Lista de Alunos</CardTitle>
+              <CardDescription>
+                Lista de todos os alunos cadastrados no sistema com seus respectivos níveis de risco.
+              </CardDescription>
+            </div>
+            
+            {classFilter && (
+              <div className="flex items-center space-x-2">
+                <Badge variant="outline" className="flex items-center gap-1 px-3 py-1">
+                  <Filter size={12} />
+                  Turma {classFilter}
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-4 w-4 ml-1 text-muted-foreground hover:text-foreground"
+                    onClick={clearClassFilter}
+                  >
+                    <X size={12} />
+                  </Button>
+                </Badge>
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -167,44 +202,66 @@ const StudentsContent: React.FC = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sortedStudents.map((student) => (
-                <TableRow key={student.id}>
-                  <TableCell className="font-medium">{student.name}</TableCell>
-                  <TableCell>{student.class}</TableCell>
-                  <TableCell>
-                    <Badge className={getRiskColor(student.riskLevel)}>
-                      {getRiskText(student.riskLevel)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{student.grade.toFixed(1)}</TableCell>
-                  <TableCell>{student.attendance}%</TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
+              {sortedStudents.length > 0 ? (
+                sortedStudents.map((student) => (
+                  <TableRow key={student.id}>
+                    <TableCell className="font-medium">{student.name}</TableCell>
+                    <TableCell>{student.class}</TableCell>
+                    <TableCell>
+                      <Badge className={getRiskColor(student.riskLevel)}>
+                        {getRiskText(student.riskLevel)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{student.grade.toFixed(1)}</TableCell>
+                    <TableCell>{student.attendance}%</TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem 
+                            className="flex items-center gap-2 cursor-pointer"
+                            onClick={() => handleViewAlerts(student.id)}
+                          >
+                            <AlertTriangle className="h-4 w-4" />
+                            Ver Alertas
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="flex items-center gap-2 cursor-pointer"
+                            onClick={() => handleSchedule(student.id)}
+                          >
+                            <Calendar className="h-4 w-4" />
+                            Agendar Atendimento
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-10">
+                    {classFilter ? (
+                      <div className="flex flex-col items-center justify-center space-y-2">
+                        <p className="text-muted-foreground">Nenhum aluno encontrado na turma {classFilter}</p>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={clearClassFilter}
+                          className="mt-2"
+                        >
+                          Mostrar todos os alunos
                         </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem 
-                          className="flex items-center gap-2 cursor-pointer"
-                          onClick={() => handleViewAlerts(student.id)}
-                        >
-                          <AlertTriangle className="h-4 w-4" />
-                          Ver Alertas
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="flex items-center gap-2 cursor-pointer"
-                          onClick={() => handleSchedule(student.id)}
-                        >
-                          <Calendar className="h-4 w-4" />
-                          Agendar Atendimento
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground">Nenhum aluno cadastrado</p>
+                    )}
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </CardContent>
@@ -213,7 +270,6 @@ const StudentsContent: React.FC = () => {
   );
 };
 
-// Page wrapper component
 const StudentsPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
@@ -228,7 +284,7 @@ const StudentsPage: React.FC = () => {
       <div className="flex-1 flex flex-col">
         <Header toggleSidebar={toggleSidebar} />
         
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 overflow-auto">
           <StudentsContent />
         </main>
       </div>
@@ -236,7 +292,6 @@ const StudentsPage: React.FC = () => {
   );
 };
 
-// Wrapper with DataProvider
 const StudentsPageWithProvider: React.FC = () => {
   return (
     <DataProvider>
