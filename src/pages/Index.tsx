@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { useData } from '@/context/DataContext';
+import { useData, DataProvider } from '@/context/DataContext';
 
-const Index = () => {
+const IndexContent = () => {
   const { students, alerts, generateDemoData } = useData();
   const { toast } = useToast();
   
@@ -26,7 +26,7 @@ const Index = () => {
       {/* Hero Section */}
       <section className="relative w-full bg-gradient-to-b from-primary/10 to-background py-20 overflow-hidden">
         <div className="max-w-5xl mx-auto px-4 md:px-6 relative z-10">
-          <div className="flex flex-col items-center text-center animate-slide-up">
+          <div className="flex flex-col items-center text-center">
             <Badge className="mb-4 px-3 py-1 text-sm rounded-full">
               <Shield className="mr-1 h-3.5 w-3.5" />
               <span>Preview MVP</span>
@@ -272,6 +272,14 @@ const Index = () => {
         </div>
       </footer>
     </div>
+  );
+};
+
+const Index = () => {
+  return (
+    <DataProvider>
+      <IndexContent />
+    </DataProvider>
   );
 };
 
