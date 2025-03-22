@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -13,6 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from '@/hooks/use-toast';
 import { useData } from '@/context/DataContext';
 
@@ -53,6 +53,20 @@ const SurveyForm: React.FC = () => {
     },
   });
   
+  // Handle student selection
+  const handleStudentSelect = (studentId: string) => {
+    if (studentId) {
+      const student = students.find(s => s.id === studentId);
+      if (student) {
+        form.setValue('studentId', student.id);
+        form.setValue('studentName', student.name);
+      }
+    } else {
+      form.setValue('studentId', '');
+      form.setValue('studentName', '');
+    }
+  };
+  
   const onSubmit = (values: FormValues) => {
     setIsSubmitting(true);
     
@@ -92,21 +106,6 @@ const SurveyForm: React.FC = () => {
       setIsSubmitting(false);
       setFormSubmitted(true);
     }, 1500);
-  };
-  
-  // Handle student selection
-  const handleStudentSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const studentId = e.target.value;
-    if (studentId) {
-      const student = students.find(s => s.id === studentId);
-      if (student) {
-        form.setValue('studentId', student.id);
-        form.setValue('studentName', student.name);
-      }
-    } else {
-      form.setValue('studentId', '');
-      form.setValue('studentName', '');
-    }
   };
   
   const startNewSurvey = () => {
@@ -154,29 +153,33 @@ const SurveyForm: React.FC = () => {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <div className="space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <label htmlFor="student-select" className="text-sm font-medium">
-                        Selecione o aluno
-                      </label>
-                      <select
-                        id="student-select"
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        onChange={handleStudentSelect}
-                        value={form.getValues('studentId')}
-                      >
-                        <option value="">Selecione um aluno...</option>
-                        {students.map(student => (
-                          <option key={student.id} value={student.id}>
-                            {student.name} - {student.class}
-                          </option>
-                        ))}
-                      </select>
-                      {form.formState.errors.studentId && (
-                        <p className="text-xs text-destructive mt-1">
-                          {form.formState.errors.studentId.message}
-                        </p>
+                    <FormField
+                      control={form.control}
+                      name="studentId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Selecione o aluno</FormLabel>
+                          <Select
+                            onValueChange={(value) => handleStudentSelect(value)}
+                            value={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione um aluno..." />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {students.map((student) => (
+                                <SelectItem key={student.id} value={student.id}>
+                                  {student.name} - {student.class}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
                       )}
-                    </div>
+                    />
                     
                     <FormField
                       control={form.control}
@@ -397,3 +400,4 @@ const SurveyForm: React.FC = () => {
 };
 
 export default SurveyForm;
+
