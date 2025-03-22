@@ -39,7 +39,7 @@ const Index = () => {
               com análise preditiva e recomendações personalizadas.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" asChild className="relative overflow-hidden group animate-scale-in">
+              <Button size="lg" asChild className="relative group">
                 <Link to="/dashboard">
                   <span className="relative z-10 flex items-center">
                     Acessar dashboard
@@ -79,7 +79,7 @@ const Index = () => {
         </div>
         
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="animate-scale-in transition-all duration-300 hover:shadow-md">
+          <Card className="transition-all duration-300 hover:shadow-md">
             <CardHeader>
               <div className="rounded-full w-10 h-10 bg-primary/10 flex items-center justify-center mb-2">
                 <FileUp className="h-5 w-5 text-primary" />
@@ -105,7 +105,7 @@ const Index = () => {
             </CardFooter>
           </Card>
           
-          <Card className="animate-scale-in transition-all duration-300 hover:shadow-md [animation-delay:100ms]">
+          <Card className="transition-all duration-300 hover:shadow-md">
             <CardHeader>
               <div className="rounded-full w-10 h-10 bg-primary/10 flex items-center justify-center mb-2">
                 <BarChart3 className="h-5 w-5 text-primary" />
@@ -131,7 +131,7 @@ const Index = () => {
             </CardFooter>
           </Card>
           
-          <Card className="animate-scale-in transition-all duration-300 hover:shadow-md [animation-delay:200ms]">
+          <Card className="transition-all duration-300 hover:shadow-md">
             <CardHeader>
               <div className="rounded-full w-10 h-10 bg-primary/10 flex items-center justify-center mb-2">
                 <Bell className="h-5 w-5 text-primary" />
@@ -157,7 +157,7 @@ const Index = () => {
             </CardFooter>
           </Card>
           
-          <Card className="animate-scale-in transition-all duration-300 hover:shadow-md [animation-delay:300ms]">
+          <Card className="transition-all duration-300 hover:shadow-md">
             <CardHeader>
               <div className="rounded-full w-10 h-10 bg-primary/10 flex items-center justify-center mb-2">
                 <ClipboardCheck className="h-5 w-5 text-primary" />
@@ -183,7 +183,7 @@ const Index = () => {
             </CardFooter>
           </Card>
           
-          <Card className="animate-scale-in transition-all duration-300 hover:shadow-md [animation-delay:400ms]">
+          <Card className="transition-all duration-300 hover:shadow-md">
             <CardHeader>
               <div className="rounded-full w-10 h-10 bg-primary/10 flex items-center justify-center mb-2">
                 <Calendar className="h-5 w-5 text-primary" />
@@ -209,7 +209,7 @@ const Index = () => {
             </CardFooter>
           </Card>
           
-          <Card className="glass-panel animate-scale-in transition-all duration-300 hover:shadow-md [animation-delay:500ms]">
+          <Card className="transition-all duration-300 hover:shadow-md">
             <CardHeader>
               <div className="rounded-full w-10 h-10 bg-primary/10 flex items-center justify-center mb-2">
                 <Shield className="h-5 w-5 text-primary" />
