@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, Check, ChevronLeft, ChevronRight, Clock, Edit, MoreVertical, Plus, Trash, Users, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,6 +23,16 @@ const ScheduleView: React.FC = () => {
   const { toast } = useToast();
   const location = useLocation();
   const formRef = useRef<HTMLFormElement>(null);
+  
+  // Filter students who already have active appointments
+  const studentsWithoutSchedules = students.filter(student => {
+    // Check if student already has an active (scheduled) appointment
+    return !schedules.some(
+      schedule => 
+        schedule.studentId === student.id && 
+        schedule.status === 'scheduled'
+    );
+  });
   
   useEffect(() => {
     if (students.length === 0) {
@@ -108,6 +119,8 @@ const ScheduleView: React.FC = () => {
     if (formRef.current) {
       formRef.current.reset();
     }
+    
+    setShowAddDialog(false);
   };
   
   const markCompleted = (id: string) => {
@@ -172,7 +185,15 @@ const ScheduleView: React.FC = () => {
     return null;
   };
   
+  // Get pre-selected student, but only if they don't already have a scheduled appointment
   const preSelectedStudentId = location.state?.studentId || '';
+  const canSelectPreSelectedStudent = !schedules.some(
+    schedule => 
+      schedule.studentId === preSelectedStudentId && 
+      schedule.status === 'scheduled'
+  );
+  
+  const finalPreSelectedStudentId = canSelectPreSelectedStudent ? preSelectedStudentId : '';
   
   return (
     <div className="animate-fade-in">
@@ -519,13 +540,13 @@ const ScheduleView: React.FC = () => {
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
                 <Label htmlFor="studentId">Aluno</Label>
-                <Select name="studentId" defaultValue={preSelectedStudentId} required>
+                <Select name="studentId" defaultValue={finalPreSelectedStudentId} required>
                   <SelectTrigger id="studentId" className="w-full bg-background">
                     <SelectValue placeholder="Selecione um aluno" />
                   </SelectTrigger>
                   <SelectContent position="popper" className="w-full max-h-[200px] overflow-auto z-[100] bg-background">
-                    {students.length > 0 ? (
-                      students
+                    {studentsWithoutSchedules.length > 0 ? (
+                      studentsWithoutSchedules
                         .filter(student => student.riskLevel !== 'low')
                         .sort((a, b) => {
                           if (a.riskLevel === 'high' && b.riskLevel !== 'high') return -1;
@@ -591,4 +612,3 @@ const ScheduleView: React.FC = () => {
 };
 
 export default ScheduleView;
-
