@@ -8,13 +8,21 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, ArrowLeft, Calendar, Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useData } from '@/context/DataContext';
 
 // Create a component for alert details
 const AlertDetails = ({ alertId }: { alertId: string }) => {
-  const { alerts, markAlertActionTaken, addSchedule } = useData();
+  const { alerts, markAlertActionTaken, addSchedule, generateDemoData } = useData();
   const navigate = useNavigate();
+  
+  // Verificar se há alertas, se não, carregar dados de demonstração
+  useEffect(() => {
+    if (alerts.length === 0) {
+      generateDemoData();
+    }
+  }, [alerts.length, generateDemoData]);
+  
   const alert = alerts.find(a => a.id === alertId);
   
   if (!alert) {
@@ -228,30 +236,47 @@ const AlertsPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchParams] = useSearchParams();
   const alertId = searchParams.get('id');
+  const { alerts, generateDemoData } = useData();
+  const location = useLocation();
+  
+  // Verificar se não há alertas, e se deve carregar dados de demonstração
+  useEffect(() => {
+    if (alerts.length === 0) {
+      console.log("Gerando dados de demonstração para alertas");
+      generateDemoData();
+    }
+  }, [alerts.length, generateDemoData]);
   
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
   
   return (
-    <DataProvider>
-      <div className="min-h-screen flex w-full">
-        <Sidebar isOpen={sidebarOpen} onClose={toggleSidebar} />
+    <div className="min-h-screen flex w-full">
+      <Sidebar isOpen={sidebarOpen} onClose={toggleSidebar} />
+      
+      <div className="flex-1 flex flex-col">
+        <Header toggleSidebar={toggleSidebar} />
         
-        <div className="flex-1 flex flex-col">
-          <Header toggleSidebar={toggleSidebar} />
-          
-          <main className="flex-1 p-6">
-            {alertId ? (
-              <AlertDetails alertId={alertId} />
-            ) : (
-              <AlertsList />
-            )}
-          </main>
-        </div>
+        <main className="flex-1 p-6">
+          {alertId ? (
+            <AlertDetails alertId={alertId} />
+          ) : (
+            <AlertsList />
+          )}
+        </main>
       </div>
+    </div>
+  );
+};
+
+// Componente wrapper para garantir que DataProvider esteja disponível
+const AlertsPageWithProvider: React.FC = () => {
+  return (
+    <DataProvider>
+      <AlertsPage />
     </DataProvider>
   );
 };
 
-export default AlertsPage;
+export default AlertsPageWithProvider;

@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AlertTriangle, BookOpen, Calendar, Check, CheckCircle2, Filter, Search } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,9 +17,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useData } from '@/context/DataContext';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 const AlertsList: React.FC = () => {
-  const { alerts, markAlertAsRead, markAlertActionTaken, addSchedule } = useData();
+  const { alerts, markAlertAsRead, markAlertActionTaken, addSchedule, generateDemoData } = useData();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterTypes, setFilterTypes] = useState<Record<string, boolean>>({
     'high-risk': true,
@@ -30,8 +30,15 @@ const AlertsList: React.FC = () => {
     'meeting-scheduled': true
   });
   const { toast } = useToast();
+  const navigate = useNavigate();
   
-  // Filter alerts based on search term and selected filters
+  useEffect(() => {
+    if (alerts.length === 0) {
+      console.log("Carregando dados de demonstração para a lista de alertas");
+      generateDemoData();
+    }
+  }, [alerts.length, generateDemoData]);
+  
   const filteredAlerts = alerts.filter(alert => {
     const matchesSearch = 
       alert.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -42,13 +49,10 @@ const AlertsList: React.FC = () => {
     return matchesSearch && matchesType;
   });
   
-  // Split alerts into unread and read
   const unreadAlerts = filteredAlerts.filter(alert => !alert.read);
   const readAlerts = filteredAlerts.filter(alert => alert.read);
   
-  // Handle scheduling a meeting
   const handleScheduleMeeting = (alertId: string, studentId: string, studentName: string) => {
-    // Schedule for tomorrow
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(10, 0, 0, 0);
@@ -69,6 +73,11 @@ const AlertsList: React.FC = () => {
       title: 'Atendimento agendado',
       description: `Agendado para ${tomorrow.toLocaleDateString()} às ${tomorrow.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`
     });
+  };
+  
+  const handleViewDetails = (alertId: string) => {
+    markAlertAsRead(alertId);
+    navigate(`/alerts?id=${alertId}`);
   };
   
   const getAlertIcon = (type: string) => {
@@ -140,12 +149,27 @@ const AlertsList: React.FC = () => {
           <p className="mt-1 text-sm">{alert.message}</p>
           
           <div className="mt-3 flex items-center gap-2">
+            <Button 
+              size="sm" 
+              variant="outline"
+              className="relative overflow-hidden"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleViewDetails(alert.id);
+              }}
+            >
+              Ver detalhes
+            </Button>
+            
             {!alert.actionTaken ? (
               <>
                 <Button 
                   size="sm" 
                   className="relative overflow-hidden"
-                  onClick={() => handleScheduleMeeting(alert.id, alert.studentId, alert.studentName)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleScheduleMeeting(alert.id, alert.studentId, alert.studentName);
+                  }}
                 >
                   <Calendar className="mr-1 h-3.5 w-3.5" />
                   Agendar atendimento
@@ -153,7 +177,10 @@ const AlertsList: React.FC = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => markAlertActionTaken(alert.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    markAlertActionTaken(alert.id);
+                  }}
                 >
                   <Check className="mr-1 h-3.5 w-3.5" />
                   Marcar como resolvido
