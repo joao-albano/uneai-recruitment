@@ -235,8 +235,8 @@ export const parseCSV = async (text: string): Promise<{ data: StudentData[], err
         if (propertyName === 'grade' || propertyName === 'attendance' || propertyName === 'behavior') {
           studentData[propertyName] = parseFloat(value);
         } else {
-          // Fixed the type issue by using type assertion with proper typing
-          studentData[propertyName as keyof StudentData] = value as unknown as any;
+          // Fix type issue by properly typing the value based on property name
+          (studentData as any)[propertyName] = value;
         }
       }
     }
