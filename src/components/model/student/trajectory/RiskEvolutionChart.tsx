@@ -27,14 +27,22 @@ const renderTooltip = (props: any) => {
 };
 
 const RiskEvolutionChart: React.FC<RiskEvolutionChartProps> = ({ trajectoryData }) => {
+  // Define chart config for ChartContainer
+  const chartConfig = {
+    riskScore: { 
+      color: '#ef4444',
+      label: 'Nível de Risco'
+    }
+  };
+
   return (
     <Card className="w-full">
       <CardHeader className="pb-2">
         <CardTitle className="text-xl text-center">Evolução do Nível de Risco</CardTitle>
       </CardHeader>
-      <CardContent className="p-0">
-        <div className="h-[350px] w-full px-2 pb-4">
-          <ResponsiveContainer width="100%" height="100%">
+      <CardContent className="p-2 sm:p-4">
+        <div className="h-[350px] w-full">
+          <ChartContainer config={chartConfig}>
             <LineChart 
               data={trajectoryData} 
               margin={{ top: 10, right: 25, left: 5, bottom: 25 }}
@@ -86,7 +94,7 @@ const RiskEvolutionChart: React.FC<RiskEvolutionChartProps> = ({ trajectoryData 
                 name="Nível de Risco"
               />
             </LineChart>
-          </ResponsiveContainer>
+          </ChartContainer>
         </div>
       </CardContent>
     </Card>

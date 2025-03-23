@@ -26,11 +26,19 @@ const renderTooltip = (props: any) => {
 };
 
 const AttendanceChart: React.FC<AttendanceChartProps> = ({ trajectoryData }) => {
+  // Define chart config for ChartContainer
+  const chartConfig = {
+    attendance: { 
+      color: '#10b981',
+      label: 'Frequência (%)'
+    }
+  };
+
   return (
     <div className="flex flex-col items-center space-y-1">
       <h3 className="font-medium text-lg">Frequência</h3>
       <div className="h-[250px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+        <ChartContainer config={chartConfig}>
           <BarChart 
             data={trajectoryData} 
             margin={{ top: 10, right: 20, left: 5, bottom: 25 }}
@@ -65,7 +73,7 @@ const AttendanceChart: React.FC<AttendanceChartProps> = ({ trajectoryData }) => 
               name="Frequência (%)"
             />
           </BarChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
     </div>
   );

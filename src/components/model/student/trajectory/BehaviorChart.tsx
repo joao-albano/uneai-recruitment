@@ -25,11 +25,19 @@ const renderTooltip = (props: any) => {
 };
 
 const BehaviorChart: React.FC<BehaviorChartProps> = ({ trajectoryData }) => {
+  // Define chart config for ChartContainer
+  const chartConfig = {
+    behavior: { 
+      color: '#8b5cf6',
+      label: 'Comportamento (1-5)'
+    }
+  };
+
   return (
     <div className="flex flex-col items-center space-y-1">
       <h3 className="font-medium text-lg">Comportamento</h3>
       <div className="h-[250px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+        <ChartContainer config={chartConfig}>
           <BarChart 
             data={trajectoryData} 
             margin={{ top: 10, right: 20, left: 5, bottom: 25 }}
@@ -54,7 +62,7 @@ const BehaviorChart: React.FC<BehaviorChartProps> = ({ trajectoryData }) => {
               name="Comportamento (1-5)"
             />
           </BarChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
     </div>
   );

@@ -26,11 +26,19 @@ const renderTooltip = (props: any) => {
 };
 
 const GradesChart: React.FC<GradesChartProps> = ({ trajectoryData }) => {
+  // Define chart config for ChartContainer
+  const chartConfig = {
+    grade: { 
+      color: '#3b82f6',
+      label: 'Nota'
+    }
+  };
+
   return (
     <div className="flex flex-col items-center space-y-1">
       <h3 className="font-medium text-lg">Notas</h3>
       <div className="h-[250px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+        <ChartContainer config={chartConfig}>
           <LineChart 
             data={trajectoryData} 
             margin={{ top: 10, right: 20, left: 5, bottom: 25 }}
@@ -68,7 +76,7 @@ const GradesChart: React.FC<GradesChartProps> = ({ trajectoryData }) => {
               name="Nota"
             />
           </LineChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
     </div>
   );
