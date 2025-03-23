@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+
+import React, { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useData } from '@/context/DataContext';
 import { useNavigate } from 'react-router-dom';
@@ -12,21 +13,14 @@ const Dashboard: React.FC = () => {
   const { students, alerts, schedules, isLoading, generateDemoData } = useData();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const hasShownToastRef = useRef(false);
   
   useEffect(() => {
-    // Only generate demo data if there are no students and not currently loading
-    if (students.length === 0 && !isLoading && !hasShownToastRef.current) {
+    if (students.length === 0 && !isLoading) {
       generateDemoData();
-      
-      // Show toast only once
       toast({
         title: 'Dados de demonstração',
         description: 'Carregamos alguns dados de exemplo para você explorar o sistema.',
       });
-      
-      // Mark that we've shown the toast
-      hasShownToastRef.current = true;
     }
   }, [students.length, generateDemoData, isLoading, toast]);
 
@@ -88,10 +82,7 @@ const Dashboard: React.FC = () => {
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-4">
             <Button 
-              onClick={() => {
-                hasShownToastRef.current = false;
-                generateDemoData();
-              }}
+              onClick={generateDemoData}
               size="lg"
               className="w-full max-w-md"
             >

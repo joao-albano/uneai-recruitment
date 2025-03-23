@@ -1,11 +1,12 @@
 
-import React, { createContext, useContext, ReactNode, useState } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 import { StudentsProvider, useStudents } from './students/StudentsContext';
 import { SurveysProvider, useSurveys } from './surveys/SurveysContext';
 import { SchedulesProvider, useSchedules } from './schedules/SchedulesContext';
 import { AlertsProvider, useAlerts } from './alerts/AlertsContext';
 import { UploadsProvider, useUploads } from './uploads/UploadsContext';
 import { WhatsAppProvider, useWhatsApp } from './whatsapp/WhatsAppContext';
+import { AppStateProvider, useAppState } from './app/AppStateContext';
 import { StudentData, SurveyData, ScheduleItem, AlertItem, UploadRecord } from '@/types/data';
 import { WhatsAppMessage } from '@/types/whatsapp';
 
@@ -40,13 +41,17 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   return (
     <StudentsProvider>
       <SurveysProvider>
-        <SchedulesProvider>
-          <UploadsProvider>
-            <WhatsAppProvider>
-              <DataProviderInner>{children}</DataProviderInner>
-            </WhatsAppProvider>
-          </UploadsProvider>
-        </SchedulesProvider>
+        <AlertsProvider>
+          <SchedulesProvider>
+            <UploadsProvider>
+              <WhatsAppProvider>
+                <AppStateProvider>
+                  <DataProviderInner>{children}</DataProviderInner>
+                </AppStateProvider>
+              </WhatsAppProvider>
+            </UploadsProvider>
+          </SchedulesProvider>
+        </AlertsProvider>
       </SurveysProvider>
     </StudentsProvider>
   );
@@ -56,22 +61,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 const DataProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { students, setStudents } = useStudents();
   const { surveys, addSurvey } = useSurveys();
-  const { schedules, addSchedule, updateScheduleStatus, updateSchedule } = useSchedules();
-  const { alerts, addAlert, markAlertAsRead, markAlertActionTaken } = useAlerts();
+  const { schedules, addSchedule, updateScheduleStatus, updateSchedule, setSchedules } = useSchedules();
+  const { alerts, addAlert, markAlertAsRead, markAlertActionTaken, setAlerts } = useAlerts();
   const { uploadHistory, addUploadRecord, clearUploadHistory } = useUploads();
   const { whatsAppConfig, whatsAppMessages, addWhatsAppMessage, sendWhatsAppSurvey: sendWhatsAppSurveyToStudent } = useWhatsApp();
-  
-  // Instead of using useAppState which causes dependency issues, we'll implement the minimal functionality needed
-  const [isLoading, setIsLoading] = useState(false);
-  
-  const generateDemoData = () => {
-    setIsLoading(true);
-    
-    // Simplified version that just controls loading state
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 800);
-  };
+  const { isLoading, generateDemoData } = useAppState();
 
   // Adapt the sendWhatsAppSurvey function to match the original signature
   const sendWhatsAppSurvey = (studentId: string) => {

@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Bell, Menu, LogOut, User, Settings, UserCog } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useData } from '@/context/DataContext';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -14,7 +15,6 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
-import { useAlerts } from '@/context/alerts/AlertsContext';
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -22,7 +22,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed }) => {
-  const { alerts = [] } = useAlerts();
+  const { alerts } = useData();
   const navigate = useNavigate();
   const { isAdmin, logout, userEmail } = useAuth();
   const { theme } = useTheme();

@@ -1,12 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Trash2 } from 'lucide-react';
+import { SchedulesProvider } from '@/context/schedules/SchedulesContext';
+import Header from '@/components/layout/Header';
+import Sidebar from '@/components/layout/Sidebar';
+import ScheduleView from '@/components/scheduling/ScheduleView';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/AuthContext';
 import { useSchedules } from '@/context/schedules/SchedulesContext';
-import { Layout } from '@/components/layout/Layout';
-import ScheduleView from '@/components/scheduling/ScheduleView';
 
 const ScheduleContent: React.FC = () => {
   const { clearAllSchedules } = useSchedules();
@@ -45,10 +47,29 @@ const ScheduleContent: React.FC = () => {
 };
 
 const SchedulePage: React.FC = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+  
   return (
-    <Layout>
-      <ScheduleContent />
-    </Layout>
+    <SchedulesProvider>
+      <div className="h-screen flex flex-col md:flex-row overflow-hidden">
+        <Sidebar 
+          isOpen={sidebarOpen} 
+          onClose={toggleSidebar} 
+          collapsed={sidebarCollapsed}
+          setCollapsed={setSidebarCollapsed}
+        />
+        
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <Header toggleSidebar={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
+          <ScheduleContent />
+        </div>
+      </div>
+    </SchedulesProvider>
   );
 };
 
