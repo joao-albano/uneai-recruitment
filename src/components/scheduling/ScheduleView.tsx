@@ -5,6 +5,7 @@ import TodaySchedules from './TodaySchedules';
 import UpcomingSchedules from './UpcomingSchedules';
 import ScheduleStats from './ScheduleStats';
 import ScheduleDialog from './ScheduleDialog';
+import ScheduleDetailsDialog from './ScheduleDetailsDialog';
 import { useScheduleData } from '@/hooks/useScheduleData';
 
 const ScheduleView: React.FC = () => {
@@ -29,7 +30,10 @@ const ScheduleView: React.FC = () => {
     hasSchedulesOnDay,
     getScheduleCountForDay,
     getScheduleStatusForDay,
-    finalPreSelectedStudentId
+    finalPreSelectedStudentId,
+    showScheduleDetails,
+    setShowScheduleDetails,
+    selectedSchedule
   } = useScheduleData();
   
   return (
@@ -84,6 +88,16 @@ const ScheduleView: React.FC = () => {
         preSelectedStudentId={finalPreSelectedStudentId}
         onSubmit={handleScheduleSubmit}
       />
+      
+      {selectedSchedule && (
+        <ScheduleDetailsDialog
+          open={showScheduleDetails}
+          onOpenChange={setShowScheduleDetails}
+          schedule={selectedSchedule}
+          onMarkCompleted={markCompleted}
+          onCancelSchedule={cancelSchedule}
+        />
+      )}
     </div>
   );
 };

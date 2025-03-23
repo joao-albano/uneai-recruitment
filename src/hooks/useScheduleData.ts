@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useData } from '@/context/DataContext';
 import { useCalendarState } from './useCalendarState';
@@ -11,6 +11,9 @@ export type { Schedule, FormattedScheduleData } from '@/types/schedule';
 export const useScheduleData = () => {
   const location = useLocation();
   const { students, schedules, generateDemoData } = useData();
+  const [showScheduleDetails, setShowScheduleDetails] = useState(false);
+  const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null);
+  
   const {
     selectedDate,
     formattedMonthYear,
@@ -38,10 +41,21 @@ export const useScheduleData = () => {
       generateDemoData();
     }
     
-    if (location.state?.studentId) {
+    const locationState = location.state as { studentId?: string; scheduleId?: string } | null;
+    
+    // Check if we have a scheduleId in the state
+    if (locationState?.scheduleId) {
+      const schedule = schedules.find(s => s.id === locationState.scheduleId);
+      if (schedule) {
+        setSelectedSchedule(schedule);
+        setShowScheduleDetails(true);
+      }
+    }
+    // If we have a studentId but no scheduleId, open the add dialog
+    else if (locationState?.studentId) {
       setShowAddDialog(true);
     }
-  }, [students.length, generateDemoData, location.state]);
+  }, [students.length, schedules, generateDemoData, location.state, setShowAddDialog]);
   
   const today = new Date();
   
@@ -87,6 +101,9 @@ export const useScheduleData = () => {
     hasSchedulesOnDay,
     getScheduleCountForDay,
     getScheduleStatusForDay,
-    finalPreSelectedStudentId
+    finalPreSelectedStudentId,
+    showScheduleDetails,
+    setShowScheduleDetails,
+    selectedSchedule
   };
 };

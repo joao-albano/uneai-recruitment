@@ -38,7 +38,9 @@ const Dashboard: React.FC = () => {
   };
 
   const handleScheduleClick = (schedule: Schedule) => {
-    navigate('/schedule', { state: { studentId: schedule.studentId } });
+    // Navigate to schedule page and pass the schedule ID instead of studentId
+    // This will signal the schedule page to show details view rather than opening the new appointment dialog
+    navigate('/schedule', { state: { scheduleId: schedule.id } });
     
     toast({
       title: 'Visualizando agendamento',
