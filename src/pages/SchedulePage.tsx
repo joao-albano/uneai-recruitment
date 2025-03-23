@@ -27,7 +27,12 @@ const ScheduleContent: React.FC = () => {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <div className="flex justify-between items-center mb-4 mt-4 px-6">
-        <h1 className="text-3xl font-bold tracking-tight">Agenda</h1>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Agenda</h1>
+          <p className="text-muted-foreground mt-1">
+            Gerencie atendimentos e acompanhamentos
+          </p>
+        </div>
         {isAdmin && (
           <Button 
             variant="destructive" 

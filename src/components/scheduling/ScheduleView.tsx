@@ -77,14 +77,7 @@ const ScheduleView: React.FC = () => {
   
   return (
     <div className="w-full animate-fade-in">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Agenda</h1>
-        <p className="text-muted-foreground mt-1">
-          Gerencie atendimentos e acompanhamentos
-        </p>
-      </div>
-      
-      <div className="grid gap-8 lg:grid-cols-5">
+      <div className="grid gap-8 lg:grid-cols-5 mt-4">
         <div className="lg:col-span-3 space-y-6">
           <CalendarView
             formattedMonthYear={formattedMonthYear}
