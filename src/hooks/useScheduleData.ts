@@ -32,16 +32,6 @@ export const useScheduleData = () => {
     }
     return success;
   };
-  
-  // Handle edit schedule submission
-  const handleEditScheduleSubmit = (formData: FormData) => {
-    const success = scheduleOperations.handleEditScheduleSubmit(dialogState.scheduleToEdit, formData);
-    if (success) {
-      // Call with explicit false parameter to ensure proper cleanup
-      dialogState.setShowEditDialog(false);
-    }
-    return success;
-  };
 
   // Return combined object with all needed properties and methods
   return {
@@ -64,7 +54,6 @@ export const useScheduleData = () => {
     
     // Operations with arguments adjusted for composition
     handleScheduleSubmit,
-    handleEditScheduleSubmit,
     markCompleted: scheduleOperations.markCompleted,
     cancelSchedule: scheduleOperations.cancelSchedule,
   };

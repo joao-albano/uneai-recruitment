@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Calendar, Clock, Edit, MoreVertical, Plus, Trash, Users } from 'lucide-react';
+import { Calendar, Clock, MoreVertical, Plus, Trash, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -57,13 +57,6 @@ const UpcomingSchedules: React.FC<UpcomingSchedulesProps> = ({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={(e) => {
-                            e.stopPropagation();
-                            onEditSchedule(schedule);
-                          }}>
-                            <Edit className="mr-2 h-4 w-4" />
-                            Editar
-                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={(e) => {
                             e.stopPropagation();
                             onCancelSchedule(schedule.id);
