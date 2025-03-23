@@ -98,9 +98,9 @@ const StudentTable: React.FC<StudentTableProps> = ({
       ) : (
         <TableRow>
           <TableCell colSpan={6} className="text-center py-10">
-            {classFilter ? (
-              <div className="flex flex-col items-center justify-center space-y-2">
-                <p className="text-muted-foreground">Nenhum aluno encontrado na turma {classFilter}</p>
+            <div className="flex flex-col items-center justify-center space-y-2">
+              <p className="text-muted-foreground">Nenhum aluno encontrado com os filtros aplicados</p>
+              {classFilter ? (
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -109,10 +109,8 @@ const StudentTable: React.FC<StudentTableProps> = ({
                 >
                   Mostrar todos os alunos
                 </Button>
-              </div>
-            ) : (
-              <p className="text-muted-foreground">Nenhum aluno cadastrado</p>
-            )}
+              ) : null}
+            </div>
           </TableCell>
         </TableRow>
       )}
