@@ -3,14 +3,11 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   ResponsiveContainer, 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
+  PieChart, 
+  Pie, 
+  Cell, 
   Tooltip, 
-  Legend,
-  Cell
+  Legend
 } from 'recharts';
 import { StudentData } from '@/context/DataContext';
 
@@ -34,22 +31,45 @@ const Chart: React.FC<ChartProps> = ({ students, title, description }) => {
   const highRiskPercentage = totalStudents > 0 ? (highRisk / totalStudents) * 100 : 0;
   
   const data = [
-    { name: 'Baixo Risco', value: parseFloat(lowRiskPercentage.toFixed(1)), count: lowRisk, color: '#10B981' },
-    { name: 'Médio Risco', value: parseFloat(mediumRiskPercentage.toFixed(1)), count: mediumRisk, color: '#F59E0B' },
-    { name: 'Alto Risco', value: parseFloat(highRiskPercentage.toFixed(1)), count: highRisk, color: '#EF4444' },
+    { name: 'Baixo Risco', value: lowRisk, percentage: parseFloat(lowRiskPercentage.toFixed(1)), color: '#10B981' },
+    { name: 'Médio Risco', value: mediumRisk, percentage: parseFloat(mediumRiskPercentage.toFixed(1)), color: '#F59E0B' },
+    { name: 'Alto Risco', value: highRisk, percentage: parseFloat(highRiskPercentage.toFixed(1)), color: '#EF4444' },
   ];
   
   // Custom tooltip
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-popover p-2 shadow-md rounded-md border text-xs">
-          <p className="font-medium">{`${payload[0].name}: ${payload[0].value}%`}</p>
-          <p className="text-muted-foreground">{`${payload[0].payload.count} alunos`}</p>
+        <div className="bg-popover p-3 shadow-md rounded-md border">
+          <p className="font-medium text-sm">{`${payload[0].name}`}</p>
+          <p className="text-muted-foreground text-xs">{`${payload[0].value} alunos (${payload[0].payload.percentage}%)`}</p>
         </div>
       );
     }
     return null;
+  };
+  
+  const RADIAN = Math.PI / 180;
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, value }: any) => {
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    
+    if (value === 0) return null;
+    
+    return (
+      <text 
+        x={x} 
+        y={y} 
+        fill="white" 
+        textAnchor={x > cx ? 'start' : 'end'} 
+        dominantBaseline="central"
+        fontSize={12}
+        fontWeight="bold"
+      >
+        {value}
+      </text>
+    );
   };
   
   return (
@@ -60,49 +80,34 @@ const Chart: React.FC<ChartProps> = ({ students, title, description }) => {
       </CardHeader>
       <CardContent className="h-72">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={data}
-            margin={{
-              top: 5,
-              right: 20,
-              left: 0,
-              bottom: 20,
-            }}
-            layout="vertical"
-          >
-            <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.3} />
-            <XAxis 
-              type="number"
-              domain={[0, 100]}
-              tickFormatter={(value) => `${value}%`}
-              tick={{ fontSize: 12 }}
-              tickLine={false}
-              axisLine={{ stroke: '#e5e7eb', strokeWidth: 1 }}
-            />
-            <YAxis 
-              dataKey="name"
-              type="category"
-              tick={{ fontSize: 12 }}
-              tickLine={false}
-              axisLine={{ stroke: '#e5e7eb', strokeWidth: 1 }}
-              width={100}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend 
-              verticalAlign="bottom" 
-              wrapperStyle={{ paddingTop: '15px', fontSize: '12px' }}
-            />
-            <Bar 
-              dataKey="value" 
-              name="Porcentagem" 
-              radius={[0, 4, 4, 0]} 
-              barSize={40}
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={renderCustomizedLabel}
+              outerRadius={80}
+              fill="#8884d8"
+              dataKey="value"
+              nameKey="name"
             >
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
-            </Bar>
-          </BarChart>
+            </Pie>
+            <Tooltip content={<CustomTooltip />} />
+            <Legend 
+              layout="horizontal" 
+              verticalAlign="bottom" 
+              align="center" 
+              wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }}
+              formatter={(value, entry, index) => {
+                const { payload } = entry as any;
+                return `${value} (${payload.percentage}%)`;
+              }}
+            />
+          </PieChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
