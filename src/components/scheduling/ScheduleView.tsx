@@ -6,7 +6,6 @@ import UpcomingSchedules from './UpcomingSchedules';
 import ScheduleStats from './ScheduleStats';
 import ScheduleDialog from './ScheduleDialog';
 import ScheduleDetailsDialog from './ScheduleDetailsDialog';
-import EditScheduleDialog from './EditScheduleDialog';
 import DaySchedulesDialog from './DaySchedulesDialog';
 import { useAuth } from '@/context/AuthContext';
 import { useScheduleData } from '@/hooks/useScheduleData';
@@ -23,9 +22,6 @@ const ScheduleView: React.FC = () => {
     visibleSchedules,
     showAddDialog,
     setShowAddDialog,
-    showEditDialog,
-    setShowEditDialog,
-    scheduleToEdit,
     formattedMonthYear,
     daysInMonth,
     firstDayOfMonth,
@@ -36,8 +32,6 @@ const ScheduleView: React.FC = () => {
     previousMonth,
     nextMonth,
     handleScheduleSubmit,
-    handleEditScheduleSubmit,
-    startEditSchedule,
     markCompleted,
     cancelSchedule,
     hasSchedulesOnDay,
@@ -106,7 +100,7 @@ const ScheduleView: React.FC = () => {
             upcomingSchedules={upcomingSchedules}
             onCancelSchedule={cancelSchedule}
             onNewSchedule={() => setShowAddDialog(true)}
-            onEditSchedule={startEditSchedule}
+            onEditSchedule={() => {}}
           />
           
           <ScheduleStats schedules={visibleSchedules} />
@@ -132,14 +126,6 @@ const ScheduleView: React.FC = () => {
           onCancelSchedule={cancelSchedule}
         />
       )}
-      
-      <EditScheduleDialog
-        open={showEditDialog}
-        onOpenChange={setShowEditDialog}
-        schedule={scheduleToEdit}
-        onSubmit={handleEditScheduleSubmit}
-        currentUserEmail={userEmail}
-      />
       
       <DaySchedulesDialog
         isOpen={showDaySchedules}
