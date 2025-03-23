@@ -22,6 +22,7 @@ import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 import UsersPage from "./pages/UsersPage";
 import ModelPage from "./pages/ModelPage";
+import PricingPage from "./pages/PricingPage";
 import NotFound from "./pages/NotFound";
 import ModelStudentPage from "./pages/ModelStudentPage";
 
@@ -41,6 +42,9 @@ const App = () => (
               
               {/* Public route - LoginPage */}
               <Route path="/login" element={<LoginPage />} />
+              
+              {/* Public route - PricingPage */}
+              <Route path="/pricing" element={<PricingPage />} />
               
               {/* Protected route - Index (landing page) */}
               <Route 
