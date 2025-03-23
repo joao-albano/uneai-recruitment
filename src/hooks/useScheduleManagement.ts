@@ -77,11 +77,12 @@ export const useScheduleManagement = () => {
     });
     
     setShowEditDialog(false);
-    setScheduleToEdit(null);
+    // Garantir que o scheduleToEdit seja limpo após o fechamento do diálogo
+    setTimeout(() => setScheduleToEdit(null), 100);
   };
   
   const startEditSchedule = (schedule: Schedule) => {
-    setScheduleToEdit(schedule);
+    setScheduleToEdit({...schedule});
     setShowEditDialog(true);
   };
   

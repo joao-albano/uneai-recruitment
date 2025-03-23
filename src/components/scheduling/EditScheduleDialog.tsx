@@ -26,8 +26,8 @@ const EditScheduleDialog: React.FC<EditScheduleDialogProps> = ({
   const { toast } = useToast();
 
   // Format the date and time for the input fields
-  const formattedDate = schedule ? format(schedule.date, 'yyyy-MM-dd') : '';
-  const formattedTime = schedule ? format(schedule.date, 'HH:mm') : '';
+  const formattedDate = schedule ? format(new Date(schedule.date), 'yyyy-MM-dd') : '';
+  const formattedTime = schedule ? format(new Date(schedule.date), 'HH:mm') : '';
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,9 +50,13 @@ const EditScheduleDialog: React.FC<EditScheduleDialogProps> = ({
     }
     
     onSubmit(formData);
+  };
+  
+  const handleClose = () => {
     onOpenChange(false);
   };
 
+  // Impedir que o componente seja renderizado sem um schedule
   if (!schedule) return null;
 
   return (
@@ -104,14 +108,14 @@ const EditScheduleDialog: React.FC<EditScheduleDialogProps> = ({
                 name="notes"
                 id="notes"
                 placeholder="Detalhes sobre o atendimento..."
-                defaultValue={schedule.notes}
+                defaultValue={schedule.notes || ''}
                 className="min-h-[80px]"
               />
             </div>
           </div>
           
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="outline" onClick={handleClose}>
               Cancelar
             </Button>
             <Button type="submit">Salvar alterações</Button>

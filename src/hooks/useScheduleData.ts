@@ -62,6 +62,16 @@ export const useScheduleData = () => {
     }
   }, [students.length, schedules, generateDemoData, location.state, setShowAddDialog]);
   
+  // Certificar-se de que selectedSchedule também é atualizado quando schedules muda
+  useEffect(() => {
+    if (selectedSchedule) {
+      const updatedSchedule = schedules.find(s => s.id === selectedSchedule.id);
+      if (updatedSchedule) {
+        setSelectedSchedule(updatedSchedule);
+      }
+    }
+  }, [schedules, selectedSchedule]);
+  
   const today = new Date();
   
   const todaySchedules = schedules.filter(schedule => {
@@ -71,7 +81,7 @@ export const useScheduleData = () => {
            scheduleDate.getMonth() === today.getMonth() &&
            scheduleDate.getFullYear() === today.getFullYear() &&
            schedule.status === 'scheduled';
-  }).sort((a, b) => a.date.getTime() - b.date.getTime());
+  }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   
   const upcomingSchedules = schedules.filter(schedule => {
     // Ensure we're using the correct date comparison
@@ -79,7 +89,7 @@ export const useScheduleData = () => {
     const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     return scheduleDate > todayStart &&
            schedule.status === 'scheduled';
-  }).sort((a, b) => a.date.getTime() - b.date.getTime()).slice(0, 5);
+  }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).slice(0, 5);
   
   const preSelectedStudentId = location.state?.studentId || '';
   const canSelectPreSelectedStudent = !schedules.some(
