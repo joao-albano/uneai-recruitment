@@ -67,7 +67,7 @@ const Chart: React.FC<ChartProps> = ({ students, title, description }) => {
         fontSize={12}
         fontWeight="bold"
       >
-        {value}
+        {`${data[index].percentage.toFixed(0)}%`}
       </text>
     );
   };
@@ -103,8 +103,9 @@ const Chart: React.FC<ChartProps> = ({ students, title, description }) => {
               align="center" 
               wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }}
               formatter={(value, entry, index) => {
-                const { payload } = entry as any;
-                return `${value} (${payload.percentage}%)`;
+                // Only show the percentage
+                const idx = (entry as any).payload.index;
+                return `${data[idx].percentage.toFixed(0)}%`;
               }}
             />
           </PieChart>

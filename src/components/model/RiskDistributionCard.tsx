@@ -15,10 +15,15 @@ const RiskDistributionCard: React.FC = () => {
   const mediumRiskCount = students.filter(student => student.riskLevel === 'medium').length;
   const lowRiskCount = students.filter(student => student.riskLevel === 'low').length;
   
+  const totalStudents = students.length;
+  const highRiskPercentage = totalStudents > 0 ? Math.round((highRiskCount / totalStudents) * 100) : 0;
+  const mediumRiskPercentage = totalStudents > 0 ? Math.round((mediumRiskCount / totalStudents) * 100) : 0;
+  const lowRiskPercentage = totalStudents > 0 ? Math.round((lowRiskCount / totalStudents) * 100) : 0;
+  
   const data = [
-    { name: 'Alto Risco', value: highRiskCount, color: '#ef4444' },
-    { name: 'Médio Risco', value: mediumRiskCount, color: '#f59e0b' },
-    { name: 'Baixo Risco', value: lowRiskCount, color: '#10b981' },
+    { name: 'Alto Risco', value: highRiskCount, color: '#ef4444', percentage: highRiskPercentage },
+    { name: 'Médio Risco', value: mediumRiskCount, color: '#f59e0b', percentage: mediumRiskPercentage },
+    { name: 'Baixo Risco', value: lowRiskCount, color: '#10b981', percentage: lowRiskPercentage },
   ];
   
   const handleViewStudents = (riskLevel: string) => {
@@ -45,15 +50,23 @@ const RiskDistributionCard: React.FC = () => {
                 outerRadius={80}
                 paddingAngle={2}
                 dataKey="value"
-                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                label={({ percentage }) => `${percentage}%`}
                 labelLine={false}
               >
                 {data.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value) => [`${value} alunos`, 'Quantidade']} />
-              <Legend verticalAlign="bottom" align="center" />
+              <Tooltip formatter={(value, name) => [`${value} alunos`, '']} />
+              <Legend 
+                verticalAlign="bottom" 
+                align="center"
+                formatter={(value, entry, index) => {
+                  // Only show the percentage without the name
+                  const { percentage } = data[index];
+                  return `${percentage}%`;
+                }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
