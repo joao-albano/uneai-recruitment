@@ -64,17 +64,22 @@ export const useScheduleData = () => {
   
   const today = new Date();
   
-  const todaySchedules = schedules.filter(schedule => 
-    schedule.date.getDate() === today.getDate() &&
-    schedule.date.getMonth() === today.getMonth() &&
-    schedule.date.getFullYear() === today.getFullYear() &&
-    schedule.status === 'scheduled'
-  ).sort((a, b) => a.date.getTime() - b.date.getTime());
+  const todaySchedules = schedules.filter(schedule => {
+    // Improved date comparison logic for today's appointments
+    const scheduleDate = new Date(schedule.date);
+    return scheduleDate.getDate() === today.getDate() &&
+           scheduleDate.getMonth() === today.getMonth() &&
+           scheduleDate.getFullYear() === today.getFullYear() &&
+           schedule.status === 'scheduled';
+  }).sort((a, b) => a.date.getTime() - b.date.getTime());
   
-  const upcomingSchedules = schedules.filter(schedule => 
-    schedule.date > today &&
-    schedule.status === 'scheduled'
-  ).sort((a, b) => a.date.getTime() - b.date.getTime()).slice(0, 5);
+  const upcomingSchedules = schedules.filter(schedule => {
+    // Ensure we're using the correct date comparison
+    const scheduleDate = new Date(schedule.date);
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    return scheduleDate > todayStart &&
+           schedule.status === 'scheduled';
+  }).sort((a, b) => a.date.getTime() - b.date.getTime()).slice(0, 5);
   
   const preSelectedStudentId = location.state?.studentId || '';
   const canSelectPreSelectedStudent = !schedules.some(

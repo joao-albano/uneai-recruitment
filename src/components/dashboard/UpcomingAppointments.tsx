@@ -39,7 +39,7 @@ const UpcomingAppointments: React.FC<UpcomingAppointmentsProps> = ({
                 <CardContent className="p-4">
                   <div className="flex flex-col space-y-2">
                     <span className="text-xs text-muted-foreground">
-                      {schedule.date.toLocaleDateString()}, {schedule.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                      {new Date(schedule.date).toLocaleDateString()}, {new Date(schedule.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                     </span>
                     <span className="font-semibold">{schedule.studentName}</span>
                     <span className="text-sm text-muted-foreground">
