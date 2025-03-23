@@ -56,7 +56,9 @@ const StudentsTab: React.FC = () => {
                   <div className="flex justify-between items-start">
                     <div>
                       <p className="font-medium">{student.name}</p>
-                      <p className="text-xs text-muted-foreground">Turma {student.class} • RA: {student.registrationNumber}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Turma {student.class} • {student.segment} • RA: {student.registrationNumber}
+                      </p>
                     </div>
                     <div className={`text-xs font-medium rounded-full px-2 py-1 ${
                       student.riskLevel === 'high' ? 'bg-red-100 text-red-700' :

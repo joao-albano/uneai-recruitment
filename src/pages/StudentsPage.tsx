@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { DataProvider, useData } from '@/context/DataContext';
 import Header from '@/components/layout/Header';
@@ -182,7 +183,7 @@ const StudentsContent: React.FC = () => {
                     Nome <ArrowUpDown size={16} />
                   </div>
                 </TableHead>
-                <TableHead>Turma</TableHead>
+                <TableHead>Turma / Segmento</TableHead>
                 <TableHead className="cursor-pointer" onClick={() => toggleSort('riskLevel')}>
                   <div className="flex items-center gap-1">
                     Nível de Risco <ArrowUpDown size={16} />
@@ -206,7 +207,7 @@ const StudentsContent: React.FC = () => {
                 sortedStudents.map((student) => (
                   <TableRow key={student.id}>
                     <TableCell className="font-medium">{student.name}</TableCell>
-                    <TableCell>{student.class}</TableCell>
+                    <TableCell>{student.class} • {student.segment}</TableCell>
                     <TableCell>
                       <Badge className={getRiskColor(student.riskLevel)}>
                         {getRiskText(student.riskLevel)}

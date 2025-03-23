@@ -29,7 +29,7 @@ const StudentHeader: React.FC<StudentHeaderProps> = ({ student }) => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-muted p-4 rounded-lg">
         <div>
           <h2 className="text-xl font-bold">{student.name}</h2>
-          <p className="text-muted-foreground">Turma {student.class} • RA: {student.registrationNumber}</p>
+          <p className="text-muted-foreground">Turma {student.class} • {student.segment} • RA: {student.registrationNumber}</p>
         </div>
         <div className={`mt-2 sm:mt-0 text-sm font-medium rounded-full px-3 py-1 ${
           student.riskLevel === 'high' ? 'bg-red-100 text-red-700' :

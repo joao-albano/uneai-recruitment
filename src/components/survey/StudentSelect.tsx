@@ -56,7 +56,7 @@ const StudentSelect: React.FC<StudentSelectProps> = ({ form }) => {
               <SelectContent>
                 {students.map((student) => (
                   <SelectItem key={student.id} value={student.id}>
-                    {student.name} - {student.class}
+                    {student.name} - Turma {student.class} - {student.segment}
                   </SelectItem>
                 ))}
               </SelectContent>
