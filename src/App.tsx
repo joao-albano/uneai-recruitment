@@ -25,6 +25,7 @@ const queryClient = new QueryClient();
 interface AuthContextType {
   isAuthenticated: boolean;
   isAdmin: boolean;
+  userEmail: string | null;
   login: (email: string, password: string) => boolean;
   logout: () => void;
 }
@@ -43,15 +44,18 @@ export const useAuth = () => {
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   
   // Check localStorage on initial load
   useEffect(() => {
     const authStatus = localStorage.getItem("isAuthenticated");
     const adminStatus = localStorage.getItem("isAdmin");
+    const storedEmail = localStorage.getItem("userEmail");
     
     if (authStatus === "true") {
       setIsAuthenticated(true);
       setIsAdmin(adminStatus === "true");
+      setUserEmail(storedEmail);
     }
   }, []);
   
@@ -60,14 +64,18 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (email === 'admin@escola.edu' && password === 'admin123') {
       setIsAuthenticated(true);
       setIsAdmin(true);
+      setUserEmail(email);
       localStorage.setItem("isAuthenticated", "true");
       localStorage.setItem("isAdmin", "true");
+      localStorage.setItem("userEmail", email);
       return true;
     } else if (email === 'user@escola.edu' && password === 'user123') {
       setIsAuthenticated(true);
       setIsAdmin(false);
+      setUserEmail(email);
       localStorage.setItem("isAuthenticated", "true");
       localStorage.setItem("isAdmin", "false");
+      localStorage.setItem("userEmail", email);
       return true;
     }
     return false;
@@ -76,12 +84,14 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = () => {
     setIsAuthenticated(false);
     setIsAdmin(false);
+    setUserEmail(null);
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("isAdmin");
+    localStorage.removeItem("userEmail");
   };
   
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isAdmin, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isAdmin, userEmail, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

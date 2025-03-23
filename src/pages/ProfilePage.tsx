@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { DataProvider } from '@/context/DataContext';
 import Header from '@/components/layout/Header';
@@ -14,6 +13,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, Lock } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/App';
 
 const profileSchema = z.object({
   name: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
@@ -32,17 +32,17 @@ const passwordSchema = z.object({
 
 const ProfilePage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { isAdmin, userEmail } = useAuth();
   
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  // This would come from auth context in a real app
   const user = {
-    name: 'Admin',
-    email: 'admin@escola.edu',
-    role: 'admin',
-    initials: 'AD'
+    name: isAdmin ? 'Admin' : 'Usuário',
+    email: userEmail || (isAdmin ? 'admin@escola.edu' : 'user@escola.edu'),
+    role: isAdmin ? 'admin' : 'user',
+    initials: isAdmin ? 'AD' : 'US'
   };
   
   const profileForm = useForm<z.infer<typeof profileSchema>>({
@@ -64,17 +64,15 @@ const ProfilePage: React.FC = () => {
   });
 
   const onProfileSubmit = (values: z.infer<typeof profileSchema>) => {
-    // In a real app, this would update the user profile in a backend
     console.log('Profile update:', values);
     toast.success('Perfil atualizado com sucesso!');
   };
 
   const onPasswordSubmit = (values: z.infer<typeof passwordSchema>) => {
-    // In a real app, this would update the password in a backend
     console.log('Password update:', values);
     
-    // Mock validation
-    if (values.currentPassword !== 'admin123') {
+    const correctPassword = isAdmin ? 'admin123' : 'user123';
+    if (values.currentPassword !== correctPassword) {
       toast.error('Senha atual incorreta');
       return;
     }

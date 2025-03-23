@@ -23,14 +23,14 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
   const { alerts } = useData();
   const unreadAlerts = alerts.filter(alert => !alert.read).length;
   const navigate = useNavigate();
-  const { isAdmin, logout } = useAuth();
+  const { isAdmin, logout, userEmail } = useAuth();
   
-  // Use auth context to get user info
+  // Define user based on authentication context
   const user = {
-    name: 'Admin',
-    email: 'admin@escola.edu',
+    name: isAdmin ? 'Admin' : 'Usuário',
+    email: userEmail || (isAdmin ? 'admin@escola.edu' : 'user@escola.edu'),
     role: isAdmin ? 'admin' : 'user',
-    initials: 'AD'
+    initials: isAdmin ? 'AD' : 'US'
   };
 
   const handleLogout = () => {
