@@ -31,8 +31,8 @@ export const generateInvoicePDF = (
   // Create a new PDF document
   const doc = new jsPDF();
   
-  // Add the autotable plugin to the document
-  autoTable(doc as any, {});
+  // We don't need to manually add the plugin as it's automatically attached
+  // to the jsPDF prototype when imported
   
   // Add company logo/name
   doc.setFontSize(20);
@@ -53,7 +53,7 @@ export const generateInvoicePDF = (
   doc.text(`${isPtBR ? 'Status:' : 'Status:'} ${isPtBR ? (invoice.status === 'paid' ? 'Pago' : invoice.status) : invoice.status}`, 20, 70);
   
   // Add invoice items
-  doc.autoTable({
+  autoTable(doc, {
     startY: 80,
     head: [
       [
