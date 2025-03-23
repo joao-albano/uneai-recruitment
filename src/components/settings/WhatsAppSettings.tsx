@@ -2,17 +2,11 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTheme } from '@/context/ThemeContext';
-import { useWhatsAppHistory } from '@/hooks/useWhatsAppHistory';
 import WhatsAppConfigTab from './whatsapp/WhatsAppConfigTab';
-import WhatsAppHistory from './WhatsAppHistory';
+import WhatsAppHistoryTab from './whatsapp/WhatsAppHistoryTab';
 
 const WhatsAppSettings: React.FC = () => {
   const { language } = useTheme();
-  const { messages, clearHistory } = useWhatsAppHistory();
-  
-  const handleClearHistory = () => {
-    clearHistory();
-  };
   
   return (
     <Tabs defaultValue="config" className="w-full">
@@ -30,10 +24,7 @@ const WhatsAppSettings: React.FC = () => {
       </TabsContent>
       
       <TabsContent value="history">
-        <WhatsAppHistory 
-          messages={messages}
-          onClearHistory={handleClearHistory}
-        />
+        <WhatsAppHistoryTab />
       </TabsContent>
     </Tabs>
   );
