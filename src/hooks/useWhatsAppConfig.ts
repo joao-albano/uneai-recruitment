@@ -17,6 +17,7 @@ export const useWhatsAppConfig = () => {
     // Configuração padrão
     return {
       provider: 'disabled' as WhatsAppProvider,
+      webhookUrl: '',
     };
   });
 

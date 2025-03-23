@@ -64,17 +64,15 @@ const WebhookSettings: React.FC = () => {
   
   return (
     <div className="space-y-6">
-      <WebhookAccessKey />
-      
       <Card>
         <CardHeader>
           <CardTitle>
-            {language === 'pt-BR' ? 'Adicionar Novo Webhook' : 'Add New Webhook'}
+            {language === 'pt-BR' ? 'Webhooks para outros sistemas' : 'Webhooks for other systems'}
           </CardTitle>
           <CardDescription>
             {language === 'pt-BR' 
-              ? 'Configure webhooks para notificações em tempo real' 
-              : 'Configure webhooks for real-time notifications'}
+              ? 'Configure webhooks de saída para notificar outros sistemas sobre eventos deste sistema' 
+              : 'Configure outgoing webhooks to notify other systems about events from this system'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -133,8 +131,8 @@ const WebhookSettings: React.FC = () => {
                       </FormLabel>
                       <FormDescription>
                         {language === 'pt-BR' 
-                          ? 'Ative para começar a receber notificações' 
-                          : 'Enable to start receiving notifications'}
+                          ? 'Ative para enviar notificações para este webhook' 
+                          : 'Enable to send notifications to this webhook'}
                       </FormDescription>
                     </div>
                     <FormControl>
@@ -156,6 +154,8 @@ const WebhookSettings: React.FC = () => {
           </Form>
         </CardContent>
       </Card>
+      
+      <WebhookAccessKey />
       
       <WebhooksList 
         webhooks={webhooks} 

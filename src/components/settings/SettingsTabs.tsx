@@ -5,18 +5,18 @@ import { useTheme } from '@/context/ThemeContext';
 import GeneralSettings from './GeneralSettings';
 import SecuritySettings from './SecuritySettings';
 import NotificationSettings from './NotificationSettings';
+import WhatsAppSettings from './WhatsAppSettings';
+import WebhookSettings from './WebhookSettings';
 import ApiSettings from './ApiSettings';
 import OpenAiSettings from './OpenAiSettings';
 import AdvancedSettings from './AdvancedSettings';
-import WebhookSettings from './WebhookSettings';
-import WhatsAppSettings from './WhatsAppSettings';
 
 const SettingsTabs: React.FC = () => {
   const { language } = useTheme();
   
   return (
     <Tabs defaultValue="general" className="w-full">
-      <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 mb-8">
+      <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 mb-8">
         <TabsTrigger value="general">
           {language === 'pt-BR' ? 'Geral' : 'General'}
         </TabsTrigger>
@@ -37,9 +37,6 @@ const SettingsTabs: React.FC = () => {
         </TabsTrigger>
         <TabsTrigger value="openai">
           OpenAI
-        </TabsTrigger>
-        <TabsTrigger value="advanced">
-          {language === 'pt-BR' ? 'Avançado' : 'Advanced'}
         </TabsTrigger>
       </TabsList>
       
@@ -69,10 +66,6 @@ const SettingsTabs: React.FC = () => {
       
       <TabsContent value="openai" className="space-y-6">
         <OpenAiSettings />
-      </TabsContent>
-      
-      <TabsContent value="advanced" className="space-y-6">
-        <AdvancedSettings />
       </TabsContent>
     </Tabs>
   );

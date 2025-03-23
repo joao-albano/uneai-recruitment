@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { useAlertsState } from '@/hooks/useAlertsState';
 import { useSchedulesState } from '@/hooks/useSchedulesState';
@@ -86,6 +87,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     alerts,
     uploadHistory,
     isLoading,
+    whatsAppConfig,
     setStudents,
     addSurvey,
     addSchedule,

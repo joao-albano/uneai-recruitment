@@ -1,12 +1,10 @@
 
 import { useToast } from "@/components/ui/use-toast";
 
-export type WhatsAppProvider = 'direct_api' | 'n8n_webhook' | 'disabled';
+export type WhatsAppProvider = 'n8n_webhook' | 'disabled';
 
 export interface WhatsAppConfig {
   provider: WhatsAppProvider;
-  apiKey?: string;
-  apiUrl?: string;
   webhookUrl?: string;
 }
 
@@ -17,18 +15,6 @@ export const testWhatsAppConnection = async (config: WhatsAppConfig): Promise<bo
     if (config.provider === 'disabled') {
       console.log('WhatsApp integration is disabled');
       return false;
-    }
-    
-    if (config.provider === 'direct_api') {
-      if (!config.apiUrl || !config.apiKey) {
-        console.error('Missing API URL or API Key for direct API integration');
-        return false;
-      }
-      
-      // Simulando uma verificação da API
-      console.log('Testando conexão direta com API do WhatsApp');
-      // Em um ambiente real, aqui faria uma chamada à API para verificar
-      return true;
     }
     
     if (config.provider === 'n8n_webhook') {
@@ -82,21 +68,6 @@ export const sendWhatsAppMessage = async (
       };
     }
     
-    if (config.provider === 'direct_api') {
-      if (!config.apiUrl || !config.apiKey) {
-        return { 
-          success: false, 
-          message: 'Configuração da API incompleta' 
-        };
-      }
-      
-      // Simulando envio via API direta
-      console.log('Enviando via API direta:', config.apiUrl);
-      // Aqui faria a chamada real à API
-      
-      return { success: true };
-    }
-    
     if (config.provider === 'n8n_webhook') {
       if (!config.webhookUrl) {
         return { 
@@ -105,7 +76,7 @@ export const sendWhatsAppMessage = async (
         };
       }
       
-      // Simulando envio via webhook n8n
+      // Enviando via webhook n8n
       console.log('Enviando via webhook n8n:', config.webhookUrl);
       
       await fetch(config.webhookUrl, {
