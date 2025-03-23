@@ -23,6 +23,8 @@ import ProfilePage from "./pages/ProfilePage";
 import UsersPage from "./pages/UsersPage";
 import ModelPage from "./pages/ModelPage";
 import PricingPage from "./pages/PricingPage";
+import UserBillingPage from "./pages/UserBillingPage";
+import AdminPaymentsPage from "./pages/AdminPaymentsPage";
 import NotFound from "./pages/NotFound";
 import ModelStudentPage from "./pages/ModelStudentPage";
 
@@ -137,6 +139,14 @@ const App = () => (
                   </ProtectedRoute>
                 } 
               />
+              <Route 
+                path="/user-billing" 
+                element={
+                  <ProtectedRoute>
+                    <UserBillingPage />
+                  </ProtectedRoute>
+                } 
+              />
               
               {/* Admin Routes - Only accessible to admin users */}
               <Route 
@@ -152,6 +162,14 @@ const App = () => (
                 element={
                   <AdminRoute>
                     <AdminDashboardPage />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/payments" 
+                element={
+                  <AdminRoute>
+                    <AdminPaymentsPage />
                   </AdminRoute>
                 } 
               />

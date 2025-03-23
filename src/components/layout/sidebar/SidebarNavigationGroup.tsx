@@ -3,7 +3,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import SidebarNavLink from './SidebarNavLink';
-import { BarChart3, FileUp, Bell, Calendar, ClipboardCheck, Users, Settings, Brain, Cog, DollarSign } from 'lucide-react';
+import { BarChart3, FileUp, Bell, Calendar, ClipboardCheck, Users, Settings, Brain, Cog, DollarSign, Receipt } from 'lucide-react';
 
 interface SidebarNavigationGroupProps {
   collapsed: boolean;
@@ -58,6 +58,13 @@ const SidebarNavigationGroup: React.FC<SidebarNavigationGroupProps> = ({
           label="Planos e Preços" 
           collapsed={collapsed}
         />
+        
+        <SidebarNavLink 
+          to="/user-billing" 
+          icon={Receipt} 
+          label="Minhas Cobranças" 
+          collapsed={collapsed}
+        />
       </div>
       
       <Separator className="my-4" />
@@ -85,12 +92,20 @@ const SidebarNavigationGroup: React.FC<SidebarNavigationGroupProps> = ({
         />
         
         {isAdmin && (
-          <SidebarNavLink 
-            to="/admin/settings" 
-            icon={Cog} 
-            label="Config. Avançadas" 
-            collapsed={collapsed}
-          />
+          <>
+            <SidebarNavLink 
+              to="/admin/settings" 
+              icon={Cog} 
+              label="Config. Avançadas" 
+              collapsed={collapsed}
+            />
+            <SidebarNavLink 
+              to="/admin/payments" 
+              icon={DollarSign} 
+              label="Relatório de Pagamentos" 
+              collapsed={collapsed}
+            />
+          </>
         )}
       </div>
     </nav>
