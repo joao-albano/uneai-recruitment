@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Calendar, Clock, User, FileText, UserCircle } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface ScheduleDetailsDialogProps {
   open: boolean;
@@ -24,17 +25,37 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
   onCancelSchedule,
 }) => {
   const { language } = useTheme();
+  const { toast } = useToast();
   const formattedDate = format(schedule.date, "PPP", { locale: ptBR });
   const formattedTime = format(schedule.date, "HH:mm", { locale: ptBR });
 
   const handleMarkCompleted = () => {
+    // First mark as completed
     onMarkCompleted(schedule.id);
+    
+    // Then close the dialog
     onOpenChange(false);
+    
+    // Show confirmation toast
+    toast({
+      title: "Atendimento concluído",
+      description: `O atendimento com ${schedule.studentName} foi marcado como concluído.`,
+    });
   };
 
   const handleCancelSchedule = () => {
+    // First cancel the schedule
     onCancelSchedule(schedule.id);
+    
+    // Then close the dialog
     onOpenChange(false);
+    
+    // Show confirmation toast
+    toast({
+      title: "Atendimento cancelado",
+      description: `O atendimento com ${schedule.studentName} foi cancelado.`,
+      variant: "destructive"
+    });
   };
 
   return (
