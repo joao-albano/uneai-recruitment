@@ -7,7 +7,8 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ReferenceLine
+  ReferenceLine,
+  ResponsiveContainer
 } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 
@@ -26,15 +27,13 @@ const renderTooltip = (props: any) => {
 
 const GradesChart: React.FC<GradesChartProps> = ({ trajectoryData }) => {
   return (
-    <div className="flex flex-col items-center space-y-3">
+    <div className="flex flex-col items-center space-y-1">
       <h3 className="font-medium text-lg">Notas</h3>
       <div className="h-[250px] w-full">
-        <ChartContainer config={{
-          grade: { theme: { light: "#3b82f6", dark: "#60a5fa" } },
-        }}>
+        <ResponsiveContainer width="100%" height="100%">
           <LineChart 
             data={trajectoryData} 
-            margin={{ top: 20, right: 20, left: 5, bottom: 20 }}
+            margin={{ top: 10, right: 20, left: 5, bottom: 25 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis 
@@ -69,7 +68,7 @@ const GradesChart: React.FC<GradesChartProps> = ({ trajectoryData }) => {
               name="Nota"
             />
           </LineChart>
-        </ChartContainer>
+        </ResponsiveContainer>
       </div>
     </div>
   );

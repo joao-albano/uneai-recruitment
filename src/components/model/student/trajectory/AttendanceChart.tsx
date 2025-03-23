@@ -7,7 +7,8 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ReferenceLine
+  ReferenceLine,
+  ResponsiveContainer
 } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 
@@ -26,15 +27,13 @@ const renderTooltip = (props: any) => {
 
 const AttendanceChart: React.FC<AttendanceChartProps> = ({ trajectoryData }) => {
   return (
-    <div className="flex flex-col items-center space-y-3">
+    <div className="flex flex-col items-center space-y-1">
       <h3 className="font-medium text-lg">Frequência</h3>
       <div className="h-[250px] w-full">
-        <ChartContainer config={{
-          attendance: { theme: { light: "#10b981", dark: "#34d399" } },
-        }}>
+        <ResponsiveContainer width="100%" height="100%">
           <BarChart 
             data={trajectoryData} 
-            margin={{ top: 20, right: 20, left: 5, bottom: 20 }}
+            margin={{ top: 10, right: 20, left: 5, bottom: 25 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis 
@@ -66,7 +65,7 @@ const AttendanceChart: React.FC<AttendanceChartProps> = ({ trajectoryData }) => 
               name="Frequência (%)"
             />
           </BarChart>
-        </ChartContainer>
+        </ResponsiveContainer>
       </div>
     </div>
   );

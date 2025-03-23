@@ -32,14 +32,12 @@ const RiskEvolutionChart: React.FC<RiskEvolutionChartProps> = ({ trajectoryData 
       <CardHeader className="pb-2">
         <CardTitle className="text-xl text-center">Evolução do Nível de Risco</CardTitle>
       </CardHeader>
-      <CardContent className="p-0 pt-0">
-        <div className="h-[350px] w-full">
-          <ChartContainer config={{
-            riskScore: { theme: { light: "#ef4444", dark: "#ef4444" } },
-          }}>
+      <CardContent className="p-0">
+        <div className="h-[350px] w-full px-2 pb-4">
+          <ResponsiveContainer width="100%" height="100%">
             <LineChart 
               data={trajectoryData} 
-              margin={{ top: 5, right: 20, left: 0, bottom: 20 }}
+              margin={{ top: 10, right: 25, left: 5, bottom: 25 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
@@ -88,7 +86,7 @@ const RiskEvolutionChart: React.FC<RiskEvolutionChartProps> = ({ trajectoryData 
                 name="Nível de Risco"
               />
             </LineChart>
-          </ChartContainer>
+          </ResponsiveContainer>
         </div>
       </CardContent>
     </Card>
