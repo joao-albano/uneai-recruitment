@@ -6,30 +6,13 @@ import Sidebar from '@/components/layout/Sidebar';
 import UploadForm from '@/components/upload/UploadForm';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileSpreadsheet, HelpCircle, Info } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { useToast } from '@/hooks/use-toast';
+import { FileSpreadsheet, Info } from 'lucide-react';
 
 const UploadPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { toast } = useToast();
   
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
-  };
-  
-  const handleGuideClick = () => {
-    // Open the info tab instead of an external URL
-    const infoTab = document.querySelector('[data-state="inactive"][value="info"]') as HTMLElement;
-    if (infoTab) {
-      infoTab.click();
-    } else {
-      toast({
-        title: "Guia de Upload",
-        description: "Consulte a aba de informações para instruções detalhadas sobre o upload.",
-      });
-    }
   };
   
   return (
@@ -41,40 +24,11 @@ const UploadPage: React.FC = () => {
           <Header toggleSidebar={toggleSidebar} />
           
           <main className="flex-1 p-6">
-            <div className="mb-8 flex justify-between items-end">
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight">Upload de Dados</h1>
-                <p className="text-muted-foreground mt-1">
-                  Faça upload de planilhas com dados dos alunos
-                </p>
-              </div>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1"
-                  >
-                    <HelpCircle className="h-4 w-4" />
-                    Guia de Upload
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-80">
-                  <div className="space-y-2">
-                    <h4 className="font-medium">Guia de Upload</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Instruções detalhadas sobre como fazer upload de dados estão disponíveis na aba "Informações".
-                    </p>
-                    <Button 
-                      variant="default" 
-                      className="w-full mt-2"
-                      onClick={handleGuideClick}
-                    >
-                      Ver guia detalhado
-                    </Button>
-                  </div>
-                </PopoverContent>
-              </Popover>
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold tracking-tight">Upload de Dados</h1>
+              <p className="text-muted-foreground mt-1">
+                Faça upload de planilhas com dados dos alunos
+              </p>
             </div>
             
             <Tabs defaultValue="upload" className="w-full">
