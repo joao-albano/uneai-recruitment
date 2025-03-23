@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '@/context/DataContext';
 import { Card, CardContent } from '@/components/ui/card';
@@ -137,11 +136,13 @@ const StudentsContent: React.FC = () => {
             />
           </Table>
           
-          <StudentPagination 
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
+          <div className="mt-4 flex justify-center">
+            <StudentPagination 
+              currentPage={currentPage}
+              totalPages={Math.max(1, totalPages)}
+              onPageChange={handlePageChange}
+            />
+          </div>
         </CardContent>
       </Card>
     </div>

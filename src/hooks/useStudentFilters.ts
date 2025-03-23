@@ -1,4 +1,3 @@
-
 import { useState, useMemo, useEffect } from 'react';
 import { StudentData, SchoolSegment } from '@/types/data';
 
@@ -14,7 +13,6 @@ const useStudentFilters = ({ students, classFilter }: UseStudentFiltersProps) =>
   const [riskFilter, setRiskFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
   const [segmentFilter, setSegmentFilter] = useState<'all' | SchoolSegment>('all');
   
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -33,29 +31,24 @@ const useStudentFilters = ({ students, classFilter }: UseStudentFiltersProps) =>
     setSearchTerm('');
     setRiskFilter('all');
     setSegmentFilter('all');
-    return Boolean(classFilter); // Return if class filter is active
+    return Boolean(classFilter);
   };
 
-  // Apply filters
   const filteredStudents = useMemo(() => {
     let filtered = [...students];
     
-    // Filter by class
     if (classFilter) {
       filtered = filtered.filter(student => student.class === classFilter);
     }
     
-    // Filter by risk level
     if (riskFilter !== 'all') {
       filtered = filtered.filter(student => student.riskLevel === riskFilter);
     }
     
-    // Filter by segment
     if (segmentFilter !== 'all') {
       filtered = filtered.filter(student => student.segment === segmentFilter);
     }
     
-    // Filter by search term (name or registration number)
     if (searchTerm.trim()) {
       const search = searchTerm.toLowerCase().trim();
       filtered = filtered.filter(student => 
@@ -67,7 +60,6 @@ const useStudentFilters = ({ students, classFilter }: UseStudentFiltersProps) =>
     return filtered;
   }, [students, classFilter, riskFilter, segmentFilter, searchTerm]);
 
-  // Sort students
   const sortedStudents = useMemo(() => {
     return [...filteredStudents].sort((a, b) => {
       let comparison = 0;
@@ -89,24 +81,21 @@ const useStudentFilters = ({ students, classFilter }: UseStudentFiltersProps) =>
     });
   }, [filteredStudents, sortKey, sortOrder]);
 
-  // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, riskFilter, segmentFilter, classFilter, sortKey, sortOrder]);
 
-  // Paginate students
   const paginatedStudents = useMemo(() => {
-    return sortedStudents.slice(
-      (currentPage - 1) * itemsPerPage,
-      currentPage * itemsPerPage
-    );
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return sortedStudents.slice(startIndex, startIndex + itemsPerPage);
   }, [sortedStudents, currentPage, itemsPerPage]);
   
   const totalPages = Math.max(1, Math.ceil(sortedStudents.length / itemsPerPage));
 
   const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
-    window.scrollTo(0, 0); // Scroll to top when changing pages
+    window.scrollTo(0, 0);
   };
 
   return {
