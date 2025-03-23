@@ -22,12 +22,21 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed }) => {
-  const { alerts } = useData();
   const navigate = useNavigate();
   const { isAdmin, logout, userEmail } = useAuth();
   const { theme } = useTheme();
   
-  const unreadAlerts = alerts.filter(alert => !alert.read).length;
+  // Try to use the data context, but provide a fallback if it's not available
+  let alerts = [];
+  try {
+    const dataContext = useData();
+    alerts = dataContext.alerts || [];
+  } catch (error) {
+    // If useData throws an error, use an empty array as fallback
+    console.log("DataProvider not available, using fallback for alerts");
+  }
+  
+  const unreadAlerts = Array.isArray(alerts) ? alerts.filter(alert => !alert.read).length : 0;
   
   const user = {
     name: isAdmin ? 'Admin' : 'Usuário',
