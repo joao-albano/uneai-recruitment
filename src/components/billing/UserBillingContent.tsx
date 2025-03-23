@@ -5,16 +5,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Download, Receipt, CreditCard, Clock } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { Download, Receipt, CreditCard, Clock, CheckCircle } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { format } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
+import { useToast } from '@/hooks/use-toast';
 
 const UserBillingContent: React.FC = () => {
   const { language } = useTheme();
   const { isAdmin } = useAuth();
   const [activeTab, setActiveTab] = useState<string>('invoices');
+  const [changePlanOpen, setChangePlanOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState('premium');
+  const { toast } = useToast();
   
   const isPtBR = language === 'pt-BR';
   const dateLocale = isPtBR ? ptBR : enUS;
@@ -87,6 +94,48 @@ const UserBillingContent: React.FC = () => {
         );
     }
   };
+
+  const handleChangePlan = () => {
+    setChangePlanOpen(true);
+  };
+
+  const handlePlanChange = (value: string) => {
+    setSelectedPlan(value);
+  };
+
+  const handlePlanSubmit = () => {
+    // Aqui iria a lógica para mudar o plano no backend
+    toast({
+      title: isPtBR ? "Plano alterado com sucesso!" : "Plan changed successfully!",
+      description: isPtBR 
+        ? "A mudança entrará em vigor no próximo ciclo de faturamento." 
+        : "The change will take effect on your next billing cycle.",
+      variant: "default",
+    });
+    setChangePlanOpen(false);
+  };
+  
+  // Dados dos planos disponíveis
+  const availablePlans = [
+    {
+      id: 'basic',
+      name: isPtBR ? 'Básico' : 'Basic',
+      price: isPtBR ? 'R$ 2.990,00/ano' : '$2,990.00/year',
+      description: isPtBR ? 'Até 500 alunos' : 'Up to 500 students',
+    },
+    {
+      id: 'premium',
+      name: 'Premium',
+      price: isPtBR ? 'R$ 5.990,00/ano' : '$5,990.00/year',
+      description: isPtBR ? 'Até 1500 alunos' : 'Up to 1500 students',
+    },
+    {
+      id: 'enterprise',
+      name: 'Enterprise',
+      price: isPtBR ? 'R$ 9.990,00/ano' : '$9,990.00/year',
+      description: isPtBR ? 'Alunos ilimitados' : 'Unlimited students',
+    }
+  ];
 
   return (
     <div>
@@ -188,7 +237,7 @@ const UserBillingContent: React.FC = () => {
                   </div>
                   
                   <div className="pt-4">
-                    <Button variant="outline" className="w-full">
+                    <Button variant="outline" className="w-full" onClick={handleChangePlan}>
                       {isPtBR ? 'Alterar Plano' : 'Change Plan'}
                     </Button>
                   </div>
@@ -248,6 +297,56 @@ const UserBillingContent: React.FC = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Dialog de alteração de plano */}
+      <Dialog open={changePlanOpen} onOpenChange={setChangePlanOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>
+              {isPtBR ? 'Alterar seu plano' : 'Change your plan'}
+            </DialogTitle>
+            <DialogDescription>
+              {isPtBR 
+                ? 'Selecione o plano que melhor atende às suas necessidades.' 
+                : 'Select the plan that best suits your needs.'}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <RadioGroup value={selectedPlan} onValueChange={handlePlanChange} className="space-y-4">
+              {availablePlans.map(plan => (
+                <div key={plan.id} className="flex items-start space-x-3 rounded-lg border p-4 relative">
+                  <RadioGroupItem value={plan.id} id={plan.id} className="mt-1" />
+                  <div className="flex-1">
+                    <Label htmlFor={plan.id} className="text-base font-medium flex items-center justify-between">
+                      {plan.name}
+                      {plan.id === subscriptionData.plan.toLowerCase() && (
+                        <Badge variant="outline" className="ml-2 bg-green-50 text-green-700 border-green-200">
+                          {isPtBR ? 'Atual' : 'Current'}
+                        </Badge>
+                      )}
+                    </Label>
+                    <p className="text-sm text-muted-foreground">{plan.description}</p>
+                    <p className="text-sm font-medium mt-2">{plan.price}</p>
+                  </div>
+                  {selectedPlan === plan.id && (
+                    <CheckCircle className="h-5 w-5 text-primary absolute right-4 top-4" />
+                  )}
+                </div>
+              ))}
+            </RadioGroup>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setChangePlanOpen(false)}>
+              {isPtBR ? 'Cancelar' : 'Cancel'}
+            </Button>
+            <Button onClick={handlePlanSubmit}>
+              {isPtBR ? 'Confirmar Alteração' : 'Confirm Change'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
