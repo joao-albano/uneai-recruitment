@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { useAlertsState } from '@/hooks/useAlertsState';
 import { useSchedulesState } from '@/hooks/useSchedulesState';
 import { StudentData, SurveyData, ScheduleItem, AlertItem, DataContextType } from '@/types/data';
+import { UploadRecord } from '@/types/upload';
 import { sendWhatsAppSurvey as sendWhatsAppSurveyUtil } from '@/utils/notifications';
 import { generateDemoStudents, generateDemoAlerts, generateDemoSchedules } from '@/data/demoData';
 
@@ -12,6 +13,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [students, setStudents] = useState<StudentData[]>([]);
   const [surveys, setSurveys] = useState<SurveyData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [uploadHistory, setUploadHistory] = useState<UploadRecord[]>([]);
   
   // Use our custom hooks for alerts and schedules
   const { 
@@ -34,6 +36,18 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setSurveys([...surveys, survey]);
   };
 
+  const addUploadRecord = (record: Omit<UploadRecord, 'id'>) => {
+    const newRecord: UploadRecord = {
+      ...record,
+      id: `upload-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+    };
+    setUploadHistory([newRecord, ...uploadHistory]);
+  };
+
+  const clearUploadHistory = () => {
+    setUploadHistory([]);
+  };
+
   const sendWhatsAppSurvey = (studentId: string) => {
     const student = students.find(s => s.id === studentId);
     if (student) {
@@ -52,6 +66,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setAlerts(demoAlerts);
     setSchedules(demoSchedules);
     
+    // Add a demo upload record
+    addUploadRecord({
+      filename: 'demo_dados.csv',
+      uploadDate: new Date(Date.now() - 86400000), // yesterday
+      recordCount: demoStudents.length,
+      status: 'success'
+    });
+    
     setTimeout(() => {
       setIsLoading(false);
     }, 800);
@@ -62,11 +84,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     surveys,
     schedules,
     alerts,
+    uploadHistory,
     isLoading,
     setStudents,
     addSurvey,
     addSchedule,
     addAlert,
+    addUploadRecord,
+    clearUploadHistory,
     markAlertAsRead,
     markAlertActionTaken,
     updateScheduleStatus,
@@ -87,4 +112,4 @@ export const useData = () => {
 };
 
 // Re-export types for convenience
-export type { StudentData, SurveyData, ScheduleItem, AlertItem };
+export type { StudentData, SurveyData, ScheduleItem, AlertItem, UploadRecord };

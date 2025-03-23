@@ -43,16 +43,28 @@ export type AlertItem = {
   actionTaken: boolean;
 };
 
+export type UploadRecord = {
+  id: string;
+  filename: string;
+  uploadDate: Date;
+  recordCount: number;
+  status: 'success' | 'error';
+  errorCount?: number;
+};
+
 export type DataContextType = {
   students: StudentData[];
   surveys: SurveyData[];
   schedules: ScheduleItem[];
   alerts: AlertItem[];
+  uploadHistory: UploadRecord[];
   isLoading: boolean;
   setStudents: (students: StudentData[]) => void;
   addSurvey: (survey: SurveyData) => void;
   addSchedule: (schedule: ScheduleItem) => void;
   addAlert: (alert: AlertItem) => void;
+  addUploadRecord: (record: Omit<UploadRecord, 'id'>) => void;
+  clearUploadHistory: () => void;
   markAlertAsRead: (id: string) => void;
   markAlertActionTaken: (id: string) => void;
   updateScheduleStatus: (id: string, status: 'scheduled' | 'completed' | 'canceled') => void;

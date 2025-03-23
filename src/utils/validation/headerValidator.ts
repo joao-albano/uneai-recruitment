@@ -9,9 +9,6 @@ export const mapHeadersToProperties = (headers: string[]): HeaderMap => {
     'turma': 'class',
     'nota': 'grade',
     'frequencia': 'attendance',
-    'comportamento': 'behavior',
-    'nivel_risco': 'riskLevel',
-    'acoes': 'actionItems',
     'nome_responsavel': 'parentName',
     'contato_responsavel': 'parentContact',
     
@@ -20,9 +17,6 @@ export const mapHeadersToProperties = (headers: string[]): HeaderMap => {
     'class': 'class',
     'grade': 'grade',
     'attendance': 'attendance',
-    'behavior': 'behavior',
-    'risk_level': 'riskLevel',
-    'actions': 'actionItems',
     'parent_name': 'parentName',
     'parent_contact': 'parentContact'
   };
@@ -39,7 +33,7 @@ export const mapHeadersToProperties = (headers: string[]): HeaderMap => {
 // Header validation function
 export const validateHeaders = (headers: string[]): boolean => {
   const requiredHeaders = [
-    'nome', 'turma', 'nota', 'frequencia', 'comportamento'
+    'nome', 'turma', 'nota', 'frequencia'
   ];
   
   const normalizedHeaders = headers.map(h => h.toLowerCase().trim());
@@ -52,7 +46,6 @@ export const validateHeaders = (headers: string[]): boolean => {
       required === 'turma' ? 'class' :
       required === 'nota' ? 'grade' :
       required === 'frequencia' ? 'attendance' :
-      required === 'comportamento' ? 'behavior' :
       required
     )
   );
@@ -62,11 +55,10 @@ export const validateHeaders = (headers: string[]): boolean => {
 export const getExcelFormat = (): { headers: string[]; description: string } => {
   return {
     headers: [
-      'Nome', 'Turma', 'Nota', 'Frequencia', 'Comportamento', 
-      'Nivel_Risco', 'Acoes', 'Nome_Responsavel', 'Contato_Responsavel'
+      'Nome', 'Turma', 'Nota', 'Frequencia', 
+      'Nome_Responsavel', 'Contato_Responsavel'
     ],
     description: 'O arquivo deve conter as colunas: Nome, Turma, Nota (0-10), Frequência (0-100), ' +
-      'Comportamento (1-5), Nível de Risco (low, medium, high), Ações, Nome do Responsável, ' +
-      'e Contato do Responsável (formato (99) 99999-9999)'
+      'Nome do Responsável, e Contato do Responsável (formato (99) 99999-9999)'
   };
 };

@@ -21,7 +21,7 @@ const UploadForm: React.FC = () => {
   const [showColumnInfo, setShowColumnInfo] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  const { setStudents, addAlert } = useData();
+  const { setStudents, addAlert, addUploadRecord } = useData();
   
   const resetUpload = () => {
     setFile(null);
@@ -104,6 +104,15 @@ const UploadForm: React.FC = () => {
       // Check for validation errors
       if (result.errors.length > 0) {
         setValidationErrors(result.errors);
+        
+        addUploadRecord({
+          filename: file.name,
+          uploadDate: new Date(),
+          recordCount: 0,
+          status: 'error',
+          errorCount: result.errors.length
+        });
+        
         toast({
           title: 'Validação falhou',
           description: `Encontrados ${result.errors.length} erros. Corrija-os antes de continuar.`,
@@ -115,8 +124,23 @@ const UploadForm: React.FC = () => {
       
       // Process data if valid
       if (result.data.length > 0) {
-        // Apply risk calculation algorithm
-        const processedStudents = processStudentData(result.data);
+        // Generate behavior scores randomly for the imported students
+        // This simulates the "AI" generating behavior scores
+        const dataWithBehavior = result.data.map(student => ({
+          ...student,
+          behavior: Math.floor(Math.random() * 5) + 1 // Random behavior score between 1 and 5
+        }));
+        
+        // Apply risk calculation algorithm (this will add riskLevel and actionItems)
+        const processedStudents = processStudentData(dataWithBehavior);
+        
+        // Add record to upload history
+        addUploadRecord({
+          filename: file.name,
+          uploadDate: new Date(),
+          recordCount: processedStudents.length,
+          status: 'success'
+        });
         
         // Set the data in context
         setStudents(processedStudents);
@@ -143,11 +167,20 @@ const UploadForm: React.FC = () => {
           description: `${processedStudents.length} alunos processados com sucesso.`,
         });
         
-        // Navigate to dashboard or show success message
+        // Reset upload form
         resetUpload();
       }
     } catch (error) {
       console.error('Error processing file:', error);
+      
+      addUploadRecord({
+        filename: file.name,
+        uploadDate: new Date(),
+        recordCount: 0,
+        status: 'error',
+        errorCount: 1
+      });
+      
       toast({
         title: 'Erro no processamento',
         description: 'Ocorreu um erro ao processar o arquivo.',
@@ -167,7 +200,6 @@ const UploadForm: React.FC = () => {
     { name: 'turma', description: 'Turma do aluno', example: '9A' },
     { name: 'nota', description: 'Nota média (0-10)', example: '7.5' },
     { name: 'frequencia', description: 'Porcentagem de presença (0-100)', example: '85' },
-    { name: 'comportamento', description: 'Avaliação de comportamento (1-5)', example: '4' },
     { name: 'responsavel', description: 'Nome do responsável', example: 'Roberto Silva' },
     { name: 'contato', description: 'Telefone do responsável', example: '(11) 98765-4321' },
   ];
@@ -212,6 +244,10 @@ const UploadForm: React.FC = () => {
                 ))}
               </TableBody>
             </Table>
+            <p className="mt-4 text-xs text-muted-foreground">
+              <strong>Nota:</strong> Os campos de comportamento, nível de risco e ações necessárias 
+              serão gerados automaticamente pelo sistema após o processamento.
+            </p>
           </div>
         )}
         

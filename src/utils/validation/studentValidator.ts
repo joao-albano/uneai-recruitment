@@ -56,21 +56,6 @@ export const validateStudentData = (
     });
   }
 
-  // Validate behavior (should be 1-5)
-  if (data.behavior === undefined || data.behavior === null) {
-    errors.push({
-      row: rowIndex,
-      column: 'comportamento',
-      message: 'Comportamento é obrigatório'
-    });
-  } else if (isNaN(data.behavior) || data.behavior < 1 || data.behavior > 5) {
-    errors.push({
-      row: rowIndex,
-      column: 'comportamento',
-      message: 'Comportamento deve ser um número entre 1 e 5'
-    });
-  }
-
   // Validate parent name if provided
   if (data.parentName !== undefined && typeof data.parentName !== 'string') {
     errors.push({
@@ -88,18 +73,6 @@ export const validateStudentData = (
         row: rowIndex,
         column: 'contato_responsavel',
         message: 'Contato do responsável deve seguir o formato (99) 99999-9999'
-      });
-    }
-  }
-
-  // Risk level validation (if provided)
-  if (data.riskLevel !== undefined) {
-    const validRiskLevels = ['low', 'medium', 'high'];
-    if (typeof data.riskLevel !== 'string' || !validRiskLevels.includes(data.riskLevel as string)) {
-      errors.push({
-        row: rowIndex,
-        column: 'nivel_risco',
-        message: 'Nível de risco deve ser low, medium ou high'
       });
     }
   }

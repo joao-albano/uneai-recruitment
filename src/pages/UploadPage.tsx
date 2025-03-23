@@ -4,9 +4,10 @@ import { DataProvider } from '@/context/DataContext';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
 import UploadForm from '@/components/upload/UploadForm';
+import UploadHistory from '@/components/upload/UploadHistory';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileSpreadsheet, Info } from 'lucide-react';
+import { FileSpreadsheet, History, Info } from 'lucide-react';
 
 const UploadPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -37,6 +38,10 @@ const UploadPage: React.FC = () => {
                   <FileSpreadsheet className="h-4 w-4" />
                   Upload
                 </TabsTrigger>
+                <TabsTrigger value="history" className="gap-2">
+                  <History className="h-4 w-4" />
+                  Histórico
+                </TabsTrigger>
                 <TabsTrigger value="info" className="gap-2">
                   <Info className="h-4 w-4" />
                   Informações
@@ -45,6 +50,10 @@ const UploadPage: React.FC = () => {
               
               <TabsContent value="upload">
                 <UploadForm />
+              </TabsContent>
+              
+              <TabsContent value="history">
+                <UploadHistory />
               </TabsContent>
               
               <TabsContent value="info">
@@ -63,7 +72,6 @@ const UploadPage: React.FC = () => {
                           <li><strong>turma</strong> - Turma do aluno (ex: 9A, 8B)</li>
                           <li><strong>nota</strong> - Nota média do aluno (de 0 a 10)</li>
                           <li><strong>frequencia</strong> - Porcentagem de presença (de 0 a 100)</li>
-                          <li><strong>comportamento</strong> - Avaliação de comportamento (de 1 a 5)</li>
                           <li><strong>responsavel</strong> - Nome do responsável pelo aluno</li>
                           <li><strong>contato</strong> - Número de telefone do responsável no formato (XX) XXXXX-XXXX</li>
                         </ul>
@@ -87,6 +95,10 @@ const UploadPage: React.FC = () => {
                           Após o processamento, o sistema avaliará automaticamente os alunos com base em seus dados,
                           classificando-os em níveis de risco (baixo, médio, alto) para intervenção pedagógica.
                           Os casos de risco médio e alto geram alertas no sistema.
+                        </p>
+                        <p className="text-muted-foreground text-sm mt-2">
+                          <strong>Nota:</strong> Os campos de comportamento, nível de risco e ações necessárias 
+                          serão gerados automaticamente pelo sistema de IA com base nos dados acadêmicos do aluno.
                         </p>
                       </div>
                     </div>
