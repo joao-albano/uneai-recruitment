@@ -3,7 +3,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import SidebarNavLink from './SidebarNavLink';
-import { BarChart3, FileUp, Bell, Calendar, ClipboardCheck, Users, Settings, Brain, Cog } from 'lucide-react';
+import { BarChart3, FileUp, Bell, Calendar, ClipboardCheck, Users, Settings, Brain, Cog, DollarSign } from 'lucide-react';
 
 interface SidebarNavigationGroupProps {
   collapsed: boolean;
@@ -49,6 +49,13 @@ const SidebarNavigationGroup: React.FC<SidebarNavigationGroupProps> = ({
           to="/survey" 
           icon={ClipboardCheck} 
           label="Pesquisa Diagnóstica" 
+          collapsed={collapsed}
+        />
+
+        <SidebarNavLink 
+          to="/pricing" 
+          icon={DollarSign} 
+          label="Planos e Preços" 
           collapsed={collapsed}
         />
       </div>

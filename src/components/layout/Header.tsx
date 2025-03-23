@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bell, Menu, LogOut, User, Settings, UserCog } from 'lucide-react';
+import { Bell, Menu, LogOut, User, Settings, UserCog, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useData } from '@/context/DataContext';
@@ -26,13 +25,11 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed }) => {
   const { isAdmin, logout, userEmail } = useAuth();
   const { theme } = useTheme();
   
-  // Try to use the data context, but provide a fallback if it's not available
   let alerts = [];
   try {
     const dataContext = useData();
     alerts = dataContext.alerts || [];
   } catch (error) {
-    // If useData throws an error, use an empty array as fallback
     console.log("DataProvider not available, using fallback for alerts");
   }
   
@@ -88,6 +85,13 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed }) => {
       )}
       
       <div className="ml-auto flex items-center gap-4">
+        <Link to="/pricing">
+          <Button variant="ghost" size="sm" className="gap-1">
+            <DollarSign className="h-4 w-4" />
+            <span>Planos</span>
+          </Button>
+        </Link>
+        
         <Link to="/alerts" className="relative">
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
