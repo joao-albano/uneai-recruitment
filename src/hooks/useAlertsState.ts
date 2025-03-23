@@ -1,12 +1,20 @@
 
 import { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { AlertItem } from '../types/data';
 
 export const useAlertsState = () => {
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
 
-  const addAlert = (alert: AlertItem) => {
-    setAlerts([alert, ...alerts]);
+  const addAlert = (alert: Omit<AlertItem, 'id' | 'date' | 'read' | 'actionTaken'>) => {
+    const newAlert: AlertItem = {
+      id: uuidv4(),
+      createdAt: new Date(),
+      read: false,
+      actionTaken: false,
+      ...alert
+    };
+    setAlerts([newAlert, ...alerts]);
   };
 
   const markAlertAsRead = (id: string) => {

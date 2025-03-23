@@ -30,8 +30,7 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 export const useAlerts = () => {
   const context = useContext(AlertsContext);
   if (context === undefined) {
-    console.warn('useAlerts must be used within an AlertsProvider. Returning empty data.');
-    return { alerts: [] };
+    throw new Error('useAlerts must be used within an AlertsProvider');
   }
   return context;
 };

@@ -1,8 +1,6 @@
 
 import React, { useState } from 'react';
 import { Trash2 } from 'lucide-react';
-import { SchedulesProvider } from '@/context/schedules/SchedulesContext';
-import { AlertsProvider } from '@/context/alerts/AlertsContext';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
 import ScheduleView from '@/components/scheduling/ScheduleView';
@@ -56,23 +54,19 @@ const SchedulePage: React.FC = () => {
   };
   
   return (
-    <AlertsProvider>
-      <SchedulesProvider>
-        <div className="h-screen flex flex-col md:flex-row overflow-hidden">
-          <Sidebar 
-            isOpen={sidebarOpen} 
-            onClose={toggleSidebar} 
-            collapsed={sidebarCollapsed}
-            setCollapsed={setSidebarCollapsed}
-          />
-          
-          <div className="flex-1 flex flex-col overflow-hidden">
-            <Header toggleSidebar={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
-            <ScheduleContent />
-          </div>
-        </div>
-      </SchedulesProvider>
-    </AlertsProvider>
+    <div className="h-screen flex flex-col md:flex-row overflow-hidden">
+      <Sidebar 
+        isOpen={sidebarOpen} 
+        onClose={toggleSidebar} 
+        collapsed={sidebarCollapsed}
+        setCollapsed={setSidebarCollapsed}
+      />
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <Header toggleSidebar={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
+        <ScheduleContent />
+      </div>
+    </div>
   );
 };
 

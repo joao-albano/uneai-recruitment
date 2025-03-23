@@ -3,10 +3,10 @@ import React, { createContext, useContext, ReactNode } from 'react';
 import { StudentsProvider, useStudents } from './students/StudentsContext';
 import { SurveysProvider, useSurveys } from './surveys/SurveysContext';
 import { SchedulesProvider, useSchedules } from './schedules/SchedulesContext';
-import { AlertsProvider, useAlerts } from './alerts/AlertsContext';
+import { useAlerts } from './alerts/AlertsContext';
 import { UploadsProvider, useUploads } from './uploads/UploadsContext';
 import { WhatsAppProvider, useWhatsApp } from './whatsapp/WhatsAppContext';
-import { AppStateProvider, useAppState } from './app/AppStateContext';
+import { useAppState } from './app/AppStateContext';
 import { StudentData, SurveyData, ScheduleItem, AlertItem, UploadRecord } from '@/types/data';
 import { WhatsAppMessage } from '@/types/whatsapp';
 
@@ -41,17 +41,13 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   return (
     <StudentsProvider>
       <SurveysProvider>
-        <AlertsProvider>
-          <SchedulesProvider>
-            <UploadsProvider>
-              <WhatsAppProvider>
-                <AppStateProvider>
-                  <DataProviderInner>{children}</DataProviderInner>
-                </AppStateProvider>
-              </WhatsAppProvider>
-            </UploadsProvider>
-          </SchedulesProvider>
-        </AlertsProvider>
+        <SchedulesProvider>
+          <UploadsProvider>
+            <WhatsAppProvider>
+              <DataProviderInner>{children}</DataProviderInner>
+            </WhatsAppProvider>
+          </UploadsProvider>
+        </SchedulesProvider>
       </SurveysProvider>
     </StudentsProvider>
   );

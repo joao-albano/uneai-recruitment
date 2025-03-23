@@ -1,13 +1,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useData } from '@/context/DataContext';
 import { useToast } from '@/hooks/use-toast';
 import AlertsFilter from './AlertsFilter';
 import AlertsTabs from './AlertsTabs';
+import { useAlerts } from '@/context/alerts/AlertsContext';
+import { useAppState } from '@/context/app/AppStateContext';
+import { useSchedules } from '@/context/schedules/SchedulesContext';
 
 const AlertsList: React.FC = () => {
-  const { alerts, markAlertAsRead, markAlertActionTaken, addSchedule, generateDemoData } = useData();
+  const { alerts, markAlertAsRead, markAlertActionTaken } = useAlerts();
+  const { addSchedule } = useSchedules();
+  const { generateDemoData } = useAppState();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterTypes, setFilterTypes] = useState<Record<string, boolean>>({
     'high-risk': true,
