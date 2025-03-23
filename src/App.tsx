@@ -7,9 +7,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { ProtectedRoute, AdminRoute } from "./components/auth/ProtectedRoutes";
-import { DataProvider } from "./context/DataContext";
 import { AppStateProvider } from "./context/app/AppStateContext";
 import { AlertsProvider } from "./context/alerts/AlertsContext";
+import { DataProvider } from "./context/DataContext";
 
 import Index from "./pages/Index";
 import DashboardPage from "./pages/DashboardPage";
@@ -33,9 +33,9 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <AuthProvider>
-        <AlertsProvider>
-          <DataProvider>
-            <AppStateProvider>
+        <AppStateProvider>
+          <AlertsProvider>
+            <DataProvider>
               <TooltipProvider>
                 <Toaster />
                 <Sonner />
@@ -161,9 +161,9 @@ const App = () => (
                   </Routes>
                 </BrowserRouter>
               </TooltipProvider>
-            </AppStateProvider>
-          </DataProvider>
-        </AlertsProvider>
+            </DataProvider>
+          </AlertsProvider>
+        </AppStateProvider>
       </AuthProvider>
     </ThemeProvider>
   </QueryClientProvider>

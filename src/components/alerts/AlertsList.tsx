@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -88,11 +87,38 @@ const AlertsList: React.FC = () => {
       />
       
       <AlertsTabs 
-        unreadAlerts={unreadAlerts}
-        readAlerts={readAlerts}
-        filteredAlerts={filteredAlerts}
-        onViewDetails={handleViewDetails}
-        onScheduleMeeting={handleScheduleMeeting}
+        unreadAlerts={alerts.filter(alert => !alert.read && filterTypes[alert.type] && 
+          (alert.studentName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+          alert.message.toLowerCase().includes(searchTerm.toLowerCase())))}
+        readAlerts={alerts.filter(alert => alert.read && filterTypes[alert.type] && 
+          (alert.studentName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+          alert.message.toLowerCase().includes(searchTerm.toLowerCase())))}
+        filteredAlerts={alerts.filter(alert => filterTypes[alert.type] && 
+          (alert.studentName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+          alert.message.toLowerCase().includes(searchTerm.toLowerCase())))}
+        onViewDetails={markAlertAsRead}
+        onScheduleMeeting={(alertId, studentId, studentName) => {
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          tomorrow.setHours(10, 0, 0, 0);
+          
+          addSchedule({
+            id: `schedule-${Date.now()}`,
+            studentId,
+            studentName,
+            date: tomorrow,
+            agentName: 'Coord. Mariana',
+            status: 'scheduled',
+            notes: 'Acompanhamento para prevenção de evasão'
+          });
+          
+          markAlertActionTaken(alertId);
+          
+          toast({
+            title: 'Atendimento agendado',
+            description: `Agendado para ${tomorrow.toLocaleDateString()} às ${tomorrow.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`
+          });
+        }}
         onMarkAsResolved={markAlertActionTaken}
       />
     </div>
