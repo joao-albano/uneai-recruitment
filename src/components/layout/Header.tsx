@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Bell, Menu, LogOut, User, Settings, UserCog } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/App';
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -23,17 +23,18 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
   const { alerts } = useData();
   const unreadAlerts = alerts.filter(alert => !alert.read).length;
   const navigate = useNavigate();
+  const { isAdmin, logout } = useAuth();
   
-  // In a real app, this would come from authentication state
+  // Use auth context to get user info
   const user = {
     name: 'Admin',
     email: 'admin@escola.edu',
-    role: 'admin', // 'admin' or 'user'
+    role: isAdmin ? 'admin' : 'user',
     initials: 'AD'
   };
 
   const handleLogout = () => {
-    // In a real app, this would handle actual logout logic
+    logout();
     navigate('/login');
   };
 
@@ -56,7 +57,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
               <span className="text-sm font-semibold">U</span>
             </div>
           </div>
-          <Link to="/" className="flex items-center gap-1 transition-opacity hover:opacity-80">
+          <Link to="/home" className="flex items-center gap-1 transition-opacity hover:opacity-80">
             <span className="text-lg font-bold">Une.AI</span>
             <span className="text-lg font-light text-foreground/80">EduCare</span>
           </Link>

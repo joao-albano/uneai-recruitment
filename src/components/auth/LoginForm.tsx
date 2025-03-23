@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { useAuth } from '@/App';
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -22,6 +23,7 @@ interface LoginFormProps {
 
 const LoginForm = ({ onSwitchTab }: LoginFormProps) => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -34,8 +36,8 @@ const LoginForm = ({ onSwitchTab }: LoginFormProps) => {
   const onSubmit = (values: LoginFormValues) => {
     console.log('Login attempt:', values);
     
-    // Mock authentication
-    if (values.email === 'admin@escola.edu' && values.password === 'admin123') {
+    // Use our auth context login function
+    if (login(values.email, values.password)) {
       toast.success('Login realizado com sucesso!');
       navigate('/dashboard');
     } else {

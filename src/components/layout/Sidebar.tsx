@@ -16,6 +16,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { useData } from '@/context/DataContext';
+import { useAuth } from '@/App';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -23,11 +24,13 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-  // In a real app, this would come from authentication state
+  const { isAdmin } = useAuth();
+  
+  // Use auth context to get user info
   const user = {
     name: 'Admin',
     email: 'admin@escola.edu',
-    role: 'admin', // 'admin' or 'user'
+    role: isAdmin ? 'admin' : 'user',
     initials: 'AD'
   };
 
