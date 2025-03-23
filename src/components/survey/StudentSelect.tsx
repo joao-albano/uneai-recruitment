@@ -49,7 +49,7 @@ const StudentSelect: React.FC<StudentSelectProps> = ({ form }) => {
               value={field.value}
             >
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger className="px-2">
                   <SelectValue placeholder="Selecione um aluno..." />
                 </SelectTrigger>
               </FormControl>
