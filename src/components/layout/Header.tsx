@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bell, Menu, LogOut, User, Settings, UserCog } from 'lucide-react';
@@ -13,7 +12,7 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { useAuth } from '@/App';
+import { useAuth } from '@/context/AuthContext';
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -25,7 +24,6 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
   const navigate = useNavigate();
   const { isAdmin, logout, userEmail } = useAuth();
   
-  // Define user based on authentication context
   const user = {
     name: isAdmin ? 'Admin' : 'Usuário',
     email: userEmail || (isAdmin ? 'admin@escola.edu' : 'user@escola.edu'),
@@ -105,7 +103,6 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
               <span>Meu Perfil</span>
             </DropdownMenuItem>
             
-            {/* Only show Settings menu item if user is admin */}
             {user.role === 'admin' && (
               <DropdownMenuItem onClick={() => navigate('/settings')}>
                 <Settings className="mr-2 h-4 w-4" />
