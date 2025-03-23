@@ -104,7 +104,7 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
                         </SelectItem>
                       ))
                   ) : (
-                    <SelectItem value="loading" disabled>Carregando alunos...</SelectItem>
+                    <SelectItem value="loading" disabled>Nenhum aluno disponível</SelectItem>
                   )}
                 </SelectContent>
               </Select>

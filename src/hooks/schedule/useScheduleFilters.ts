@@ -25,19 +25,32 @@ export const useScheduleFilters = (schedules: Schedule[], today: Date) => {
   }, [schedules, today]);
 
   // Derive students list from schedules
-  const students = useMemo(() => schedules.map(s => ({
-    id: s.studentId,
-    name: s.studentName
-  })), [schedules]);
+  const students = useMemo(() => {
+    // Create a unique list of students from all schedules
+    const uniqueStudents = new Map();
+    schedules.forEach(s => {
+      if (!uniqueStudents.has(s.studentId)) {
+        uniqueStudents.set(s.studentId, {
+          id: s.studentId,
+          name: s.studentName
+        });
+      }
+    });
+    return Array.from(uniqueStudents.values());
+  }, [schedules]);
 
   // Calculate students without active schedules
-  const studentsWithoutSchedules = useMemo(() => students.filter(student => {
-    return !schedules.some(
-      schedule => 
-        schedule.studentId === student.id && 
-        schedule.status === 'scheduled'
-    );
-  }), [students, schedules]);
+  const studentsWithoutSchedules = useMemo(() => {
+    return students.filter(student => {
+      // A student is available if they have NO scheduled appointments
+      // (completed or canceled appointments don't count)
+      return !schedules.some(
+        schedule => 
+          schedule.studentId === student.id && 
+          schedule.status === 'scheduled' // Only check for active schedules
+      );
+    });
+  }, [students, schedules]);
 
   return {
     todaySchedules,
