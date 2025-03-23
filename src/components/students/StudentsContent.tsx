@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '@/context/DataContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Table } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import StudentTable from './StudentTable';
@@ -18,14 +17,12 @@ const StudentsContent: React.FC = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Ensure we have some data to display
   useEffect(() => {
     if (students.length === 0) {
       generateDemoData();
     }
   }, [students.length, generateDemoData]);
 
-  // Set up our filters
   const {
     searchTerm,
     setSearchTerm,
@@ -62,7 +59,6 @@ const StudentsContent: React.FC = () => {
   };
 
   const handleAddAsData = (studentId: string) => {
-    // Find the student in the data
     const student = students.find(s => s.id === studentId);
     if (student) {
       toast({
@@ -70,7 +66,6 @@ const StudentsContent: React.FC = () => {
         description: `${student.name} foi adicionado como dados completos ao sistema`,
       });
       
-      // Navigate to student detail in the model page
       navigate(`/model/student/${studentId}`);
     }
   };
@@ -89,8 +84,6 @@ const StudentsContent: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Removed the heading and description text as requested */}
-
       <StudentFilters 
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}

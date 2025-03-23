@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { StudentData, SchoolSegment } from '@/types/data';
 
@@ -14,7 +13,7 @@ const useStudentFilters = ({ students, classFilter }: UseStudentFiltersProps) =>
   const [riskFilter, setRiskFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
   const [segmentFilter, setSegmentFilter] = useState<'all' | SchoolSegment>('all');
   
-  // Paginação
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -36,26 +35,26 @@ const useStudentFilters = ({ students, classFilter }: UseStudentFiltersProps) =>
     return Boolean(classFilter); // Return if class filter is active
   };
 
-  // Aplicar filtros
+  // Apply filters
   const filteredStudents = useMemo(() => {
     let filtered = [...students];
     
-    // Filtrar por classe
+    // Filter by class
     if (classFilter) {
       filtered = filtered.filter(student => student.class === classFilter);
     }
     
-    // Filtrar por nível de risco
+    // Filter by risk level
     if (riskFilter !== 'all') {
       filtered = filtered.filter(student => student.riskLevel === riskFilter);
     }
     
-    // Filtrar por segmento
+    // Filter by segment
     if (segmentFilter !== 'all') {
       filtered = filtered.filter(student => student.segment === segmentFilter);
     }
     
-    // Filtrar por termo de pesquisa (nome ou número de registro)
+    // Filter by search term (name or registration number)
     if (searchTerm.trim()) {
       const search = searchTerm.toLowerCase().trim();
       filtered = filtered.filter(student => 
@@ -67,7 +66,7 @@ const useStudentFilters = ({ students, classFilter }: UseStudentFiltersProps) =>
     return filtered;
   }, [students, classFilter, riskFilter, segmentFilter, searchTerm]);
 
-  // Ordenar alunos
+  // Sort students
   const sortedStudents = useMemo(() => {
     return [...filteredStudents].sort((a, b) => {
       let comparison = 0;
@@ -89,17 +88,19 @@ const useStudentFilters = ({ students, classFilter }: UseStudentFiltersProps) =>
     });
   }, [filteredStudents, sortKey, sortOrder]);
 
-  // Paginar alunos
-  const paginatedStudents = sortedStudents.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // Paginate students
+  const paginatedStudents = useMemo(() => {
+    return sortedStudents.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    );
+  }, [sortedStudents, currentPage, itemsPerPage]);
   
   const totalPages = Math.ceil(sortedStudents.length / itemsPerPage);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo(0, 0);
+    window.scrollTo(0, 0); // Scroll to top when changing pages
   };
 
   return {
