@@ -23,6 +23,7 @@ interface ScheduleDialogProps {
   studentsWithoutSchedules: Student[];
   preSelectedStudentId: string;
   onSubmit: (formData: FormData) => void;
+  currentUserEmail: string | null;
 }
 
 const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
@@ -32,6 +33,7 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
   studentsWithoutSchedules,
   preSelectedStudentId,
   onSubmit,
+  currentUserEmail
 }) => {
   const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
@@ -54,6 +56,11 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
         variant: 'destructive'
       });
       return;
+    }
+    
+    // Adicionar o email do usuário atual como agente
+    if (currentUserEmail) {
+      formData.set('agentName', currentUserEmail);
     }
     
     onSubmit(formData);
@@ -118,6 +125,18 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
                 <Label htmlFor="time">Horário</Label>
                 <Input type="time" name="time" id="time" required />
               </div>
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="agentName">Responsável</Label>
+              <Input
+                type="text"
+                name="agentName"
+                id="agentName"
+                defaultValue={currentUserEmail || ""}
+                className="bg-muted/30"
+                readOnly
+              />
             </div>
             
             <div className="grid gap-2">

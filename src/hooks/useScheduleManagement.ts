@@ -26,6 +26,7 @@ export const useScheduleManagement = () => {
     const date = formData.get('date') as string;
     const time = formData.get('time') as string;
     const notes = formData.get('notes') as string;
+    const agentName = formData.get('agentName') as string;
     
     const student = students.find(s => s.id === studentId);
     if (!student) return;
@@ -39,7 +40,7 @@ export const useScheduleManagement = () => {
       studentId,
       studentName: student.name,
       date: scheduleDate,
-      agentName: 'Coord. Mariana',
+      agentName: agentName || 'Coord. Mariana', // Usar o valor do formulário ou padrão
       status: 'scheduled' as const,
       notes,
     };
@@ -61,6 +62,7 @@ export const useScheduleManagement = () => {
     const date = formData.get('date') as string;
     const time = formData.get('time') as string;
     const notes = formData.get('notes') as string;
+    const agentName = formData.get('agentName') as string;
     
     const [year, month, day] = date.split('-').map(Number);
     const [hours, minutes] = time.split(':').map(Number);
@@ -70,6 +72,7 @@ export const useScheduleManagement = () => {
       ...scheduleToEdit,
       date: scheduleDate,
       notes,
+      agentName: agentName || scheduleToEdit.agentName
     };
     
     updateSchedule(updatedSchedule);

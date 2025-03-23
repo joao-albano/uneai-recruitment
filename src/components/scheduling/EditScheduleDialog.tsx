@@ -5,15 +5,15 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
 import { Schedule } from '@/types/schedule';
-import { format } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
 
 interface EditScheduleDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   schedule: Schedule | null;
   onSubmit: (formData: FormData) => void;
+  currentUserEmail: string | null;
 }
 
 const EditScheduleDialog: React.FC<EditScheduleDialogProps> = ({
@@ -21,83 +21,67 @@ const EditScheduleDialog: React.FC<EditScheduleDialogProps> = ({
   onOpenChange,
   schedule,
   onSubmit,
+  currentUserEmail
 }) => {
   const formRef = useRef<HTMLFormElement>(null);
-  const { toast } = useToast();
 
-  // Resetar o formulário quando o diálogo é aberto ou o agendamento muda
+  // Reset form when schedule changes
   useEffect(() => {
-    if (open && formRef.current) {
-      formRef.current.reset();
+    if (open && schedule && formRef.current) {
+      const dateInput = formRef.current.querySelector('[name="date"]') as HTMLInputElement;
+      const timeInput = formRef.current.querySelector('[name="time"]') as HTMLInputElement;
+      const notesInput = formRef.current.querySelector('[name="notes"]') as HTMLTextAreaElement;
+      const agentInput = formRef.current.querySelector('[name="agentName"]') as HTMLInputElement;
+      
+      if (dateInput && timeInput && notesInput) {
+        const date = new Date(schedule.date);
+        
+        // Format date as YYYY-MM-DD
+        const formattedDate = date.toISOString().split('T')[0];
+        dateInput.value = formattedDate;
+        
+        // Format time as HH:MM
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        timeInput.value = `${hours}:${minutes}`;
+        
+        // Set notes
+        notesInput.value = schedule.notes || '';
+        
+        // Set agent name if field exists
+        if (agentInput) {
+          agentInput.value = schedule.agentName || '';
+        }
+      }
     }
-  }, [open, schedule]);
-
-  // Se não houver dados de agendamento, não renderize o conteúdo do diálogo
-  if (!schedule) {
-    return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Editar agendamento</DialogTitle>
-            <DialogDescription>
-              Carregando dados do agendamento...
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
-  // Formatar a data e hora para os campos de entrada
-  const formattedDate = format(new Date(schedule.date), 'yyyy-MM-dd');
-  const formattedTime = format(new Date(schedule.date), 'HH:mm');
+  }, [schedule, open]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    if (!formRef.current) return;
+    if (!formRef.current || !schedule) return;
     
     const formData = new FormData(formRef.current);
+    
+    // Adicionar ID do estudante ao formData (não está no formulário)
     formData.append('studentId', schedule.studentId);
-    
-    const date = formData.get('date') as string;
-    const time = formData.get('time') as string;
-    
-    if (!date || !time) {
-      toast({
-        title: 'Campos obrigatórios',
-        description: 'Por favor, preencha todos os campos obrigatórios.',
-        variant: 'destructive'
-      });
-      return;
-    }
     
     onSubmit(formData);
   };
-  
-  const handleClose = () => {
-    onOpenChange(false);
-  };
+
+  if (!schedule) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] pointer-events-auto">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Editar agendamento</DialogTitle>
+          <DialogTitle>Editar atendimento</DialogTitle>
           <DialogDescription>
-            Editar agendamento para {schedule.studentName}
+            Edite os detalhes do atendimento para <Badge variant="outline" className="ml-1">{schedule.studentName}</Badge>
           </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} ref={formRef}>
           <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label>Aluno</Label>
-              <div className="p-2 border rounded-md bg-muted/30">
-                {schedule.studentName}
-              </div>
-            </div>
-            
             <div className="grid grid-cols-2 gap-3">
               <div className="grid gap-2">
                 <Label htmlFor="date">Data</Label>
@@ -105,21 +89,26 @@ const EditScheduleDialog: React.FC<EditScheduleDialogProps> = ({
                   type="date"
                   name="date"
                   id="date"
-                  defaultValue={formattedDate}
                   min={new Date().toISOString().split('T')[0]}
                   required
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="time">Horário</Label>
-                <Input 
-                  type="time" 
-                  name="time" 
-                  id="time" 
-                  defaultValue={formattedTime} 
-                  required 
-                />
+                <Input type="time" name="time" id="time" required />
               </div>
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="agentName">Responsável</Label>
+              <Input
+                type="text"
+                name="agentName"
+                id="agentName"
+                defaultValue={schedule.agentName || currentUserEmail || ""}
+                className="bg-muted/30"
+                readOnly
+              />
             </div>
             
             <div className="grid gap-2">
@@ -128,14 +117,13 @@ const EditScheduleDialog: React.FC<EditScheduleDialogProps> = ({
                 name="notes"
                 id="notes"
                 placeholder="Detalhes sobre o atendimento..."
-                defaultValue={schedule.notes || ''}
                 className="min-h-[80px]"
               />
             </div>
           </div>
           
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={handleClose}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
             <Button type="submit">Salvar alterações</Button>

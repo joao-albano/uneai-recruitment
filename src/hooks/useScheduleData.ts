@@ -2,6 +2,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useData } from '@/context/DataContext';
+import { useSchedules } from '@/context/schedules/SchedulesContext';
 import { useCalendarState } from './useCalendarState';
 import { useScheduleManagement } from './useScheduleManagement';
 import { Schedule } from '@/types/schedule';
@@ -15,13 +16,14 @@ export const useScheduleData = () => {
   
   // Dados e localização
   const location = useLocation();
-  const { students, schedules, generateDemoData } = useData();
+  const { students, generateDemoData } = useData();
+  const { schedules, visibleSchedules } = useSchedules();
   
   // Valor fixo para Today
   const today = useMemo(() => new Date(), []);
   
   // Hooks principais - manter na mesma ordem em cada renderização
-  const calendarHooks = useCalendarState(schedules);
+  const calendarHooks = useCalendarState(visibleSchedules);
   const scheduleManagementHooks = useScheduleManagement();
   
   // Extrair valores dos hooks
@@ -53,23 +55,23 @@ export const useScheduleData = () => {
   
   // Cálculos de dados memorizados
   const todaySchedules = useMemo(() => {
-    return schedules.filter(schedule => {
+    return visibleSchedules.filter(schedule => {
       const scheduleDate = new Date(schedule.date);
       return scheduleDate.getDate() === today.getDate() &&
              scheduleDate.getMonth() === today.getMonth() &&
              scheduleDate.getFullYear() === today.getFullYear() &&
              schedule.status === 'scheduled';
     }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [schedules, today]);
+  }, [visibleSchedules, today]);
   
   const upcomingSchedules = useMemo(() => {
-    return schedules.filter(schedule => {
+    return visibleSchedules.filter(schedule => {
       const scheduleDate = new Date(schedule.date);
       const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
       return scheduleDate > todayStart &&
              schedule.status === 'scheduled';
     }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).slice(0, 5);
-  }, [schedules, today]);
+  }, [visibleSchedules, today]);
   
   // Estado derivado
   const preSelectedStudentId = useMemo(() => {
@@ -101,7 +103,7 @@ export const useScheduleData = () => {
     const locationState = location.state as { studentId?: string; scheduleId?: string } | null;
     
     if (locationState?.scheduleId) {
-      const schedule = schedules.find(s => s.id === locationState.scheduleId);
+      const schedule = visibleSchedules.find(s => s.id === locationState.scheduleId);
       if (schedule) {
         setSelectedSchedule(schedule);
         setShowScheduleDetails(true);
@@ -109,22 +111,23 @@ export const useScheduleData = () => {
     } else if (locationState?.studentId) {
       setShowAddDialog(true);
     }
-  }, [location.state, schedules, setShowAddDialog]);
+  }, [location.state, visibleSchedules, setShowAddDialog]);
   
   // Atualizar agendamento selecionado quando os agendamentos mudam
   useEffect(() => {
     if (selectedSchedule) {
-      const updatedSchedule = schedules.find(s => s.id === selectedSchedule.id);
+      const updatedSchedule = visibleSchedules.find(s => s.id === selectedSchedule.id);
       if (updatedSchedule) {
         setSelectedSchedule(updatedSchedule);
       }
     }
-  }, [schedules, selectedSchedule]);
+  }, [visibleSchedules, selectedSchedule]);
 
   return {
     students,
     studentsWithoutSchedules,
     schedules,
+    visibleSchedules,
     selectedDate,
     showAddDialog,
     setShowAddDialog,

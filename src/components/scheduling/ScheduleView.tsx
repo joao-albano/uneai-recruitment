@@ -8,16 +8,19 @@ import ScheduleDialog from './ScheduleDialog';
 import ScheduleDetailsDialog from './ScheduleDetailsDialog';
 import EditScheduleDialog from './EditScheduleDialog';
 import DaySchedulesDialog from './DaySchedulesDialog';
+import { useAuth } from '@/context/AuthContext';
 import { useScheduleData } from '@/hooks/useScheduleData';
 
 const ScheduleView: React.FC = () => {
   const [showDaySchedules, setShowDaySchedules] = useState(false);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const { userEmail } = useAuth();
   
   const {
     students,
     studentsWithoutSchedules,
     schedules,
+    visibleSchedules,
     showAddDialog,
     setShowAddDialog,
     showEditDialog,
@@ -54,7 +57,7 @@ const ScheduleView: React.FC = () => {
   const getSchedulesForDay = () => {
     if (selectedDay === null) return [];
     
-    return schedules.filter(schedule => {
+    return visibleSchedules.filter(schedule => {
       const scheduleDate = new Date(schedule.date);
       return scheduleDate.getDate() === selectedDay &&
              scheduleDate.getMonth() === selectedDate.getMonth() &&
@@ -113,7 +116,7 @@ const ScheduleView: React.FC = () => {
             onEditSchedule={startEditSchedule}
           />
           
-          <ScheduleStats schedules={schedules} />
+          <ScheduleStats schedules={visibleSchedules} />
         </div>
       </div>
       
@@ -124,6 +127,7 @@ const ScheduleView: React.FC = () => {
         studentsWithoutSchedules={studentsWithoutSchedules}
         preSelectedStudentId={finalPreSelectedStudentId}
         onSubmit={handleScheduleSubmit}
+        currentUserEmail={userEmail}
       />
       
       {selectedSchedule && (
@@ -141,6 +145,7 @@ const ScheduleView: React.FC = () => {
         onOpenChange={setShowEditDialog}
         schedule={scheduleToEdit}
         onSubmit={handleEditScheduleSubmit}
+        currentUserEmail={userEmail}
       />
       
       <DaySchedulesDialog

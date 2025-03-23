@@ -23,11 +23,16 @@ export const useSchedulesState = () => {
     );
   };
 
+  const clearAllSchedules = () => {
+    setSchedules([]);
+  };
+
   return {
     schedules,
     setSchedules,
     addSchedule,
     updateScheduleStatus,
-    updateSchedule
+    updateSchedule,
+    clearAllSchedules
   };
 };
