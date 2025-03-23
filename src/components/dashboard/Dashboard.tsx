@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useData } from '@/context/DataContext';
@@ -38,17 +37,14 @@ const Dashboard: React.FC = () => {
   };
 
   const handleScheduleClick = (schedule: Schedule) => {
-    // Navigate to schedule page and pass the schedule ID instead of studentId
-    // This will signal the schedule page to show details view rather than opening the new appointment dialog
-    navigate('/schedule', { state: { scheduleId: schedule.id } });
+    navigate('/schedule');
     
     toast({
-      title: 'Visualizando agendamento',
-      description: `Detalhes do agendamento de ${schedule.studentName}`,
+      title: 'Agenda',
+      description: 'Visualizando página de agendamentos',
     });
   };
 
-  // Convert AlertItem to Alert
   const convertedAlerts: Alert[] = alerts.map(alert => ({
     id: alert.id,
     studentId: alert.studentId,
@@ -98,8 +94,8 @@ const Dashboard: React.FC = () => {
           students={students}
           alerts={convertedAlerts}
           schedules={schedules}
-          allAlerts={alerts} // Pass the full alerts collection
-          allSchedules={schedules} // Pass the full schedules collection
+          allAlerts={alerts}
+          allSchedules={schedules}
           onViewAlertDetails={handleViewAlertDetails}
           onViewClassDetails={handleViewClassDetails}
           onScheduleClick={handleScheduleClick}

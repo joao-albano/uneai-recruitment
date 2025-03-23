@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Schedule } from '@/types/schedule';
 
@@ -13,6 +14,13 @@ const UpcomingAppointments: React.FC<UpcomingAppointmentsProps> = ({
   schedules, 
   onScheduleClick 
 }) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    // Navigate to schedule page
+    navigate('/schedule');
+  };
+
   return (
     <Card className="shadow-md">
       <CardHeader>
@@ -26,7 +34,7 @@ const UpcomingAppointments: React.FC<UpcomingAppointmentsProps> = ({
               <Card 
                 key={schedule.id} 
                 className="border-t-4 border-t-primary cursor-pointer transition-shadow hover:shadow-md"
-                onClick={() => onScheduleClick(schedule)}
+                onClick={handleCardClick}
               >
                 <CardContent className="p-4">
                   <div className="flex flex-col space-y-2">
