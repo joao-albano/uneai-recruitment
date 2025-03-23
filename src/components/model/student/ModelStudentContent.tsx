@@ -1,14 +1,22 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useData } from '@/context/DataContext';
 import StudentHeader from './StudentHeader';
 import StudentTabsContent from './StudentTabsContent';
 import StudentNotFound from './StudentNotFound';
+import { Card } from '@/components/ui/card';
 
 const ModelStudentContent: React.FC = () => {
   const { studentId } = useParams<{ studentId: string }>();
-  const { students } = useData();
+  const { students, generateDemoData } = useData();
+  
+  // Garante que temos dados para exibir
+  useEffect(() => {
+    if (students.length === 0) {
+      generateDemoData();
+    }
+  }, [students.length, generateDemoData]);
   
   const student = students.find(s => s.id === studentId);
   
