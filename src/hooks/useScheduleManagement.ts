@@ -92,10 +92,13 @@ export const useScheduleManagement = () => {
     setShowEditDialog(true);
   }, []);
   
-  // Fechar diálogo de edição
+  // Fechar diálogo de edição - função melhorada
   const closeEditDialog = useCallback(() => {
     setShowEditDialog(false);
-    setScheduleToEdit(null);
+    // Importante: adicionar um pequeno atraso para evitar problemas de estado
+    setTimeout(() => {
+      setScheduleToEdit(null);
+    }, 100);
   }, []);
   
   // Marcar agendamento como concluído

@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -24,6 +24,13 @@ const EditScheduleDialog: React.FC<EditScheduleDialogProps> = ({
 }) => {
   const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
+
+  // Resetar o formulário quando o diálogo é aberto ou o agendamento muda
+  useEffect(() => {
+    if (open && formRef.current) {
+      formRef.current.reset();
+    }
+  }, [open, schedule]);
 
   // Se não houver dados de agendamento, não renderize o conteúdo do diálogo
   if (!schedule) {
@@ -74,7 +81,7 @@ const EditScheduleDialog: React.FC<EditScheduleDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] pointer-events-auto">
         <DialogHeader>
           <DialogTitle>Editar agendamento</DialogTitle>
           <DialogDescription>
