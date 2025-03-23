@@ -11,13 +11,24 @@ const StudentsTab: React.FC = () => {
   const { toast } = useToast();
   
   const handleStudentClick = (studentId: string) => {
-    // Navigate to model-specific student detail page
-    navigate(`/model/student/${studentId}`);
+    // First check if student exists in the data context
+    const studentExists = students.find(student => student.id === studentId);
     
-    toast({
-      title: 'Análise do Aluno',
-      description: 'Visualizando trajetória analítica do aluno'
-    });
+    if (studentExists) {
+      // Navigate to model-specific student detail page
+      navigate(`/model/student/${studentId}`);
+      
+      toast({
+        title: 'Análise do Aluno',
+        description: 'Visualizando trajetória analítica do aluno'
+      });
+    } else {
+      toast({
+        title: 'Erro',
+        description: 'Aluno não encontrado no sistema',
+        variant: 'destructive'
+      });
+    }
   };
   
   return (
