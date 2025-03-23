@@ -37,7 +37,7 @@ export const getRevenueStats = (isPtBR: boolean) => ({
   growthRate: '+18.5%'
 });
 
-// Mock data for payments
+// Mock data for payments with more entries for pagination testing
 export const getMockPayments = (isPtBR: boolean): Payment[] => [
   {
     id: 'PAY-001',
@@ -88,6 +88,76 @@ export const getMockPayments = (isPtBR: boolean): Payment[] => [
     plan: 'Premium',
     status: 'pending',
     method: 'bank_transfer'
+  },
+  {
+    id: 'PAY-006',
+    customer: 'Escola Montessori',
+    email: 'financeiro@montessori.edu',
+    date: new Date(2024, 1, 28),
+    amount: isPtBR ? 'R$ 5.990,00' : '$5,990.00',
+    plan: 'Premium',
+    status: 'completed',
+    method: 'credit_card'
+  },
+  {
+    id: 'PAY-007',
+    customer: 'Colégio São Francisco',
+    email: 'contato@saofrancisco.edu',
+    date: new Date(2024, 1, 25),
+    amount: isPtBR ? 'R$ 2.990,00' : '$2,990.00',
+    plan: 'Basic',
+    status: 'completed',
+    method: 'credit_card'
+  },
+  {
+    id: 'PAY-008',
+    customer: 'Instituto Educacional Alvorada',
+    email: 'financeiro@alvorada.edu',
+    date: new Date(2024, 1, 20),
+    amount: isPtBR ? 'R$ 9.990,00' : '$9,990.00',
+    plan: 'Enterprise',
+    status: 'completed',
+    method: 'bank_transfer'
+  },
+  {
+    id: 'PAY-009',
+    customer: 'Escola Nova Geração',
+    email: 'adm@novageracao.edu',
+    date: new Date(2024, 1, 15),
+    amount: isPtBR ? 'R$ 5.990,00' : '$5,990.00',
+    plan: 'Premium',
+    status: 'failed',
+    method: 'credit_card'
+  },
+  {
+    id: 'PAY-010',
+    customer: 'Colégio Integrado',
+    email: 'financeiro@integrado.edu',
+    date: new Date(2024, 1, 10),
+    amount: isPtBR ? 'R$ 2.990,00' : '$2,990.00',
+    plan: 'Basic',
+    status: 'completed',
+    method: 'credit_card'
+  },
+  {
+    id: 'PAY-011',
+    customer: 'Academia de Ensino',
+    email: 'contato@academiaensino.edu',
+    date: new Date(2024, 1, 5),
+    amount: isPtBR ? 'R$ 5.990,00' : '$5,990.00',
+    plan: 'Premium',
+    status: 'completed',
+    method: 'bank_transfer'
+  },
+  {
+    id: 'PAY-012',
+    customer: 'Instituto Educacional Estrela',
+    email: 'financeiro@estrela.edu',
+    date: new Date(2024, 0, 28),
+    amount: isPtBR ? 'R$ 9.990,00' : '$9,990.00',
+    plan: 'Enterprise',
+    status: 'completed',
+    method: 'credit_card'
   }
 ];
 

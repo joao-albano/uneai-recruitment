@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,7 @@ import { Download, Search, ArrowUpDown, CreditCard, DollarSign, Filter } from 'l
 import { useTheme } from '@/context/ThemeContext';
 import { format } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
+import StudentPagination from '@/components/students/StudentPagination';
 
 interface Payment {
   id: string;
@@ -40,6 +41,8 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
   const { language } = useTheme();
   const isPtBR = language === 'pt-BR';
   const dateLocale = isPtBR ? ptBR : enUS;
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Number of items to display per page
   
   const formatDate = (date: Date) => {
     return format(date, isPtBR ? 'dd/MM/yyyy' : 'MM/dd/yyyy', { locale: dateLocale });
@@ -102,6 +105,21 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
     payment.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     payment.id.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Pagination logic
+  const totalPages = Math.max(1, Math.ceil(filteredPayments.length / itemsPerPage));
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredPayments.slice(indexOfFirstItem, indexOfLastItem);
+  
+  // Reset to first page when search or filter changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterPeriod]);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
 
   return (
     <Card>
@@ -177,32 +195,60 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredPayments.map((payment) => (
-              <TableRow key={payment.id}>
-                <TableCell className="font-medium">{payment.id}</TableCell>
-                <TableCell>
-                  {payment.customer}
-                  <div className="text-xs text-muted-foreground">{payment.email}</div>
-                </TableCell>
-                <TableCell>{formatDate(payment.date)}</TableCell>
-                <TableCell>{payment.plan}</TableCell>
-                <TableCell>
-                  <div className="flex items-center">
-                    {getPaymentMethodIcon(payment.method)}
-                    <span>{getPaymentMethodText(payment.method)}</span>
-                  </div>
-                </TableCell>
-                <TableCell>{payment.amount}</TableCell>
-                <TableCell>{getStatusBadge(payment.status)}</TableCell>
-                <TableCell className="text-right">
-                  <Button variant="ghost" size="icon" title={isPtBR ? 'Baixar recibo' : 'Download receipt'}>
-                    <Download className="h-4 w-4" />
-                  </Button>
+            {currentItems.length > 0 ? (
+              currentItems.map((payment) => (
+                <TableRow key={payment.id}>
+                  <TableCell className="font-medium">{payment.id}</TableCell>
+                  <TableCell>
+                    {payment.customer}
+                    <div className="text-xs text-muted-foreground">{payment.email}</div>
+                  </TableCell>
+                  <TableCell>{formatDate(payment.date)}</TableCell>
+                  <TableCell>{payment.plan}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center">
+                      {getPaymentMethodIcon(payment.method)}
+                      <span>{getPaymentMethodText(payment.method)}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>{payment.amount}</TableCell>
+                  <TableCell>{getStatusBadge(payment.status)}</TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="icon" title={isPtBR ? 'Baixar recibo' : 'Download receipt'}>
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={8} className="h-24 text-center">
+                  {isPtBR 
+                    ? 'Nenhuma transação encontrada'
+                    : 'No transactions found'
+                  }
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
+
+        {/* Pagination */}
+        {filteredPayments.length > 0 && (
+          <div className="mt-4">
+            <StudentPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+            <div className="text-sm text-muted-foreground text-center mt-2">
+              {isPtBR 
+                ? `Mostrando ${indexOfFirstItem + 1}-${Math.min(indexOfLastItem, filteredPayments.length)} de ${filteredPayments.length} transações`
+                : `Showing ${indexOfFirstItem + 1}-${Math.min(indexOfLastItem, filteredPayments.length)} of ${filteredPayments.length} transactions`
+              }
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
