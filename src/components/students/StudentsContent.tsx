@@ -89,14 +89,7 @@ const StudentsContent: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Alunos</h2>
-          <p className="text-muted-foreground">
-            Visualize e gerencie os alunos da sua instituição
-          </p>
-        </div>
-      </div>
+      {/* Removed the heading and description text as requested */}
 
       <StudentFilters 
         searchTerm={searchTerm}
