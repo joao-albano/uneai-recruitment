@@ -14,6 +14,8 @@ import { WebhookType, webhookFormSchema } from './schemas';
 import { v4 as uuidv4 } from 'uuid';
 import WebhookAccessKey from './WebhookAccessKey';
 import WebhooksList from './WebhooksList';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { HelpCircle } from 'lucide-react';
 
 const WebhookSettings: React.FC = () => {
   const { language } = useTheme();
@@ -152,6 +154,80 @@ const WebhookSettings: React.FC = () => {
               </div>
             </form>
           </Form>
+          
+          <div className="mt-6 pt-4 border-t">
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="webhook-events">
+                <AccordionTrigger className="flex items-center gap-2 text-sm font-medium">
+                  <HelpCircle className="h-4 w-4" />
+                  {language === 'pt-BR' 
+                    ? 'Eventos que acionam notificações de webhook' 
+                    : 'Events that trigger webhook notifications'}
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-2 text-sm">
+                    <p className="text-muted-foreground mb-2">
+                      {language === 'pt-BR' 
+                        ? 'Os webhooks configurados serão acionados para os seguintes eventos:' 
+                        : 'Configured webhooks will be triggered for the following events:'}
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li>
+                        <span className="font-medium">
+                          {language === 'pt-BR' ? 'Alertas de Risco:' : 'Risk Alerts:'}
+                        </span>
+                        {' '}
+                        {language === 'pt-BR' 
+                          ? 'Quando um aluno é classificado como risco alto, médio ou baixo pelo sistema.' 
+                          : 'When a student is classified as high, medium, or low risk by the system.'}
+                      </li>
+                      <li>
+                        <span className="font-medium">
+                          {language === 'pt-BR' ? 'Pesquisas:' : 'Surveys:'}
+                        </span>
+                        {' '}
+                        {language === 'pt-BR' 
+                          ? 'Quando uma nova pesquisa diagnóstica familiar é submetida.' 
+                          : 'When a new family diagnostic survey is submitted.'}
+                      </li>
+                      <li>
+                        <span className="font-medium">
+                          {language === 'pt-BR' ? 'Agendamentos:' : 'Scheduled Meetings:'}
+                        </span>
+                        {' '}
+                        {language === 'pt-BR' 
+                          ? 'Quando reuniões com famílias são agendadas, atualizadas ou canceladas.' 
+                          : 'When meetings with families are scheduled, updated, or canceled.'}
+                      </li>
+                      <li>
+                        <span className="font-medium">
+                          {language === 'pt-BR' ? 'Uploads de Dados:' : 'Data Uploads:'}
+                        </span>
+                        {' '}
+                        {language === 'pt-BR' 
+                          ? 'Quando novos dados de alunos são carregados no sistema.' 
+                          : 'When new student data is uploaded to the system.'}
+                      </li>
+                      <li>
+                        <span className="font-medium">
+                          {language === 'pt-BR' ? 'Mensagens de WhatsApp:' : 'WhatsApp Messages:'}
+                        </span>
+                        {' '}
+                        {language === 'pt-BR' 
+                          ? 'Quando mensagens de WhatsApp são enviadas para as famílias.' 
+                          : 'When WhatsApp messages are sent to families.'}
+                      </li>
+                    </ul>
+                    <p className="text-muted-foreground mt-2">
+                      {language === 'pt-BR' 
+                        ? 'As notificações incluem dados relevantes sobre cada evento em formato JSON.' 
+                        : 'Notifications include relevant data about each event in JSON format.'}
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
         </CardContent>
       </Card>
       
