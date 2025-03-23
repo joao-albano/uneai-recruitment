@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+
+import { useState, useMemo, useEffect } from 'react';
 import { StudentData, SchoolSegment } from '@/types/data';
 
 interface UseStudentFiltersProps {
@@ -88,6 +89,11 @@ const useStudentFilters = ({ students, classFilter }: UseStudentFiltersProps) =>
     });
   }, [filteredStudents, sortKey, sortOrder]);
 
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, riskFilter, segmentFilter, classFilter, sortKey, sortOrder]);
+
   // Paginate students
   const paginatedStudents = useMemo(() => {
     return sortedStudents.slice(
@@ -96,7 +102,7 @@ const useStudentFilters = ({ students, classFilter }: UseStudentFiltersProps) =>
     );
   }, [sortedStudents, currentPage, itemsPerPage]);
   
-  const totalPages = Math.ceil(sortedStudents.length / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(sortedStudents.length / itemsPerPage));
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);

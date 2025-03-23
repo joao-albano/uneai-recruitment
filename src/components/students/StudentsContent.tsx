@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useData } from '@/context/DataContext';
 import { Card, CardContent } from '@/components/ui/card';
@@ -136,15 +137,11 @@ const StudentsContent: React.FC = () => {
             />
           </Table>
           
-          {totalPages > 1 && (
-            <div className="mt-4">
-              <StudentPagination 
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
-            </div>
-          )}
+          <StudentPagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </CardContent>
       </Card>
     </div>
