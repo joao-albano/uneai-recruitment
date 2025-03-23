@@ -1,13 +1,12 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useData } from '@/context/DataContext';
 import { useSchedules } from '@/context/schedules/SchedulesContext';
 import { useCalendarState } from './useCalendarState';
-import { useScheduleManagement } from './useScheduleManagement';
 import { Schedule } from '@/types/schedule';
+import { useAuth } from '@/context/AuthContext';
 
-export type { Schedule, FormattedScheduleData } from '@/types/schedule';
+export type { Schedule } from '@/types/schedule';
 
 export const useScheduleData = () => {
   // Estado básico
@@ -16,15 +15,14 @@ export const useScheduleData = () => {
   
   // Dados e localização
   const location = useLocation();
-  const { students, generateDemoData } = useData();
-  const { schedules, visibleSchedules } = useSchedules();
+  const { schedules, visibleSchedules, addSchedule, updateScheduleStatus, updateSchedule, clearAllSchedules } = useSchedules();
+  const { isAdmin, userEmail } = useAuth();
   
   // Valor fixo para Today
   const today = useMemo(() => new Date(), []);
   
   // Hooks principais - manter na mesma ordem em cada renderização
   const calendarHooks = useCalendarState(visibleSchedules);
-  const scheduleManagementHooks = useScheduleManagement();
   
   // Extrair valores dos hooks
   const {
@@ -39,19 +37,10 @@ export const useScheduleData = () => {
     getScheduleStatusForDay
   } = calendarHooks;
   
-  const {
-    studentsWithoutSchedules,
-    showAddDialog,
-    setShowAddDialog,
-    showEditDialog,
-    setShowEditDialog,
-    scheduleToEdit,
-    handleScheduleSubmit,
-    handleEditScheduleSubmit,
-    startEditSchedule,
-    markCompleted,
-    cancelSchedule
-  } = scheduleManagementHooks;
+  // Estado para diálogos
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [scheduleToEdit, setScheduleToEdit] = useState<Schedule | null>(null);
   
   // Cálculos de dados memorizados
   const todaySchedules = useMemo(() => {
@@ -86,16 +75,78 @@ export const useScheduleData = () => {
     return canSelectStudent ? locationStudentId : '';
   }, [location.state, schedules]);
   
-  // Efeitos - devem estar após todas as definições de estado
+  // Funções de gerenciamento de agendamentos
+  const handleScheduleSubmit = (formData: FormData) => {
+    const studentId = formData.get('studentId') as string;
+    const date = formData.get('date') as string;
+    const time = formData.get('time') as string;
+    const notes = formData.get('notes') as string;
+    const agentName = formData.get('agentName') as string || userEmail;
+    
+    if (!studentId || !date || !time) return;
+    
+    const [year, month, day] = date.split('-').map(Number);
+    const [hours, minutes] = time.split(':').map(Number);
+    const scheduleDate = new Date(year, month - 1, day, hours, minutes);
+    
+    const newSchedule: Schedule = {
+      id: `schedule-${Date.now()}`,
+      studentId,
+      studentName: `Aluno ${studentId}`, // Simplificado para o exemplo
+      date: scheduleDate,
+      agentName: agentName || 'Coord. Mariana',
+      status: 'scheduled',
+      notes,
+    };
+    
+    addSchedule(newSchedule);
+    setShowAddDialog(false);
+  };
   
-  // Gerar dados de demonstração se necessário
-  useEffect(() => {
-    if (students.length === 0) {
-      console.log("Generating demo data for scheduling");
-      generateDemoData();
-    }
-  }, [students.length, generateDemoData]);
+  const handleEditScheduleSubmit = (formData: FormData) => {
+    if (!scheduleToEdit) return;
+    
+    const date = formData.get('date') as string;
+    const time = formData.get('time') as string;
+    const notes = formData.get('notes') as string;
+    const agentName = formData.get('agentName') as string;
+    
+    const [year, month, day] = date.split('-').map(Number);
+    const [hours, minutes] = time.split(':').map(Number);
+    const scheduleDate = new Date(year, month - 1, day, hours, minutes);
+    
+    const updatedSchedule = {
+      ...scheduleToEdit,
+      date: scheduleDate,
+      notes,
+      agentName: agentName || scheduleToEdit.agentName
+    };
+    
+    updateSchedule(updatedSchedule);
+    setShowEditDialog(false);
+    setScheduleToEdit(null);
+  };
   
+  const startEditSchedule = (schedule: Schedule) => {
+    setScheduleToEdit(schedule);
+    setShowEditDialog(true);
+  };
+  
+  const closeEditDialog = () => {
+    setShowEditDialog(false);
+    setTimeout(() => {
+      setScheduleToEdit(null);
+    }, 100);
+  };
+  
+  const markCompleted = (id: string) => {
+    updateScheduleStatus(id, 'completed');
+  };
+  
+  const cancelSchedule = (id: string) => {
+    updateScheduleStatus(id, 'canceled');
+  };
+
   // Lidar com dados do estado da localização
   useEffect(() => {
     if (!location.state) return;
@@ -111,7 +162,7 @@ export const useScheduleData = () => {
     } else if (locationState?.studentId) {
       setShowAddDialog(true);
     }
-  }, [location.state, visibleSchedules, setShowAddDialog]);
+  }, [location.state, visibleSchedules]);
   
   // Atualizar agendamento selecionado quando os agendamentos mudam
   useEffect(() => {
@@ -123,6 +174,21 @@ export const useScheduleData = () => {
     }
   }, [visibleSchedules, selectedSchedule]);
 
+  // Lista de estudantes básica para o exemplo
+  const students = schedules.map(s => ({
+    id: s.studentId,
+    name: s.studentName
+  }));
+
+  // Estudantes sem agendamentos
+  const studentsWithoutSchedules = students.filter(student => {
+    return !schedules.some(
+      schedule => 
+        schedule.studentId === student.id && 
+        schedule.status === 'scheduled'
+    );
+  });
+
   return {
     students,
     studentsWithoutSchedules,
@@ -132,7 +198,7 @@ export const useScheduleData = () => {
     showAddDialog,
     setShowAddDialog,
     showEditDialog,
-    setShowEditDialog,
+    setShowEditDialog: closeEditDialog,
     scheduleToEdit,
     formattedMonthYear,
     daysInMonth,
