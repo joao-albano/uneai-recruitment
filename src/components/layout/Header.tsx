@@ -18,9 +18,10 @@ import { useTheme } from '@/context/ThemeContext';
 
 interface HeaderProps {
   toggleSidebar: () => void;
+  sidebarCollapsed: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
+const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed }) => {
   const { alerts } = useData();
   const navigate = useNavigate();
   const { isAdmin, logout, userEmail } = useAuth();
@@ -52,28 +53,30 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
         <span className="sr-only">Toggle sidebar</span>
       </Button>
       
-      <div className="flex items-center gap-2">
+      {(sidebarCollapsed || window.innerWidth < 1024) && (
         <div className="flex items-center gap-2">
-          <div className="h-8 w-auto">
-            {theme === 'dark' ? (
-              <img 
-                src="/lovable-uploads/d2557391-afc4-4f36-9029-1e3ddd3c3793.png" 
-                alt="Une.AI (Modo Escuro)" 
-                className="h-full w-auto object-contain"
-              />
-            ) : (
-              <img 
-                src="/lovable-uploads/0992bc45-19cb-47ac-a913-96b95b006ee5.png" 
-                alt="Une.AI" 
-                className="h-full w-auto object-contain"
-              />
-            )}
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-auto">
+              {theme === 'dark' ? (
+                <img 
+                  src="/lovable-uploads/d2557391-afc4-4f36-9029-1e3ddd3c3793.png" 
+                  alt="Une.AI (Modo Escuro)" 
+                  className="h-full w-auto object-contain"
+                />
+              ) : (
+                <img 
+                  src="/lovable-uploads/0992bc45-19cb-47ac-a913-96b95b006ee5.png" 
+                  alt="Une.AI" 
+                  className="h-full w-auto object-contain"
+                />
+              )}
+            </div>
+            <Link to="/home" className="flex items-center gap-1 transition-opacity hover:opacity-80">
+              <span className="text-lg font-light text-foreground/80">EduCare</span>
+            </Link>
           </div>
-          <Link to="/home" className="flex items-center gap-1 transition-opacity hover:opacity-80">
-            <span className="text-lg font-light text-foreground/80">EduCare</span>
-          </Link>
         </div>
-      </div>
+      )}
       
       <div className="ml-auto flex items-center gap-4">
         <Link to="/alerts" className="relative">

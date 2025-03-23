@@ -11,11 +11,17 @@ import SidebarFooter from './sidebar/SidebarFooter';
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  collapsed: boolean;
+  setCollapsed: (collapsed: boolean) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+const Sidebar: React.FC<SidebarProps> = ({ 
+  isOpen, 
+  onClose, 
+  collapsed, 
+  setCollapsed 
+}) => {
   const { isAdmin } = useAuth();
-  const [collapsed, setCollapsed] = React.useState(false);
   
   return (
     <aside 
