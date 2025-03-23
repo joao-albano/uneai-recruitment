@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { WhatsAppMessage } from '@/types/whatsapp';
 import { v4 as uuidv4 } from 'uuid';
@@ -133,14 +132,9 @@ export const useWhatsAppHistory = () => {
     );
   };
 
-  const clearHistory = () => {
-    setMessages([]);
-  };
-
   return {
     messages,
     addMessage,
-    updateMessageStatus,
-    clearHistory
+    updateMessageStatus
   };
 };

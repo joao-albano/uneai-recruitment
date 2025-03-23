@@ -12,9 +12,14 @@ import MessageStatusBadge from './MessageStatusBadge';
 interface MessageListProps {
   messages: WhatsAppMessage[];
   onViewMessage: (message: WhatsAppMessage) => void;
+  itemsPerPage?: number;
 }
 
-const MessageList: React.FC<MessageListProps> = ({ messages, onViewMessage }) => {
+const MessageList: React.FC<MessageListProps> = ({ 
+  messages, 
+  onViewMessage,
+  itemsPerPage = 10
+}) => {
   if (messages.length === 0) {
     return (
       <div className="p-4 text-center text-muted-foreground">
@@ -24,7 +29,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onViewMessage }) =>
   }
 
   return (
-    <ScrollArea className="h-[400px]">
+    <div className="max-h-[500px] overflow-auto">
       {messages.map((message) => (
         <div
           key={message.id}
@@ -54,7 +59,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onViewMessage }) =>
           </div>
         </div>
       ))}
-    </ScrollArea>
+    </div>
   );
 };
 
