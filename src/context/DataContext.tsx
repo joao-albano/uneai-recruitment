@@ -1,89 +1,81 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { useAlertsState } from '@/hooks/useAlertsState';
-import { useSchedulesState } from '@/hooks/useSchedulesState';
-import { useWhatsAppConfig } from '@/hooks/useWhatsAppConfig';
-import { useWhatsAppHistory } from '@/hooks/useWhatsAppHistory';
-import { StudentData, SurveyData, ScheduleItem, AlertItem, DataContextType } from '@/types/data';
-import { UploadRecord } from '@/types/upload';
+import React, { createContext, useContext, ReactNode } from 'react';
+import { StudentsProvider, useStudents } from './students/StudentsContext';
+import { SurveysProvider, useSurveys } from './surveys/SurveysContext';
+import { SchedulesProvider, useSchedules } from './schedules/SchedulesContext';
+import { AlertsProvider, useAlerts } from './alerts/AlertsContext';
+import { UploadsProvider, useUploads } from './uploads/UploadsContext';
+import { WhatsAppProvider, useWhatsApp } from './whatsapp/WhatsAppContext';
+import { AppStateProvider, useAppState } from './app/AppStateContext';
+import { StudentData, SurveyData, ScheduleItem, AlertItem, UploadRecord } from '@/types/data';
 import { WhatsAppMessage } from '@/types/whatsapp';
-import { sendWhatsAppSurvey as sendWhatsAppSurveyUtil } from '@/utils/notifications';
-import { generateDemoStudents, generateDemoAlerts, generateDemoSchedules } from '@/data/demoData';
+
+// Combined context type that matches the original DataContextType
+export type DataContextType = {
+  students: StudentData[];
+  surveys: SurveyData[];
+  schedules: ScheduleItem[];
+  alerts: AlertItem[];
+  uploadHistory: UploadRecord[];
+  isLoading: boolean;
+  whatsAppConfig: any;
+  whatsAppMessages: WhatsAppMessage[];
+  setStudents: (students: StudentData[]) => void;
+  addSurvey: (survey: SurveyData) => void;
+  addSchedule: (schedule: ScheduleItem) => void;
+  addAlert: (alert: AlertItem) => void;
+  addWhatsAppMessage: (message: WhatsAppMessage) => void;
+  addUploadRecord: (record: Omit<UploadRecord, 'id'>) => void;
+  clearUploadHistory: () => void;
+  markAlertAsRead: (id: string) => void;
+  markAlertActionTaken: (id: string) => void;
+  updateScheduleStatus: (id: string, status: 'scheduled' | 'completed' | 'canceled') => void;
+  updateSchedule: (updatedSchedule: ScheduleItem) => void;
+  generateDemoData: () => void;
+  sendWhatsAppSurvey: (studentId: string) => void;
+};
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [students, setStudents] = useState<StudentData[]>([]);
-  const [surveys, setSurveys] = useState<SurveyData[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [uploadHistory, setUploadHistory] = useState<UploadRecord[]>([]);
-  
-  const { 
-    alerts, 
-    setAlerts, 
-    addAlert, 
-    markAlertAsRead, 
-    markAlertActionTaken 
-  } = useAlertsState();
-  
-  const { 
-    schedules, 
-    setSchedules, 
-    addSchedule, 
-    updateScheduleStatus, 
-    updateSchedule 
-  } = useSchedulesState();
-  
-  const { config: whatsAppConfig } = useWhatsAppConfig();
-  const { messages: whatsAppMessages, addMessage: addWhatsAppMessage } = useWhatsAppHistory();
+  return (
+    <StudentsProvider>
+      <SurveysProvider>
+        <AlertsProvider>
+          <SchedulesProvider>
+            <UploadsProvider>
+              <WhatsAppProvider>
+                <AppStateProvider>
+                  <DataProviderInner>{children}</DataProviderInner>
+                </AppStateProvider>
+              </WhatsAppProvider>
+            </UploadsProvider>
+          </SchedulesProvider>
+        </AlertsProvider>
+      </SurveysProvider>
+    </StudentsProvider>
+  );
+};
 
-  const addSurvey = (survey: SurveyData) => {
-    setSurveys([...surveys, survey]);
-  };
+// Inner provider that combines all contexts
+const DataProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { students, setStudents } = useStudents();
+  const { surveys, addSurvey } = useSurveys();
+  const { schedules, addSchedule, updateScheduleStatus, updateSchedule, setSchedules } = useSchedules();
+  const { alerts, addAlert, markAlertAsRead, markAlertActionTaken, setAlerts } = useAlerts();
+  const { uploadHistory, addUploadRecord, clearUploadHistory } = useUploads();
+  const { whatsAppConfig, whatsAppMessages, addWhatsAppMessage, sendWhatsAppSurvey: sendWhatsAppSurveyToStudent } = useWhatsApp();
+  const { isLoading, generateDemoData } = useAppState();
 
-  const addUploadRecord = (record: Omit<UploadRecord, 'id'>) => {
-    const newRecord: UploadRecord = {
-      ...record,
-      id: `upload-${Date.now()}-${Math.floor(Math.random() * 1000)}`
-    };
-    setUploadHistory([newRecord, ...uploadHistory]);
-  };
-
-  const clearUploadHistory = () => {
-    setUploadHistory([]);
-  };
-
+  // Adapt the sendWhatsAppSurvey function to match the original signature
   const sendWhatsAppSurvey = (studentId: string) => {
     const student = students.find(s => s.id === studentId);
     if (student) {
-      sendWhatsAppSurveyUtil(student, addAlert, addWhatsAppMessage, whatsAppConfig);
+      sendWhatsAppSurveyToStudent(student, addAlert);
     }
   };
 
-  const generateDemoData = () => {
-    setIsLoading(true);
-    
-    const demoStudents = generateDemoStudents();
-    const demoAlerts = generateDemoAlerts();
-    const demoSchedules = generateDemoSchedules();
-    
-    setStudents(demoStudents);
-    setAlerts(demoAlerts);
-    setSchedules(demoSchedules);
-    
-    addUploadRecord({
-      filename: 'demo_dados.csv',
-      uploadDate: new Date(Date.now() - 86400000), // yesterday
-      recordCount: demoStudents.length,
-      status: 'success'
-    });
-    
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 800);
-  };
-
-  const value = {
+  const value: DataContextType = {
     students,
     surveys,
     schedules,

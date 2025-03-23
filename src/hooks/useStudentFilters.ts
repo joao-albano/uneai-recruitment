@@ -27,13 +27,13 @@ const useStudentFilters = ({ students, classFilter }: UseStudentFiltersProps) =>
     }
   };
 
-  const hasActiveFilters = searchTerm || riskFilter !== 'all' || segmentFilter !== 'all' || classFilter;
+  const hasActiveFilters = Boolean(searchTerm || riskFilter !== 'all' || segmentFilter !== 'all' || classFilter);
 
   const clearAllFilters = () => {
     setSearchTerm('');
     setRiskFilter('all');
     setSegmentFilter('all');
-    return classFilter; // Return if class filter is active
+    return Boolean(classFilter); // Return if class filter is active
   };
 
   // Aplicar filtros
