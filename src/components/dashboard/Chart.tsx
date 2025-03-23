@@ -1,7 +1,17 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { 
+  ResponsiveContainer, 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend,
+  Cell
+} from 'recharts';
 import { StudentData } from '@/context/DataContext';
 
 interface ChartProps {
@@ -16,10 +26,17 @@ const Chart: React.FC<ChartProps> = ({ students, title, description }) => {
   const mediumRisk = students.filter(student => student.riskLevel === 'medium').length;
   const highRisk = students.filter(student => student.riskLevel === 'high').length;
   
+  const totalStudents = students.length;
+  
+  // Calculate percentages for each risk level
+  const lowRiskPercentage = totalStudents > 0 ? (lowRisk / totalStudents) * 100 : 0;
+  const mediumRiskPercentage = totalStudents > 0 ? (mediumRisk / totalStudents) * 100 : 0;
+  const highRiskPercentage = totalStudents > 0 ? (highRisk / totalStudents) * 100 : 0;
+  
   const data = [
-    { name: 'Baixo Risco', value: lowRisk, color: '#10B981' },
-    { name: 'Médio Risco', value: mediumRisk, color: '#F59E0B' },
-    { name: 'Alto Risco', value: highRisk, color: '#EF4444' },
+    { name: 'Baixo Risco', value: parseFloat(lowRiskPercentage.toFixed(1)), count: lowRisk, color: '#10B981' },
+    { name: 'Médio Risco', value: parseFloat(mediumRiskPercentage.toFixed(1)), count: mediumRisk, color: '#F59E0B' },
+    { name: 'Alto Risco', value: parseFloat(highRiskPercentage.toFixed(1)), count: highRisk, color: '#EF4444' },
   ];
   
   // Custom tooltip
@@ -27,8 +44,8 @@ const Chart: React.FC<ChartProps> = ({ students, title, description }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-popover p-2 shadow-md rounded-md border text-xs">
-          <p className="font-medium">{`${payload[0].name}: ${payload[0].value} alunos`}</p>
-          <p className="text-muted-foreground">{`${((payload[0].value / students.length) * 100).toFixed(1)}% do total`}</p>
+          <p className="font-medium">{`${payload[0].name}: ${payload[0].value}%`}</p>
+          <p className="text-muted-foreground">{`${payload[0].payload.count} alunos`}</p>
         </div>
       );
     }
@@ -43,32 +60,45 @@ const Chart: React.FC<ChartProps> = ({ students, title, description }) => {
       </CardHeader>
       <CardContent className="h-72">
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              innerRadius={70}
-              outerRadius={90}
-              paddingAngle={3}
-              dataKey="value"
-              strokeWidth={3}
-              stroke="rgba(255, 255, 255, 0.2)"
-              animationBegin={200}
-              animationDuration={800}
+          <BarChart
+            data={data}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: 40,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
+            <XAxis 
+              dataKey="name" 
+              tick={{ fontSize: 12 }}
+              tickLine={false}
+              axisLine={{ stroke: '#e5e7eb', strokeWidth: 1 }}
+            />
+            <YAxis 
+              tickFormatter={(value) => `${value}%`}
+              domain={[0, 100]}
+              tick={{ fontSize: 12 }}
+              tickLine={false}
+              axisLine={{ stroke: '#e5e7eb', strokeWidth: 1 }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend 
+              verticalAlign="bottom" 
+              wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }}
+            />
+            <Bar 
+              dataKey="value" 
+              name="Porcentagem" 
+              radius={[4, 4, 0, 0]} 
+              barSize={50}
             >
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
-            </Pie>
-            <Tooltip content={<CustomTooltip />} />
-            <Legend
-              layout="horizontal"
-              verticalAlign="bottom"
-              align="center"
-              wrapperStyle={{ paddingTop: '20px' }}
-            />
-          </PieChart>
+            </Bar>
+          </BarChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
