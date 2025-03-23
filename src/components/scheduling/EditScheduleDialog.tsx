@@ -75,8 +75,8 @@ const EditScheduleDialog: React.FC<EditScheduleDialogProps> = ({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Editar atendimento</DialogTitle>
-          <DialogDescription>
-            Edite os detalhes do atendimento para <Badge variant="outline" className="ml-1">{schedule.studentName}</Badge>
+          <DialogDescription className="flex items-center">
+            Edite os detalhes do atendimento para <span className="ml-1"><Badge variant="outline">{schedule.studentName}</Badge></span>
           </DialogDescription>
         </DialogHeader>
         
