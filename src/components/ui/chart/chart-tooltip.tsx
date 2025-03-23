@@ -4,6 +4,7 @@ import * as RechartsPrimitive from "recharts"
 import { cn } from "@/lib/utils"
 import { useChart } from "./context"
 import { TooltipItem } from "./tooltip-item"
+import { getPayloadConfigFromPayload } from "./utils"
 
 const ChartTooltip = RechartsPrimitive.Tooltip
 
