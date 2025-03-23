@@ -1,16 +1,14 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { DataProvider, useData } from '@/context/DataContext';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
 import ScheduleView from '@/components/scheduling/ScheduleView';
-import { useLocation } from 'react-router-dom';
 
 // Page content component
 const SchedulePageContent: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { students, schedules, generateDemoData } = useData();
-  const location = useLocation();
   
   // Generate demo data if needed
   useEffect(() => {
@@ -39,11 +37,14 @@ const SchedulePageContent: React.FC = () => {
   );
 };
 
+// Memoize content to prevent unnecessary re-renders
+const MemoizedSchedulePageContent = memo(SchedulePageContent);
+
 // Wrapper with DataProvider
 const SchedulePage: React.FC = () => {
   return (
     <DataProvider>
-      <SchedulePageContent />
+      <MemoizedSchedulePageContent />
     </DataProvider>
   );
 };

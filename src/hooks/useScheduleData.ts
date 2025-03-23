@@ -1,5 +1,4 @@
-
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useData } from '@/context/DataContext';
 import { useCalendarState } from './useCalendarState';
@@ -9,15 +8,19 @@ import { Schedule } from '@/types/schedule';
 export type { Schedule, FormattedScheduleData } from '@/types/schedule';
 
 export const useScheduleData = () => {
-  // Core data and location hooks first
+  // Get data and location first
   const location = useLocation();
   const { students, schedules, generateDemoData } = useData();
   
-  // State hooks next
+  // Basic state
   const [showScheduleDetails, setShowScheduleDetails] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null);
   
-  // Custom hooks last
+  // Memoize Today
+  const today = useMemo(() => new Date(), []);
+  
+  // Get hooks - keep them in the same order on every render
+  const calendarHooks = useCalendarState(schedules);
   const {
     selectedDate,
     formattedMonthYear,
@@ -28,8 +31,9 @@ export const useScheduleData = () => {
     hasSchedulesOnDay,
     getScheduleCountForDay,
     getScheduleStatusForDay
-  } = useCalendarState(schedules);
+  } = calendarHooks;
   
+  const scheduleManagementHooks = useScheduleManagement();
   const {
     studentsWithoutSchedules,
     showAddDialog,
@@ -42,11 +46,9 @@ export const useScheduleData = () => {
     startEditSchedule,
     markCompleted,
     cancelSchedule
-  } = useScheduleManagement();
+  } = scheduleManagementHooks;
   
-  // Memoized data calculations
-  const today = useMemo(() => new Date(), []);
-  
+  // Memoized data calculations - must come after hooks
   const todaySchedules = useMemo(() => {
     return schedules.filter(schedule => {
       const scheduleDate = new Date(schedule.date);
@@ -66,8 +68,22 @@ export const useScheduleData = () => {
     }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).slice(0, 5);
   }, [schedules, today]);
   
-  // Effects
-  // Effect for generating demo data
+  // Derived state - must come after all state hooks
+  const preSelectedStudentId = useMemo(() => {
+    const locationStudentId = location.state?.studentId || '';
+    
+    const canSelectStudent = !schedules.some(
+      schedule => 
+        schedule.studentId === locationStudentId && 
+        schedule.status === 'scheduled'
+    );
+    
+    return canSelectStudent ? locationStudentId : '';
+  }, [location.state, schedules]);
+  
+  // Effects must be after all state definitions and derivations
+  
+  // Generate demo data if needed
   useEffect(() => {
     if (students.length === 0) {
       console.log("Generating demo data for scheduling");
@@ -75,7 +91,7 @@ export const useScheduleData = () => {
     }
   }, [students.length, generateDemoData]);
   
-  // Effect for handling location state
+  // Handle location state
   useEffect(() => {
     const locationState = location.state as { studentId?: string; scheduleId?: string } | null;
     
@@ -90,7 +106,7 @@ export const useScheduleData = () => {
     }
   }, [location.state, schedules, setShowAddDialog]);
   
-  // Effect for updating selected schedule when schedules change
+  // Update selected schedule when schedules change
   useEffect(() => {
     if (selectedSchedule) {
       const updatedSchedule = schedules.find(s => s.id === selectedSchedule.id);
@@ -99,16 +115,6 @@ export const useScheduleData = () => {
       }
     }
   }, [schedules, selectedSchedule]);
-  
-  // Derived state
-  const preSelectedStudentId = location.state?.studentId || '';
-  const canSelectPreSelectedStudent = !schedules.some(
-    schedule => 
-      schedule.studentId === preSelectedStudentId && 
-      schedule.status === 'scheduled'
-  );
-  
-  const finalPreSelectedStudentId = canSelectPreSelectedStudent ? preSelectedStudentId : '';
 
   return {
     students,
@@ -136,7 +142,7 @@ export const useScheduleData = () => {
     hasSchedulesOnDay,
     getScheduleCountForDay,
     getScheduleStatusForDay,
-    finalPreSelectedStudentId,
+    finalPreSelectedStudentId: preSelectedStudentId,
     showScheduleDetails,
     setShowScheduleDetails,
     selectedSchedule

@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useData } from '@/context/DataContext';
 import { useToast } from '@/hooks/use-toast';
 import { Schedule } from '@/types/schedule';
@@ -52,7 +52,7 @@ export const useScheduleManagement = () => {
     setShowAddDialog(false);
   };
   
-  const handleEditScheduleSubmit = (formData: FormData) => {
+  const handleEditScheduleSubmit = useCallback((formData: FormData) => {
     if (!scheduleToEdit) return;
     
     const date = formData.get('date') as string;
@@ -76,42 +76,49 @@ export const useScheduleManagement = () => {
       description: `Agendamento de ${updatedSchedule.studentName} atualizado com sucesso.`
     });
     
-    closeEditDialog();
-  };
+    // First close the dialog
+    setShowEditDialog(false);
+    // Then clear the schedule data after the dialog transition completes
+    setTimeout(() => {
+      setScheduleToEdit(null);
+    }, 300);
+  }, [scheduleToEdit, toast, updateSchedule]);
   
-  const startEditSchedule = (schedule: Schedule) => {
-    // Create a deep copy of the schedule to avoid reference issues
-    const scheduleClone = JSON.parse(JSON.stringify(schedule));
-    scheduleClone.date = new Date(schedule.date);
+  const startEditSchedule = useCallback((schedule: Schedule) => {
+    // Create a proper deep copy to avoid reference issues
+    const scheduleClone = {
+      ...schedule,
+      date: new Date(schedule.date),
+    };
     
     setScheduleToEdit(scheduleClone);
     setShowEditDialog(true);
-  };
+  }, []);
   
-  const closeEditDialog = () => {
+  const closeEditDialog = useCallback(() => {
+    // First close the dialog
     setShowEditDialog(false);
-    // Use a timeout to clear the schedule after the dialog closes
-    // This prevents React errors from unmounting components with pending state updates
+    // Then clear the schedule data after the dialog transition completes
     setTimeout(() => {
       setScheduleToEdit(null);
-    }, 100);
-  };
+    }, 300);
+  }, []);
   
-  const markCompleted = (id: string) => {
+  const markCompleted = useCallback((id: string) => {
     updateScheduleStatus(id, 'completed');
     toast({
       title: 'Atendimento concluído',
       description: 'O atendimento foi marcado como concluído com sucesso.'
     });
-  };
+  }, [toast, updateScheduleStatus]);
   
-  const cancelSchedule = (id: string) => {
+  const cancelSchedule = useCallback((id: string) => {
     updateScheduleStatus(id, 'canceled');
     toast({
       title: 'Atendimento cancelado',
       description: 'O atendimento foi cancelado com sucesso.'
     });
-  };
+  }, [toast, updateScheduleStatus]);
 
   return {
     students,
