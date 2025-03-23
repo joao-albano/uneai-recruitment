@@ -4,6 +4,7 @@ import { DataProvider, useData } from '@/context/DataContext';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
 import SurveyForm from '@/components/survey/SurveyForm';
+import { WhatsAppHistory } from '@/components/survey/WhatsAppHistory';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageSquare, Clock, User, ArrowRight } from 'lucide-react';
@@ -198,9 +199,10 @@ const SurveyPageContent: React.FC = () => {
           </div>
           
           <Tabs defaultValue="form" className="max-w-3xl mx-auto">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsList className="grid w-full grid-cols-3 mb-6">
               <TabsTrigger value="form">Formulário</TabsTrigger>
               <TabsTrigger value="whatsapp">Simulação WhatsApp</TabsTrigger>
+              <TabsTrigger value="history">Histórico de Mensagens</TabsTrigger>
             </TabsList>
             
             <TabsContent value="form">
@@ -216,6 +218,17 @@ const SurveyPageContent: React.FC = () => {
                   <div className="bg-muted/20 rounded-lg p-4 border">
                     <WhatsAppSimulation />
                   </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="history">
+              <Card className="shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-xl font-bold">Histórico de Mensagens WhatsApp</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <WhatsAppHistory />
                 </CardContent>
               </Card>
             </TabsContent>
