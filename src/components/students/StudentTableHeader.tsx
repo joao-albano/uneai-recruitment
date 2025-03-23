@@ -3,14 +3,18 @@ import React from 'react';
 import { TableHeader, TableRow, TableHead } from '@/components/ui/table';
 import { ArrowUpDown } from 'lucide-react';
 
-interface StudentTableHeaderProps {
+export interface StudentTableHeaderProps {
   toggleSort: (key: 'name' | 'riskLevel' | 'grade' | 'attendance') => void;
   sortKey: 'name' | 'riskLevel' | 'grade' | 'attendance';
+  currentSortKey?: 'name' | 'riskLevel' | 'grade' | 'attendance';
+  sortOrder?: 'asc' | 'desc';
+  label?: string;  // Add this prop
 }
 
 const StudentTableHeader: React.FC<StudentTableHeaderProps> = ({ 
   toggleSort,
-  sortKey
+  sortKey,
+  label  // Add this parameter
 }) => {
   return (
     <TableHeader>

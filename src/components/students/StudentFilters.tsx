@@ -1,29 +1,28 @@
-
 import React from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { 
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Search, X } from 'lucide-react';
+} from "@/components/ui/select";
+import { X, Search } from "lucide-react";
 import { SchoolSegment } from '@/types/data';
 import ClassFilter from './ClassFilter';
 
-interface StudentFiltersProps {
+export interface StudentFiltersProps {
   searchTerm: string;
   setSearchTerm: (value: string) => void;
   riskFilter: 'all' | 'high' | 'medium' | 'low';
   setRiskFilter: (value: 'all' | 'high' | 'medium' | 'low') => void;
   segmentFilter: 'all' | SchoolSegment;
   setSegmentFilter: (value: 'all' | SchoolSegment) => void;
-  classFilter: string | null;
-  clearClassFilter: () => void;
-  clearAllFilters: () => void;
   hasActiveFilters: boolean;
+  classFilter: string | null;
+  setClassFilter: (value: string | null) => void;
+  clearFilters: () => void;
 }
 
 const StudentFilters: React.FC<StudentFiltersProps> = ({
@@ -33,10 +32,10 @@ const StudentFilters: React.FC<StudentFiltersProps> = ({
   setRiskFilter,
   segmentFilter,
   setSegmentFilter,
+  hasActiveFilters,
   classFilter,
-  clearClassFilter,
-  clearAllFilters,
-  hasActiveFilters
+  setClassFilter,
+  clearFilters
 }) => {
   return (
     <div className="space-y-4">
@@ -105,7 +104,7 @@ const StudentFilters: React.FC<StudentFiltersProps> = ({
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={clearAllFilters}
+              onClick={clearFilters}
               className="flex items-center gap-1"
             >
               <X className="h-4 w-4" />

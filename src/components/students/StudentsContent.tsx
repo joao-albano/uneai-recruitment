@@ -2,14 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '@/context/DataContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableHeader, TableRow, TableHead } from '@/components/ui/table';
+import { Table } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import StudentTableHeader from './StudentTableHeader';
 import StudentTable from './StudentTable';
 import StudentFilters from './StudentFilters';
 import StudentPagination from './StudentPagination';
 import useStudentFilters from '@/hooks/useStudentFilters';
 import { useNavigate } from 'react-router-dom';
+import { TableHeader, TableRow, TableHead } from '@/components/ui/table';
+import { ArrowUpDown } from 'lucide-react';
 
 const StudentsContent: React.FC = () => {
   const { students, generateDemoData } = useData();
@@ -118,23 +119,27 @@ const StudentsContent: React.FC = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead>Turma</TableHead>
-                <TableHead>Risco</TableHead>
-                <StudentTableHeader 
-                  label="Nota Média" 
-                  sortKey="grade"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
-                  onSort={() => toggleSort("grade")}
-                />
-                <StudentTableHeader 
-                  label="Frequência"
-                  sortKey="attendance"
-                  currentSortKey={sortKey}
-                  sortOrder={sortOrder}
-                  onSort={() => toggleSort("attendance")}
-                />
+                <TableHead className="cursor-pointer" onClick={() => toggleSort('name')}>
+                  <div className="flex items-center gap-1">
+                    Nome <ArrowUpDown size={16} />
+                  </div>
+                </TableHead>
+                <TableHead>Turma / Segmento</TableHead>
+                <TableHead className="cursor-pointer" onClick={() => toggleSort('riskLevel')}>
+                  <div className="flex items-center gap-1">
+                    Nível de Risco <ArrowUpDown size={16} />
+                  </div>
+                </TableHead>
+                <TableHead className="cursor-pointer" onClick={() => toggleSort('grade')}>
+                  <div className="flex items-center gap-1">
+                    Nota Média <ArrowUpDown size={16} />
+                  </div>
+                </TableHead>
+                <TableHead className="cursor-pointer" onClick={() => toggleSort('attendance')}>
+                  <div className="flex items-center gap-1">
+                    Frequência <ArrowUpDown size={16} />
+                  </div>
+                </TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>

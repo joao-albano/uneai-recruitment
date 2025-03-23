@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Pagination,
@@ -9,16 +8,16 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-interface StudentPaginationProps {
+export interface StudentPaginationProps {
   currentPage: number;
   totalPages: number;
-  handlePageChange: (page: number) => void;
+  onPageChange: (page: number) => void;
 }
 
 const StudentPagination: React.FC<StudentPaginationProps> = ({
   currentPage,
   totalPages,
-  handlePageChange
+  onPageChange
 }) => {
   if (totalPages <= 1) return null;
   
@@ -28,7 +27,7 @@ const StudentPagination: React.FC<StudentPaginationProps> = ({
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious 
-              onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+              onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
               className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
             />
           </PaginationItem>
@@ -50,7 +49,7 @@ const StudentPagination: React.FC<StudentPaginationProps> = ({
               <PaginationItem key={pageNum}>
                 <PaginationLink
                   isActive={currentPage === pageNum}
-                  onClick={() => handlePageChange(pageNum)}
+                  onClick={() => onPageChange(pageNum)}
                 >
                   {pageNum}
                 </PaginationLink>
@@ -60,7 +59,7 @@ const StudentPagination: React.FC<StudentPaginationProps> = ({
           
           <PaginationItem>
             <PaginationNext 
-              onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
+              onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)}
               className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
             />
           </PaginationItem>

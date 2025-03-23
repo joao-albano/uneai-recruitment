@@ -1,16 +1,9 @@
 
 import React from 'react';
-import { TableBody, TableRow, TableCell } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
-import { AlertTriangle, Calendar, MoreHorizontal, Database } from 'lucide-react';
+import { TableBody } from '@/components/ui/table';
 import { StudentData } from '@/types/data';
+import StudentTableRow from './student-table/StudentTableRow';
+import StudentEmptyState from './student-table/StudentEmptyState';
 
 interface StudentTableProps {
   students: StudentData[];
@@ -29,99 +22,23 @@ const StudentTable: React.FC<StudentTableProps> = ({
   classFilter,
   clearClassFilter
 }) => {
-  
-  const getRiskColor = (riskLevel?: 'low' | 'medium' | 'high') => {
-    switch(riskLevel) {
-      case 'high':
-        return 'bg-red-100 text-red-800';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'low':
-        return 'bg-green-100 text-green-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getRiskText = (riskLevel?: 'low' | 'medium' | 'high') => {
-    switch(riskLevel) {
-      case 'high':
-        return 'Alto Risco';
-      case 'medium':
-        return 'Médio Risco';
-      case 'low':
-        return 'Baixo Risco';
-      default:
-        return 'Sem Classificação';
-    }
-  };
-  
   return (
     <TableBody>
       {students.length > 0 ? (
         students.map((student) => (
-          <TableRow key={student.id}>
-            <TableCell className="font-medium">{student.name}</TableCell>
-            <TableCell>{student.class} • {student.segment}</TableCell>
-            <TableCell>
-              <Badge className={getRiskColor(student.riskLevel)}>
-                {getRiskText(student.riskLevel)}
-              </Badge>
-            </TableCell>
-            <TableCell>{student.grade.toFixed(1)}</TableCell>
-            <TableCell>{student.attendance}%</TableCell>
-            <TableCell className="text-right">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem 
-                    className="flex items-center gap-2 cursor-pointer"
-                    onClick={() => handleViewAlerts(student.id)}
-                  >
-                    <AlertTriangle className="h-4 w-4" />
-                    Ver Alertas
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="flex items-center gap-2 cursor-pointer"
-                    onClick={() => handleSchedule(student.id)}
-                  >
-                    <Calendar className="h-4 w-4" />
-                    Agendar Atendimento
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="flex items-center gap-2 cursor-pointer"
-                    onClick={() => handleAddAsData(student.id)}
-                  >
-                    <Database className="h-4 w-4" />
-                    Adicionar como Dados
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </TableCell>
-          </TableRow>
+          <StudentTableRow 
+            key={student.id}
+            student={student}
+            handleViewAlerts={handleViewAlerts}
+            handleSchedule={handleSchedule}
+            handleAddAsData={handleAddAsData}
+          />
         ))
       ) : (
-        <TableRow>
-          <TableCell colSpan={6} className="text-center py-10">
-            <div className="flex flex-col items-center justify-center space-y-2">
-              <p className="text-muted-foreground">Nenhum aluno encontrado com os filtros aplicados</p>
-              {classFilter ? (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={clearClassFilter}
-                  className="mt-2"
-                >
-                  Mostrar todos os alunos
-                </Button>
-              ) : null}
-            </div>
-          </TableCell>
-        </TableRow>
+        <StudentEmptyState 
+          classFilter={classFilter} 
+          clearClassFilter={clearClassFilter} 
+        />
       )}
     </TableBody>
   );
