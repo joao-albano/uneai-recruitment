@@ -13,7 +13,7 @@ const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
   const trajectoryData = generateTrajectoryData(student);
   
   return (
-    <div className="space-y-10 pb-8 w-full">
+    <div className="space-y-12 pb-8 w-full">
       <RiskEvolutionChart trajectoryData={trajectoryData} />
       <AcademicIndicatorsCard trajectoryData={trajectoryData} />
     </div>

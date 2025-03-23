@@ -40,7 +40,7 @@ const BehaviorChart: React.FC<BehaviorChartProps> = ({ trajectoryData }) => {
         <ChartContainer config={chartConfig}>
           <BarChart 
             data={trajectoryData} 
-            margin={{ top: 10, right: 30, left: 10, bottom: 25 }}
+            margin={{ top: 15, right: 30, left: 15, bottom: 25 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis 
@@ -48,12 +48,12 @@ const BehaviorChart: React.FC<BehaviorChartProps> = ({ trajectoryData }) => {
               tick={{ fontSize: 11 }}
               tickMargin={10}
               interval={0}
-              height={40}
+              height={45}
             />
             <YAxis 
               domain={[0, 5]} 
               tick={{ fontSize: 11 }}
-              tickMargin={8}
+              tickMargin={10}
               tickCount={6}
             />
             <Tooltip content={renderTooltip} />
