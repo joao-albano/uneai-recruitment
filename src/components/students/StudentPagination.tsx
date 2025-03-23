@@ -98,9 +98,7 @@ const StudentPagination: React.FC<StudentPaginationProps> = ({
             onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
             className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
             aria-disabled={currentPage === 1}
-          >
-            Anterior
-          </PaginationPrevious>
+          />
         </PaginationItem>
         
         {renderPageNumbers()}
@@ -110,9 +108,7 @@ const StudentPagination: React.FC<StudentPaginationProps> = ({
             onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)}
             className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
             aria-disabled={currentPage === totalPages}
-          >
-            Próximo
-          </PaginationNext>
+          />
         </PaginationItem>
       </PaginationContent>
     </Pagination>
