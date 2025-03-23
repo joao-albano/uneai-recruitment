@@ -6,8 +6,7 @@ import {
   PieChart, 
   Pie, 
   Cell, 
-  Tooltip, 
-  Legend
+  Tooltip
 } from 'recharts';
 import { StudentData } from '@/context/DataContext';
 
@@ -97,17 +96,6 @@ const Chart: React.FC<ChartProps> = ({ students, title, description }) => {
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} />
-            <Legend 
-              layout="horizontal" 
-              verticalAlign="bottom" 
-              align="center" 
-              wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }}
-              formatter={(value, entry, index) => {
-                // Only show the percentage
-                const idx = (entry as any).payload.index;
-                return `${data[idx].percentage.toFixed(0)}%`;
-              }}
-            />
           </PieChart>
         </ResponsiveContainer>
       </CardContent>

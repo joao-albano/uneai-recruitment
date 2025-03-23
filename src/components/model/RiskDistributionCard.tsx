@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { useData } from '@/context/DataContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -58,15 +58,6 @@ const RiskDistributionCard: React.FC = () => {
                 ))}
               </Pie>
               <Tooltip formatter={(value, name) => [`${value} alunos`, '']} />
-              <Legend 
-                verticalAlign="bottom" 
-                align="center"
-                formatter={(value, entry, index) => {
-                  // Only show the percentage without the name
-                  const { percentage } = data[index];
-                  return `${percentage}%`;
-                }}
-              />
             </PieChart>
           </ResponsiveContainer>
         </div>
