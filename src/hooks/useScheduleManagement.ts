@@ -77,12 +77,16 @@ export const useScheduleManagement = () => {
     });
     
     setShowEditDialog(false);
-    // Garantir que o scheduleToEdit seja limpo após o fechamento do diálogo
-    setTimeout(() => setScheduleToEdit(null), 100);
+    // Limpar o scheduleToEdit depois de fechar o diálogo
+    setScheduleToEdit(null);
   };
   
   const startEditSchedule = (schedule: Schedule) => {
-    setScheduleToEdit({...schedule});
+    // Clone the schedule object to avoid reference issues
+    setScheduleToEdit({
+      ...schedule,
+      date: new Date(schedule.date)
+    });
     setShowEditDialog(true);
   };
   

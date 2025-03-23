@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useData } from '@/context/DataContext';
@@ -45,24 +44,22 @@ export const useScheduleData = () => {
       console.log("Generating demo data for scheduling");
       generateDemoData();
     }
-    
+  }, [students.length, generateDemoData]);
+  
+  useEffect(() => {
     const locationState = location.state as { studentId?: string; scheduleId?: string } | null;
     
-    // Check if we have a scheduleId in the state
     if (locationState?.scheduleId) {
       const schedule = schedules.find(s => s.id === locationState.scheduleId);
       if (schedule) {
         setSelectedSchedule(schedule);
         setShowScheduleDetails(true);
       }
-    }
-    // If we have a studentId but no scheduleId, open the add dialog
-    else if (locationState?.studentId) {
+    } else if (locationState?.studentId) {
       setShowAddDialog(true);
     }
-  }, [students.length, schedules, generateDemoData, location.state, setShowAddDialog]);
+  }, [location.state, schedules, setShowAddDialog]);
   
-  // Certificar-se de que selectedSchedule também é atualizado quando schedules muda
   useEffect(() => {
     if (selectedSchedule) {
       const updatedSchedule = schedules.find(s => s.id === selectedSchedule.id);
@@ -75,7 +72,6 @@ export const useScheduleData = () => {
   const today = new Date();
   
   const todaySchedules = schedules.filter(schedule => {
-    // Improved date comparison logic for today's appointments
     const scheduleDate = new Date(schedule.date);
     return scheduleDate.getDate() === today.getDate() &&
            scheduleDate.getMonth() === today.getMonth() &&
@@ -84,7 +80,6 @@ export const useScheduleData = () => {
   }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   
   const upcomingSchedules = schedules.filter(schedule => {
-    // Ensure we're using the correct date comparison
     const scheduleDate = new Date(schedule.date);
     const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     return scheduleDate > todayStart &&

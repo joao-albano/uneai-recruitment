@@ -25,14 +25,17 @@ const EditScheduleDialog: React.FC<EditScheduleDialogProps> = ({
   const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
 
+  // Guard clause - don't render if there's no schedule
+  if (!schedule) return null;
+
   // Format the date and time for the input fields
-  const formattedDate = schedule ? format(new Date(schedule.date), 'yyyy-MM-dd') : '';
-  const formattedTime = schedule ? format(new Date(schedule.date), 'HH:mm') : '';
+  const formattedDate = format(new Date(schedule.date), 'yyyy-MM-dd');
+  const formattedTime = format(new Date(schedule.date), 'HH:mm');
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    if (!formRef.current || !schedule) return;
+    if (!formRef.current) return;
     
     const formData = new FormData(formRef.current);
     formData.append('studentId', schedule.studentId);
@@ -55,9 +58,6 @@ const EditScheduleDialog: React.FC<EditScheduleDialogProps> = ({
   const handleClose = () => {
     onOpenChange(false);
   };
-
-  // Impedir que o componente seja renderizado sem um schedule
-  if (!schedule) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
