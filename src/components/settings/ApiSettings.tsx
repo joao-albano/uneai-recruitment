@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { useToast } from '@/components/ui/use-toast';
@@ -10,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Robot, Webhook, EyeOff, Eye, PlusCircle, Copy, CheckCircle2 } from 'lucide-react';
+import { Bot, Webhook, EyeOff, Eye, PlusCircle, Copy, CheckCircle2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
