@@ -67,12 +67,23 @@ export const validateStudentData = (
 
   // Validate parent contact if provided
   if (data.parentContact !== undefined) {
-    const phonePattern = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
-    if (typeof data.parentContact !== 'string' || !phonePattern.test(data.parentContact)) {
+    // Support both formats: "(99) 99999-9999" and "(11) 98765-4321"
+    const phonePatterns = [
+      /^\(\d{2}\)\s\d{4,5}-\d{4}$/,  // (99) 99999-9999 format
+      /^\(\d{2}\)\s\d{5}-\d{4}$/,    // (99) 99999-9999 format
+      /^\(\d{2}\)\s\d{4}-\d{4}$/,    // (99) 9999-9999 format
+      /^\(\d{2}\)\d{4,5}-\d{4}$/,    // (99)99999-9999 format without space
+      /^\(\d{2}\)\d{4}-\d{4}$/       // (99)9999-9999 format without space
+    ];
+    
+    const isValidFormat = typeof data.parentContact === 'string' && 
+      phonePatterns.some(pattern => pattern.test(data.parentContact as string));
+    
+    if (!isValidFormat) {
       errors.push({
         row: rowIndex,
         column: 'contato_responsavel',
-        message: 'Contato do responsável deve seguir o formato (99) 99999-9999'
+        message: 'Contato do responsável deve seguir o formato (99) 99999-9999 ou (99) 9999-9999'
       });
     }
   }

@@ -6,6 +6,7 @@ interface ColumnInfo {
   name: string;
   description: string;
   example: string;
+  required?: boolean;
 }
 
 interface ColumnInfoTableProps {
@@ -15,7 +16,7 @@ interface ColumnInfoTableProps {
 const ColumnInfoTable: React.FC<ColumnInfoTableProps> = ({ columns }) => {
   return (
     <div className="border rounded-md p-4 bg-muted/30 mb-4">
-      <h3 className="text-sm font-medium mb-2">Colunas obrigatórias para a planilha:</h3>
+      <h3 className="text-sm font-medium mb-2">Formato da planilha:</h3>
       <Table>
         <TableHeader>
           <TableRow>
@@ -27,7 +28,9 @@ const ColumnInfoTable: React.FC<ColumnInfoTableProps> = ({ columns }) => {
         <TableBody>
           {columns.map((column) => (
             <TableRow key={column.name}>
-              <TableCell className="font-medium">{column.name}</TableCell>
+              <TableCell className="font-medium">
+                {column.name} {column.required && <span className="text-red-500">*</span>}
+              </TableCell>
               <TableCell>{column.description}</TableCell>
               <TableCell className="text-muted-foreground">{column.example}</TableCell>
             </TableRow>
@@ -35,7 +38,8 @@ const ColumnInfoTable: React.FC<ColumnInfoTableProps> = ({ columns }) => {
         </TableBody>
       </Table>
       <p className="mt-4 text-xs text-muted-foreground">
-        <strong>Nota:</strong> Os campos de comportamento, nível de risco e ações necessárias 
+        <strong>Nota:</strong> Os campos marcados com <span className="text-red-500">*</span> são obrigatórios.
+        Os campos de comportamento, nível de risco e ações necessárias 
         serão gerados automaticamente pelo sistema após o processamento.
       </p>
     </div>
