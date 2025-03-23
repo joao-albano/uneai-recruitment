@@ -34,27 +34,36 @@ export const generateInvoicePDF = (
   // We don't need to manually add the plugin as it's automatically attached
   // to the jsPDF prototype when imported
   
-  // Add company logo/name
+  // Add company logo
+  const logoWidth = 40;
+  const logoHeight = 20;
+  const pageWidth = doc.internal.pageSize.width;
+  const logoX = (pageWidth - logoWidth) / 2;
+  
+  // Add logo image - using a placeholder image from the public folder
+  doc.addImage('/lovable-uploads/0992bc45-19cb-47ac-a913-96b95b006ee5.png', 'PNG', logoX, 10, logoWidth, logoHeight);
+  
+  // Add company name
   doc.setFontSize(20);
-  doc.text(companyName, 105, 20, { align: 'center' });
+  doc.text(companyName, 105, 40, { align: 'center' });
   
   // Add invoice title
   doc.setFontSize(16);
-  doc.text(isPtBR ? 'FATURA' : 'INVOICE', 105, 30, { align: 'center' });
+  doc.text(isPtBR ? 'FATURA' : 'INVOICE', 105, 50, { align: 'center' });
   
   // Add invoice details
   doc.setFontSize(12);
-  doc.text(`${isPtBR ? 'Fatura Nº:' : 'Invoice No:'} ${invoice.id}`, 20, 50);
+  doc.text(`${isPtBR ? 'Fatura Nº:' : 'Invoice No:'} ${invoice.id}`, 20, 70);
   doc.text(
     `${isPtBR ? 'Data:' : 'Date:'} ${format(invoice.date, isPtBR ? 'dd/MM/yyyy' : 'MM/dd/yyyy', { locale: dateLocale })}`, 
     20, 
-    60
+    80
   );
-  doc.text(`${isPtBR ? 'Status:' : 'Status:'} ${isPtBR ? (invoice.status === 'paid' ? 'Pago' : invoice.status) : invoice.status}`, 20, 70);
+  doc.text(`${isPtBR ? 'Status:' : 'Status:'} ${isPtBR ? (invoice.status === 'paid' ? 'Pago' : invoice.status) : invoice.status}`, 20, 90);
   
   // Add invoice items
   autoTable(doc, {
-    startY: 80,
+    startY: 100,
     head: [
       [
         isPtBR ? 'Descrição' : 'Description', 
@@ -83,7 +92,7 @@ export const generateInvoicePDF = (
     : 'Thank you for choosing our services!';
   
   doc.setFontSize(10);
-  doc.text(footerText, 105, 160, { align: 'center' });
+  doc.text(footerText, 105, 180, { align: 'center' });
   
   // Generate a blob from the PDF
   const pdfBlob = doc.output('blob');
