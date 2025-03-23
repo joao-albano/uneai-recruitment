@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Upload, FileText, X, AlertTriangle, CheckCircle2, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { useData } from '@/context/DataContext';
-import { parseCSV, parseExcel, downloadTemplate, ValidationError } from '@/utils/validations';
+import { parseCSV, parseExcel, downloadTemplate, ValidationError } from '@/utils/validation';
 import { processStudentData } from '@/utils/riskCalculator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StudentData } from '@/context/DataContext';
