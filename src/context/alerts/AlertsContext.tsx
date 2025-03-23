@@ -6,7 +6,7 @@ import { AlertItem } from '@/types/data';
 interface AlertsContextType {
   alerts: AlertItem[];
   setAlerts: (alerts: AlertItem[]) => void;
-  addAlert: (alert: Omit<AlertItem, 'id' | 'date' | 'read' | 'actionTaken'>) => void;
+  addAlert: (alert: Omit<AlertItem, 'id' | 'createdAt' | 'read' | 'actionTaken'>) => void;
   markAlertAsRead: (id: string) => void;
   markAlertActionTaken: (id: string) => void;
 }

@@ -6,7 +6,7 @@ import { AlertItem } from '../types/data';
 export const useAlertsState = () => {
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
 
-  const addAlert = (alert: Omit<AlertItem, 'id' | 'date' | 'read' | 'actionTaken'>) => {
+  const addAlert = (alert: Omit<AlertItem, 'id' | 'createdAt' | 'read' | 'actionTaken'>) => {
     const newAlert: AlertItem = {
       id: uuidv4(),
       createdAt: new Date(),
