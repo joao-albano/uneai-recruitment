@@ -5,14 +5,13 @@ import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { PlusCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { webhookFormSchema, WebhookType } from './schemas';
 import { Switch } from '@/components/ui/switch';
-import { z } from 'zod';
+import { Textarea } from '@/components/ui/textarea';
+import { WebhookType, webhookFormSchema } from './schemas';
+import { v4 as uuidv4 } from 'uuid';
 import WebhookAccessKey from './WebhookAccessKey';
 import WebhooksList from './WebhooksList';
 
@@ -21,7 +20,7 @@ const WebhookSettings: React.FC = () => {
   const { toast } = useToast();
   const [webhooks, setWebhooks] = useState<WebhookType[]>([]);
   
-  const webhookForm = useForm<z.infer<typeof webhookFormSchema>>({
+  const webhookForm = useForm({
     resolver: zodResolver(webhookFormSchema),
     defaultValues: {
       url: '',
@@ -30,9 +29,9 @@ const WebhookSettings: React.FC = () => {
     },
   });
   
-  const onWebhookSubmit = (values: z.infer<typeof webhookFormSchema>) => {
-    const newWebhook = {
-      id: `webhook-${Date.now()}`,
+  const onWebhookSubmit = (values: any) => {
+    const newWebhook: WebhookType = {
+      id: uuidv4(),
       url: values.url,
       description: values.description || '',
       enabled: values.enabled,
@@ -51,7 +50,7 @@ const WebhookSettings: React.FC = () => {
   
   const toggleWebhook = (id: string) => {
     setWebhooks(
-      webhooks.map(webhook => 
+      webhooks.map((webhook) => 
         webhook.id === id 
           ? { ...webhook, enabled: !webhook.enabled } 
           : webhook
@@ -60,31 +59,25 @@ const WebhookSettings: React.FC = () => {
   };
   
   const deleteWebhook = (id: string) => {
-    setWebhooks(webhooks.filter(webhook => webhook.id !== id));
-    toast({
-      title: language === 'pt-BR' ? 'Webhook removido' : 'Webhook removed',
-      description: language === 'pt-BR' 
-        ? 'O webhook foi removido com sucesso' 
-        : 'The webhook has been successfully removed',
-    });
+    setWebhooks(webhooks.filter((webhook) => webhook.id !== id));
   };
   
   return (
-    <>
+    <div className="space-y-6">
       <WebhookAccessKey />
       
       <Card>
         <CardHeader>
           <CardTitle>
-            {language === 'pt-BR' ? 'Gerenciar Webhooks' : 'Manage Webhooks'}
+            {language === 'pt-BR' ? 'Adicionar Novo Webhook' : 'Add New Webhook'}
           </CardTitle>
           <CardDescription>
             {language === 'pt-BR' 
-              ? 'Configure webhooks para integrar com sistemas externos' 
-              : 'Configure webhooks to integrate with external systems'}
+              ? 'Configure webhooks para notificações em tempo real' 
+              : 'Configure webhooks for real-time notifications'}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent>
           <Form {...webhookForm}>
             <form onSubmit={webhookForm.handleSubmit(onWebhookSubmit)} className="space-y-4">
               <FormField
@@ -96,15 +89,12 @@ const WebhookSettings: React.FC = () => {
                       {language === 'pt-BR' ? 'URL do Webhook' : 'Webhook URL'}
                     </FormLabel>
                     <FormControl>
-                      <Input 
-                        {...field} 
-                        placeholder={language === 'pt-BR' ? 'https://sua-api.com/webhook' : 'https://your-api.com/webhook'}
-                      />
+                      <Input {...field} placeholder="https://" />
                     </FormControl>
                     <FormDescription>
                       {language === 'pt-BR' 
-                        ? 'URL para onde os eventos serão enviados' 
-                        : 'URL where events will be sent'}
+                        ? 'URL para onde as notificações serão enviadas' 
+                        : 'The URL where notifications will be sent'}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -117,12 +107,14 @@ const WebhookSettings: React.FC = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      {language === 'pt-BR' ? 'Descrição (opcional)' : 'Description (optional)'}
+                      {language === 'pt-BR' ? 'Descrição (Opcional)' : 'Description (Optional)'}
                     </FormLabel>
                     <FormControl>
-                      <Input 
+                      <Textarea 
                         {...field} 
-                        placeholder={language === 'pt-BR' ? 'Webhook para sistema de CRM' : 'Webhook for CRM system'}
+                        placeholder={language === 'pt-BR' 
+                          ? 'Adicione uma descrição para identificar esse webhook' 
+                          : 'Add a description to identify this webhook'}
                       />
                     </FormControl>
                     <FormMessage />
@@ -137,12 +129,12 @@ const WebhookSettings: React.FC = () => {
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
                     <div className="space-y-0.5">
                       <FormLabel>
-                        {language === 'pt-BR' ? 'Ativo' : 'Enabled'}
+                        {language === 'pt-BR' ? 'Ativar Webhook' : 'Enable Webhook'}
                       </FormLabel>
                       <FormDescription>
                         {language === 'pt-BR' 
-                          ? 'Ative ou desative o webhook' 
-                          : 'Enable or disable the webhook'}
+                          ? 'Ative para começar a receber notificações' 
+                          : 'Enable to start receiving notifications'}
                       </FormDescription>
                     </div>
                     <FormControl>
@@ -156,27 +148,21 @@ const WebhookSettings: React.FC = () => {
               />
               
               <div className="flex justify-end">
-                <Button type="submit" className="flex items-center gap-1">
-                  <PlusCircle className="h-4 w-4" />
+                <Button type="submit">
                   {language === 'pt-BR' ? 'Adicionar Webhook' : 'Add Webhook'}
                 </Button>
               </div>
             </form>
           </Form>
-          
-          {webhooks.length > 0 && (
-            <>
-              <Separator className="my-4" />
-              <WebhooksList 
-                webhooks={webhooks} 
-                toggleWebhook={toggleWebhook}
-                deleteWebhook={deleteWebhook}
-              />
-            </>
-          )}
         </CardContent>
       </Card>
-    </>
+      
+      <WebhooksList 
+        webhooks={webhooks} 
+        toggleWebhook={toggleWebhook}
+        deleteWebhook={deleteWebhook}
+      />
+    </div>
   );
 };
 
