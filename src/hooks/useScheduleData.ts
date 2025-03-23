@@ -1,4 +1,5 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+
+import { useEffect, useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useData } from '@/context/DataContext';
 import { useCalendarState } from './useCalendarState';
@@ -8,19 +9,22 @@ import { Schedule } from '@/types/schedule';
 export type { Schedule, FormattedScheduleData } from '@/types/schedule';
 
 export const useScheduleData = () => {
-  // Get data and location first
-  const location = useLocation();
-  const { students, schedules, generateDemoData } = useData();
-  
-  // Basic state
+  // Estado básico
   const [showScheduleDetails, setShowScheduleDetails] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null);
   
-  // Memoize Today
+  // Dados e localização
+  const location = useLocation();
+  const { students, schedules, generateDemoData } = useData();
+  
+  // Valor fixo para Today
   const today = useMemo(() => new Date(), []);
   
-  // Get hooks - keep them in the same order on every render
+  // Hooks principais - manter na mesma ordem em cada renderização
   const calendarHooks = useCalendarState(schedules);
+  const scheduleManagementHooks = useScheduleManagement();
+  
+  // Extrair valores dos hooks
   const {
     selectedDate,
     formattedMonthYear,
@@ -33,7 +37,6 @@ export const useScheduleData = () => {
     getScheduleStatusForDay
   } = calendarHooks;
   
-  const scheduleManagementHooks = useScheduleManagement();
   const {
     studentsWithoutSchedules,
     showAddDialog,
@@ -48,7 +51,7 @@ export const useScheduleData = () => {
     cancelSchedule
   } = scheduleManagementHooks;
   
-  // Memoized data calculations - must come after hooks
+  // Cálculos de dados memorizados
   const todaySchedules = useMemo(() => {
     return schedules.filter(schedule => {
       const scheduleDate = new Date(schedule.date);
@@ -68,7 +71,7 @@ export const useScheduleData = () => {
     }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).slice(0, 5);
   }, [schedules, today]);
   
-  // Derived state - must come after all state hooks
+  // Estado derivado
   const preSelectedStudentId = useMemo(() => {
     const locationStudentId = location.state?.studentId || '';
     
@@ -81,9 +84,9 @@ export const useScheduleData = () => {
     return canSelectStudent ? locationStudentId : '';
   }, [location.state, schedules]);
   
-  // Effects must be after all state definitions and derivations
+  // Efeitos - devem estar após todas as definições de estado
   
-  // Generate demo data if needed
+  // Gerar dados de demonstração se necessário
   useEffect(() => {
     if (students.length === 0) {
       console.log("Generating demo data for scheduling");
@@ -91,8 +94,10 @@ export const useScheduleData = () => {
     }
   }, [students.length, generateDemoData]);
   
-  // Handle location state
+  // Lidar com dados do estado da localização
   useEffect(() => {
+    if (!location.state) return;
+    
     const locationState = location.state as { studentId?: string; scheduleId?: string } | null;
     
     if (locationState?.scheduleId) {
@@ -106,7 +111,7 @@ export const useScheduleData = () => {
     }
   }, [location.state, schedules, setShowAddDialog]);
   
-  // Update selected schedule when schedules change
+  // Atualizar agendamento selecionado quando os agendamentos mudam
   useEffect(() => {
     if (selectedSchedule) {
       const updatedSchedule = schedules.find(s => s.id === selectedSchedule.id);
