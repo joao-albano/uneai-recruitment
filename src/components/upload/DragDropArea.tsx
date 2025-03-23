@@ -1,0 +1,120 @@
+
+import React, { useRef } from 'react';
+import { Upload, FileText, X, CheckCircle2, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { downloadTemplate } from '@/utils/validation/templateManager';
+
+interface DragDropAreaProps {
+  file: File | null;
+  uploadProgress: number;
+  isDragging: boolean;
+  isProcessing: boolean;
+  onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDragLeave: () => void;
+  onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
+  onFileSelect: () => void;
+  onReset: () => void;
+}
+
+const DragDropArea: React.FC<DragDropAreaProps> = ({
+  file,
+  uploadProgress,
+  isDragging,
+  isProcessing,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+  onFileSelect,
+  onReset,
+}) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <div 
+      className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+        isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/20'
+      }`}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+    >
+      {!file ? (
+        <div className="space-y-4">
+          <div className="flex justify-center">
+            <div className="rounded-full bg-muted p-4">
+              <Upload className="h-8 w-8 text-muted-foreground" />
+            </div>
+          </div>
+          <div>
+            <p className="text-lg font-medium">
+              Arraste e solte sua planilha aqui ou clique para escolher
+            </p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Formatos suportados: CSV, Excel (.xlsx, .xls)
+            </p>
+          </div>
+          <Button
+            variant="secondary"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            Selecionar arquivo
+          </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv,.xlsx,.xls"
+            className="hidden"
+            onChange={(e) => {
+              if (e.target.files && e.target.files.length > 0) {
+                onFileSelect();
+              }
+            }}
+          />
+          <p className="text-sm text-muted-foreground mt-4 flex items-center justify-center gap-1">
+            <span>Novo por aqui?</span>
+            <Button
+              variant="link"
+              className="h-auto p-0"
+              onClick={() => downloadTemplate()}
+            >
+              Baixe um modelo <Download className="h-3 w-3 ml-1" />
+            </Button>
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="flex items-center justify-center gap-3">
+            <FileText className="h-8 w-8 text-primary" />
+            <div className="text-left">
+              <p className="font-medium">{file.name}</p>
+              <p className="text-sm text-muted-foreground">
+                {(file.size / 1024).toFixed(2)} KB
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onReset}
+              className="ml-auto"
+              disabled={isProcessing}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          <Progress value={uploadProgress} className="h-2 w-full" />
+          
+          {uploadProgress >= 100 && (
+            <div className="flex items-center justify-center gap-2 text-sm text-green-600">
+              <CheckCircle2 className="h-4 w-4" />
+              <span>Arquivo carregado com sucesso</span>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default DragDropArea;

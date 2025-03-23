@@ -1,16 +1,16 @@
 
-import React, { useState, useRef } from 'react';
-import { Upload, FileText, X, AlertTriangle, CheckCircle2, Download } from 'lucide-react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { useData } from '@/context/DataContext';
-import { parseCSV, parseExcel, downloadTemplate, ValidationError } from '@/utils/validation';
+import { parseCSV, parseExcel } from '@/utils/validation';
 import { processStudentData } from '@/utils/riskCalculator';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { StudentData } from '@/context/DataContext';
+import { StudentData } from '@/types/data';
+import { ValidationError } from '@/utils/validation/types';
+import DragDropArea from './DragDropArea';
+import ValidationErrorsDisplay from './ValidationErrorsDisplay';
+import ColumnInfoTable from './ColumnInfoTable';
 
 const UploadForm: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -19,7 +19,6 @@ const UploadForm: React.FC = () => {
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [showColumnInfo, setShowColumnInfo] = useState<boolean>(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { setStudents, addAlert, addUploadRecord } = useData();
   
@@ -27,8 +26,8 @@ const UploadForm: React.FC = () => {
     setFile(null);
     setUploadProgress(0);
     setValidationErrors([]);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+    if (document.querySelector('input[type="file"]')) {
+      (document.querySelector('input[type="file"]') as HTMLInputElement).value = '';
     }
   };
   
@@ -50,9 +49,10 @@ const UploadForm: React.FC = () => {
     }
   };
   
-  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      handleFileSelect(e.target.files[0]);
+  const handleFileInputChange = () => {
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (fileInput?.files && fileInput.files.length > 0) {
+      handleFileSelect(fileInput.files[0]);
     }
   };
   
@@ -223,130 +223,21 @@ const UploadForm: React.FC = () => {
           {showColumnInfo ? 'Ocultar informações das colunas' : 'Exibir informações das colunas'}
         </Button>
         
-        {showColumnInfo && (
-          <div className="border rounded-md p-4 bg-muted/30 mb-4">
-            <h3 className="text-sm font-medium mb-2">Colunas obrigatórias para a planilha:</h3>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-1/4">Coluna</TableHead>
-                  <TableHead className="w-2/4">Descrição</TableHead>
-                  <TableHead className="w-1/4">Exemplo</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {requiredColumns.map((column) => (
-                  <TableRow key={column.name}>
-                    <TableCell className="font-medium">{column.name}</TableCell>
-                    <TableCell>{column.description}</TableCell>
-                    <TableCell className="text-muted-foreground">{column.example}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <p className="mt-4 text-xs text-muted-foreground">
-              <strong>Nota:</strong> Os campos de comportamento, nível de risco e ações necessárias 
-              serão gerados automaticamente pelo sistema após o processamento.
-            </p>
-          </div>
-        )}
+        {showColumnInfo && <ColumnInfoTable columns={requiredColumns} />}
         
-        <div 
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-            isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/20'
-          }`}
+        <DragDropArea
+          file={file}
+          uploadProgress={uploadProgress}
+          isDragging={isDragging}
+          isProcessing={isProcessing}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-        >
-          {!file ? (
-            <div className="space-y-4">
-              <div className="flex justify-center">
-                <div className="rounded-full bg-muted p-4">
-                  <Upload className="h-8 w-8 text-muted-foreground" />
-                </div>
-              </div>
-              <div>
-                <p className="text-lg font-medium">
-                  Arraste e solte sua planilha aqui ou clique para escolher
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Formatos suportados: CSV, Excel (.xlsx, .xls)
-                </p>
-              </div>
-              <Button
-                variant="secondary"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                Selecionar arquivo
-              </Button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".csv,.xlsx,.xls"
-                className="hidden"
-                onChange={handleFileInputChange}
-              />
-              <p className="text-sm text-muted-foreground mt-4 flex items-center justify-center gap-1">
-                <span>Novo por aqui?</span>
-                <Button
-                  variant="link"
-                  className="h-auto p-0"
-                  onClick={() => downloadTemplate()}
-                >
-                  Baixe um modelo <Download className="h-3 w-3 ml-1" />
-                </Button>
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="flex items-center justify-center gap-3">
-                <FileText className="h-8 w-8 text-primary" />
-                <div className="text-left">
-                  <p className="font-medium">{file.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {(file.size / 1024).toFixed(2)} KB
-                  </p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={resetUpload}
-                  className="ml-auto"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-              
-              <Progress value={uploadProgress} className="h-2 w-full" />
-              
-              {uploadProgress >= 100 && (
-                <div className="flex items-center justify-center gap-2 text-sm text-green-600">
-                  <CheckCircle2 className="h-4 w-4" />
-                  <span>Arquivo carregado com sucesso</span>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+          onFileSelect={handleFileInputChange}
+          onReset={resetUpload}
+        />
         
-        {validationErrors.length > 0 && (
-          <Alert variant="destructive">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Erros de validação</AlertTitle>
-            <AlertDescription>
-              <div className="mt-2 max-h-40 overflow-auto text-sm">
-                <ul className="list-disc pl-5 space-y-1">
-                  {validationErrors.map((error, index) => (
-                    <li key={index}>
-                      Linha {error.row}: {error.message} (coluna: {error.column})
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </AlertDescription>
-          </Alert>
-        )}
+        <ValidationErrorsDisplay errors={validationErrors} />
       </CardContent>
       
       <CardFooter className="flex justify-between">
