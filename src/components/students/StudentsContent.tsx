@@ -105,10 +105,7 @@ const StudentsContent: React.FC = () => {
       />
 
       <Card>
-        <CardHeader>
-          <CardTitle>Lista de Alunos</CardTitle>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <Table>
             <TableHeader>
               <TableRow>
