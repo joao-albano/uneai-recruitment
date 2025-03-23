@@ -19,11 +19,9 @@ export const mapHeadersToProperties = (headers: string[]): HeaderMap => {
     'contato_responsável': 'parentContact',
     'nome responsável': 'parentName',
     'contato responsável': 'parentContact',
-    'nome_responsavel': 'parentName',
-    'contato_responsavel': 'parentContact',
     
     // Format with capitalization that matches the CSV
-    'Nome_Responsavel': 'parentName',
+    'Nome_Responsavel': 'parentName', 
     'Contato_Responsavel': 'parentContact',
     
     // English headers (fallback)
