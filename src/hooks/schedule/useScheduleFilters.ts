@@ -1,6 +1,7 @@
 
 import { useMemo } from 'react';
 import { Schedule } from '@/types/schedule';
+import { demoStudents } from '@/data/demoStudents';
 
 export const useScheduleFilters = (schedules: Schedule[], today: Date) => {
   // Calculate today's schedules
@@ -24,10 +25,22 @@ export const useScheduleFilters = (schedules: Schedule[], today: Date) => {
     }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).slice(0, 5);
   }, [schedules, today]);
 
-  // Derive students list from schedules
+  // Get the complete list of students from the available demo data
+  // This ensures we always have the full student list regardless of schedule history
   const students = useMemo(() => {
     // Create a unique list of students from all schedules
     const uniqueStudents = new Map();
+    
+    // Add students from demo data to ensure we always have a full list
+    demoStudents().forEach(student => {
+      uniqueStudents.set(student.id, {
+        id: student.id,
+        name: student.name,
+        riskLevel: student.riskLevel
+      });
+    });
+    
+    // Also add any students from schedules that might not be in demo data
     schedules.forEach(s => {
       if (!uniqueStudents.has(s.studentId)) {
         uniqueStudents.set(s.studentId, {
@@ -36,14 +49,15 @@ export const useScheduleFilters = (schedules: Schedule[], today: Date) => {
         });
       }
     });
+    
     return Array.from(uniqueStudents.values());
   }, [schedules]);
 
   // Calculate students without active schedules
   const studentsWithoutSchedules = useMemo(() => {
     return students.filter(student => {
-      // A student is available if they have NO scheduled appointments
-      // (completed or canceled appointments don't count)
+      // A student is available if they have NO active (scheduled) appointments
+      // Completed or canceled appointments don't count - those students should be available
       return !schedules.some(
         schedule => 
           schedule.studentId === student.id && 

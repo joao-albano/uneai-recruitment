@@ -66,6 +66,15 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
     onSubmit(formData);
   };
 
+  // Get prioritized students - students at risk first
+  const availableStudents = studentsWithoutSchedules
+    .filter(student => student.riskLevel !== 'low')
+    .sort((a, b) => {
+      if (a.riskLevel === 'high' && b.riskLevel !== 'high') return -1;
+      if (a.riskLevel !== 'high' && b.riskLevel === 'high') return 1;
+      return a.name.localeCompare(b.name);
+    });
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
@@ -85,24 +94,17 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
                   <SelectValue placeholder="Selecione um aluno" />
                 </SelectTrigger>
                 <SelectContent align="start" className="w-full max-h-[200px] overflow-auto z-[100] bg-background">
-                  {studentsWithoutSchedules.length > 0 ? (
-                    studentsWithoutSchedules
-                      .filter(student => student.riskLevel !== 'low')
-                      .sort((a, b) => {
-                        if (a.riskLevel === 'high' && b.riskLevel !== 'high') return -1;
-                        if (a.riskLevel !== 'high' && b.riskLevel === 'high') return 1;
-                        return a.name.localeCompare(b.name);
-                      })
-                      .map(student => (
-                        <SelectItem key={student.id} value={student.id} className="flex items-center justify-between">
-                          <span>{student.name}</span>
-                          {student.riskLevel === 'high' && (
-                            <Badge className="ml-2 bg-red-500 text-[10px]">
-                              Alto risco
-                            </Badge>
-                          )}
-                        </SelectItem>
-                      ))
+                  {availableStudents.length > 0 ? (
+                    availableStudents.map(student => (
+                      <SelectItem key={student.id} value={student.id} className="flex items-center justify-between">
+                        <span>{student.name}</span>
+                        {student.riskLevel === 'high' && (
+                          <Badge className="ml-2 bg-red-500 text-[10px]">
+                            Alto risco
+                          </Badge>
+                        )}
+                      </SelectItem>
+                    ))
                   ) : (
                     <SelectItem value="loading" disabled>Nenhum aluno disponível</SelectItem>
                   )}
