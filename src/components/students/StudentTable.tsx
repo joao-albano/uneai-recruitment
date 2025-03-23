@@ -9,13 +9,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { AlertTriangle, Calendar, MoreHorizontal } from 'lucide-react';
+import { AlertTriangle, Calendar, MoreHorizontal, Database } from 'lucide-react';
 import { StudentData } from '@/types/data';
 
 interface StudentTableProps {
   students: StudentData[];
   handleViewAlerts: (studentId: string) => void;
   handleSchedule: (studentId: string) => void;
+  handleAddAsData: (studentId: string) => void;
   classFilter: string | null;
   clearClassFilter: () => void;
 }
@@ -24,6 +25,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
   students, 
   handleViewAlerts, 
   handleSchedule,
+  handleAddAsData,
   classFilter,
   clearClassFilter
 }) => {
@@ -89,6 +91,13 @@ const StudentTable: React.FC<StudentTableProps> = ({
                   >
                     <Calendar className="h-4 w-4" />
                     Agendar Atendimento
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="flex items-center gap-2 cursor-pointer"
+                    onClick={() => handleAddAsData(student.id)}
+                  >
+                    <Database className="h-4 w-4" />
+                    Adicionar como Dados
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

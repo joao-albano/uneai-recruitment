@@ -1,42 +1,30 @@
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useData } from '@/context/DataContext';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableHeader, TableRow, TableHead } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Table } from '@/components/ui/table';
-import useStudentFilters from '@/hooks/useStudentFilters';
-import StudentTable from './StudentTable';
 import StudentTableHeader from './StudentTableHeader';
+import StudentTable from './StudentTable';
 import StudentFilters from './StudentFilters';
 import StudentPagination from './StudentPagination';
+import useStudentFilters from '@/hooks/useStudentFilters';
+import { useNavigate } from 'react-router-dom';
 
 const StudentsContent: React.FC = () => {
-  const { students, alerts, generateDemoData } = useData();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { students, generateDemoData } = useData();
+  const [classFilter, setClassFilter] = useState<string | null>(null);
   const { toast } = useToast();
-  
-  // Get class filter from URL
-  const searchParams = new URLSearchParams(location.search);
-  const classFilter = searchParams.get('class');
-  
+  const navigate = useNavigate();
+
+  // Ensure we have some data to display
   useEffect(() => {
     if (students.length === 0) {
-      console.log("Gerando dados de demonstração para estudantes");
       generateDemoData();
     }
   }, [students.length, generateDemoData]);
-  
-  useEffect(() => {
-    if (classFilter) {
-      toast({
-        title: `Turma ${classFilter}`,
-        description: `Visualizando alunos da turma ${classFilter}`,
-      });
-    }
-  }, [classFilter, toast]);
 
+  // Set up our filters
   const {
     searchTerm,
     setSearchTerm,
@@ -47,82 +35,127 @@ const StudentsContent: React.FC = () => {
     hasActiveFilters,
     currentPage,
     sortKey,
+    sortOrder,
     toggleSort,
     paginatedStudents,
     totalPages,
     handlePageChange,
     clearAllFilters,
-  } = useStudentFilters({ students, classFilter });
-
-  const clearClassFilter = () => {
-    navigate('/students');
-  };
+  } = useStudentFilters({
+    students,
+    classFilter,
+  });
 
   const handleViewAlerts = (studentId: string) => {
-    const studentAlert = alerts?.find(alert => alert.studentId === studentId);
-    
-    if (studentAlert) {
-      navigate(`/alerts?id=${studentAlert.id}`);
-    } else {
-      navigate('/alerts');
-    }
+    toast({
+      title: "Alertas",
+      description: `Visualizando alertas para o estudante ID: ${studentId}`,
+    });
   };
 
   const handleSchedule = (studentId: string) => {
-    navigate('/schedule', { state: { studentId } });
+    toast({
+      title: "Agendar Atendimento",
+      description: `Agendando atendimento para o estudante ID: ${studentId}`,
+    });
   };
 
-  // This function is called when clearAllFilters button is clicked
-  const handleClearAllFilters = () => {
-    const hasClassFilter = clearAllFilters();
-    if (hasClassFilter) {
-      navigate('/students');
+  const handleAddAsData = (studentId: string) => {
+    // Find the student in the data
+    const student = students.find(s => s.id === studentId);
+    if (student) {
+      toast({
+        title: "Adicionado como Dados",
+        description: `${student.name} foi adicionado como dados completos ao sistema`,
+      });
+      
+      // Navigate to student detail in the model page
+      navigate(`/model/student/${studentId}`);
+    }
+  };
+
+  const clearClassFilter = () => {
+    setClassFilter(null);
+    const shouldResetOtherFilters = clearAllFilters();
+    
+    if (shouldResetOtherFilters) {
+      toast({
+        title: "Filtros resetados",
+        description: "Todos os filtros foram limpos.",
+      });
     }
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold">Alunos</h2>
+      <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Alunos</h2>
+          <p className="text-muted-foreground">
+            Visualize e gerencie os alunos da sua instituição
+          </p>
+        </div>
       </div>
-      
+
+      <StudentFilters 
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        riskFilter={riskFilter}
+        setRiskFilter={setRiskFilter}
+        segmentFilter={segmentFilter}
+        setSegmentFilter={setSegmentFilter}
+        hasActiveFilters={hasActiveFilters}
+        classFilter={classFilter}
+        setClassFilter={setClassFilter}
+        clearFilters={clearClassFilter}
+      />
+
       <Card>
-        <CardHeader className="pb-0">
-          <StudentFilters 
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            riskFilter={riskFilter}
-            setRiskFilter={setRiskFilter}
-            segmentFilter={segmentFilter}
-            setSegmentFilter={setSegmentFilter}
-            classFilter={classFilter}
-            clearClassFilter={clearClassFilter}
-            clearAllFilters={handleClearAllFilters}
-            hasActiveFilters={hasActiveFilters}
-          />
+        <CardHeader>
+          <CardTitle>Lista de Alunos</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
-            <StudentTableHeader 
-              toggleSort={toggleSort}
-              sortKey={sortKey}
-            />
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nome</TableHead>
+                <TableHead>Turma</TableHead>
+                <TableHead>Risco</TableHead>
+                <StudentTableHeader 
+                  label="Nota Média" 
+                  sortKey="grade"
+                  currentSortKey={sortKey}
+                  sortOrder={sortOrder}
+                  onSort={() => toggleSort("grade")}
+                />
+                <StudentTableHeader 
+                  label="Frequência"
+                  sortKey="attendance"
+                  currentSortKey={sortKey}
+                  sortOrder={sortOrder}
+                  onSort={() => toggleSort("attendance")}
+                />
+                <TableHead className="text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
             <StudentTable 
               students={paginatedStudents}
               handleViewAlerts={handleViewAlerts}
               handleSchedule={handleSchedule}
+              handleAddAsData={handleAddAsData}
               classFilter={classFilter}
               clearClassFilter={clearClassFilter}
             />
           </Table>
           
-          {/* Paginação */}
-          {paginatedStudents.length > 0 && (
-            <StudentPagination 
-              currentPage={currentPage}
-              totalPages={totalPages}
-              handlePageChange={handlePageChange}
-            />
+          {totalPages > 1 && (
+            <div className="mt-4">
+              <StudentPagination 
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </div>
           )}
         </CardContent>
       </Card>
