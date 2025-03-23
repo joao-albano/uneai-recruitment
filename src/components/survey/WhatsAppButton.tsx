@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,32 +22,45 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
   const { sendWhatsAppSurvey, whatsAppConfig } = useData();
 
   const handleSendWhatsApp = () => {
-    const studentId = form.getValues('studentId');
-    if (!studentId) {
+    try {
+      const studentId = form.getValues('studentId');
+      if (!studentId) {
+        toast({
+          title: 'Selecione um aluno',
+          description: 'É necessário selecionar um aluno para enviar a pesquisa.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      setSendingWhatsApp(true);
+      
+      // Send WhatsApp survey
+      sendWhatsAppSurvey(studentId);
+      
+      const configEnabled = whatsAppConfig && whatsAppConfig.provider !== 'disabled';
+      
       toast({
-        title: 'Selecione um aluno',
-        description: 'É necessário selecionar um aluno para enviar a pesquisa.',
+        title: 'Pesquisa enviada via WhatsApp',
+        description: configEnabled
+          ? 'A pesquisa foi enviada usando a integração configurada do WhatsApp.'
+          : 'A pesquisa foi enviada (modo simulação). Verifique o histórico em Configurações Admin > WhatsApp > Histórico.',
+      });
+    } catch (error) {
+      console.error('Error sending WhatsApp survey:', error);
+      toast({
+        title: 'Erro ao enviar pesquisa',
+        description: error instanceof Error 
+          ? `Falha ao enviar: ${error.message}` 
+          : 'Ocorreu um erro desconhecido ao enviar a pesquisa.',
         variant: 'destructive',
       });
-      return;
+    } finally {
+      // Ensure the button is always re-enabled
+      setTimeout(() => {
+        setSendingWhatsApp(false);
+      }, 2000);
     }
-
-    setSendingWhatsApp(true);
-    
-    sendWhatsAppSurvey(studentId);
-    
-    const configEnabled = whatsAppConfig && whatsAppConfig.provider !== 'disabled';
-    
-    toast({
-      title: 'Pesquisa enviada via WhatsApp',
-      description: configEnabled
-        ? 'A pesquisa foi enviada usando a integração configurada do WhatsApp.'
-        : 'A pesquisa foi enviada (modo simulação). Verifique o histórico em Configurações Admin > WhatsApp > Histórico.',
-    });
-    
-    setTimeout(() => {
-      setSendingWhatsApp(false);
-    }, 2000);
   };
 
   return (

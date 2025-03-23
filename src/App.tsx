@@ -17,6 +17,7 @@ import SchedulePage from "./pages/SchedulePage";
 import StudentsPage from "./pages/StudentsPage";
 import SettingsPage from "./pages/SettingsPage";
 import AdminSettingsPage from "./pages/AdminSettingsPage";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 import UsersPage from "./pages/UsersPage";
@@ -139,6 +140,14 @@ const App = () => (
                 element={
                   <AdminRoute>
                     <AdminSettingsPage />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/dashboard" 
+                element={
+                  <AdminRoute>
+                    <AdminDashboardPage />
                   </AdminRoute>
                 } 
               />
