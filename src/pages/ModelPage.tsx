@@ -4,7 +4,7 @@ import { DataProvider } from '@/context/DataContext';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
 import { useData } from '@/context/DataContext';
-import AiModelInfo from '@/components/dashboard/AiModelInfo';
+import AiModelInfo from '@/components/model/AiModelInfo';
 import RiskDistributionCard from '@/components/model/RiskDistributionCard';
 import InterventionsCard from '@/components/model/InterventionsCard';
 import ModelExplanationCard from '@/components/model/ModelExplanationCard';
