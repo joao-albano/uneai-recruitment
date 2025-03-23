@@ -1,7 +1,7 @@
 
 import { saveAs } from 'file-saver';
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { format } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
 
@@ -30,6 +30,9 @@ export const generateInvoicePDF = (
   
   // Create a new PDF document
   const doc = new jsPDF();
+  
+  // Add the autotable plugin to the document
+  autoTable(doc as any, {});
   
   // Add company logo/name
   doc.setFontSize(20);
