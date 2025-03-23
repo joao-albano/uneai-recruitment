@@ -8,9 +8,12 @@ import { Download } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { format } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
+import { downloadInvoice } from '@/utils/billing/invoiceUtils';
+import { useToast } from '@/hooks/use-toast';
 
 const InvoiceHistory: React.FC = () => {
   const { language } = useTheme();
+  const { toast } = useToast();
   const isPtBR = language === 'pt-BR';
   const dateLocale = isPtBR ? ptBR : enUS;
   
@@ -40,6 +43,28 @@ const InvoiceHistory: React.FC = () => {
   
   const formatDate = (date: Date) => {
     return format(date, isPtBR ? 'dd/MM/yyyy' : 'MM/dd/yyyy', { locale: dateLocale });
+  };
+  
+  const handleDownloadInvoice = (invoice: typeof invoices[0]) => {
+    try {
+      downloadInvoice(invoice, language);
+      toast({
+        title: isPtBR ? 'PDF gerado com sucesso' : 'PDF generated successfully',
+        description: isPtBR 
+          ? `Fatura ${invoice.id} baixada` 
+          : `Invoice ${invoice.id} downloaded`,
+        variant: "default",
+      });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast({
+        title: isPtBR ? 'Erro ao gerar PDF' : 'Error generating PDF',
+        description: isPtBR 
+          ? 'Ocorreu um erro ao gerar o PDF. Tente novamente.' 
+          : 'An error occurred while generating the PDF. Please try again.',
+        variant: "destructive",
+      });
+    }
   };
   
   const getStatusBadge = (status: string) => {
@@ -109,7 +134,12 @@ const InvoiceHistory: React.FC = () => {
                 <TableCell>{invoice.amount}</TableCell>
                 <TableCell>{getStatusBadge(invoice.status)}</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="icon" title={isPtBR ? 'Baixar PDF' : 'Download PDF'}>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    title={isPtBR ? 'Baixar PDF' : 'Download PDF'}
+                    onClick={() => handleDownloadInvoice(invoice)}
+                  >
                     <Download className="h-4 w-4" />
                   </Button>
                 </TableCell>
