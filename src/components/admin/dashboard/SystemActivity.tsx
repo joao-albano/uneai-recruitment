@@ -37,17 +37,8 @@ const SystemActivity: React.FC = () => {
         }
       });
       
-      // Count surveys by day (assuming surveys have createdAt field)
-      if (surveys.length > 0 && surveys[0].createdAt) {
-        surveys.forEach(survey => {
-          const dayData = last30Days.find(day => 
-            isSameDay(day.date, new Date((survey as AlertItem).createdAt))
-          );
-          if (dayData) {
-            dayData.surveys += 1;
-          }
-        });
-      }
+      // Since SurveyData doesn't have createdAt, we'll skip that part
+      // or you could add a timestamp field to your surveys when they're created
       
       // Count schedules by day
       schedules.forEach(schedule => {

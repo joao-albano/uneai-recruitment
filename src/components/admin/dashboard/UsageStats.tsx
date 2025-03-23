@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useData } from '@/context/DataContext';
 import { useTheme } from '@/context/ThemeContext';
-import { BarChart, ChartIcon, Users, FileText, AlertTriangle } from 'lucide-react';
+import { BarChart, Users, FileText, AlertTriangle } from 'lucide-react';
 
 const UsageStats: React.FC = () => {
   const { students, surveys, alerts, schedules } = useData();
