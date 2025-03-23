@@ -234,6 +234,7 @@ const AlertDetails = ({ alertId }: { alertId: string }) => {
 // Main AlertsPage component
 const AlertsPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [searchParams] = useSearchParams();
   const alertId = searchParams.get('id');
   const { alerts, generateDemoData } = useData();
@@ -253,10 +254,15 @@ const AlertsPage: React.FC = () => {
   
   return (
     <div className="min-h-screen flex w-full">
-      <Sidebar isOpen={sidebarOpen} onClose={toggleSidebar} />
+      <Sidebar 
+        isOpen={sidebarOpen} 
+        onClose={toggleSidebar} 
+        collapsed={sidebarCollapsed}
+        setCollapsed={setSidebarCollapsed}
+      />
       
       <div className="flex-1 flex flex-col">
-        <Header toggleSidebar={toggleSidebar} />
+        <Header toggleSidebar={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
         
         <main className="flex-1 p-6">
           {alertId ? (

@@ -7,6 +7,7 @@ import ScheduleView from '@/components/scheduling/ScheduleView';
 
 const SchedulePage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -15,10 +16,15 @@ const SchedulePage: React.FC = () => {
   return (
     <DataProvider>
       <div className="h-screen flex flex-col md:flex-row overflow-hidden">
-        <Sidebar isOpen={sidebarOpen} onClose={toggleSidebar} />
+        <Sidebar 
+          isOpen={sidebarOpen} 
+          onClose={toggleSidebar} 
+          collapsed={sidebarCollapsed}
+          setCollapsed={setSidebarCollapsed}
+        />
         
         <div className="flex-1 flex flex-col overflow-hidden">
-          <Header toggleSidebar={toggleSidebar} />
+          <Header toggleSidebar={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
           
           <main className="flex-1 overflow-y-auto p-6 pointer-events-auto">
             <ScheduleView />

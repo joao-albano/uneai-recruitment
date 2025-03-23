@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '@/context/DataContext';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -141,7 +140,6 @@ const StudentsContent: React.FC = () => {
           <Table>
             <StudentTableHeader 
               toggleSort={toggleSort}
-
               sortKey={sortKey}
             />
             <StudentTable 
