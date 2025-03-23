@@ -1,14 +1,15 @@
 
 import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import { useData } from '@/context/DataContext';
 import StudentHeader from './StudentHeader';
 import StudentTabsContent from './StudentTabsContent';
 import StudentNotFound from './StudentNotFound';
-import { Card } from '@/components/ui/card';
 
-const ModelStudentContent: React.FC = () => {
-  const { studentId } = useParams<{ studentId: string }>();
+interface ModelStudentContentProps {
+  studentId?: string;
+}
+
+const ModelStudentContent: React.FC<ModelStudentContentProps> = ({ studentId }) => {
   const { students, generateDemoData } = useData();
   
   // Garante que temos dados para exibir

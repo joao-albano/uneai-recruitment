@@ -13,7 +13,8 @@ import {
   BarChart,
   Bar,
   Legend,
-  ReferenceLine
+  ReferenceLine,
+  TooltipProps
 } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 
@@ -72,6 +73,14 @@ const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
     return '#ef4444'; // vermelho para alto risco
   };
   
+  // Custom tooltip renderer function with proper type cast
+  const tooltipRenderer = (props: any) => {
+    if (props.active && props.payload && props.payload.length) {
+      return <ChartTooltipContent {...props} />;
+    }
+    return null;
+  };
+  
   return (
     <div className="space-y-4">
       <Card>
@@ -87,7 +96,7 @@ const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis domain={[0, 100]} />
-                <Tooltip content={(props) => props.active && props.payload ? <ChartTooltipContent {...props} /> : null} />
+                <Tooltip content={tooltipRenderer} />
                 <ReferenceLine y={40} stroke="#4ade80" strokeDasharray="3 3" label="Baixo" />
                 <ReferenceLine y={70} stroke="#fbbf24" strokeDasharray="3 3" label="Médio" />
                 <Line 
@@ -121,7 +130,7 @@ const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis domain={[0, 10]} />
-                    <Tooltip content={(props) => props.active && props.payload ? <ChartTooltipContent {...props} /> : null} />
+                    <Tooltip content={tooltipRenderer} />
                     <ReferenceLine y={6} stroke="#ef4444" strokeDasharray="3 3" label="Mínimo" />
                     <Line 
                       type="monotone" 
@@ -146,7 +155,7 @@ const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis domain={[0, 100]} />
-                    <Tooltip content={(props) => props.active && props.payload ? <ChartTooltipContent {...props} /> : null} />
+                    <Tooltip content={tooltipRenderer} />
                     <ReferenceLine y={75} stroke="#ef4444" strokeDasharray="3 3" label="Mínimo" />
                     <Bar 
                       dataKey="attendance" 
@@ -169,7 +178,7 @@ const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis domain={[0, 5]} />
-                    <Tooltip content={(props) => props.active && props.payload ? <ChartTooltipContent {...props} /> : null} />
+                    <Tooltip content={tooltipRenderer} />
                     <Bar 
                       dataKey="behavior" 
                       fill="#8b5cf6" 
