@@ -49,7 +49,8 @@ const UpcomingSchedules: React.FC<UpcomingSchedulesProps> = ({
               {upcomingSchedules.map(schedule => (
                 <div 
                   key={schedule.id}
-                  className="flex gap-3 p-3 rounded-lg border transition-colors hover:bg-muted/20"
+                  className="flex gap-3 p-3 rounded-lg border transition-colors hover:bg-muted/20 cursor-pointer"
+                  onClick={() => onNewSchedule()}
                 >
                   <div className="flex-shrink-0 rounded-full bg-primary/10 p-2 h-10 w-10 flex items-center justify-center">
                     <Users className="h-4 w-4 text-primary" />
@@ -68,7 +69,10 @@ const UpcomingSchedules: React.FC<UpcomingSchedulesProps> = ({
                             <Edit className="mr-2 h-4 w-4" />
                             Editar
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => onCancelSchedule(schedule.id)}>
+                          <DropdownMenuItem onClick={(e) => {
+                            e.stopPropagation();
+                            onCancelSchedule(schedule.id);
+                          }}>
                             <Trash className="mr-2 h-4 w-4" />
                             Cancelar
                           </DropdownMenuItem>
