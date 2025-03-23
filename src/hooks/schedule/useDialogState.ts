@@ -24,7 +24,7 @@ export const useDialogState = (schedules: Schedule[]) => {
     // Only clear the schedule reference when closing
     if (!show) {
       // Use a longer timeout to ensure proper cleanup
-      setTimeout(() => setScheduleToEdit(null), 300);
+      setTimeout(() => setScheduleToEdit(null), 500);
     }
   }, []);
 
@@ -34,15 +34,29 @@ export const useDialogState = (schedules: Schedule[]) => {
     setShowScheduleDetails(true);
   }, []);
 
+  // Clean close of the add dialog
+  const handleSetShowAddDialog = useCallback((show: boolean = false) => {
+    setShowAddDialog(show);
+  }, []);
+
+  // Clean close of the details dialog
+  const handleSetShowScheduleDetails = useCallback((show: boolean = false) => {
+    setShowScheduleDetails(show);
+    
+    if (!show) {
+      setTimeout(() => setSelectedSchedule(null), 300);
+    }
+  }, []);
+
   return {
     showAddDialog,
-    setShowAddDialog,
+    setShowAddDialog: handleSetShowAddDialog,
     showEditDialog,
     setShowEditDialog: handleSetShowEditDialog,
     scheduleToEdit,
     startEditSchedule,
     showScheduleDetails,
-    setShowScheduleDetails,
+    setShowScheduleDetails: handleSetShowScheduleDetails,
     selectedSchedule,
     viewScheduleDetails,
     finalPreSelectedStudentId,

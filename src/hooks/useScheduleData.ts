@@ -27,8 +27,10 @@ export const useScheduleData = () => {
   const handleScheduleSubmit = (formData: FormData) => {
     const success = scheduleOperations.handleScheduleSubmit(formData);
     if (success) {
+      // Explicit false parameter
       dialogState.setShowAddDialog(false);
     }
+    return success;
   };
   
   // Handle edit schedule submission
@@ -38,6 +40,7 @@ export const useScheduleData = () => {
       // Call with explicit false parameter to ensure proper cleanup
       dialogState.setShowEditDialog(false);
     }
+    return success;
   };
 
   // Return combined object with all needed properties and methods

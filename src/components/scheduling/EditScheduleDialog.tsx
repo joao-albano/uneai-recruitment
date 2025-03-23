@@ -70,6 +70,7 @@ const EditScheduleDialog: React.FC<EditScheduleDialogProps> = ({
 
   // Ensure proper dialog cleanup
   const handleDialogClose = (open: boolean) => {
+    // Always use the provided callback to change dialog state
     onOpenChange(open);
   };
 
