@@ -98,6 +98,8 @@ const Dashboard: React.FC = () => {
           students={students}
           alerts={convertedAlerts}
           schedules={schedules}
+          allAlerts={alerts} // Pass the full alerts collection
+          allSchedules={schedules} // Pass the full schedules collection
           onViewAlertDetails={handleViewAlertDetails}
           onViewClassDetails={handleViewClassDetails}
           onScheduleClick={handleScheduleClick}

@@ -2,6 +2,7 @@
 import React from 'react';
 import { AlertTriangle, Users, Clock, CheckCircle2 } from 'lucide-react';
 import RiskCard from './RiskCard';
+import { AlertItem, ScheduleItem } from '@/types/data';
 
 interface RiskStatsProps {
   highRiskCount: number;
@@ -9,13 +10,25 @@ interface RiskStatsProps {
   lowRiskCount: number;
   totalStudents: number;
   highRiskPercentage: string;
+  alerts: AlertItem[];
+  schedules: ScheduleItem[];
 }
 
 const RiskStats: React.FC<RiskStatsProps> = ({
   highRiskCount,
   totalStudents,
-  highRiskPercentage
+  highRiskPercentage,
+  alerts,
+  schedules
 }) => {
+  // Count pending alerts (those that need action and haven't been marked as actioned)
+  const pendingAlertsCount = alerts.filter(alert => !alert.actionTaken).length;
+  
+  // Count completed interventions (schedules with 'completed' status)
+  const completedInterventionsCount = schedules.filter(
+    schedule => schedule.status === 'completed'
+  ).length;
+
   return (
     <>
       <RiskCard
@@ -34,14 +47,14 @@ const RiskStats: React.FC<RiskStatsProps> = ({
       />
       <RiskCard
         title="Alertas Pendentes"
-        value={0} // This will be passed from parent in the real implementation
+        value={pendingAlertsCount}
         description="Ações necessárias"
         icon={<Clock className="h-4 w-4 text-yellow-500" />}
         className="border-l-4 border-l-yellow-500"
       />
       <RiskCard
         title="Atendimentos Realizados"
-        value={0} // This will be passed from parent in the real implementation
+        value={completedInterventionsCount}
         description="Intervenções concluídas"
         icon={<CheckCircle2 className="h-4 w-4 text-green-500" />}
         className="border-l-4 border-l-green-500"

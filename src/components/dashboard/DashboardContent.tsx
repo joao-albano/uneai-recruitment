@@ -7,7 +7,7 @@ import AlertsSection from './AlertsSection';
 import UpcomingAppointments from './UpcomingAppointments';
 import ClassesOverview from './ClassesOverview';
 import Chart from './Chart';
-import { StudentData } from '@/context/DataContext';
+import { StudentData, AlertItem, ScheduleItem } from '@/context/DataContext';
 import { Schedule } from '@/types/schedule';
 import { Alert } from '@/types/alert';
 
@@ -15,6 +15,8 @@ interface DashboardContentProps {
   students: StudentData[];
   alerts: Alert[];
   schedules: Schedule[];
+  allAlerts: AlertItem[]; // Add this prop to access the full alerts collection
+  allSchedules: ScheduleItem[]; // Add this prop to access the full schedules collection
   onViewAlertDetails: (alertId: string) => void;
   onViewClassDetails: (className: string) => void;
   onScheduleClick: (schedule: Schedule) => void;
@@ -24,6 +26,8 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   students,
   alerts,
   schedules,
+  allAlerts,
+  allSchedules,
   onViewAlertDetails,
   onViewClassDetails,
   onScheduleClick
@@ -53,6 +57,8 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           lowRiskCount={lowRiskCount}
           totalStudents={totalStudents}
           highRiskPercentage={highRiskPercentage}
+          alerts={allAlerts}
+          schedules={allSchedules}
         />
       </div>
       
