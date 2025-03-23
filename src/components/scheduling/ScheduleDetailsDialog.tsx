@@ -37,7 +37,7 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px] p-6">
         <DialogHeader>
           <DialogTitle>Visualizando agendamento</DialogTitle>
           <DialogDescription>
@@ -45,7 +45,7 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
         
-        <div className="py-4 space-y-4">
+        <div className="py-4 space-y-5">
           <div className="flex items-start gap-3">
             <User className="h-5 w-5 text-muted-foreground mt-0.5" />
             <div>
@@ -85,25 +85,25 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
           </div>
         </div>
         
-        <DialogFooter className="flex-col sm:flex-row gap-2">
+        <DialogFooter className="flex sm:flex-row gap-2 mt-2">
           <Button 
             variant="outline" 
             onClick={() => onOpenChange(false)}
-            className="sm:order-1"
+            className="flex-1 sm:flex-none"
           >
             Fechar
           </Button>
           <Button 
             variant="destructive" 
             onClick={handleCancelSchedule}
-            className="sm:order-2"
+            className="flex-1 sm:flex-none"
           >
             Cancelar Agendamento
           </Button>
           <Button 
             variant="default" 
             onClick={handleMarkCompleted}
-            className="sm:order-3"
+            className="flex-1 sm:flex-none"
           >
             Marcar como Concluído
           </Button>

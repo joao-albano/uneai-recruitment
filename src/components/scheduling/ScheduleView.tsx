@@ -37,7 +37,7 @@ const ScheduleView: React.FC = () => {
   } = useScheduleData();
   
   return (
-    <div className="animate-fade-in">
+    <div className="w-full animate-fade-in">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Agenda</h1>
         <p className="text-muted-foreground mt-1">
@@ -45,8 +45,8 @@ const ScheduleView: React.FC = () => {
         </p>
       </div>
       
-      <div className="grid gap-8 md:grid-cols-5">
-        <div className="md:col-span-3 space-y-4">
+      <div className="grid gap-8 lg:grid-cols-5">
+        <div className="lg:col-span-3 space-y-6">
           <CalendarView
             formattedMonthYear={formattedMonthYear}
             firstDayOfMonth={firstDayOfMonth}
@@ -69,7 +69,7 @@ const ScheduleView: React.FC = () => {
           />
         </div>
         
-        <div className="md:col-span-2 space-y-4">
+        <div className="lg:col-span-2 space-y-6">
           <UpcomingSchedules
             upcomingSchedules={upcomingSchedules}
             onCancelSchedule={cancelSchedule}
