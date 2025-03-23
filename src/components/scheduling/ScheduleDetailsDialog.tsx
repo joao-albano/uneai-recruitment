@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -30,32 +29,38 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
   const formattedTime = format(schedule.date, "HH:mm", { locale: ptBR });
 
   const handleMarkCompleted = () => {
-    // Call the parent function to mark as completed
-    onMarkCompleted(schedule.id);
-    
-    // Show confirmation toast
-    toast({
-      title: "Atendimento concluído",
-      description: `O atendimento com ${schedule.studentName} foi marcado como concluído.`,
-    });
-    
-    // Close the dialog last, after the actions are performed
+    // First close the dialog
     onOpenChange(false);
+    
+    // Delay other actions to ensure dialog closes
+    setTimeout(() => {
+      // Then call the parent function to mark as completed
+      onMarkCompleted(schedule.id);
+      
+      // Show confirmation toast
+      toast({
+        title: "Atendimento concluído",
+        description: `O atendimento com ${schedule.studentName} foi marcado como concluído.`,
+      });
+    }, 100);
   };
 
   const handleCancelSchedule = () => {
-    // Call the parent function to cancel
-    onCancelSchedule(schedule.id);
-    
-    // Show confirmation toast
-    toast({
-      title: "Atendimento cancelado",
-      description: `O atendimento com ${schedule.studentName} foi cancelado.`,
-      variant: "destructive"
-    });
-    
-    // Close the dialog last, after the actions are performed
+    // First close the dialog
     onOpenChange(false);
+    
+    // Delay other actions to ensure dialog closes
+    setTimeout(() => {
+      // Then call the parent function to cancel
+      onCancelSchedule(schedule.id);
+      
+      // Show confirmation toast
+      toast({
+        title: "Atendimento cancelado",
+        description: `O atendimento com ${schedule.studentName} foi cancelado.`,
+        variant: "destructive"
+      });
+    }, 100);
   };
 
   return (
