@@ -26,6 +26,12 @@ const AlertsFilter: React.FC<AlertsFilterProps> = ({
   filterTypes, 
   setFilterTypes 
 }) => {
+  // Helper function to update a single filter type
+  const updateFilterType = (key: string, checked: boolean) => {
+    const newFilterTypes = { ...filterTypes, [key]: checked };
+    setFilterTypes(newFilterTypes);
+  };
+
   return (
     <Card className="shadow-md mb-8">
       <CardContent className="p-4 sm:p-6">
@@ -54,7 +60,7 @@ const AlertsFilter: React.FC<AlertsFilterProps> = ({
               <DropdownMenuCheckboxItem
                 checked={filterTypes['high-risk']}
                 onCheckedChange={(checked) => 
-                  setFilterTypes(prev => ({ ...prev, 'high-risk': checked }))
+                  updateFilterType('high-risk', checked as boolean)
                 }
               >
                 Alto Risco
@@ -62,7 +68,7 @@ const AlertsFilter: React.FC<AlertsFilterProps> = ({
               <DropdownMenuCheckboxItem
                 checked={filterTypes['medium-risk']}
                 onCheckedChange={(checked) => 
-                  setFilterTypes(prev => ({ ...prev, 'medium-risk': checked }))
+                  updateFilterType('medium-risk', checked as boolean)
                 }
               >
                 Médio Risco
@@ -70,7 +76,7 @@ const AlertsFilter: React.FC<AlertsFilterProps> = ({
               <DropdownMenuCheckboxItem
                 checked={filterTypes['low-risk']}
                 onCheckedChange={(checked) => 
-                  setFilterTypes(prev => ({ ...prev, 'low-risk': checked }))
+                  updateFilterType('low-risk', checked as boolean)
                 }
               >
                 Baixo Risco
@@ -78,7 +84,7 @@ const AlertsFilter: React.FC<AlertsFilterProps> = ({
               <DropdownMenuCheckboxItem
                 checked={filterTypes['survey-requested']}
                 onCheckedChange={(checked) => 
-                  setFilterTypes(prev => ({ ...prev, 'survey-requested': checked }))
+                  updateFilterType('survey-requested', checked as boolean)
                 }
               >
                 Pesquisa Solicitada
@@ -86,7 +92,7 @@ const AlertsFilter: React.FC<AlertsFilterProps> = ({
               <DropdownMenuCheckboxItem
                 checked={filterTypes['meeting-scheduled']}
                 onCheckedChange={(checked) => 
-                  setFilterTypes(prev => ({ ...prev, 'meeting-scheduled': checked }))
+                  updateFilterType('meeting-scheduled', checked as boolean)
                 }
               >
                 Atendimento Agendado
