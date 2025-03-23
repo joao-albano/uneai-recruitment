@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { AlertTriangle, BookOpen, CheckCircle2, Clock, Users } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -17,7 +16,6 @@ const Dashboard: React.FC = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  // Generate demo data if there's no data yet
   useEffect(() => {
     if (students.length === 0 && !isLoading) {
       generateDemoData();
@@ -28,39 +26,41 @@ const Dashboard: React.FC = () => {
     }
   }, [students.length, generateDemoData, isLoading, toast]);
   
-  // Risk level counts
   const highRiskCount = students.filter(s => s.riskLevel === 'high').length;
   const mediumRiskCount = students.filter(s => s.riskLevel === 'medium').length;
   const lowRiskCount = students.filter(s => s.riskLevel === 'low').length;
   
-  // Percentage calculations
   const totalStudents = students.length;
   const highRiskPercentage = totalStudents > 0 
     ? ((highRiskCount / totalStudents) * 100).toFixed(1) 
     : '0';
     
-  // Get 5 recent alerts
   const recentAlerts = alerts.slice(0, 5);
   
-  // Get upcoming schedules
   const upcomingSchedules = schedules
     .filter(s => s.status === 'scheduled')
     .sort((a, b) => a.date.getTime() - b.date.getTime())
     .slice(0, 3);
   
-  // Handle alert button click
   const handleViewAlertDetails = (alertId: string) => {
     navigate(`/alerts?id=${alertId}`);
   };
   
-  // Função para lidar com o clique no botão "Ver detalhes" da turma
   const handleViewClassDetails = (className: string) => {
     navigate(`/students?class=${className}`);
     
-    // Informar o usuário sobre a navegação
     toast({
       title: `Turma ${className}`,
       description: `Visualizando todos os alunos da turma ${className}`,
+    });
+  };
+
+  const handleScheduleClick = (schedule: typeof schedules[0]) => {
+    navigate('/schedule', { state: { studentId: schedule.studentId } });
+    
+    toast({
+      title: 'Visualizando agendamento',
+      description: `Detalhes do agendamento de ${schedule.studentName}`,
     });
   };
 
@@ -227,14 +227,21 @@ const Dashboard: React.FC = () => {
                   {upcomingSchedules.length > 0 ? (
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       {upcomingSchedules.map((schedule) => (
-                        <Card key={schedule.id} className="border-t-4 border-t-primary">
+                        <Card 
+                          key={schedule.id} 
+                          className="border-t-4 border-t-primary cursor-pointer transition-shadow hover:shadow-md"
+                          onClick={() => handleScheduleClick(schedule)}
+                        >
                           <CardContent className="p-4">
                             <div className="flex flex-col space-y-2">
                               <span className="text-xs text-muted-foreground">
                                 {schedule.date.toLocaleDateString()}, {schedule.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                               </span>
                               <span className="font-semibold">{schedule.studentName}</span>
-                              <span className="text-sm text-muted-foreground">{schedule.notes}</span>
+                              <span className="text-sm text-muted-foreground">
+                                {schedule.notes?.replace(/Discuss attendance and academic performance/g, "Discussão sobre frequência e desempenho acadêmico")
+                                             .replace(/Parent meeting to address attendance issues/g, "Reunião com os pais para tratar questões de frequência")}
+                              </span>
                               <div className="mt-2 flex items-center">
                                 <span className="text-xs bg-muted px-2 py-0.5 rounded-full">
                                   {schedule.agentName}

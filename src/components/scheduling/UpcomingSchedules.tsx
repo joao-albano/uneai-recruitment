@@ -5,16 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-
-interface Schedule {
-  id: string;
-  studentId: string;
-  studentName: string;
-  date: Date;
-  agentName: string;
-  status: 'scheduled' | 'completed' | 'canceled';
-  notes?: string;
-}
+import { Schedule } from '@/types/schedule';
 
 interface UpcomingSchedulesProps {
   upcomingSchedules: Schedule[];
