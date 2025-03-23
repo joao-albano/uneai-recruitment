@@ -8,7 +8,6 @@ import {
   CartesianGrid,
   Tooltip,
   ReferenceLine,
-  ResponsiveContainer
 } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
@@ -36,16 +35,16 @@ const RiskEvolutionChart: React.FC<RiskEvolutionChartProps> = ({ trajectoryData 
   };
 
   return (
-    <Card className="w-full mb-10">
+    <Card className="w-full">
       <CardHeader className="pb-2">
         <CardTitle className="text-xl text-center">Evolução do Nível de Risco</CardTitle>
       </CardHeader>
       <CardContent className="p-2 sm:p-6">
-        <div className="h-[350px] w-full">
+        <div className="h-[300px] w-full">
           <ChartContainer config={chartConfig}>
             <LineChart 
               data={trajectoryData} 
-              margin={{ top: 20, right: 50, left: 15, bottom: 25 }}
+              margin={{ top: 20, right: 60, left: 20, bottom: 30 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
@@ -53,7 +52,7 @@ const RiskEvolutionChart: React.FC<RiskEvolutionChartProps> = ({ trajectoryData 
                 tick={{ fontSize: 12 }}
                 tickMargin={10}
                 interval={0}
-                height={45}
+                height={50}
               />
               <YAxis 
                 domain={[0, 100]} 
@@ -68,11 +67,11 @@ const RiskEvolutionChart: React.FC<RiskEvolutionChartProps> = ({ trajectoryData 
                 strokeDasharray="3 3" 
                 label={{ 
                   value: "Baixo", 
-                  position: "insideRight",
+                  position: "right",
                   fill: "#4ade80",
                   fontSize: 12,
                   fontWeight: "bold",
-                  offset: 15
+                  offset: 10
                 }} 
               />
               <ReferenceLine 
@@ -81,11 +80,11 @@ const RiskEvolutionChart: React.FC<RiskEvolutionChartProps> = ({ trajectoryData 
                 strokeDasharray="3 3" 
                 label={{ 
                   value: "Médio", 
-                  position: "insideRight",
+                  position: "right",
                   fill: "#fbbf24",
                   fontSize: 12,
                   fontWeight: "bold",
-                  offset: 15
+                  offset: 10
                 }} 
               />
               <Line 

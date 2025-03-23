@@ -16,7 +16,7 @@ const AcademicIndicatorsCard: React.FC<AcademicIndicatorsCardProps> = ({ traject
         <CardTitle className="text-xl text-center">Indicadores Acadêmicos</CardTitle>
       </CardHeader>
       <CardContent className="p-4 sm:p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mt-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-2">
           <GradesChart trajectoryData={trajectoryData} />
           <AttendanceChart trajectoryData={trajectoryData} />
           <BehaviorChart trajectoryData={trajectoryData} />

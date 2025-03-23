@@ -6,8 +6,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
-  ResponsiveContainer
+  Tooltip
 } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 
@@ -34,13 +33,13 @@ const BehaviorChart: React.FC<BehaviorChartProps> = ({ trajectoryData }) => {
   };
 
   return (
-    <div className="flex flex-col items-center space-y-1">
+    <div className="flex flex-col items-center space-y-2">
       <h3 className="font-medium text-lg">Comportamento</h3>
-      <div className="h-[250px] w-full">
+      <div className="h-[220px] w-full">
         <ChartContainer config={chartConfig}>
           <BarChart 
             data={trajectoryData} 
-            margin={{ top: 15, right: 30, left: 15, bottom: 25 }}
+            margin={{ top: 15, right: 20, left: 0, bottom: 30 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis 
@@ -48,7 +47,7 @@ const BehaviorChart: React.FC<BehaviorChartProps> = ({ trajectoryData }) => {
               tick={{ fontSize: 11 }}
               tickMargin={10}
               interval={0}
-              height={45}
+              height={40}
             />
             <YAxis 
               domain={[0, 5]} 
