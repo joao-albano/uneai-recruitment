@@ -55,6 +55,7 @@ interface ChartTooltipContentProps
   nameKey?: string;
   labelKey?: string;
   content?: React.ReactNode;
+  color?: string; // Add the missing color property
 }
 
 const ChartTooltipContent = React.forwardRef<
