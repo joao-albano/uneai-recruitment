@@ -2,7 +2,7 @@
 import React from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { useTheme } from '@/context/ThemeContext';
 
 interface SidebarHeaderProps {
   collapsed: boolean;
@@ -15,9 +15,29 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({
   setCollapsed, 
   onClose 
 }) => {
+  const { theme } = useTheme();
+
   return (
     <div className="flex h-16 items-center justify-between border-b px-4">
-      {!collapsed && <span className="text-xl font-semibold">Menu</span>}
+      {!collapsed && (
+        <div className="flex items-center">
+          <div className="h-8 w-auto">
+            {theme === 'dark' ? (
+              <img 
+                src="/lovable-uploads/d2557391-afc4-4f36-9029-1e3ddd3c3793.png" 
+                alt="Une.AI (Modo Escuro)" 
+                className="h-full w-auto object-contain"
+              />
+            ) : (
+              <img 
+                src="/lovable-uploads/0992bc45-19cb-47ac-a913-96b95b006ee5.png" 
+                alt="Une.AI" 
+                className="h-full w-auto object-contain"
+              />
+            )}
+          </div>
+        </div>
+      )}
       <div className="flex items-center">
         <Button 
           variant="ghost" 

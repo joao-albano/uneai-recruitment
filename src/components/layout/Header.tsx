@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bell, Menu, LogOut, User, Settings, UserCog } from 'lucide-react';
@@ -13,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -20,9 +22,11 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
   const { alerts } = useData();
-  const unreadAlerts = alerts.filter(alert => !alert.read).length;
   const navigate = useNavigate();
   const { isAdmin, logout, userEmail } = useAuth();
+  const { theme } = useTheme();
+  
+  const unreadAlerts = alerts.filter(alert => !alert.read).length;
   
   const user = {
     name: isAdmin ? 'Admin' : 'Usuário',
@@ -50,13 +54,22 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
       
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-2">
-          <div className="relative h-8 w-8 overflow-hidden rounded-full bg-primary/10">
-            <div className="flex h-full w-full items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <span className="text-sm font-semibold">U</span>
-            </div>
+          <div className="h-8 w-auto">
+            {theme === 'dark' ? (
+              <img 
+                src="/lovable-uploads/d2557391-afc4-4f36-9029-1e3ddd3c3793.png" 
+                alt="Une.AI (Modo Escuro)" 
+                className="h-full w-auto object-contain"
+              />
+            ) : (
+              <img 
+                src="/lovable-uploads/0992bc45-19cb-47ac-a913-96b95b006ee5.png" 
+                alt="Une.AI" 
+                className="h-full w-auto object-contain"
+              />
+            )}
           </div>
           <Link to="/home" className="flex items-center gap-1 transition-opacity hover:opacity-80">
-            <span className="text-lg font-bold">Une.AI</span>
             <span className="text-lg font-light text-foreground/80">EduCare</span>
           </Link>
         </div>
