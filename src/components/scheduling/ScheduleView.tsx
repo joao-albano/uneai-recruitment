@@ -1,4 +1,3 @@
-
 import React from 'react';
 import CalendarView from './CalendarView';
 import TodaySchedules from './TodaySchedules';
@@ -64,7 +63,6 @@ const ScheduleView: React.FC = () => {
             hasSchedulesOnDay={hasSchedulesOnDay}
             getScheduleCountForDay={getScheduleCountForDay}
             getScheduleStatusForDay={getScheduleStatusForDay}
-            onNewSchedule={() => setShowAddDialog(true)}
           />
           
           <TodaySchedules

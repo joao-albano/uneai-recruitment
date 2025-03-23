@@ -1,14 +1,8 @@
 
 import React from 'react';
-import { Plus } from 'lucide-react';
 import { CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 
-interface CalendarFooterProps {
-  onNewSchedule: () => void;
-}
-
-const CalendarFooter: React.FC<CalendarFooterProps> = ({ onNewSchedule }) => {
+const CalendarFooter: React.FC = () => {
   return (
     <CardFooter className="justify-between">
       <div className="flex flex-wrap items-center gap-4">
@@ -21,10 +15,6 @@ const CalendarFooter: React.FC<CalendarFooterProps> = ({ onNewSchedule }) => {
           <span className="text-xs text-muted-foreground">Agendado</span>
         </div>
       </div>
-      <Button variant="outline" size="sm" onClick={onNewSchedule}>
-        <Plus className="mr-1 h-3.5 w-3.5" />
-        Novo atendimento
-      </Button>
     </CardFooter>
   );
 };
