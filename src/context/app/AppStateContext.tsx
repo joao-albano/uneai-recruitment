@@ -15,7 +15,7 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
   const generateDemoData = () => {
     setIsLoading(true);
     
-    // Simplified version that just controls loading state
+    // Use a timeout to simulate loading, then set loading to false
     setTimeout(() => {
       setIsLoading(false);
     }, 800);
