@@ -7,7 +7,8 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ReferenceLine
+  ReferenceLine,
+  ResponsiveContainer
 } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
@@ -27,18 +28,18 @@ const renderTooltip = (props: any) => {
 
 const RiskEvolutionChart: React.FC<RiskEvolutionChartProps> = ({ trajectoryData }) => {
   return (
-    <Card className="w-full overflow-hidden">
+    <Card className="w-full">
       <CardHeader className="pb-2">
         <CardTitle className="text-xl text-center">Evolução do Nível de Risco</CardTitle>
       </CardHeader>
-      <CardContent className="p-0 sm:p-6">
+      <CardContent className="p-0 pt-0">
         <div className="h-[350px] w-full">
           <ChartContainer config={{
             riskScore: { theme: { light: "#ef4444", dark: "#ef4444" } },
           }}>
             <LineChart 
               data={trajectoryData} 
-              margin={{ top: 20, right: 30, left: 10, bottom: 30 }}
+              margin={{ top: 5, right: 20, left: 0, bottom: 20 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
