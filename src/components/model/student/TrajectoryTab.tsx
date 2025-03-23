@@ -63,27 +63,31 @@ const generateTrajectoryData = (student: StudentData) => {
   }));
 };
 
+// Componente para renderizar o tooltip
+const tooltipRenderer = (props: any) => {
+  const { active, payload } = props;
+  return active && payload && payload.length ? <ChartTooltipContent {...props} /> : null;
+};
+
 const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
   const trajectoryData = generateTrajectoryData(student);
   
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       <Card>
         <CardHeader>
           <CardTitle>Evolução do Risco</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[250px] w-full">
+          <div className="h-[300px] w-full">
             <ChartContainer config={{
               riskScore: { theme: { light: "#ef4444", dark: "#ef4444" } },
             }}>
-              <LineChart data={trajectoryData}>
+              <LineChart data={trajectoryData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis domain={[0, 100]} />
-                <Tooltip content={({ active, payload }) => 
-                  active && payload && payload.length ? <ChartTooltipContent active={active} payload={payload} /> : null
-                } />
+                <Tooltip content={tooltipRenderer} />
                 <ReferenceLine y={40} stroke="#4ade80" strokeDasharray="3 3" label="Baixo" />
                 <ReferenceLine y={70} stroke="#fbbf24" strokeDasharray="3 3" label="Médio" />
                 <Line 
@@ -106,20 +110,18 @@ const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
           <CardTitle>Indicadores Acadêmicos</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="space-y-2">
-              <h3 className="font-medium">Notas</h3>
-              <div className="h-[200px] w-full">
+              <h3 className="font-medium text-center">Notas</h3>
+              <div className="h-[250px] w-full">
                 <ChartContainer config={{
                   grade: { theme: { light: "#3b82f6", dark: "#60a5fa" } },
                 }}>
-                  <LineChart data={trajectoryData}>
+                  <LineChart data={trajectoryData} margin={{ top: 20, right: 10, left: 10, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis domain={[0, 10]} />
-                    <Tooltip content={({ active, payload }) => 
-                      active && payload && payload.length ? <ChartTooltipContent active={active} payload={payload} /> : null
-                    } />
+                    <Tooltip content={tooltipRenderer} />
                     <ReferenceLine y={6} stroke="#ef4444" strokeDasharray="3 3" label="Mínimo" />
                     <Line 
                       type="monotone" 
@@ -135,18 +137,16 @@ const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
             </div>
             
             <div className="space-y-2">
-              <h3 className="font-medium">Frequência</h3>
-              <div className="h-[200px] w-full">
+              <h3 className="font-medium text-center">Frequência</h3>
+              <div className="h-[250px] w-full">
                 <ChartContainer config={{
                   attendance: { theme: { light: "#10b981", dark: "#34d399" } },
                 }}>
-                  <BarChart data={trajectoryData}>
+                  <BarChart data={trajectoryData} margin={{ top: 20, right: 10, left: 10, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis domain={[0, 100]} />
-                    <Tooltip content={({ active, payload }) => 
-                      active && payload && payload.length ? <ChartTooltipContent active={active} payload={payload} /> : null
-                    } />
+                    <Tooltip content={tooltipRenderer} />
                     <ReferenceLine y={75} stroke="#ef4444" strokeDasharray="3 3" label="Mínimo" />
                     <Bar 
                       dataKey="attendance" 
@@ -160,18 +160,16 @@ const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
             </div>
             
             <div className="space-y-2">
-              <h3 className="font-medium">Comportamento</h3>
-              <div className="h-[200px] w-full">
+              <h3 className="font-medium text-center">Comportamento</h3>
+              <div className="h-[250px] w-full">
                 <ChartContainer config={{
                   behavior: { theme: { light: "#8b5cf6", dark: "#a78bfa" } },
                 }}>
-                  <BarChart data={trajectoryData}>
+                  <BarChart data={trajectoryData} margin={{ top: 20, right: 10, left: 10, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis domain={[0, 5]} />
-                    <Tooltip content={({ active, payload }) => 
-                      active && payload && payload.length ? <ChartTooltipContent active={active} payload={payload} /> : null
-                    } />
+                    <Tooltip content={tooltipRenderer} />
                     <Bar 
                       dataKey="behavior" 
                       fill="#8b5cf6" 
