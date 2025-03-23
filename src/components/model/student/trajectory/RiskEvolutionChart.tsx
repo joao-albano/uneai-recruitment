@@ -45,7 +45,7 @@ const RiskEvolutionChart: React.FC<RiskEvolutionChartProps> = ({ trajectoryData 
           <ChartContainer config={chartConfig}>
             <LineChart 
               data={trajectoryData} 
-              margin={{ top: 10, right: 25, left: 5, bottom: 25 }}
+              margin={{ top: 10, right: 40, left: 10, bottom: 25 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
@@ -66,10 +66,11 @@ const RiskEvolutionChart: React.FC<RiskEvolutionChartProps> = ({ trajectoryData 
                 strokeDasharray="3 3" 
                 label={{ 
                   value: "Baixo", 
-                  position: "right",
+                  position: "insideRight",
                   fill: "#4ade80",
                   fontSize: 12,
-                  fontWeight: "bold"
+                  fontWeight: "bold",
+                  offset: 10
                 }} 
               />
               <ReferenceLine 
@@ -78,10 +79,11 @@ const RiskEvolutionChart: React.FC<RiskEvolutionChartProps> = ({ trajectoryData 
                 strokeDasharray="3 3" 
                 label={{ 
                   value: "Médio", 
-                  position: "right",
+                  position: "insideRight",
                   fill: "#fbbf24",
                   fontSize: 12,
-                  fontWeight: "bold"
+                  fontWeight: "bold",
+                  offset: 10
                 }} 
               />
               <Line 

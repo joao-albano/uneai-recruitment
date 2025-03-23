@@ -41,13 +41,15 @@ const AttendanceChart: React.FC<AttendanceChartProps> = ({ trajectoryData }) => 
         <ChartContainer config={chartConfig}>
           <BarChart 
             data={trajectoryData} 
-            margin={{ top: 10, right: 20, left: 5, bottom: 25 }}
+            margin={{ top: 10, right: 30, left: 10, bottom: 25 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis 
               dataKey="month" 
               tick={{ fontSize: 11 }}
               tickMargin={10}
+              interval={0}
+              height={40}
             />
             <YAxis 
               domain={[0, 100]} 
@@ -61,9 +63,10 @@ const AttendanceChart: React.FC<AttendanceChartProps> = ({ trajectoryData }) => 
               strokeDasharray="3 3" 
               label={{ 
                 value: "Mínimo", 
-                position: "right",
+                position: "insideRight",
                 fontSize: 11,
-                fill: "#ef4444"
+                fill: "#ef4444",
+                offset: 5
               }} 
             />
             <Bar 

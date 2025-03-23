@@ -3,8 +3,8 @@ import { StudentData } from '@/types/data';
 
 // Generate trajectory data for the student
 export const generateTrajectoryData = (student: StudentData) => {
-  // Últimos 6 meses
-  const months = ['Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro', 'Janeiro'];
+  // Abreviações dos últimos 6 meses
+  const months = ['Ago', 'Set', 'Out', 'Nov', 'Dez', 'Jan'];
   
   // Começar com valores altos e ir deteriorando (para alunos de risco)
   // Ou começar com valores baixos e ir melhorando (para alunos de baixo risco)
