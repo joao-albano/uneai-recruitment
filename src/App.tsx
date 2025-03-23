@@ -21,6 +21,7 @@ import ProfilePage from "./pages/ProfilePage";
 import UsersPage from "./pages/UsersPage";
 import ModelPage from "./pages/ModelPage";
 import NotFound from "./pages/NotFound";
+import ModelStudentPage from "./pages/ModelStudentPage";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +64,14 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <ModelPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/model/student/:studentId" 
+                element={
+                  <ProtectedRoute>
+                    <ModelStudentPage />
                   </ProtectedRoute>
                 } 
               />

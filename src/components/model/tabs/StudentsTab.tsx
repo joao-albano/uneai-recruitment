@@ -11,11 +11,12 @@ const StudentsTab: React.FC = () => {
   const { toast } = useToast();
   
   const handleStudentClick = (studentId: string) => {
-    navigate(`/students?id=${studentId}`);
+    // Navigate to model-specific student detail page
+    navigate(`/model/student/${studentId}`);
     
     toast({
-      title: 'Perfil do aluno',
-      description: 'Visualizando detalhes do aluno selecionado'
+      title: 'Análise do Aluno',
+      description: 'Visualizando trajetória analítica do aluno'
     });
   };
   
