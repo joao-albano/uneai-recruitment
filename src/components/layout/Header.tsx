@@ -28,6 +28,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed }) => {
   
   // For demo purposes - we'll assume there's a pending invoice
   const hasPendingInvoice = true;
+  const shouldShowPaymentButton = hasPendingInvoice && !isAdmin;
   
   let alerts = [];
   try {
@@ -89,7 +90,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed }) => {
       )}
       
       <div className="ml-auto flex items-center gap-4">
-        {hasPendingInvoice && (
+        {shouldShowPaymentButton && (
           <Link to="/user-billing">
             <Button variant="outline" size="sm" className="gap-1 border-yellow-300 text-yellow-700 hover:bg-yellow-50 hover:text-yellow-800">
               <AlertTriangle className="h-4 w-4" />

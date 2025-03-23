@@ -9,14 +9,17 @@ import { Button } from '@/components/ui/button';
 import { Schedule } from '@/types/schedule';
 import { Alert } from '@/types/alert';
 import PaymentNotificationBanner from '../billing/PaymentNotificationBanner';
+import { useAuth } from '@/context/AuthContext';
 
 const Dashboard: React.FC = () => {
   const { students, alerts, schedules, isLoading, generateDemoData } = useData();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
   
   // For demo purposes - we'll assume there's a pending invoice
   const hasPendingInvoice = true;
+  const shouldShowPaymentBanner = hasPendingInvoice && !isAdmin;
   
   useEffect(() => {
     if (students.length === 0 && !isLoading) {
@@ -62,7 +65,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="animate-fade-in">
-      {hasPendingInvoice && <PaymentNotificationBanner />}
+      {shouldShowPaymentBanner && <PaymentNotificationBanner />}
       
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
