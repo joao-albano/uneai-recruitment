@@ -3,6 +3,7 @@ import React from 'react';
 import { AlertTriangle, Users, Clock, CheckCircle2, AlertCircle, ShieldCheck, Brain } from 'lucide-react';
 import RiskCard from './RiskCard';
 import { AlertItem, ScheduleItem } from '@/types/data';
+import { useNavigate } from 'react-router-dom';
 
 interface RiskStatsProps {
   highRiskCount: number;
@@ -23,6 +24,8 @@ const RiskStats: React.FC<RiskStatsProps> = ({
   alerts,
   schedules
 }) => {
+  const navigate = useNavigate();
+  
   // Count pending alerts (those that need action and haven't been marked as actioned)
   const pendingAlertsCount = alerts.filter(alert => !alert.actionTaken).length;
   
@@ -34,6 +37,10 @@ const RiskStats: React.FC<RiskStatsProps> = ({
   // Calculate AI assisted interventions (a subset of completed interventions)
   const aiAssistedCount = Math.min(completedInterventionsCount, 
     Math.floor(completedInterventionsCount * 0.8)); // Assume 80% of interventions are AI-assisted
+    
+  const handleModelCardClick = () => {
+    navigate('/model');
+  };
 
   return (
     <>
@@ -78,6 +85,7 @@ const RiskStats: React.FC<RiskStatsProps> = ({
         description="Intervenções guiadas por IA"
         icon={<Brain className="h-4 w-4 text-purple-500" />}
         className="border-l-4 border-l-purple-500"
+        onClick={handleModelCardClick}
       />
     </>
   );

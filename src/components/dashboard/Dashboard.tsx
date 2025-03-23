@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Schedule } from '@/types/schedule';
 import { Alert } from '@/types/alert';
-import AiModelInfo from './AiModelInfo';
 
 const Dashboard: React.FC = () => {
   const { students, alerts, schedules, isLoading, generateDemoData } = useData();
@@ -93,23 +92,16 @@ const Dashboard: React.FC = () => {
         </Card>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div className="md:col-span-3">
-              <DashboardContent
-                students={students}
-                alerts={convertedAlerts}
-                schedules={schedules}
-                allAlerts={alerts}
-                allSchedules={schedules}
-                onViewAlertDetails={handleViewAlertDetails}
-                onViewClassDetails={handleViewClassDetails}
-                onScheduleClick={handleScheduleClick}
-              />
-            </div>
-            <div className="md:col-span-1">
-              <AiModelInfo />
-            </div>
-          </div>
+          <DashboardContent
+            students={students}
+            alerts={convertedAlerts}
+            schedules={schedules}
+            allAlerts={alerts}
+            allSchedules={schedules}
+            onViewAlertDetails={handleViewAlertDetails}
+            onViewClassDetails={handleViewClassDetails}
+            onScheduleClick={handleScheduleClick}
+          />
         </>
       )}
     </div>
