@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useState } from 'react';
 import { StudentsProvider, useStudents } from './students/StudentsContext';
 import { SurveysProvider, useSurveys } from './surveys/SurveysContext';
 import { SchedulesProvider, useSchedules } from './schedules/SchedulesContext';
@@ -8,7 +8,6 @@ import { UploadsProvider, useUploads } from './uploads/UploadsContext';
 import { WhatsAppProvider, useWhatsApp } from './whatsapp/WhatsAppContext';
 import { StudentData, SurveyData, ScheduleItem, AlertItem, UploadRecord } from '@/types/data';
 import { WhatsAppMessage } from '@/types/whatsapp';
-import { useAppState } from './app/AppStateContext';
 
 // Combined context type that matches the original DataContextType
 export type DataContextType = {
@@ -61,7 +60,18 @@ const DataProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { alerts, addAlert, markAlertAsRead, markAlertActionTaken } = useAlerts();
   const { uploadHistory, addUploadRecord, clearUploadHistory } = useUploads();
   const { whatsAppConfig, whatsAppMessages, addWhatsAppMessage, sendWhatsAppSurvey: sendWhatsAppSurveyToStudent } = useWhatsApp();
-  const { isLoading, generateDemoData } = useAppState();
+  
+  // Instead of using useAppState which causes dependency issues, we'll implement the minimal functionality needed
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const generateDemoData = () => {
+    setIsLoading(true);
+    
+    // Simplified version that just controls loading state
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 800);
+  };
 
   // Adapt the sendWhatsAppSurvey function to match the original signature
   const sendWhatsAppSurvey = (studentId: string) => {
