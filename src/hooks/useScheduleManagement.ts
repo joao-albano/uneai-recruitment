@@ -76,20 +76,25 @@ export const useScheduleManagement = () => {
       description: `Agendamento de ${updatedSchedule.studentName} atualizado com sucesso.`
     });
     
-    // Primeiro fechar o diálogo
-    setShowEditDialog(false);
-    // Depois limpar o state em uma operação separada
-    setScheduleToEdit(null);
+    closeEditDialog();
   };
   
   const startEditSchedule = (schedule: Schedule) => {
-    // Criar uma cópia profunda do objeto schedule para evitar problemas de referência
-    const scheduleClone = {
-      ...schedule,
-      date: new Date(schedule.date)
-    };
+    // Create a deep copy of the schedule to avoid reference issues
+    const scheduleClone = JSON.parse(JSON.stringify(schedule));
+    scheduleClone.date = new Date(schedule.date);
+    
     setScheduleToEdit(scheduleClone);
     setShowEditDialog(true);
+  };
+  
+  const closeEditDialog = () => {
+    setShowEditDialog(false);
+    // Use a timeout to clear the schedule after the dialog closes
+    // This prevents React errors from unmounting components with pending state updates
+    setTimeout(() => {
+      setScheduleToEdit(null);
+    }, 100);
   };
   
   const markCompleted = (id: string) => {
@@ -115,7 +120,7 @@ export const useScheduleManagement = () => {
     showAddDialog,
     setShowAddDialog,
     showEditDialog,
-    setShowEditDialog,
+    setShowEditDialog: closeEditDialog,
     scheduleToEdit,
     handleScheduleSubmit,
     handleEditScheduleSubmit,

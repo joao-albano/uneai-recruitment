@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -25,12 +25,23 @@ const EditScheduleDialog: React.FC<EditScheduleDialogProps> = ({
   const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
 
-  // Não renderizar nada se não houver um agendamento para editar
+  // If there's no schedule data, don't render the dialog content
   if (!schedule) {
-    return null;
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Editar agendamento</DialogTitle>
+            <DialogDescription>
+              Carregando dados do agendamento...
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    );
   }
 
-  // Formatar a data e hora para os campos de entrada
+  // Format the date and time for the input fields
   const formattedDate = format(new Date(schedule.date), 'yyyy-MM-dd');
   const formattedTime = format(new Date(schedule.date), 'HH:mm');
 

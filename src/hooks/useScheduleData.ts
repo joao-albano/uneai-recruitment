@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useData } from '@/context/DataContext';
 import { useCalendarState } from './useCalendarState';
@@ -9,11 +9,15 @@ import { Schedule } from '@/types/schedule';
 export type { Schedule, FormattedScheduleData } from '@/types/schedule';
 
 export const useScheduleData = () => {
+  // Core data and location hooks first
   const location = useLocation();
   const { students, schedules, generateDemoData } = useData();
+  
+  // State hooks next
   const [showScheduleDetails, setShowScheduleDetails] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null);
   
+  // Custom hooks last
   const {
     selectedDate,
     formattedMonthYear,
@@ -40,6 +44,29 @@ export const useScheduleData = () => {
     cancelSchedule
   } = useScheduleManagement();
   
+  // Memoized data calculations
+  const today = useMemo(() => new Date(), []);
+  
+  const todaySchedules = useMemo(() => {
+    return schedules.filter(schedule => {
+      const scheduleDate = new Date(schedule.date);
+      return scheduleDate.getDate() === today.getDate() &&
+             scheduleDate.getMonth() === today.getMonth() &&
+             scheduleDate.getFullYear() === today.getFullYear() &&
+             schedule.status === 'scheduled';
+    }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [schedules, today]);
+  
+  const upcomingSchedules = useMemo(() => {
+    return schedules.filter(schedule => {
+      const scheduleDate = new Date(schedule.date);
+      const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      return scheduleDate > todayStart &&
+             schedule.status === 'scheduled';
+    }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).slice(0, 5);
+  }, [schedules, today]);
+  
+  // Effects
   // Effect for generating demo data
   useEffect(() => {
     if (students.length === 0) {
@@ -48,7 +75,7 @@ export const useScheduleData = () => {
     }
   }, [students.length, generateDemoData]);
   
-  // Effect for handling location state (separated from the demo data effect)
+  // Effect for handling location state
   useEffect(() => {
     const locationState = location.state as { studentId?: string; scheduleId?: string } | null;
     
@@ -73,23 +100,7 @@ export const useScheduleData = () => {
     }
   }, [schedules, selectedSchedule]);
   
-  const today = new Date();
-  
-  const todaySchedules = schedules.filter(schedule => {
-    const scheduleDate = new Date(schedule.date);
-    return scheduleDate.getDate() === today.getDate() &&
-           scheduleDate.getMonth() === today.getMonth() &&
-           scheduleDate.getFullYear() === today.getFullYear() &&
-           schedule.status === 'scheduled';
-  }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  
-  const upcomingSchedules = schedules.filter(schedule => {
-    const scheduleDate = new Date(schedule.date);
-    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    return scheduleDate > todayStart &&
-           schedule.status === 'scheduled';
-  }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).slice(0, 5);
-  
+  // Derived state
   const preSelectedStudentId = location.state?.studentId || '';
   const canSelectPreSelectedStudent = !schedules.some(
     schedule => 
