@@ -76,19 +76,19 @@ const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
   const trajectoryData = generateTrajectoryData(student);
   
   return (
-    <div className="space-y-12 pb-8">
+    <div className="space-y-10 pb-8 w-full">
       <Card className="w-full overflow-hidden">
         <CardHeader className="pb-2">
           <CardTitle className="text-xl text-center">Evolução do Nível de Risco</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[400px] w-full px-4">
+          <div className="h-[350px] w-full px-2 md:px-4">
             <ChartContainer config={{
               riskScore: { theme: { light: "#ef4444", dark: "#ef4444" } },
             }}>
               <LineChart 
                 data={trajectoryData} 
-                margin={{ top: 30, right: 50, left: 20, bottom: 30 }}
+                margin={{ top: 20, right: 30, left: 10, bottom: 30 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
@@ -99,7 +99,7 @@ const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
                 <YAxis 
                   domain={[0, 100]} 
                   tick={{ fontSize: 12 }}
-                  tickMargin={10}
+                  tickMargin={8}
                   tickCount={6}
                 />
                 <Tooltip content={renderTooltip} />
@@ -147,14 +147,17 @@ const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
           <CardTitle className="text-xl text-center">Indicadores Acadêmicos</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-6">
-            <div className="flex flex-col items-center space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-8 mt-4">
+            <div className="flex flex-col items-center space-y-3">
               <h3 className="font-medium text-lg">Notas</h3>
               <div className="h-[250px] w-full">
                 <ChartContainer config={{
                   grade: { theme: { light: "#3b82f6", dark: "#60a5fa" } },
                 }}>
-                  <LineChart data={trajectoryData} margin={{ top: 20, right: 20, left: 10, bottom: 20 }}>
+                  <LineChart 
+                    data={trajectoryData} 
+                    margin={{ top: 20, right: 20, left: 5, bottom: 20 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis 
                       dataKey="month" 
@@ -192,13 +195,16 @@ const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
               </div>
             </div>
             
-            <div className="flex flex-col items-center space-y-4">
+            <div className="flex flex-col items-center space-y-3">
               <h3 className="font-medium text-lg">Frequência</h3>
               <div className="h-[250px] w-full">
                 <ChartContainer config={{
                   attendance: { theme: { light: "#10b981", dark: "#34d399" } },
                 }}>
-                  <BarChart data={trajectoryData} margin={{ top: 20, right: 20, left: 10, bottom: 20 }}>
+                  <BarChart 
+                    data={trajectoryData} 
+                    margin={{ top: 20, right: 20, left: 5, bottom: 20 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis 
                       dataKey="month" 
@@ -233,13 +239,16 @@ const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
               </div>
             </div>
             
-            <div className="flex flex-col items-center space-y-4">
+            <div className="flex flex-col items-center space-y-3">
               <h3 className="font-medium text-lg">Comportamento</h3>
               <div className="h-[250px] w-full">
                 <ChartContainer config={{
                   behavior: { theme: { light: "#8b5cf6", dark: "#a78bfa" } },
                 }}>
-                  <BarChart data={trajectoryData} margin={{ top: 20, right: 20, left: 10, bottom: 20 }}>
+                  <BarChart 
+                    data={trajectoryData} 
+                    margin={{ top: 20, right: 20, left: 5, bottom: 20 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis 
                       dataKey="month" 
