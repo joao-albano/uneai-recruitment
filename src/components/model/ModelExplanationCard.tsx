@@ -5,9 +5,11 @@ import { Brain, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useData } from '@/context/DataContext';
+import { useNavigate } from 'react-router-dom';
 
 const ModelExplanationCard: React.FC = () => {
   const { students } = useData();
+  const navigate = useNavigate();
   
   // Get a high risk student as an example
   const exampleStudent = students.find(student => student.riskLevel === 'high') || students[0];
@@ -67,11 +69,13 @@ const ModelExplanationCard: React.FC = () => {
           </div>
         </div>
         
-        <Button variant="outline" className="w-full mt-2 flex items-center gap-2" asChild>
-          <a href="/alerts" className="no-underline">
-            <span>Ver alertas gerados pelo modelo</span>
-            <ExternalLink className="h-4 w-4" />
-          </a>
+        <Button 
+          variant="outline" 
+          className="w-full mt-2 flex items-center gap-2" 
+          onClick={() => navigate('/alerts')}
+        >
+          <span>Ver alertas gerados pelo modelo</span>
+          <ExternalLink className="h-4 w-4" />
         </Button>
       </CardContent>
     </Card>
