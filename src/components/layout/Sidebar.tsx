@@ -11,7 +11,8 @@ import {
   Settings,
   X,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Brain
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -157,6 +158,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             >
               <Users className="h-5 w-5" />
               {!collapsed && <span>Alunos</span>}
+            </NavLink>
+            
+            <NavLink 
+              to="/model" 
+              className={({isActive}) => cn(
+                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors", 
+                isActive 
+                  ? "bg-primary text-primary-foreground" 
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                collapsed && "justify-center px-2"
+              )}
+            >
+              <Brain className="h-5 w-5" />
+              {!collapsed && <span>Modelo de Previsão</span>}
             </NavLink>
             
             {/* Only show Settings link if user is admin */}

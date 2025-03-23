@@ -1,19 +1,17 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
-import { ModelSidebar } from '@/components/model/ModelSidebar';
 import { useData } from '@/context/DataContext';
 import ModelPageHeader from './ModelPageHeader';
 import ModelTabsContent from './ModelTabsContent';
 
 const ModelPageContent: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [modelSidebarOpen, setModelSidebarOpen] = useState(true);
   const { students, generateDemoData } = useData();
   
   // Make sure we have demo data
-  React.useEffect(() => {
+  useEffect(() => {
     if (students.length === 0) {
       generateDemoData();
     }
@@ -21,10 +19,6 @@ const ModelPageContent: React.FC = () => {
   
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
-  };
-
-  const toggleModelSidebar = () => {
-    setModelSidebarOpen(!modelSidebarOpen);
   };
   
   return (
@@ -35,11 +29,9 @@ const ModelPageContent: React.FC = () => {
         <Header toggleSidebar={toggleSidebar} />
         
         <div className="flex flex-1 overflow-hidden">
-          <ModelSidebar isOpen={modelSidebarOpen} onClose={toggleModelSidebar} />
-          
           <main className="flex-1 p-6 overflow-auto">
             <div className="animate-fade-in">
-              <ModelPageHeader toggleModelSidebar={toggleModelSidebar} />
+              <ModelPageHeader />
               <ModelTabsContent />
             </div>
           </main>
