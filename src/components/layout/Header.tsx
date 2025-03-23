@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bell, Menu, LogOut, User, Settings, UserCog, DollarSign } from 'lucide-react';
+import { Bell, Menu, LogOut, User, Settings, UserCog, DollarSign, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useData } from '@/context/DataContext';
@@ -24,6 +25,9 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed }) => {
   const navigate = useNavigate();
   const { isAdmin, logout, userEmail } = useAuth();
   const { theme } = useTheme();
+  
+  // For demo purposes - we'll assume there's a pending invoice
+  const hasPendingInvoice = true;
   
   let alerts = [];
   try {
@@ -85,6 +89,15 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed }) => {
       )}
       
       <div className="ml-auto flex items-center gap-4">
+        {hasPendingInvoice && (
+          <Link to="/user-billing">
+            <Button variant="outline" size="sm" className="gap-1 border-yellow-300 text-yellow-700 hover:bg-yellow-50 hover:text-yellow-800">
+              <AlertTriangle className="h-4 w-4" />
+              <span>Pagamento Pendente</span>
+            </Button>
+          </Link>
+        )}
+        
         <Link to="/pricing">
           <Button variant="ghost" size="sm" className="gap-1">
             <DollarSign className="h-4 w-4" />

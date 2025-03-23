@@ -8,11 +8,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Schedule } from '@/types/schedule';
 import { Alert } from '@/types/alert';
+import PaymentNotificationBanner from '../billing/PaymentNotificationBanner';
 
 const Dashboard: React.FC = () => {
   const { students, alerts, schedules, isLoading, generateDemoData } = useData();
   const { toast } = useToast();
   const navigate = useNavigate();
+  
+  // For demo purposes - we'll assume there's a pending invoice
+  const hasPendingInvoice = true;
   
   useEffect(() => {
     if (students.length === 0 && !isLoading) {
@@ -58,6 +62,8 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="animate-fade-in">
+      {hasPendingInvoice && <PaymentNotificationBanner />}
+      
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground mt-1">

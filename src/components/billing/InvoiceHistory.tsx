@@ -39,6 +39,13 @@ const InvoiceHistory: React.FC = () => {
       status: 'paid',
       description: isPtBR ? 'Adicional de usuários' : 'Additional users'
     },
+    {
+      id: 'INV-004',
+      date: new Date(2024, 5, 15),
+      amount: isPtBR ? 'R$ 5.990,00' : '$5,990.00',
+      status: 'pending',
+      description: isPtBR ? 'Renovação anual' : 'Annual renewal'
+    },
   ];
   
   const formatDate = (date: Date) => {
