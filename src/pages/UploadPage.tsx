@@ -8,12 +8,28 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FileSpreadsheet, HelpCircle, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useToast } from '@/hooks/use-toast';
 
 const UploadPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { toast } = useToast();
   
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
+  };
+  
+  const handleGuideClick = () => {
+    // Open the info tab instead of an external URL
+    const infoTab = document.querySelector('[data-state="inactive"][value="info"]') as HTMLElement;
+    if (infoTab) {
+      infoTab.click();
+    } else {
+      toast({
+        title: "Guia de Upload",
+        description: "Consulte a aba de informações para instruções detalhadas sobre o upload.",
+      });
+    }
   };
   
   return (
@@ -32,15 +48,33 @@ const UploadPage: React.FC = () => {
                   Faça upload de planilhas com dados dos alunos
                 </p>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1"
-                onClick={() => window.open('https://docs.example.com/upload-guide', '_blank')}
-              >
-                <HelpCircle className="h-4 w-4" />
-                Guia de Upload
-              </Button>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1"
+                  >
+                    <HelpCircle className="h-4 w-4" />
+                    Guia de Upload
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="space-y-2">
+                    <h4 className="font-medium">Guia de Upload</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Instruções detalhadas sobre como fazer upload de dados estão disponíveis na aba "Informações".
+                    </p>
+                    <Button 
+                      variant="default" 
+                      className="w-full mt-2"
+                      onClick={handleGuideClick}
+                    >
+                      Ver guia detalhado
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
             
             <Tabs defaultValue="upload" className="w-full">
