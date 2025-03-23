@@ -197,6 +197,7 @@ const UploadForm: React.FC = () => {
   
   const requiredColumns = [
     { name: 'nome', description: 'Nome completo do aluno', example: 'João Silva' },
+    { name: 'registro', description: 'Número de matrícula do aluno', example: '12345' },
     { name: 'turma', description: 'Turma do aluno', example: '9A' },
     { name: 'nota', description: 'Nota média (0-10)', example: '7.5' },
     { name: 'frequencia', description: 'Porcentagem de presença (0-100)', example: '85' },

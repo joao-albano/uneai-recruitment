@@ -18,6 +18,15 @@ export const validateStudentData = (
     });
   }
 
+  // Validate registration number
+  if (!data.registrationNumber) {
+    errors.push({
+      row: rowIndex,
+      column: 'registro',
+      message: 'Número de registro/matrícula é obrigatório'
+    });
+  }
+
   if (!data.class) {
     errors.push({
       row: rowIndex,

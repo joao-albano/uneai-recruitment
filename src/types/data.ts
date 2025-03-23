@@ -1,7 +1,9 @@
+
 // Define types for our data
 export type StudentData = {
   id: string;
   name: string;
+  registrationNumber: string; // Added registration number field
   class: string;
   grade: number;
   attendance: number;

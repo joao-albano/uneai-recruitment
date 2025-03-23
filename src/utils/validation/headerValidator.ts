@@ -6,6 +6,8 @@ export const mapHeadersToProperties = (headers: string[]): HeaderMap => {
   const headerMap: Record<string, string> = {
     // Portuguese headers - standard format
     'nome': 'name',
+    'registro': 'registrationNumber',
+    'matricula': 'registrationNumber',
     'turma': 'class',
     'nota': 'grade',
     'frequencia': 'attendance',
@@ -23,9 +25,13 @@ export const mapHeadersToProperties = (headers: string[]): HeaderMap => {
     // Format with capitalization that matches the CSV
     'Nome_Responsavel': 'parentName', 
     'Contato_Responsavel': 'parentContact',
+    'Registro': 'registrationNumber',
+    'Matricula': 'registrationNumber',
     
     // English headers (fallback)
     'name': 'name',
+    'registration': 'registrationNumber',
+    'registration_number': 'registrationNumber',
     'class': 'class',
     'grade': 'grade',
     'attendance': 'attendance',
@@ -52,7 +58,7 @@ export const mapHeadersToProperties = (headers: string[]): HeaderMap => {
 // Header validation function
 export const validateHeaders = (headers: string[]): boolean => {
   const requiredHeaders = [
-    'nome', 'turma', 'nota', 'frequencia'
+    'nome', 'registro', 'turma', 'nota', 'frequencia'
   ];
   
   // Create a more flexible header matching approach
@@ -62,9 +68,13 @@ export const validateHeaders = (headers: string[]): boolean => {
     // Check standard forms
     if (normalizedHeaders.includes(required)) return true;
     
+    // Special case for 'registro' - also accept 'matricula'
+    if (required === 'registro' && normalizedHeaders.includes('matricula')) return true;
+    
     // Check English equivalents
     const englishEquivalent = 
       required === 'nome' ? 'name' :
+      required === 'registro' ? 'registration' :
       required === 'turma' ? 'class' :
       required === 'nota' ? 'grade' :
       required === 'frequencia' ? 'attendance' :
@@ -82,10 +92,10 @@ export const validateHeaders = (headers: string[]): boolean => {
 export const getExcelFormat = (): { headers: string[]; description: string } => {
   return {
     headers: [
-      'Nome', 'Turma', 'Nota', 'Frequencia', 
+      'Nome', 'Registro', 'Turma', 'Nota', 'Frequencia', 
       'Nome_Responsavel', 'Contato_Responsavel'
     ],
-    description: 'O arquivo deve conter as colunas: Nome, Turma, Nota (0-10), Frequência (0-100), ' +
+    description: 'O arquivo deve conter as colunas: Nome, Registro (número de matrícula), Turma, Nota (0-10), Frequência (0-100), ' +
       'Nome do Responsável, e Contato do Responsável (formato (99) 99999-9999)'
   };
 };
