@@ -6,6 +6,7 @@ export const generateDemoStudents = (): StudentData[] => {
     {
       id: '1',
       name: 'Ana Silva',
+      registrationNumber: '12345',
       class: '9A',
       grade: 5.5,
       attendance: 75,
@@ -18,6 +19,7 @@ export const generateDemoStudents = (): StudentData[] => {
     {
       id: '2',
       name: 'Bruno Santos',
+      registrationNumber: '23456',
       class: '9A',
       grade: 7.2,
       attendance: 92,
@@ -30,6 +32,7 @@ export const generateDemoStudents = (): StudentData[] => {
     {
       id: '3',
       name: 'Carla Oliveira',
+      registrationNumber: '34567',
       class: '9B',
       grade: 6.1,
       attendance: 81,
@@ -42,6 +45,7 @@ export const generateDemoStudents = (): StudentData[] => {
     {
       id: '4',
       name: 'Daniel Pereira',
+      registrationNumber: '45678',
       class: '9B',
       grade: 8.5,
       attendance: 96,
@@ -53,6 +57,7 @@ export const generateDemoStudents = (): StudentData[] => {
     {
       id: '5',
       name: 'Elena Costa',
+      registrationNumber: '56789',
       class: '9C',
       grade: 4.8,
       attendance: 68,
@@ -65,6 +70,7 @@ export const generateDemoStudents = (): StudentData[] => {
     {
       id: '6',
       name: 'Felipe Martins',
+      registrationNumber: '67890',
       class: '9C',
       grade: 6.9,
       attendance: 88,
@@ -76,6 +82,7 @@ export const generateDemoStudents = (): StudentData[] => {
     {
       id: '7',
       name: 'Gabriela Lima',
+      registrationNumber: '78901',
       class: '9A',
       grade: 5.9,
       attendance: 79,
@@ -88,6 +95,7 @@ export const generateDemoStudents = (): StudentData[] => {
     {
       id: '8',
       name: 'Henrique Alves',
+      registrationNumber: '89012',
       class: '9C',
       grade: 7.8,
       attendance: 93,
