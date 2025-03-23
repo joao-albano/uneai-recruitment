@@ -73,7 +73,7 @@ const StudentFilters: React.FC<StudentFiltersProps> = ({
             <SelectTrigger>
               <SelectValue placeholder="Nível de risco" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent align="start">
               <SelectItem value="all">Todos os níveis</SelectItem>
               <SelectItem value="high">Alto risco</SelectItem>
               <SelectItem value="medium">Médio risco</SelectItem>
@@ -90,7 +90,7 @@ const StudentFilters: React.FC<StudentFiltersProps> = ({
             <SelectTrigger>
               <SelectValue placeholder="Segmento" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent align="start">
               <SelectItem value="all">Todos os segmentos</SelectItem>
               <SelectItem value="ENSINO MÉDIO">Ensino Médio</SelectItem>
               <SelectItem value="ENSINO FUNDAMENTAL I">Ensino Fundamental I</SelectItem>

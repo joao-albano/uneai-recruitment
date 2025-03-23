@@ -84,7 +84,7 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
                 <SelectTrigger id="studentId" className="w-full bg-background">
                   <SelectValue placeholder="Selecione um aluno" />
                 </SelectTrigger>
-                <SelectContent position="popper" className="w-full max-h-[200px] overflow-auto z-[100] bg-background">
+                <SelectContent align="start" className="w-full max-h-[200px] overflow-auto z-[100] bg-background">
                   {studentsWithoutSchedules.length > 0 ? (
                     studentsWithoutSchedules
                       .filter(student => student.riskLevel !== 'low')

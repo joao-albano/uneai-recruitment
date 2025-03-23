@@ -53,7 +53,7 @@ const StudentSelect: React.FC<StudentSelectProps> = ({ form }) => {
                   <SelectValue placeholder="Selecione um aluno..." />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent>
+              <SelectContent align="start" className="w-full">
                 {students.map((student) => (
                   <SelectItem key={student.id} value={student.id}>
                     {student.name} - Turma {student.class} - {student.segment}

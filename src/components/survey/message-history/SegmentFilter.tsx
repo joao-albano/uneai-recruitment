@@ -33,7 +33,7 @@ const SegmentFilter: React.FC<SegmentFilterProps> = ({
           {selectedSegment ? `Segmento: ${selectedSegment}` : 'Filtrar por segmento'}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="start">
         <DropdownMenuLabel>Segmento Escolar</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {availableSegments.map((segment) => (
