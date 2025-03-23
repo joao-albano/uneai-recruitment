@@ -1,4 +1,5 @@
 
-import { useToast as useToastHook, toast } from "@/hooks/use-toast";
+// Correctly re-export from the hooks directory
+import { useToast, toast } from "@/hooks/use-toast";
 
-export { useToastHook as useToast, toast };
+export { useToast, toast };

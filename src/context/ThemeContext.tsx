@@ -1,6 +1,4 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
-// Fixed the import to use the correct path
 import { toast } from "@/hooks/use-toast";
 
 type Theme = 'light' | 'dark';
@@ -16,20 +14,16 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Removed the useToast hook that was causing circular dependency
   const [theme, setTheme] = useState<Theme>(() => {
-    // Try to get theme from localStorage on initial load
     const savedTheme = localStorage.getItem('theme');
     return (savedTheme as Theme) || 'light';
   });
   
   const [language, setLanguageState] = useState<Language>(() => {
-    // Try to get language from localStorage on initial load
     const savedLanguage = localStorage.getItem('language');
     return (savedLanguage as Language) || 'pt-BR';
   });
 
-  // Apply theme to the document when it changes
   useEffect(() => {
     const root = window.document.documentElement;
     
@@ -39,11 +33,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       root.classList.remove('dark');
     }
     
-    // Save theme preference to localStorage
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  // Save language preference when it changes
   useEffect(() => {
     localStorage.setItem('language', language);
   }, [language]);
@@ -51,7 +43,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const toggleTheme = () => {
     setTheme(prevTheme => {
       const newTheme = prevTheme === 'light' ? 'dark' : 'light';
-      // Use the toast function directly
       toast({
         title: language === 'pt-BR' ? 'Tema alterado' : 'Theme changed',
         description: language === 'pt-BR' 
@@ -64,7 +55,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    // Use the toast function directly
     toast({
       title: lang === 'pt-BR' ? 'Idioma alterado' : 'Language changed',
       description: lang === 'pt-BR' 
