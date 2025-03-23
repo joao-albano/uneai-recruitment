@@ -3,15 +3,13 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { AlertTriangle, CheckCircle2, PieChart as PieChartIcon, TrendingDown, TrendingUp } from 'lucide-react';
-import { StudentData } from '@/types/data';
+import { useData } from '@/context/DataContext';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-interface RiskDistributionCardProps {
-  students: StudentData[];
-}
-
-const RiskDistributionCard: React.FC<RiskDistributionCardProps> = ({ students }) => {
+const RiskDistributionCard: React.FC = () => {
+  const { students } = useData();
+  
   const highRiskCount = students.filter(s => s.riskLevel === 'high').length;
   const mediumRiskCount = students.filter(s => s.riskLevel === 'medium').length;
   const lowRiskCount = students.filter(s => s.riskLevel === 'low').length;

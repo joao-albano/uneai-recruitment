@@ -4,13 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Info } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
-import { ScheduleItem } from '@/types/data';
+import { useData } from '@/context/DataContext';
 
-interface InterventionsCardProps {
-  schedules: ScheduleItem[];
-}
-
-const InterventionsCard: React.FC<InterventionsCardProps> = ({ schedules }) => {
+const InterventionsCard: React.FC = () => {
+  const { schedules } = useData();
+  
   // Calculate completed interventions (schedules with 'completed' status)
   const completedInterventionsCount = schedules.filter(
     schedule => schedule.status === 'completed'
