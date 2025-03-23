@@ -5,8 +5,10 @@ import { useToast } from '@/hooks/use-toast';
 import { Schedule } from '@/types/schedule';
 
 export const useScheduleManagement = () => {
-  const { students, schedules, addSchedule, updateScheduleStatus } = useData();
+  const { students, schedules, addSchedule, updateScheduleStatus, updateSchedule } = useData();
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [scheduleToEdit, setScheduleToEdit] = useState<Schedule | null>(null);
   const { toast } = useToast();
   
   const studentsWithoutSchedules = students.filter(student => {
@@ -50,6 +52,39 @@ export const useScheduleManagement = () => {
     setShowAddDialog(false);
   };
   
+  const handleEditScheduleSubmit = (formData: FormData) => {
+    if (!scheduleToEdit) return;
+    
+    const date = formData.get('date') as string;
+    const time = formData.get('time') as string;
+    const notes = formData.get('notes') as string;
+    
+    const [year, month, day] = date.split('-').map(Number);
+    const [hours, minutes] = time.split(':').map(Number);
+    const scheduleDate = new Date(year, month - 1, day, hours, minutes);
+    
+    const updatedSchedule = {
+      ...scheduleToEdit,
+      date: scheduleDate,
+      notes,
+    };
+    
+    updateSchedule(updatedSchedule);
+    
+    toast({
+      title: 'Atendimento atualizado',
+      description: `Agendamento de ${updatedSchedule.studentName} atualizado com sucesso.`
+    });
+    
+    setShowEditDialog(false);
+    setScheduleToEdit(null);
+  };
+  
+  const startEditSchedule = (schedule: Schedule) => {
+    setScheduleToEdit(schedule);
+    setShowEditDialog(true);
+  };
+  
   const markCompleted = (id: string) => {
     updateScheduleStatus(id, 'completed');
     toast({
@@ -72,7 +107,12 @@ export const useScheduleManagement = () => {
     schedules,
     showAddDialog,
     setShowAddDialog,
+    showEditDialog,
+    setShowEditDialog,
+    scheduleToEdit,
     handleScheduleSubmit,
+    handleEditScheduleSubmit,
+    startEditSchedule,
     markCompleted,
     cancelSchedule
   };

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Check, MoreVertical, X } from 'lucide-react';
+import { Check, MoreVertical, X, Edit } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,7 @@ interface ScheduleItemProps {
   notes?: string;
   onMarkCompleted: (id: string) => void;
   onCancelSchedule: (id: string) => void;
+  onEditSchedule?: (id: string) => void;
 }
 
 const ScheduleItem: React.FC<ScheduleItemProps> = ({
@@ -24,6 +25,7 @@ const ScheduleItem: React.FC<ScheduleItemProps> = ({
   notes,
   onMarkCompleted,
   onCancelSchedule,
+  onEditSchedule,
 }) => {
   return (
     <Card key={id} className="overflow-hidden">
@@ -45,6 +47,12 @@ const ScheduleItem: React.FC<ScheduleItemProps> = ({
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Ações</DropdownMenuLabel>
                   <DropdownMenuSeparator />
+                  {onEditSchedule && (
+                    <DropdownMenuItem onClick={() => onEditSchedule(id)}>
+                      <Edit className="mr-2 h-4 w-4" />
+                      Editar agendamento
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={() => onMarkCompleted(id)}>
                     <Check className="mr-2 h-4 w-4" />
                     Marcar como concluído

@@ -11,12 +11,14 @@ interface UpcomingSchedulesProps {
   upcomingSchedules: Schedule[];
   onCancelSchedule: (id: string) => void;
   onNewSchedule: () => void;
+  onEditSchedule: (schedule: Schedule) => void;
 }
 
 const UpcomingSchedules: React.FC<UpcomingSchedulesProps> = ({
   upcomingSchedules,
   onCancelSchedule,
   onNewSchedule,
+  onEditSchedule,
 }) => {
   return (
     <Card className="shadow-md">
@@ -56,7 +58,10 @@ const UpcomingSchedules: React.FC<UpcomingSchedulesProps> = ({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={(e) => {
+                            e.stopPropagation();
+                            onEditSchedule(schedule);
+                          }}>
                             <Edit className="mr-2 h-4 w-4" />
                             Editar
                           </DropdownMenuItem>
