@@ -10,6 +10,7 @@ interface CalendarGridProps {
   hasSchedulesOnDay: (day: number) => boolean;
   getScheduleCountForDay: (day: number) => number;
   getScheduleStatusForDay: (day: number) => string | null;
+  onDayClick: (day: number) => void;
 }
 
 const CalendarGrid: React.FC<CalendarGridProps> = ({
@@ -20,6 +21,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   hasSchedulesOnDay,
   getScheduleCountForDay,
   getScheduleStatusForDay,
+  onDayClick
 }) => {
   const weekdays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
   
@@ -49,6 +51,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
         let dayClasses = `
           relative p-2 text-center transition-colors hover:bg-muted/50 rounded-lg
           ${isToday ? 'font-bold' : ''}
+          ${hasSchedules ? 'cursor-pointer' : ''}
         `;
         
         let badgeClasses = "text-[10px] h-4 min-w-4 flex items-center justify-center";
@@ -75,6 +78,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
           <div 
             key={`day-${day}`} 
             className={dayClasses}
+            onClick={() => hasSchedules && onDayClick(day)}
           >
             <span className={`${isToday ? 'text-primary' : ''}`}>{day}</span>
             

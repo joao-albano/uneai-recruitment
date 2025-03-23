@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import CalendarView from './CalendarView';
 import TodaySchedules from './TodaySchedules';
 import UpcomingSchedules from './UpcomingSchedules';
@@ -6,9 +7,13 @@ import ScheduleStats from './ScheduleStats';
 import ScheduleDialog from './ScheduleDialog';
 import ScheduleDetailsDialog from './ScheduleDetailsDialog';
 import EditScheduleDialog from './EditScheduleDialog';
+import DaySchedulesDialog from './DaySchedulesDialog';
 import { useScheduleData } from '@/hooks/useScheduleData';
 
 const ScheduleView: React.FC = () => {
+  const [showDaySchedules, setShowDaySchedules] = useState(false);
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  
   const {
     students,
     studentsWithoutSchedules,
@@ -41,6 +46,32 @@ const ScheduleView: React.FC = () => {
     selectedSchedule
   } = useScheduleData();
   
+  const handleDayClick = (day: number) => {
+    setSelectedDay(day);
+    setShowDaySchedules(true);
+  };
+  
+  const getSchedulesForDay = () => {
+    if (selectedDay === null) return [];
+    
+    return schedules.filter(schedule => {
+      const scheduleDate = new Date(schedule.date);
+      return scheduleDate.getDate() === selectedDay &&
+             scheduleDate.getMonth() === selectedDate.getMonth() &&
+             scheduleDate.getFullYear() === selectedDate.getFullYear();
+    }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  };
+  
+  const getSelectedDayDate = () => {
+    if (selectedDay === null) return new Date();
+    
+    return new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      selectedDay
+    );
+  };
+  
   return (
     <div className="w-full animate-fade-in">
       <div className="mb-8">
@@ -63,6 +94,7 @@ const ScheduleView: React.FC = () => {
             hasSchedulesOnDay={hasSchedulesOnDay}
             getScheduleCountForDay={getScheduleCountForDay}
             getScheduleStatusForDay={getScheduleStatusForDay}
+            onDayClick={handleDayClick}
           />
           
           <TodaySchedules
@@ -109,6 +141,15 @@ const ScheduleView: React.FC = () => {
         onOpenChange={setShowEditDialog}
         schedule={scheduleToEdit}
         onSubmit={handleEditScheduleSubmit}
+      />
+      
+      <DaySchedulesDialog
+        isOpen={showDaySchedules}
+        onClose={() => setShowDaySchedules(false)}
+        date={getSelectedDayDate()}
+        schedules={getSchedulesForDay()}
+        onMarkCompleted={markCompleted}
+        onCancelSchedule={cancelSchedule}
       />
     </div>
   );

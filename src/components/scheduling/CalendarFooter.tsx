@@ -15,6 +15,10 @@ const CalendarFooter: React.FC = () => {
           <span className="text-xs text-muted-foreground">Agendado</span>
         </div>
         <div className="flex items-center gap-2">
+          <div className="h-3 w-3 rounded-full bg-green-100 border border-green-300" />
+          <span className="text-xs text-muted-foreground">Concluído</span>
+        </div>
+        <div className="flex items-center gap-2">
           <div className="h-3 w-3 rounded-full bg-red-100 border border-red-300" />
           <span className="text-xs text-muted-foreground">Cancelado</span>
         </div>

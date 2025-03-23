@@ -16,6 +16,7 @@ interface CalendarViewProps {
   hasSchedulesOnDay: (day: number) => boolean;
   getScheduleCountForDay: (day: number) => number;
   getScheduleStatusForDay: (day: number) => string | null;
+  onDayClick: (day: number) => void;
 }
 
 const CalendarView: React.FC<CalendarViewProps> = ({
@@ -29,6 +30,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   hasSchedulesOnDay,
   getScheduleCountForDay,
   getScheduleStatusForDay,
+  onDayClick
 }) => {
   return (
     <Card className="shadow-md">
@@ -46,6 +48,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           hasSchedulesOnDay={hasSchedulesOnDay}
           getScheduleCountForDay={getScheduleCountForDay}
           getScheduleStatusForDay={getScheduleStatusForDay}
+          onDayClick={onDayClick}
         />
       </CardContent>
       <CalendarFooter />
