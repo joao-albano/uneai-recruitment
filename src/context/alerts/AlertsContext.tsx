@@ -6,7 +6,7 @@ import { AlertItem } from '@/types/data';
 interface AlertsContextType {
   alerts: AlertItem[];
   setAlerts: (alerts: AlertItem[]) => void;
-  addAlert: (alert: AlertItem) => void;
+  addAlert: (alert: Omit<AlertItem, 'id' | 'date' | 'read' | 'actionTaken'>) => void;
   markAlertAsRead: (id: string) => void;
   markAlertActionTaken: (id: string) => void;
 }
@@ -14,20 +14,14 @@ interface AlertsContextType {
 const AlertsContext = createContext<AlertsContextType | undefined>(undefined);
 
 export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { 
-    alerts, 
-    setAlerts, 
-    addAlert, 
-    markAlertAsRead, 
-    markAlertActionTaken 
-  } = useAlertsState();
+  const { alerts, setAlerts, addAlert, markAlertAsRead, markAlertActionTaken } = useAlertsState();
 
   const value = {
     alerts,
     setAlerts,
     addAlert,
     markAlertAsRead,
-    markAlertActionTaken
+    markAlertActionTaken,
   };
 
   return <AlertsContext.Provider value={value}>{children}</AlertsContext.Provider>;
@@ -36,7 +30,8 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 export const useAlerts = () => {
   const context = useContext(AlertsContext);
   if (context === undefined) {
-    throw new Error('useAlerts must be used within an AlertsProvider');
+    console.warn('useAlerts must be used within an AlertsProvider. Returning empty data.');
+    return { alerts: [] };
   }
   return context;
 };
