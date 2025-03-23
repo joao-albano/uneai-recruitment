@@ -16,7 +16,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { useData } from '@/context/DataContext';
-import { useAuth } from '@/App';
+import { useAuth } from '@/context/AuthContext';
 
 interface SidebarProps {
   isOpen: boolean;

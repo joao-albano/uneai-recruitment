@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AuthLogo from '@/components/auth/AuthLogo';
 import LoginForm from '@/components/auth/LoginForm';
 import SignupForm from '@/components/auth/SignupForm';
-import { useAuth } from '@/App';
+import { useAuth } from '@/context/AuthContext';
 
 const LoginPage = () => {
   const [activeTab, setActiveTab] = useState<string>('login');

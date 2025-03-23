@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { DataProvider } from '@/context/DataContext';
 import Header from '@/components/layout/Header';
@@ -13,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 const profileSchema = z.object({
   name: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
