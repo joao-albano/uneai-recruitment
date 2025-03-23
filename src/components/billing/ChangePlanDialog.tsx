@@ -8,13 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { CheckCircle } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { useToast } from '@/hooks/use-toast';
-
-interface PlanOption {
-  id: string;
-  name: string;
-  price: string;
-  description: string;
-}
+import { usePlanOptions, PlanOption } from '@/utils/billing/planOptions';
 
 interface ChangePlanDialogProps {
   open: boolean;
@@ -35,30 +29,11 @@ const ChangePlanDialog: React.FC<ChangePlanDialogProps> = ({
   const { toast } = useToast();
   const isPtBR = language === 'pt-BR';
   
-  // Dados dos planos disponíveis
-  const availablePlans: PlanOption[] = [
-    {
-      id: 'basic',
-      name: isPtBR ? 'Básico' : 'Basic',
-      price: isPtBR ? 'R$ 2.990,00/ano' : '$2,990.00/year',
-      description: isPtBR ? 'Até 500 alunos' : 'Up to 500 students',
-    },
-    {
-      id: 'premium',
-      name: 'Premium',
-      price: isPtBR ? 'R$ 5.990,00/ano' : '$5,990.00/year',
-      description: isPtBR ? 'Até 1500 alunos' : 'Up to 1500 students',
-    },
-    {
-      id: 'enterprise',
-      name: 'Enterprise',
-      price: isPtBR ? 'R$ 9.990,00/ano' : '$9,990.00/year',
-      description: isPtBR ? 'Alunos ilimitados' : 'Unlimited students',
-    }
-  ];
+  // Get plan options from the utility hook
+  const availablePlans = usePlanOptions();
 
   const handlePlanSubmit = () => {
-    // Aqui iria a lógica para mudar o plano no backend
+    // Here would be the logic to change the plan in the backend
     toast({
       title: isPtBR ? "Plano alterado com sucesso!" : "Plan changed successfully!",
       description: isPtBR 
