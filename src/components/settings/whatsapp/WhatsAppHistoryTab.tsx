@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { useWhatsAppHistory } from '@/hooks/useWhatsAppHistory';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

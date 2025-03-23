@@ -33,6 +33,7 @@ const WhatsAppHistory: React.FC<WhatsAppHistoryProps> = ({ messages }) => {
   const [selectedMessage, setSelectedMessage] = useState<WhatsAppMessage | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [open, setOpen] = useState(false);
   const messagesPerPage = 10;
   
   const dateLocale = language === 'pt-BR' ? ptBR : enUS;
@@ -75,6 +76,10 @@ const WhatsAppHistory: React.FC<WhatsAppHistoryProps> = ({ messages }) => {
     setStartDate(undefined);
     setEndDate(undefined);
   };
+
+  const applyDateFilter = () => {
+    setOpen(false); // Close the popover when applying the filter
+  };
   
   return (
     <div className="space-y-4">
@@ -90,7 +95,7 @@ const WhatsAppHistory: React.FC<WhatsAppHistoryProps> = ({ messages }) => {
         </div>
         
         <div className="flex gap-2">
-          <Popover>
+          <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button variant="outline" className="gap-2">
                 <Calendar className="h-4 w-4" />
@@ -107,7 +112,7 @@ const WhatsAppHistory: React.FC<WhatsAppHistoryProps> = ({ messages }) => {
                     mode="single"
                     selected={startDate}
                     onSelect={setStartDate}
-                    className="rounded-md border"
+                    className="rounded-md border pointer-events-auto"
                   />
                 </div>
                 <div className="space-y-1">
@@ -119,14 +124,14 @@ const WhatsAppHistory: React.FC<WhatsAppHistoryProps> = ({ messages }) => {
                     selected={endDate}
                     onSelect={setEndDate}
                     disabled={(date) => startDate ? isBefore(date, startDate) : false}
-                    className="rounded-md border"
+                    className="rounded-md border pointer-events-auto"
                   />
                 </div>
                 <div className="flex justify-between">
                   <Button variant="outline" size="sm" onClick={clearDateFilter}>
                     {language === 'pt-BR' ? 'Limpar' : 'Clear'}
                   </Button>
-                  <Button variant="default" size="sm" onClick={() => document.body.click()}>
+                  <Button variant="default" size="sm" onClick={applyDateFilter}>
                     {language === 'pt-BR' ? 'Aplicar' : 'Apply'}
                   </Button>
                 </div>

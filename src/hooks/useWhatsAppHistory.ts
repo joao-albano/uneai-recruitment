@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { WhatsAppMessage } from '@/types/whatsapp';
 import { v4 as uuidv4 } from 'uuid';
@@ -82,6 +83,62 @@ const generateDemoMessages = (): WhatsAppMessage[] => {
       status: 'read',
       createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 dias atrás
       updatedAt: new Date(Date.now() - 6.8 * 24 * 60 * 60 * 1000)
+    },
+    {
+      id: uuidv4(),
+      studentId: '1',
+      studentName: 'Ana Silva',
+      parentName: 'Roberto Silva',
+      recipientNumber: '(11) 98765-4321',
+      message: 'Sr. Roberto, lembramos que Ana tem uma avaliação de recuperação de Matemática na próxima semana. Por favor, certifique-se de que ela esteja preparada.',
+      status: 'delivered',
+      createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
+      updatedAt: new Date(Date.now() - 7.9 * 24 * 60 * 60 * 1000)
+    },
+    {
+      id: uuidv4(),
+      studentId: '5',
+      studentName: 'Elena Costa',
+      parentName: 'Fernando Costa',
+      recipientNumber: '(11) 99123-8765',
+      message: 'Sr. Fernando, Elena está com dificuldades em entregar as tarefas de casa. Podemos conversar sobre como estabelecer uma rotina de estudos?',
+      status: 'read',
+      createdAt: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000),
+      updatedAt: new Date(Date.now() - 8.8 * 24 * 60 * 60 * 1000)
+    },
+    {
+      id: uuidv4(),
+      studentId: '6',
+      studentName: 'Felipe Martins',
+      parentName: 'Joana Martins',
+      recipientNumber: '(11) 97654-3210',
+      message: 'Sra. Joana, o Felipe tem demonstrado grande talento para música. Sugerimos considerar as aulas extracurriculares de música oferecidas pela escola.',
+      status: 'sent',
+      createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+      updatedAt: undefined
+    },
+    {
+      id: uuidv4(),
+      studentId: '2',
+      studentName: 'Bruno Santos',
+      parentName: 'Marta Santos',
+      recipientNumber: '(11) 91234-5678',
+      message: 'Sra. Marta, Bruno esqueceu seu livro de ciências na escola hoje. Ele precisará dele para a tarefa de casa.',
+      status: 'read',
+      createdAt: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000),
+      updatedAt: new Date(Date.now() - 10.9 * 24 * 60 * 60 * 1000)
+    },
+    {
+      id: uuidv4(),
+      studentId: '3',
+      studentName: 'Carla Oliveira',
+      parentName: 'Paulo Oliveira',
+      recipientNumber: '(11) 99876-5432',
+      message: 'Sr. Paulo, a apresentação do projeto de ciências da Carla foi excelente! Ela demonstrou grande conhecimento e criatividade.',
+      status: 'failed',
+      createdAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000),
+      updatedAt: new Date(Date.now() - 11.9 * 24 * 60 * 60 * 1000),
+      errorMessage: 'Falha na entrega da mensagem'
     }
   ];
 };
@@ -89,18 +146,20 @@ const generateDemoMessages = (): WhatsAppMessage[] => {
 export const useWhatsAppHistory = () => {
   const [messages, setMessages] = useState<WhatsAppMessage[]>(() => {
     // Tenta carregar o histórico do localStorage
-    const savedHistory = localStorage.getItem('whatsapp_history');
-    if (savedHistory) {
-      try {
-        const parsed = JSON.parse(savedHistory);
-        // Converte as strings de data para objetos Date
-        return parsed.map((msg: any) => ({
-          ...msg,
-          createdAt: new Date(msg.createdAt),
-          updatedAt: msg.updatedAt ? new Date(msg.updatedAt) : undefined,
-        }));
-      } catch (e) {
-        console.error('Erro ao carregar histórico de WhatsApp:', e);
+    if (typeof window !== 'undefined') {
+      const savedHistory = localStorage.getItem('whatsapp_history');
+      if (savedHistory) {
+        try {
+          const parsed = JSON.parse(savedHistory);
+          // Converte as strings de data para objetos Date
+          return parsed.map((msg: any) => ({
+            ...msg,
+            createdAt: new Date(msg.createdAt),
+            updatedAt: msg.updatedAt ? new Date(msg.updatedAt) : undefined,
+          }));
+        } catch (e) {
+          console.error('Erro ao carregar histórico de WhatsApp:', e);
+        }
       }
     }
     
@@ -110,7 +169,9 @@ export const useWhatsAppHistory = () => {
 
   // Salva mensagens no localStorage quando mudam
   useEffect(() => {
-    localStorage.setItem('whatsapp_history', JSON.stringify(messages));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('whatsapp_history', JSON.stringify(messages));
+    }
   }, [messages]);
 
   const addMessage = (message: WhatsAppMessage) => {
