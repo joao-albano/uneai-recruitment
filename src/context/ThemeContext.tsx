@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-// Changed the import to use the directly from the radix UI component
-import { toast } from "@/components/ui/toast";
+// Fixed the import to use the correct path
+import { toast } from "@/hooks/use-toast";
 
 type Theme = 'light' | 'dark';
 type Language = 'pt-BR' | 'en-US';
