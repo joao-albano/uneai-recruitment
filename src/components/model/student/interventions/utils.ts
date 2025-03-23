@@ -5,14 +5,14 @@ import { ptBR } from 'date-fns/locale';
 import { Intervention } from './types';
 import React from 'react';
 
-// Função para renderizar o ícone baseado no tipo de intervenção
+// Função para retornar o componente de ícone baseado no tipo de intervenção
 export const getInterventionIcon = (type: Intervention['interventionType']) => {
   switch (type) {
-    case 'meeting': return <Calendar className="h-4 w-4" />;
-    case 'call': return <Phone className="h-4 w-4" />;
-    case 'material': return <FileText className="h-4 w-4" />;
-    case 'monitoring': return <LineChart className="h-4 w-4" />;
-    default: return <Info className="h-4 w-4" />;
+    case 'meeting': return Calendar;
+    case 'call': return Phone;
+    case 'material': return FileText;
+    case 'monitoring': return LineChart;
+    default: return Info;
   }
 };
 
