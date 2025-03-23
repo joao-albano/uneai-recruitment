@@ -194,12 +194,25 @@ export const generateDemoAlerts = (): AlertItem[] => {
 };
 
 export const generateDemoSchedules = (): ScheduleItem[] => {
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  
+  const nextWeek = new Date(today);
+  nextWeek.setDate(today.getDate() + 7);
+  
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  
+  const lastWeek = new Date(today);
+  lastWeek.setDate(today.getDate() - 7);
+  
   return [
     {
       id: '1',
       studentId: '1',
       studentName: 'Ana Silva',
-      date: new Date(Date.now() + 86400000),
+      date: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 10, 30),
       agentName: 'Coord. Mariana',
       status: 'scheduled',
       notes: 'Discutir frequência e desempenho acadêmico. Recomendado pelo modelo de IA: foco em plano de recuperação de notas.'
@@ -208,7 +221,7 @@ export const generateDemoSchedules = (): ScheduleItem[] => {
       id: '2',
       studentId: '5',
       studentName: 'Elena Costa',
-      date: new Date(Date.now() + 86400000 * 3),
+      date: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 14, 0),
       agentName: 'Coord. Mariana',
       status: 'scheduled',
       notes: 'Reunião com pais para tratar problemas de frequência. Estratégia sugerida pelo modelo: estabelecer metas claras de frequência.'
@@ -217,7 +230,7 @@ export const generateDemoSchedules = (): ScheduleItem[] => {
       id: '3',
       studentId: '3',
       studentName: 'Carla Oliveira',
-      date: new Date(Date.now() - 86400000 * 2),
+      date: new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate(), 9, 0),
       agentName: 'Coord. Mariana',
       status: 'completed',
       notes: 'Intervenção comportamental concluída. Recomendação de IA aplicada: estabelecimento de rotina de estudos estruturada.'
@@ -226,7 +239,7 @@ export const generateDemoSchedules = (): ScheduleItem[] => {
       id: '4',
       studentId: '7',
       studentName: 'Gabriela Lima',
-      date: new Date(Date.now() - 86400000 * 5),
+      date: new Date(lastWeek.getFullYear(), lastWeek.getMonth(), lastWeek.getDate(), 11, 15),
       agentName: 'Prof. Ricardo',
       status: 'completed',
       notes: 'Apoio acadêmico realizado. Plano de estudos baseado em análise de IA sobre pontos fracos identificados.'
@@ -235,10 +248,55 @@ export const generateDemoSchedules = (): ScheduleItem[] => {
       id: '5',
       studentId: '2',
       studentName: 'Bruno Santos',
-      date: new Date(Date.now() - 86400000 * 10),
+      date: new Date(lastWeek.getFullYear(), lastWeek.getMonth(), lastWeek.getDate() - 3, 10, 0),
       agentName: 'Prof. Ricardo',
       status: 'completed',
       notes: 'Monitoramento preventivo conforme recomendação do modelo para manutenção do bom desempenho.'
+    },
+    {
+      id: '6',
+      studentId: '4',
+      studentName: 'Daniel Pereira',
+      date: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 9, 0),
+      agentName: 'Prof. Juliana',
+      status: 'scheduled',
+      notes: 'Acompanhamento regular de desempenho para manter bom rendimento.'
+    },
+    {
+      id: '7',
+      studentId: '6',
+      studentName: 'Felipe Martins',
+      date: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 15, 30),
+      agentName: 'Coord. Mariana',
+      status: 'scheduled',
+      notes: 'Discussão sobre atividades extracurriculares e participação em projetos escolares.'
+    },
+    {
+      id: '8',
+      studentId: '8',
+      studentName: 'Henrique Alves',
+      date: new Date(nextWeek.getFullYear(), nextWeek.getMonth(), nextWeek.getDate(), 13, 45),
+      agentName: 'Prof. Ricardo',
+      status: 'scheduled',
+      notes: 'Planejamento de estudos para o próximo período letivo.'
+    },
+    {
+      id: '9',
+      studentId: '5',
+      studentName: 'Elena Costa',
+      date: new Date(nextWeek.getFullYear(), nextWeek.getMonth(), nextWeek.getDate() + 2, 10, 0),
+      agentName: 'Coord. Mariana',
+      status: 'scheduled',
+      notes: 'Acompanhamento das metas estabelecidas na reunião anterior.'
+    },
+    {
+      id: '10',
+      studentId: '3',
+      studentName: 'Carla Oliveira',
+      date: new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate() - 2, 14, 30),
+      agentName: 'Prof. Juliana',
+      status: 'canceled',
+      notes: 'Cancelado devido a conflito de horário com atividade escolar.'
     }
   ];
 };
