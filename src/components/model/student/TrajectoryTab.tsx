@@ -82,24 +82,58 @@ const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
           <CardTitle className="text-xl text-center">Evolução do Nível de Risco</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px] w-full">
+          <div className="h-[400px] w-full px-4">
             <ChartContainer config={{
               riskScore: { theme: { light: "#ef4444", dark: "#ef4444" } },
             }}>
-              <LineChart data={trajectoryData} margin={{ top: 20, right: 30, left: 10, bottom: 20 }}>
+              <LineChart 
+                data={trajectoryData} 
+                margin={{ top: 30, right: 50, left: 20, bottom: 30 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis domain={[0, 100]} />
+                <XAxis 
+                  dataKey="month" 
+                  tick={{ fontSize: 12 }}
+                  tickMargin={10}
+                />
+                <YAxis 
+                  domain={[0, 100]} 
+                  tick={{ fontSize: 12 }}
+                  tickMargin={10}
+                  tickCount={6}
+                />
                 <Tooltip content={renderTooltip} />
-                <ReferenceLine y={40} stroke="#4ade80" strokeDasharray="3 3" label={{ value: "Baixo", position: "insideRight" }} />
-                <ReferenceLine y={70} stroke="#fbbf24" strokeDasharray="3 3" label={{ value: "Médio", position: "insideRight" }} />
+                <ReferenceLine 
+                  y={40} 
+                  stroke="#4ade80" 
+                  strokeDasharray="3 3" 
+                  label={{ 
+                    value: "Baixo", 
+                    position: "right",
+                    fill: "#4ade80",
+                    fontSize: 12,
+                    fontWeight: "bold"
+                  }} 
+                />
+                <ReferenceLine 
+                  y={70} 
+                  stroke="#fbbf24" 
+                  strokeDasharray="3 3" 
+                  label={{ 
+                    value: "Médio", 
+                    position: "right",
+                    fill: "#fbbf24",
+                    fontSize: 12,
+                    fontWeight: "bold"
+                  }} 
+                />
                 <Line 
                   type="monotone" 
                   dataKey="riskScore" 
                   stroke="#ef4444" 
-                  strokeWidth={2}
-                  dot={{ r: 4, fill: "#ef4444" }}
-                  activeDot={{ r: 8 }}
+                  strokeWidth={3}
+                  dot={{ r: 6, fill: "#ef4444", strokeWidth: 2, stroke: "#ffffff" }}
+                  activeDot={{ r: 8, fill: "#ef4444", stroke: "#ffffff", strokeWidth: 2 }}
                   name="Nível de Risco"
                 />
               </LineChart>
@@ -113,25 +147,44 @@ const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
           <CardTitle className="text-xl text-center">Indicadores Acadêmicos</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-6">
             <div className="flex flex-col items-center space-y-4">
               <h3 className="font-medium text-lg">Notas</h3>
               <div className="h-[250px] w-full">
                 <ChartContainer config={{
                   grade: { theme: { light: "#3b82f6", dark: "#60a5fa" } },
                 }}>
-                  <LineChart data={trajectoryData} margin={{ top: 20, right: 10, left: 10, bottom: 20 }}>
+                  <LineChart data={trajectoryData} margin={{ top: 20, right: 20, left: 10, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis domain={[0, 10]} />
+                    <XAxis 
+                      dataKey="month" 
+                      tick={{ fontSize: 11 }} 
+                      tickMargin={10}
+                    />
+                    <YAxis 
+                      domain={[0, 10]} 
+                      tick={{ fontSize: 11 }}
+                      tickMargin={8}
+                    />
                     <Tooltip content={renderTooltip} />
-                    <ReferenceLine y={6} stroke="#ef4444" strokeDasharray="3 3" label={{ value: "Mínimo", position: "insideRight" }} />
+                    <ReferenceLine 
+                      y={6} 
+                      stroke="#ef4444" 
+                      strokeDasharray="3 3" 
+                      label={{ 
+                        value: "Mínimo", 
+                        position: "right", 
+                        fontSize: 11,
+                        fill: "#ef4444"
+                      }} 
+                    />
                     <Line 
                       type="monotone" 
                       dataKey="grade" 
                       stroke="#3b82f6" 
                       strokeWidth={2} 
-                      dot={{ r: 4, fill: "#3b82f6" }}
+                      dot={{ r: 4, fill: "#3b82f6", stroke: "#ffffff", strokeWidth: 1 }}
+                      activeDot={{ r: 6, stroke: "#ffffff", strokeWidth: 1 }}
                       name="Nota"
                     />
                   </LineChart>
@@ -145,12 +198,30 @@ const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
                 <ChartContainer config={{
                   attendance: { theme: { light: "#10b981", dark: "#34d399" } },
                 }}>
-                  <BarChart data={trajectoryData} margin={{ top: 20, right: 10, left: 10, bottom: 20 }}>
+                  <BarChart data={trajectoryData} margin={{ top: 20, right: 20, left: 10, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis domain={[0, 100]} />
+                    <XAxis 
+                      dataKey="month" 
+                      tick={{ fontSize: 11 }}
+                      tickMargin={10}
+                    />
+                    <YAxis 
+                      domain={[0, 100]} 
+                      tick={{ fontSize: 11 }}
+                      tickMargin={8}
+                    />
                     <Tooltip content={renderTooltip} />
-                    <ReferenceLine y={75} stroke="#ef4444" strokeDasharray="3 3" label={{ value: "Mínimo", position: "insideRight" }} />
+                    <ReferenceLine 
+                      y={75} 
+                      stroke="#ef4444" 
+                      strokeDasharray="3 3" 
+                      label={{ 
+                        value: "Mínimo", 
+                        position: "right",
+                        fontSize: 11,
+                        fill: "#ef4444"
+                      }} 
+                    />
                     <Bar 
                       dataKey="attendance" 
                       fill="#10b981" 
@@ -168,10 +239,19 @@ const TrajectoryTab: React.FC<TrajectoryTabProps> = ({ student }) => {
                 <ChartContainer config={{
                   behavior: { theme: { light: "#8b5cf6", dark: "#a78bfa" } },
                 }}>
-                  <BarChart data={trajectoryData} margin={{ top: 20, right: 10, left: 10, bottom: 20 }}>
+                  <BarChart data={trajectoryData} margin={{ top: 20, right: 20, left: 10, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis domain={[0, 5]} />
+                    <XAxis 
+                      dataKey="month" 
+                      tick={{ fontSize: 11 }}
+                      tickMargin={10}
+                    />
+                    <YAxis 
+                      domain={[0, 5]} 
+                      tick={{ fontSize: 11 }}
+                      tickCount={6}
+                      tickMargin={8}
+                    />
                     <Tooltip content={renderTooltip} />
                     <Bar 
                       dataKey="behavior" 
