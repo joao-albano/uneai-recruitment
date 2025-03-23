@@ -6,13 +6,14 @@ import GeneralSettings from './GeneralSettings';
 import NotificationSettings from './NotificationSettings';
 import SecuritySettings from './SecuritySettings';
 import AdvancedSettings from './AdvancedSettings';
+import ApiSettings from './ApiSettings';
 
 const SettingsTabs: React.FC = () => {
   const { language } = useTheme();
   
   return (
     <Tabs defaultValue="general" className="max-w-4xl">
-      <TabsList className="grid w-full grid-cols-4 mb-6">
+      <TabsList className="grid w-full grid-cols-5 mb-6">
         <TabsTrigger value="general">
           {language === 'pt-BR' ? 'Geral' : 'General'}
         </TabsTrigger>
@@ -21,6 +22,9 @@ const SettingsTabs: React.FC = () => {
         </TabsTrigger>
         <TabsTrigger value="security">
           {language === 'pt-BR' ? 'Segurança' : 'Security'}
+        </TabsTrigger>
+        <TabsTrigger value="api">
+          {language === 'pt-BR' ? 'APIs' : 'APIs'}
         </TabsTrigger>
         <TabsTrigger value="advanced">
           {language === 'pt-BR' ? 'Avançado' : 'Advanced'}
@@ -37,6 +41,10 @@ const SettingsTabs: React.FC = () => {
       
       <TabsContent value="security">
         <SecuritySettings />
+      </TabsContent>
+      
+      <TabsContent value="api">
+        <ApiSettings />
       </TabsContent>
       
       <TabsContent value="advanced">
