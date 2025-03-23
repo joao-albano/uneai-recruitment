@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AlertTriangle, Users, Clock, CheckCircle2 } from 'lucide-react';
+import { AlertTriangle, Users, Clock, CheckCircle2, AlertCircle, ShieldCheck } from 'lucide-react';
 import RiskCard from './RiskCard';
 import { AlertItem, ScheduleItem } from '@/types/data';
 
@@ -16,6 +16,8 @@ interface RiskStatsProps {
 
 const RiskStats: React.FC<RiskStatsProps> = ({
   highRiskCount,
+  mediumRiskCount,
+  lowRiskCount,
   totalStudents,
   highRiskPercentage,
   alerts,
@@ -37,6 +39,20 @@ const RiskStats: React.FC<RiskStatsProps> = ({
         description={`${highRiskPercentage}% do total de alunos`}
         icon={<AlertTriangle className="h-4 w-4 text-red-500" />}
         className="border-l-4 border-l-red-500"
+      />
+      <RiskCard
+        title="Alunos em Médio Risco"
+        value={mediumRiskCount}
+        description="Risco moderado de evasão"
+        icon={<AlertCircle className="h-4 w-4 text-orange-500" />}
+        className="border-l-4 border-l-orange-500"
+      />
+      <RiskCard
+        title="Alunos em Baixo Risco"
+        value={lowRiskCount}
+        description="Baixo risco de evasão"
+        icon={<ShieldCheck className="h-4 w-4 text-green-500" />}
+        className="border-l-4 border-l-green-500"
       />
       <RiskCard
         title="Total de Alunos"
