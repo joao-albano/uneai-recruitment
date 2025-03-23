@@ -6,9 +6,9 @@ import { SchedulesProvider, useSchedules } from './schedules/SchedulesContext';
 import { AlertsProvider, useAlerts } from './alerts/AlertsContext';
 import { UploadsProvider, useUploads } from './uploads/UploadsContext';
 import { WhatsAppProvider, useWhatsApp } from './whatsapp/WhatsAppContext';
-import { useAppState } from './app/AppStateContext';
 import { StudentData, SurveyData, ScheduleItem, AlertItem, UploadRecord } from '@/types/data';
 import { WhatsAppMessage } from '@/types/whatsapp';
+import { useAppState } from './app/AppStateContext';
 
 // Combined context type that matches the original DataContextType
 export type DataContextType = {
