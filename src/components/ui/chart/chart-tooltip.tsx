@@ -45,14 +45,16 @@ function getPayloadConfigFromPayload(
 
 const ChartTooltip = RechartsPrimitive.Tooltip
 
+// Fix the interface by omitting the conflicting 'content' property and then adding our own
 interface ChartTooltipContentProps
-  extends React.ComponentProps<typeof RechartsPrimitive.Tooltip>,
-    React.ComponentProps<"div"> {
-  hideLabel?: boolean
-  hideIndicator?: boolean
-  indicator?: "line" | "dot" | "dashed"
-  nameKey?: string
-  labelKey?: string
+  extends Omit<React.ComponentProps<typeof RechartsPrimitive.Tooltip>, 'content'> {
+  className?: string;
+  hideLabel?: boolean;
+  hideIndicator?: boolean;
+  indicator?: 'line' | 'dot' | 'dashed';
+  nameKey?: string;
+  labelKey?: string;
+  content?: React.ReactNode;
 }
 
 const ChartTooltipContent = React.forwardRef<
