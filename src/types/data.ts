@@ -1,5 +1,6 @@
-
 // Define types for our data
+import { WhatsAppConfig } from '@/utils/whatsappIntegration';
+
 export type StudentData = {
   id: string;
   name: string;
@@ -12,7 +13,7 @@ export type StudentData = {
   actionItems?: string[];
   parentName?: string;
   parentContact?: string;
-  decisionPath?: string[]; // Add decision path for explainable AI
+  decisionPath?: string[]; // Add decision path for explainable AI;
 };
 
 export type SurveyData = {
@@ -61,6 +62,7 @@ export type DataContextType = {
   alerts: AlertItem[];
   uploadHistory: UploadRecord[];
   isLoading: boolean;
+  whatsAppConfig: WhatsAppConfig;
   setStudents: (students: StudentData[]) => void;
   addSurvey: (survey: SurveyData) => void;
   addSchedule: (schedule: ScheduleItem) => void;

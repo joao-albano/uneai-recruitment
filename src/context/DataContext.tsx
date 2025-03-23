@@ -1,7 +1,7 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { useAlertsState } from '@/hooks/useAlertsState';
 import { useSchedulesState } from '@/hooks/useSchedulesState';
+import { useWhatsAppConfig } from '@/hooks/useWhatsAppConfig';
 import { StudentData, SurveyData, ScheduleItem, AlertItem, DataContextType } from '@/types/data';
 import { UploadRecord } from '@/types/upload';
 import { sendWhatsAppSurvey as sendWhatsAppSurveyUtil } from '@/utils/notifications';
@@ -15,7 +15,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState(false);
   const [uploadHistory, setUploadHistory] = useState<UploadRecord[]>([]);
   
-  // Use our custom hooks for alerts and schedules
   const { 
     alerts, 
     setAlerts, 
@@ -31,6 +30,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     updateScheduleStatus, 
     updateSchedule 
   } = useSchedulesState();
+  
+  const { config: whatsAppConfig } = useWhatsAppConfig();
 
   const addSurvey = (survey: SurveyData) => {
     setSurveys([...surveys, survey]);
@@ -51,7 +52,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const sendWhatsAppSurvey = (studentId: string) => {
     const student = students.find(s => s.id === studentId);
     if (student) {
-      sendWhatsAppSurveyUtil(student, addAlert);
+      sendWhatsAppSurveyUtil(student, addAlert, whatsAppConfig);
     }
   };
 
@@ -66,7 +67,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setAlerts(demoAlerts);
     setSchedules(demoSchedules);
     
-    // Add a demo upload record
     addUploadRecord({
       filename: 'demo_dados.csv',
       uploadDate: new Date(Date.now() - 86400000), // yesterday
@@ -111,5 +111,4 @@ export const useData = () => {
   return context;
 };
 
-// Re-export types for convenience
 export type { StudentData, SurveyData, ScheduleItem, AlertItem, UploadRecord };

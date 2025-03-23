@@ -1,10 +1,12 @@
 
 import { StudentData, AlertItem } from '../types/data';
+import { sendWhatsAppMessage, WhatsAppConfig } from './whatsappIntegration';
 
-export const sendWhatsAppSurvey = (
+export const sendWhatsAppSurvey = async (
   student: StudentData,
-  addAlert: (alert: AlertItem) => void
-): void => {
+  addAlert: (alert: AlertItem) => void,
+  whatsappConfig?: WhatsAppConfig
+): Promise<void> => {
   if (!student || !student.parentContact) return;
   
   const message = `Olá ${student.parentName}, gostaríamos de fazer uma pesquisa sobre ${student.name}. Por favor, responda as seguintes perguntas:
@@ -14,22 +16,54 @@ export const sendWhatsAppSurvey = (
   4. Com que frequência o aluno enfrenta dificuldades para chegar à escola?
   5. Alguma observação adicional?`;
   
-  console.log(`Simulando envio de WhatsApp para ${student.parentName}: ${student.parentContact}`);
-  console.log(message);
+  console.log(`Preparando envio de WhatsApp para ${student.parentName}: ${student.parentContact}`);
   
+  let success = false;
+  let errorMessage = '';
+  
+  // Se temos uma configuração de WhatsApp, usamos a integração configurada
+  if (whatsappConfig && whatsappConfig.provider !== 'disabled') {
+    console.log(`Usando integração ${whatsappConfig.provider} para envio`);
+    
+    try {
+      const result = await sendWhatsAppMessage(
+        whatsappConfig,
+        student.parentContact,
+        message
+      );
+      
+      success = result.success;
+      errorMessage = result.message || '';
+    } catch (error) {
+      console.error('Erro ao enviar mensagem:', error);
+      success = false;
+      errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+    }
+  } else {
+    // Simulação do envio (comportamento anterior)
+    console.log('Usando simulação de envio (sem integração configurada)');
+    console.log(message);
+    success = true;
+  }
+  
+  // Sempre adiciona o alerta, independente do sucesso do envio
   addAlert({
     id: `whatsapp-${Date.now()}`,
     studentId: student.id,
     studentName: student.name,
     studentClass: student.class,
     type: 'survey-requested',
-    message: `Pesquisa diagnóstica enviada via WhatsApp para ${student.parentName} (${student.parentContact}).`,
+    message: success 
+      ? `Pesquisa diagnóstica enviada via WhatsApp para ${student.parentName} (${student.parentContact}).`
+      : `Falha ao enviar WhatsApp para ${student.parentName}: ${errorMessage}`,
     createdAt: new Date(),
     read: false,
     actionTaken: false,
   });
   
-  setTimeout(() => {
-    console.log(`Simulação: ${student.parentName} visualizou a mensagem.`);
-  }, 3000);
+  if (success) {
+    setTimeout(() => {
+      console.log(`Simulação: ${student.parentName} visualizou a mensagem.`);
+    }, 3000);
+  }
 };

@@ -1,53 +1,77 @@
 
 import React from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTheme } from '@/context/ThemeContext';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import GeneralSettings from './GeneralSettings';
-import NotificationSettings from './NotificationSettings';
 import SecuritySettings from './SecuritySettings';
-import AdvancedSettings from './AdvancedSettings';
+import NotificationSettings from './NotificationSettings';
 import ApiSettings from './ApiSettings';
+import OpenAiSettings from './OpenAiSettings';
+import AdvancedSettings from './AdvancedSettings';
+import WebhookSettings from './WebhookSettings';
+import WhatsAppSettings from './WhatsAppSettings';
 
 const SettingsTabs: React.FC = () => {
   const { language } = useTheme();
   
   return (
-    <Tabs defaultValue="general" className="max-w-4xl">
-      <TabsList className="grid w-full grid-cols-5 mb-6">
+    <Tabs defaultValue="general" className="w-full">
+      <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 mb-8">
         <TabsTrigger value="general">
           {language === 'pt-BR' ? 'Geral' : 'General'}
-        </TabsTrigger>
-        <TabsTrigger value="notifications">
-          {language === 'pt-BR' ? 'Notificações' : 'Notifications'}
         </TabsTrigger>
         <TabsTrigger value="security">
           {language === 'pt-BR' ? 'Segurança' : 'Security'}
         </TabsTrigger>
+        <TabsTrigger value="notifications">
+          {language === 'pt-BR' ? 'Notificações' : 'Notifications'}
+        </TabsTrigger>
+        <TabsTrigger value="whatsapp">
+          WhatsApp
+        </TabsTrigger>
+        <TabsTrigger value="webhooks">
+          Webhooks
+        </TabsTrigger>
         <TabsTrigger value="api">
-          {language === 'pt-BR' ? 'APIs' : 'APIs'}
+          API
+        </TabsTrigger>
+        <TabsTrigger value="openai">
+          OpenAI
         </TabsTrigger>
         <TabsTrigger value="advanced">
           {language === 'pt-BR' ? 'Avançado' : 'Advanced'}
         </TabsTrigger>
       </TabsList>
       
-      <TabsContent value="general">
+      <TabsContent value="general" className="space-y-6">
         <GeneralSettings />
       </TabsContent>
       
-      <TabsContent value="notifications">
-        <NotificationSettings />
-      </TabsContent>
-      
-      <TabsContent value="security">
+      <TabsContent value="security" className="space-y-6">
         <SecuritySettings />
       </TabsContent>
       
-      <TabsContent value="api">
+      <TabsContent value="notifications" className="space-y-6">
+        <NotificationSettings />
+      </TabsContent>
+      
+      <TabsContent value="whatsapp" className="space-y-6">
+        <WhatsAppSettings />
+      </TabsContent>
+      
+      <TabsContent value="webhooks" className="space-y-6">
+        <WebhookSettings />
+      </TabsContent>
+      
+      <TabsContent value="api" className="space-y-6">
         <ApiSettings />
       </TabsContent>
       
-      <TabsContent value="advanced">
+      <TabsContent value="openai" className="space-y-6">
+        <OpenAiSettings />
+      </TabsContent>
+      
+      <TabsContent value="advanced" className="space-y-6">
         <AdvancedSettings />
       </TabsContent>
     </Tabs>

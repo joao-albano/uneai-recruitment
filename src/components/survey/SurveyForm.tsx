@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -37,7 +36,7 @@ const SurveyForm: React.FC = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
   const { toast } = useToast();
-  const { students, addSurvey, addAlert, sendWhatsAppSurvey } = useData();
+  const { students, addSurvey, addAlert, sendWhatsAppSurvey, whatsAppConfig } = useData();
   
   // Initialize the form
   const form = useForm<FormValues>({
@@ -136,10 +135,14 @@ const SurveyForm: React.FC = () => {
     // Call the function to send WhatsApp survey
     sendWhatsAppSurvey(studentId);
     
-    // Show success toast
+    // Show status message based on WhatsApp configuration
+    const configEnabled = whatsAppConfig && whatsAppConfig.provider !== 'disabled';
+    
     toast({
       title: 'Pesquisa enviada via WhatsApp',
-      description: 'A pesquisa foi enviada para o número de contato do responsável.',
+      description: configEnabled
+        ? 'A pesquisa foi enviada usando a integração configurada do WhatsApp.'
+        : 'A pesquisa foi enviada (modo simulação).',
     });
     
     setTimeout(() => {
