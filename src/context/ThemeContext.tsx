@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useToast } from '@/components/ui/use-toast';
+// Changed the import to use the directly from the radix UI component
+import { toast } from "@/components/ui/toast";
 
 type Theme = 'light' | 'dark';
 type Language = 'pt-BR' | 'en-US';
@@ -15,7 +16,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { toast } = useToast();
+  // Removed the useToast hook that was causing circular dependency
   const [theme, setTheme] = useState<Theme>(() => {
     // Try to get theme from localStorage on initial load
     const savedTheme = localStorage.getItem('theme');
@@ -50,6 +51,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const toggleTheme = () => {
     setTheme(prevTheme => {
       const newTheme = prevTheme === 'light' ? 'dark' : 'light';
+      // Use the toast function directly
       toast({
         title: language === 'pt-BR' ? 'Tema alterado' : 'Theme changed',
         description: language === 'pt-BR' 
@@ -62,6 +64,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
+    // Use the toast function directly
     toast({
       title: lang === 'pt-BR' ? 'Idioma alterado' : 'Language changed',
       description: lang === 'pt-BR' 
