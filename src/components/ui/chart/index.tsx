@@ -3,6 +3,7 @@ import { ChartConfig } from "./context"
 import { ChartContainer } from "./chart-container"
 import { ChartTooltip, ChartTooltipContent } from "./chart-tooltip"
 import { ChartLegend, ChartLegendContent } from "./chart-legend"
+import { getPayloadConfigFromPayload } from "./utils"
 
 export {
   ChartContainer,
@@ -10,5 +11,6 @@ export {
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
+  getPayloadConfigFromPayload,
   type ChartConfig,
 }

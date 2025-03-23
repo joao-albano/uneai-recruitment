@@ -3,7 +3,7 @@ import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 import { cn } from "@/lib/utils"
 import { useChart } from "./context"
-import { getPayloadConfigFromPayload } from "./chart-tooltip"
+import { getPayloadConfigFromPayload } from "./utils"
 
 const ChartLegend = RechartsPrimitive.Legend
 
