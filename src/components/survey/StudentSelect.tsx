@@ -37,23 +37,23 @@ const StudentSelect: React.FC<StudentSelectProps> = ({ form }) => {
   };
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid gap-6 sm:grid-cols-2">
       <FormField
         control={form.control}
         name="studentId"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Selecione o aluno</FormLabel>
+            <FormLabel className="text-base font-medium mb-2 block">Selecione o aluno</FormLabel>
             <Select
               onValueChange={(value) => handleStudentSelect(value)}
               value={field.value}
             >
               <FormControl>
-                <SelectTrigger className="px-2">
+                <SelectTrigger className="h-12 px-3">
                   <SelectValue placeholder="Selecione um aluno..." />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent align="start" className="w-full">
+              <SelectContent align="start" side="bottom" className="w-full">
                 {students.map((student) => (
                   <SelectItem key={student.id} value={student.id}>
                     {student.name} - Turma {student.class} - {student.segment}
@@ -71,9 +71,9 @@ const StudentSelect: React.FC<StudentSelectProps> = ({ form }) => {
         name="studentName"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nome do aluno</FormLabel>
+            <FormLabel className="text-base font-medium mb-2 block">Nome do aluno</FormLabel>
             <FormControl>
-              <Input {...field} readOnly />
+              <Input {...field} readOnly className="h-12 px-3" />
             </FormControl>
             <FormMessage />
           </FormItem>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -51,26 +50,25 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
   };
 
   return (
-    <div className="flex justify-end">
-      <Button 
-        type="button" 
-        variant="outline" 
-        onClick={handleSendWhatsApp}
-        disabled={sendingWhatsApp || !form.getValues('studentId')}
-      >
-        {sendingWhatsApp ? (
-          <>
-            <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
-            Enviando...
-          </>
-        ) : (
-          <>
-            <MessageSquare className="mr-2 h-4 w-4" />
-            Enviar via WhatsApp
-          </>
-        )}
-      </Button>
-    </div>
+    <Button 
+      type="button" 
+      variant="outline" 
+      onClick={handleSendWhatsApp}
+      disabled={sendingWhatsApp || !form.getValues('studentId')}
+      className="h-11 px-4"
+    >
+      {sendingWhatsApp ? (
+        <>
+          <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
+          Enviando...
+        </>
+      ) : (
+        <>
+          <MessageSquare className="mr-2 h-4 w-4" />
+          Enviar via WhatsApp
+        </>
+      )}
+    </Button>
   );
 };
 

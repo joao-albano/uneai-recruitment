@@ -85,22 +85,24 @@ const SurveyForm: React.FC = () => {
         <FormCompletion onStartNewSurvey={startNewSurvey} />
       ) : (
         <Card className="shadow-md">
-          <CardHeader>
-            <CardTitle className="text-xl font-bold">Pesquisa Diagnóstica Familiar</CardTitle>
-            <CardDescription>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-2xl font-bold">Pesquisa Diagnóstica Familiar</CardTitle>
+            <CardDescription className="text-base mt-1">
               Ajude-nos a entender melhor as necessidades do aluno para prevenir a evasão escolar
             </CardDescription>
           </CardHeader>
           
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="space-y-4">
-                  <WhatsAppButton 
-                    form={form} 
-                    sendingWhatsApp={sendingWhatsApp} 
-                    setSendingWhatsApp={setSendingWhatsApp} 
-                  />
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <div className="space-y-6">
+                  <div className="flex justify-end mb-2">
+                    <WhatsAppButton 
+                      form={form} 
+                      sendingWhatsApp={sendingWhatsApp} 
+                      setSendingWhatsApp={setSendingWhatsApp} 
+                    />
+                  </div>
                 
                   <StudentSelect form={form} />
                   <ParentInfo form={form} />
@@ -109,7 +111,7 @@ const SurveyForm: React.FC = () => {
                 
                 <Button 
                   type="submit" 
-                  className="w-full"
+                  className="w-full py-6"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
@@ -119,7 +121,7 @@ const SurveyForm: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      <Send className="mr-2 h-4 w-4" />
+                      <Send className="mr-2 h-5 w-5" />
                       Enviar pesquisa
                     </>
                   )}

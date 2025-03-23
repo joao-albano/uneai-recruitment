@@ -11,15 +11,15 @@ interface ParentInfoProps {
 
 const ParentInfo: React.FC<ParentInfoProps> = ({ form }) => {
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid gap-6 sm:grid-cols-2 mt-2">
       <FormField
         control={form.control}
         name="parentName"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nome do responsável</FormLabel>
+            <FormLabel className="text-base font-medium mb-2 block">Nome do responsável</FormLabel>
             <FormControl>
-              <Input {...field} placeholder="Nome completo" />
+              <Input {...field} placeholder="Nome completo" className="h-12 px-3" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -31,9 +31,9 @@ const ParentInfo: React.FC<ParentInfoProps> = ({ form }) => {
         name="parentContact"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Contato</FormLabel>
+            <FormLabel className="text-base font-medium mb-2 block">Contato</FormLabel>
             <FormControl>
-              <Input {...field} placeholder="Telefone ou email" />
+              <Input {...field} placeholder="Telefone ou email" className="h-12 px-3" />
             </FormControl>
             <FormMessage />
           </FormItem>

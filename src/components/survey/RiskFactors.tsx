@@ -15,19 +15,19 @@ interface RiskFactorsProps {
 
 const RiskFactors: React.FC<RiskFactorsProps> = ({ form }) => {
   return (
-    <div className="space-y-4">
-      <Separator className="my-4" />
+    <div className="space-y-6">
+      <Separator className="my-6" />
       
-      <h3 className="text-lg font-medium">Fatores de risco</h3>
+      <h3 className="text-lg font-semibold mb-4">Fatores de risco</h3>
       
       <FormField
         control={form.control}
         name="movedRecently"
         render={({ field }) => (
-          <FormItem className="flex items-center justify-between rounded-lg border p-4">
-            <div className="space-y-0.5">
-              <FormLabel className="text-base">Mudança recente de endereço</FormLabel>
-              <FormDescription>
+          <FormItem className="flex items-center justify-between rounded-lg border p-5">
+            <div className="space-y-1">
+              <FormLabel className="text-base font-medium">Mudança recente de endereço</FormLabel>
+              <FormDescription className="text-sm">
                 A família mudou de residência nos últimos 6 meses?
               </FormDescription>
             </div>
@@ -45,10 +45,10 @@ const RiskFactors: React.FC<RiskFactorsProps> = ({ form }) => {
         control={form.control}
         name="bullyingConcerns"
         render={({ field }) => (
-          <FormItem className="flex items-center justify-between rounded-lg border p-4">
-            <div className="space-y-0.5">
-              <FormLabel className="text-base">Preocupações com bullying</FormLabel>
-              <FormDescription>
+          <FormItem className="flex items-center justify-between rounded-lg border p-5">
+            <div className="space-y-1">
+              <FormLabel className="text-base font-medium">Preocupações com bullying</FormLabel>
+              <FormDescription className="text-sm">
                 O aluno relatou episódios de bullying ou tratamento inadequado?
               </FormDescription>
             </div>
@@ -66,14 +66,14 @@ const RiskFactors: React.FC<RiskFactorsProps> = ({ form }) => {
         control={form.control}
         name="socialIntegration"
         render={({ field }) => (
-          <FormItem className="space-y-4 rounded-lg border p-4">
+          <FormItem className="space-y-4 rounded-lg border p-5">
             <div>
-              <FormLabel className="text-base">Integração social</FormLabel>
-              <FormDescription>
+              <FormLabel className="text-base font-medium">Integração social</FormLabel>
+              <FormDescription className="text-sm mt-1">
                 Como você avalia a integração social do aluno na escola?
               </FormDescription>
             </div>
-            <div className="pt-2">
+            <div className="pt-3">
               <FormControl>
                 <Slider
                   value={[field.value]}
@@ -84,7 +84,7 @@ const RiskFactors: React.FC<RiskFactorsProps> = ({ form }) => {
                 />
               </FormControl>
             </div>
-            <div className="flex justify-between text-xs text-muted-foreground">
+            <div className="flex justify-between text-xs text-muted-foreground pt-1">
               <span>Pouca interação</span>
               <span>Interação normal</span>
               <span>Muito sociável</span>
@@ -97,16 +97,16 @@ const RiskFactors: React.FC<RiskFactorsProps> = ({ form }) => {
         control={form.control}
         name="transportationIssues"
         render={({ field }) => (
-          <FormItem className="space-y-3 rounded-lg border p-4">
-            <FormLabel className="text-base">Problemas de transporte</FormLabel>
-            <FormDescription>
+          <FormItem className="space-y-3 rounded-lg border p-5">
+            <FormLabel className="text-base font-medium">Problemas de transporte</FormLabel>
+            <FormDescription className="text-sm">
               Com que frequência o aluno enfrenta dificuldades para chegar à escola?
             </FormDescription>
             <FormControl>
               <RadioGroup
                 onValueChange={field.onChange}
                 defaultValue={field.value}
-                className="flex flex-col space-y-1"
+                className="flex flex-col space-y-3 mt-2"
               >
                 <FormItem className="flex items-center space-x-3 space-y-0">
                   <FormControl>
@@ -143,16 +143,16 @@ const RiskFactors: React.FC<RiskFactorsProps> = ({ form }) => {
         control={form.control}
         name="additionalNotes"
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>Observações adicionais</FormLabel>
+          <FormItem className="pt-2">
+            <FormLabel className="text-base font-medium mb-2 block">Observações adicionais</FormLabel>
             <FormControl>
               <Textarea
                 placeholder="Compartilhe outras informações relevantes para a escola..."
-                className="min-h-[100px]"
+                className="min-h-[120px] p-3 text-base"
                 {...field}
               />
             </FormControl>
-            <FormDescription>
+            <FormDescription className="text-sm mt-2">
               Quaisquer detalhes adicionais que possam nos ajudar a apoiar melhor o aluno.
             </FormDescription>
             <FormMessage />
