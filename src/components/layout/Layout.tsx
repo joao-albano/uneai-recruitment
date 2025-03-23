@@ -8,15 +8,15 @@ interface LayoutProps {
 }
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
   
   const toggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed);
+    setSidebarOpen(!sidebarOpen);
   };
   
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar collapsed={sidebarCollapsed} />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header toggleSidebar={toggleSidebar} />
