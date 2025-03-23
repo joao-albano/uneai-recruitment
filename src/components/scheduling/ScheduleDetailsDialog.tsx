@@ -30,40 +30,32 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
   const formattedTime = format(schedule.date, "HH:mm", { locale: ptBR });
 
   const handleMarkCompleted = () => {
-    try {
-      // Close the dialog first to ensure it closes
-      onOpenChange(false);
-      
-      // Then mark as completed
-      onMarkCompleted(schedule.id);
-      
-      // Show confirmation toast
-      toast({
-        title: "Atendimento concluído",
-        description: `O atendimento com ${schedule.studentName} foi marcado como concluído.`,
-      });
-    } catch (error) {
-      console.error("Error marking as completed:", error);
-    }
+    // Call the parent function to mark as completed
+    onMarkCompleted(schedule.id);
+    
+    // Show confirmation toast
+    toast({
+      title: "Atendimento concluído",
+      description: `O atendimento com ${schedule.studentName} foi marcado como concluído.`,
+    });
+    
+    // Close the dialog last, after the actions are performed
+    onOpenChange(false);
   };
 
   const handleCancelSchedule = () => {
-    try {
-      // Close the dialog first to ensure it closes
-      onOpenChange(false);
-      
-      // Then cancel the schedule
-      onCancelSchedule(schedule.id);
-      
-      // Show confirmation toast
-      toast({
-        title: "Atendimento cancelado",
-        description: `O atendimento com ${schedule.studentName} foi cancelado.`,
-        variant: "destructive"
-      });
-    } catch (error) {
-      console.error("Error canceling schedule:", error);
-    }
+    // Call the parent function to cancel
+    onCancelSchedule(schedule.id);
+    
+    // Show confirmation toast
+    toast({
+      title: "Atendimento cancelado",
+      description: `O atendimento com ${schedule.studentName} foi cancelado.`,
+      variant: "destructive"
+    });
+    
+    // Close the dialog last, after the actions are performed
+    onOpenChange(false);
   };
 
   return (
@@ -133,7 +125,6 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
             <Button 
               variant="destructive" 
               className="w-full"
-              type="button"
               onClick={handleCancelSchedule}
             >
               Cancelar Agendamento
@@ -141,7 +132,6 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
             <Button 
               variant="default" 
               className="w-full bg-accent text-white hover:bg-accent/90"
-              type="button"
               onClick={handleMarkCompleted}
             >
               Marcar como Concluído
