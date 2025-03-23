@@ -29,6 +29,10 @@ const DetailsTab: React.FC<DetailsTabProps> = ({ student }) => {
               <dd className="mt-1">{student.class}</dd>
             </div>
             <div>
+              <dt className="text-sm font-medium text-muted-foreground">Segmento</dt>
+              <dd className="mt-1">{student.segment}</dd>
+            </div>
+            <div>
               <dt className="text-sm font-medium text-muted-foreground">Responsável</dt>
               <dd className="mt-1">{student.parentName || "Não informado"}</dd>
             </div>

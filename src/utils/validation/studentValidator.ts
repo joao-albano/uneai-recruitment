@@ -1,6 +1,7 @@
 
 import { StudentData } from "../../context/DataContext";
 import { ValidationError } from "./types";
+import { SchoolSegment } from "@/types/data";
 
 // Function to validate a row of student data
 export const validateStudentData = (
@@ -33,6 +34,30 @@ export const validateStudentData = (
       column: 'turma',
       message: 'Turma é obrigatória'
     });
+  }
+
+  // Validate segment
+  if (!data.segment) {
+    errors.push({
+      row: rowIndex,
+      column: 'segmento',
+      message: 'Segmento escolar é obrigatório'
+    });
+  } else {
+    const validSegments: SchoolSegment[] = [
+      'ENSINO MÉDIO', 
+      'ENSINO FUNDAMENTAL I', 
+      'ENSINO FUNDAMENTAL II', 
+      'EDUCAÇÃO INFANTIL'
+    ];
+    
+    if (!validSegments.includes(data.segment as SchoolSegment)) {
+      errors.push({
+        row: rowIndex,
+        column: 'segmento',
+        message: 'Segmento escolar inválido. Deve ser um dos valores: ENSINO MÉDIO, ENSINO FUNDAMENTAL I, ENSINO FUNDAMENTAL II, EDUCAÇÃO INFANTIL'
+      });
+    }
   }
 
   // Validate grade (should be 0-10)

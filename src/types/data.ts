@@ -3,11 +3,14 @@
 import { WhatsAppConfig } from '@/utils/whatsappIntegration';
 import { WhatsAppMessage } from './whatsapp';
 
+export type SchoolSegment = 'ENSINO MÉDIO' | 'ENSINO FUNDAMENTAL I' | 'ENSINO FUNDAMENTAL II' | 'EDUCAÇÃO INFANTIL';
+
 export type StudentData = {
   id: string;
   name: string;
   registrationNumber: string; // Added registration number field
   class: string;
+  segment: SchoolSegment; // Added segment field
   grade: number;
   attendance: number;
   behavior: number;

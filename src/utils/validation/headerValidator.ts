@@ -9,6 +9,7 @@ export const mapHeadersToProperties = (headers: string[]): HeaderMap => {
     'registro': 'registrationNumber',
     'matricula': 'registrationNumber',
     'turma': 'class',
+    'segmento': 'segment',
     'nota': 'grade',
     'frequencia': 'attendance',
     'nome_responsavel': 'parentName',
@@ -27,12 +28,14 @@ export const mapHeadersToProperties = (headers: string[]): HeaderMap => {
     'Contato_Responsavel': 'parentContact',
     'Registro': 'registrationNumber',
     'Matricula': 'registrationNumber',
+    'Segmento': 'segment',
     
     // English headers (fallback)
     'name': 'name',
     'registration': 'registrationNumber',
     'registration_number': 'registrationNumber',
     'class': 'class',
+    'segment': 'segment',
     'grade': 'grade',
     'attendance': 'attendance',
     'parent_name': 'parentName',
@@ -58,7 +61,7 @@ export const mapHeadersToProperties = (headers: string[]): HeaderMap => {
 // Header validation function
 export const validateHeaders = (headers: string[]): boolean => {
   const requiredHeaders = [
-    'nome', 'registro', 'turma', 'nota', 'frequencia'
+    'nome', 'registro', 'turma', 'segmento', 'nota', 'frequencia'
   ];
   
   // Create a more flexible header matching approach
@@ -76,6 +79,7 @@ export const validateHeaders = (headers: string[]): boolean => {
       required === 'nome' ? 'name' :
       required === 'registro' ? 'registration' :
       required === 'turma' ? 'class' :
+      required === 'segmento' ? 'segment' :
       required === 'nota' ? 'grade' :
       required === 'frequencia' ? 'attendance' :
       required;
@@ -92,10 +96,10 @@ export const validateHeaders = (headers: string[]): boolean => {
 export const getExcelFormat = (): { headers: string[]; description: string } => {
   return {
     headers: [
-      'Nome', 'Registro', 'Turma', 'Nota', 'Frequencia', 
+      'Nome', 'Registro', 'Turma', 'Segmento', 'Nota', 'Frequencia', 
       'Nome_Responsavel', 'Contato_Responsavel'
     ],
-    description: 'O arquivo deve conter as colunas: Nome, Registro (número de matrícula), Turma, Nota (0-10), Frequência (0-100), ' +
+    description: 'O arquivo deve conter as colunas: Nome, Registro (número de matrícula), Turma, Segmento (Ensino Médio, Fundamental I, etc.), Nota (0-10), Frequência (0-100), ' +
       'Nome do Responsável, e Contato do Responsável (formato (99) 99999-9999)'
   };
 };
