@@ -63,36 +63,40 @@ const Chart: React.FC<ChartProps> = ({ students, title, description }) => {
           <BarChart
             data={data}
             margin={{
-              top: 20,
-              right: 30,
-              left: 20,
-              bottom: 40,
+              top: 5,
+              right: 20,
+              left: 0,
+              bottom: 20,
             }}
+            layout="vertical"
           >
-            <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
+            <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.3} />
             <XAxis 
-              dataKey="name" 
+              type="number"
+              domain={[0, 100]}
+              tickFormatter={(value) => `${value}%`}
               tick={{ fontSize: 12 }}
               tickLine={false}
               axisLine={{ stroke: '#e5e7eb', strokeWidth: 1 }}
             />
             <YAxis 
-              tickFormatter={(value) => `${value}%`}
-              domain={[0, 100]}
+              dataKey="name"
+              type="category"
               tick={{ fontSize: 12 }}
               tickLine={false}
               axisLine={{ stroke: '#e5e7eb', strokeWidth: 1 }}
+              width={100}
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend 
               verticalAlign="bottom" 
-              wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }}
+              wrapperStyle={{ paddingTop: '15px', fontSize: '12px' }}
             />
             <Bar 
               dataKey="value" 
               name="Porcentagem" 
-              radius={[4, 4, 0, 0]} 
-              barSize={50}
+              radius={[0, 4, 4, 0]} 
+              barSize={40}
             >
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
