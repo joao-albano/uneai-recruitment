@@ -1,4 +1,3 @@
-
 // Define types for our data
 export type StudentData = {
   id: string;
@@ -11,6 +10,7 @@ export type StudentData = {
   actionItems?: string[];
   parentName?: string;
   parentContact?: string;
+  decisionPath?: string[]; // Add decision path for explainable AI
 };
 
 export type SurveyData = {

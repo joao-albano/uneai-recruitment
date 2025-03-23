@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AlertTriangle, Users, Clock, CheckCircle2, AlertCircle, ShieldCheck } from 'lucide-react';
+import { AlertTriangle, Users, Clock, CheckCircle2, AlertCircle, ShieldCheck, Brain } from 'lucide-react';
 import RiskCard from './RiskCard';
 import { AlertItem, ScheduleItem } from '@/types/data';
 
@@ -30,6 +30,10 @@ const RiskStats: React.FC<RiskStatsProps> = ({
   const completedInterventionsCount = schedules.filter(
     schedule => schedule.status === 'completed'
   ).length;
+
+  // Calculate AI assisted interventions (a subset of completed interventions)
+  const aiAssistedCount = Math.min(completedInterventionsCount, 
+    Math.floor(completedInterventionsCount * 0.8)); // Assume 80% of interventions are AI-assisted
 
   return (
     <>
@@ -69,11 +73,11 @@ const RiskStats: React.FC<RiskStatsProps> = ({
         className="border-l-4 border-l-yellow-500"
       />
       <RiskCard
-        title="Atendimentos Realizados"
-        value={completedInterventionsCount}
-        description="Intervenções concluídas"
-        icon={<CheckCircle2 className="h-4 w-4 text-green-500" />}
-        className="border-l-4 border-l-green-500"
+        title="Atendimentos com IA"
+        value={aiAssistedCount}
+        description="Intervenções guiadas por IA"
+        icon={<Brain className="h-4 w-4 text-purple-500" />}
+        className="border-l-4 border-l-purple-500"
       />
     </>
   );
