@@ -16,7 +16,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from '@/hooks/use-toast';
 import { useData } from '@/context/DataContext';
 
-// Define the form schema
 const formSchema = z.object({
   studentId: z.string().min(1, { message: 'Selecione um aluno' }),
   studentName: z.string().min(1, { message: 'Nome do aluno é obrigatório' }),
@@ -38,7 +37,6 @@ const SurveyForm: React.FC = () => {
   const { toast } = useToast();
   const { students, addSurvey, addAlert, sendWhatsAppSurvey, whatsAppConfig } = useData();
   
-  // Initialize the form
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,7 +52,6 @@ const SurveyForm: React.FC = () => {
     },
   });
   
-  // Handle student selection
   const handleStudentSelect = (studentId: string) => {
     if (studentId) {
       const student = students.find(s => s.id === studentId);
@@ -62,7 +59,6 @@ const SurveyForm: React.FC = () => {
         form.setValue('studentId', student.id);
         form.setValue('studentName', student.name);
         
-        // Pre-fill parent information if available
         if (student.parentName) {
           form.setValue('parentName', student.parentName);
         }
@@ -81,9 +77,7 @@ const SurveyForm: React.FC = () => {
   const onSubmit = (values: FormValues) => {
     setIsSubmitting(true);
     
-    // Simulate API call
     setTimeout(() => {
-      // Add the survey to context
       addSurvey({
         studentId: values.studentId,
         movedRecently: values.movedRecently,
@@ -92,7 +86,6 @@ const SurveyForm: React.FC = () => {
         additionalNotes: values.additionalNotes,
       });
       
-      // Create an alert for the survey submission
       const student = students.find(s => s.id === values.studentId);
       if (student) {
         addAlert({
@@ -108,7 +101,6 @@ const SurveyForm: React.FC = () => {
         });
       }
       
-      // Show success toast
       toast({
         title: 'Pesquisa enviada com sucesso',
         description: 'Obrigado por fornecer essas informações importantes.',
@@ -132,17 +124,15 @@ const SurveyForm: React.FC = () => {
 
     setSendingWhatsApp(true);
     
-    // Call the function to send WhatsApp survey
     sendWhatsAppSurvey(studentId);
     
-    // Show status message based on WhatsApp configuration
     const configEnabled = whatsAppConfig && whatsAppConfig.provider !== 'disabled';
     
     toast({
       title: 'Pesquisa enviada via WhatsApp',
       description: configEnabled
         ? 'A pesquisa foi enviada usando a integração configurada do WhatsApp.'
-        : 'A pesquisa foi enviada (modo simulação).',
+        : 'A pesquisa foi enviada (modo simulação). Verifique o histórico em Configurações Admin > WhatsApp > Histórico.',
     });
     
     setTimeout(() => {

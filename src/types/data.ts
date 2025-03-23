@@ -1,5 +1,7 @@
+
 // Define types for our data
 import { WhatsAppConfig } from '@/utils/whatsappIntegration';
+import { WhatsAppMessage } from './whatsapp';
 
 export type StudentData = {
   id: string;
@@ -63,10 +65,12 @@ export type DataContextType = {
   uploadHistory: UploadRecord[];
   isLoading: boolean;
   whatsAppConfig: WhatsAppConfig;
+  whatsAppMessages: WhatsAppMessage[];
   setStudents: (students: StudentData[]) => void;
   addSurvey: (survey: SurveyData) => void;
   addSchedule: (schedule: ScheduleItem) => void;
   addAlert: (alert: AlertItem) => void;
+  addWhatsAppMessage: (message: WhatsAppMessage) => void;
   addUploadRecord: (record: Omit<UploadRecord, 'id'>) => void;
   clearUploadHistory: () => void;
   markAlertAsRead: (id: string) => void;

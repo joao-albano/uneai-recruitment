@@ -3,8 +3,10 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { useAlertsState } from '@/hooks/useAlertsState';
 import { useSchedulesState } from '@/hooks/useSchedulesState';
 import { useWhatsAppConfig } from '@/hooks/useWhatsAppConfig';
+import { useWhatsAppHistory } from '@/hooks/useWhatsAppHistory';
 import { StudentData, SurveyData, ScheduleItem, AlertItem, DataContextType } from '@/types/data';
 import { UploadRecord } from '@/types/upload';
+import { WhatsAppMessage } from '@/types/whatsapp';
 import { sendWhatsAppSurvey as sendWhatsAppSurveyUtil } from '@/utils/notifications';
 import { generateDemoStudents, generateDemoAlerts, generateDemoSchedules } from '@/data/demoData';
 
@@ -33,6 +35,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   } = useSchedulesState();
   
   const { config: whatsAppConfig } = useWhatsAppConfig();
+  const { messages: whatsAppMessages, addMessage: addWhatsAppMessage } = useWhatsAppHistory();
 
   const addSurvey = (survey: SurveyData) => {
     setSurveys([...surveys, survey]);
@@ -53,7 +56,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const sendWhatsAppSurvey = (studentId: string) => {
     const student = students.find(s => s.id === studentId);
     if (student) {
-      sendWhatsAppSurveyUtil(student, addAlert, whatsAppConfig);
+      sendWhatsAppSurveyUtil(student, addAlert, addWhatsAppMessage, whatsAppConfig);
     }
   };
 
@@ -88,10 +91,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     uploadHistory,
     isLoading,
     whatsAppConfig,
+    whatsAppMessages,
     setStudents,
     addSurvey,
     addSchedule,
     addAlert,
+    addWhatsAppMessage,
     addUploadRecord,
     clearUploadHistory,
     markAlertAsRead,
@@ -113,4 +118,4 @@ export const useData = () => {
   return context;
 };
 
-export type { StudentData, SurveyData, ScheduleItem, AlertItem, UploadRecord };
+export type { StudentData, SurveyData, ScheduleItem, AlertItem, UploadRecord, WhatsAppMessage };
