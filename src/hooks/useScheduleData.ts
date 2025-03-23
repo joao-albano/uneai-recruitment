@@ -35,7 +35,7 @@ export const useScheduleData = () => {
   const handleEditScheduleSubmit = (formData: FormData) => {
     const success = scheduleOperations.handleEditScheduleSubmit(dialogState.scheduleToEdit, formData);
     if (success) {
-      dialogState.setShowEditDialog(false);
+      dialogState.setShowEditDialog();
     }
   };
 
