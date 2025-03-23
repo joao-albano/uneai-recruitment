@@ -55,7 +55,7 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
             </div>
           </div>
           
-          <div className="flex justify-between gap-4">
+          <div className="flex items-center gap-8">
             <div className="flex items-start gap-3">
               <Calendar className="h-5 w-5 text-primary mt-0.5 shrink-0" />
               <div>
@@ -95,13 +95,6 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
         </div>
         
         <DialogFooter className="flex flex-col sm:flex-row gap-3 mt-2">
-          <Button 
-            variant="outline" 
-            onClick={() => onOpenChange(false)}
-            className="w-full sm:w-auto"
-          >
-            Fechar
-          </Button>
           <div className="flex-1 flex gap-3">
             <Button 
               variant="destructive" 
