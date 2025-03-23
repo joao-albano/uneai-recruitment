@@ -7,6 +7,7 @@ import DashboardContent from './DashboardContent';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Schedule } from '@/types/schedule';
+import { Alert } from '@/types/alert';
 
 const Dashboard: React.FC = () => {
   const { students, alerts, schedules, isLoading, generateDemoData } = useData();
@@ -45,6 +46,17 @@ const Dashboard: React.FC = () => {
     });
   };
 
+  // Convert AlertItem to Alert
+  const convertedAlerts: Alert[] = alerts.map(alert => ({
+    id: alert.id,
+    studentId: alert.studentId,
+    studentName: alert.studentName,
+    studentClass: alert.studentClass,
+    type: alert.type,
+    actionTaken: alert.actionTaken,
+    createdAt: alert.createdAt.toString()
+  }));
+
   return (
     <div className="animate-fade-in">
       <div className="mb-8">
@@ -82,7 +94,7 @@ const Dashboard: React.FC = () => {
       ) : (
         <DashboardContent
           students={students}
-          alerts={alerts}
+          alerts={convertedAlerts}
           schedules={schedules}
           onViewAlertDetails={handleViewAlertDetails}
           onViewClassDetails={handleViewClassDetails}

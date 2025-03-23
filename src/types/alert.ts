@@ -4,7 +4,7 @@ export interface Alert {
   studentId: string;
   studentName: string;
   studentClass: string;
-  type: 'high-risk' | 'medium-risk' | 'academic';
+  type: 'high-risk' | 'medium-risk' | 'low-risk' | 'survey-requested' | 'meeting-scheduled';
   actionTaken: boolean;
   createdAt: string;
 }
