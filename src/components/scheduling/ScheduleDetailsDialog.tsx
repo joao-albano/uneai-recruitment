@@ -30,10 +30,10 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
   const formattedTime = format(schedule.date, "HH:mm", { locale: ptBR });
 
   const handleMarkCompleted = () => {
-    // First mark as completed
+    // Mark as completed
     onMarkCompleted(schedule.id);
     
-    // Then close the dialog
+    // Close the dialog immediately
     onOpenChange(false);
     
     // Show confirmation toast
@@ -44,10 +44,10 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
   };
 
   const handleCancelSchedule = () => {
-    // First cancel the schedule
+    // Cancel the schedule
     onCancelSchedule(schedule.id);
     
-    // Then close the dialog
+    // Close the dialog immediately
     onOpenChange(false);
     
     // Show confirmation toast
@@ -126,6 +126,7 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
               variant="destructive" 
               onClick={handleCancelSchedule}
               className="w-full"
+              type="button"
             >
               Cancelar Agendamento
             </Button>
@@ -133,6 +134,7 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
               variant="default" 
               onClick={handleMarkCompleted}
               className="w-full bg-accent text-white hover:bg-accent/90"
+              type="button"
             >
               Marcar como Concluído
             </Button>
