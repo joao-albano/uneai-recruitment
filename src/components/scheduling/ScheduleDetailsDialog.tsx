@@ -6,7 +6,7 @@ import { Schedule } from '@/types/schedule';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Calendar, Clock, User, FileText, UserCircle } from 'lucide-react';
-import { Textarea } from '@/components/ui/textarea';
+import { useTheme } from '@/context/ThemeContext';
 
 interface ScheduleDetailsDialogProps {
   open: boolean;
@@ -23,6 +23,7 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
   onMarkCompleted,
   onCancelSchedule,
 }) => {
+  const { language } = useTheme();
   const formattedDate = format(schedule.date, "PPP", { locale: ptBR });
   const formattedTime = format(schedule.date, "HH:mm", { locale: ptBR });
 
@@ -79,7 +80,11 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
               <div className="flex-1">
                 <h4 className="font-medium mb-1">Anotações</h4>
                 <div className="bg-muted rounded-md p-3 text-sm text-foreground border border-border">
-                  {schedule.notes}
+                  {language === 'pt-BR' && schedule.notes === 'Discuss attendance and academic performance' 
+                    ? 'Discutir frequência e desempenho acadêmico' 
+                    : language === 'pt-BR' && schedule.notes === 'Parent meeting to address attendance issues'
+                    ? 'Reunião com os pais para tratar de problemas de frequência'
+                    : schedule.notes}
                 </div>
               </div>
             </div>
