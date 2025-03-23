@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useData } from '@/context/DataContext';
@@ -39,6 +40,7 @@ export const useScheduleData = () => {
     cancelSchedule
   } = useScheduleManagement();
   
+  // Effect for generating demo data
   useEffect(() => {
     if (students.length === 0) {
       console.log("Generating demo data for scheduling");
@@ -46,6 +48,7 @@ export const useScheduleData = () => {
     }
   }, [students.length, generateDemoData]);
   
+  // Effect for handling location state (separated from the demo data effect)
   useEffect(() => {
     const locationState = location.state as { studentId?: string; scheduleId?: string } | null;
     
@@ -60,6 +63,7 @@ export const useScheduleData = () => {
     }
   }, [location.state, schedules, setShowAddDialog]);
   
+  // Effect for updating selected schedule when schedules change
   useEffect(() => {
     if (selectedSchedule) {
       const updatedSchedule = schedules.find(s => s.id === selectedSchedule.id);

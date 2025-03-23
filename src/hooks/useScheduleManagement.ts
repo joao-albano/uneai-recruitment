@@ -76,17 +76,19 @@ export const useScheduleManagement = () => {
       description: `Agendamento de ${updatedSchedule.studentName} atualizado com sucesso.`
     });
     
+    // Primeiro fechar o diálogo
     setShowEditDialog(false);
-    // Limpar o scheduleToEdit depois de fechar o diálogo
+    // Depois limpar o state em uma operação separada
     setScheduleToEdit(null);
   };
   
   const startEditSchedule = (schedule: Schedule) => {
-    // Clone the schedule object to avoid reference issues
-    setScheduleToEdit({
+    // Criar uma cópia profunda do objeto schedule para evitar problemas de referência
+    const scheduleClone = {
       ...schedule,
       date: new Date(schedule.date)
-    });
+    };
+    setScheduleToEdit(scheduleClone);
     setShowEditDialog(true);
   };
   
