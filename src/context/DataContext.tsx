@@ -57,6 +57,7 @@ type DataContextType = {
   markAlertAsRead: (id: string) => void;
   markAlertActionTaken: (id: string) => void;
   updateScheduleStatus: (id: string, status: 'scheduled' | 'completed' | 'canceled') => void;
+  updateSchedule: (updatedSchedule: ScheduleItem) => void;
   generateDemoData: () => void;
   sendWhatsAppSurvey: (studentId: string) => void;
 };
@@ -97,6 +98,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const updateScheduleStatus = (id: string, status: 'scheduled' | 'completed' | 'canceled') => {
     setSchedules(
       schedules.map((schedule) => (schedule.id === id ? { ...schedule, status } : schedule))
+    );
+  };
+
+  const updateSchedule = (updatedSchedule: ScheduleItem) => {
+    setSchedules(
+      schedules.map((schedule) => 
+        schedule.id === updatedSchedule.id ? updatedSchedule : schedule
+      )
     );
   };
 
@@ -309,6 +318,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     markAlertAsRead,
     markAlertActionTaken,
     updateScheduleStatus,
+    updateSchedule,
     generateDemoData,
     sendWhatsAppSurvey
   };
