@@ -16,8 +16,9 @@ export const useDialogState = (visibleSchedules: Schedule[]) => {
   const preSelectedStudentId = location.state?.studentId || '';
 
   // Compute final pre-selected student ID
-  const finalPreSelectedStudentId = (scheduleId: string, schedules: Schedule[]) => {
-    const canSelectStudent = !schedules.some(
+  const finalPreSelectedStudentId = () => {
+    const scheduleId = preSelectedStudentId;
+    const canSelectStudent = !visibleSchedules.some(
       schedule => 
         schedule.studentId === scheduleId && 
         schedule.status === 'scheduled'
@@ -78,6 +79,6 @@ export const useDialogState = (visibleSchedules: Schedule[]) => {
     setShowScheduleDetails,
     selectedSchedule,
     preSelectedStudentId,
-    finalPreSelectedStudentId: finalPreSelectedStudentId(preSelectedStudentId, visibleSchedules)
+    finalPreSelectedStudentId: finalPreSelectedStudentId()
   };
 };
