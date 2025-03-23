@@ -68,10 +68,15 @@ const EditScheduleDialog: React.FC<EditScheduleDialogProps> = ({
     onSubmit(formData);
   };
 
+  // Ensure proper dialog cleanup
+  const handleDialogClose = (open: boolean) => {
+    onOpenChange(open);
+  };
+
   if (!schedule) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleDialogClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Editar atendimento</DialogTitle>

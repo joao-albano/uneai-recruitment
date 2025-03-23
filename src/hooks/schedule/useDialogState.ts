@@ -18,10 +18,13 @@ export const useDialogState = (schedules: Schedule[]) => {
 
   // Function to explicitly control edit dialog
   const handleSetShowEditDialog = useCallback((show: boolean = false) => {
+    // First set the dialog visibility
     setShowEditDialog(show);
+    
+    // Only clear the schedule reference when closing
     if (!show) {
-      // Clear the schedule being edited when dialog is closed
-      setTimeout(() => setScheduleToEdit(null), 100);
+      // Use a longer timeout to ensure proper cleanup
+      setTimeout(() => setScheduleToEdit(null), 300);
     }
   }, []);
 

@@ -30,6 +30,7 @@ const SidebarNavLink: React.FC<SidebarNavLinkProps> = ({
           : "text-muted-foreground hover:bg-muted hover:text-foreground",
         collapsed && "justify-center px-2"
       )}
+      replace={false}
     >
       <Icon className="h-5 w-5" />
       {!collapsed && <span>{label}</span>}
