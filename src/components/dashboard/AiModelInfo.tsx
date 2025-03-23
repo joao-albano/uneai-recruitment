@@ -1,11 +1,22 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Info } from 'lucide-react';
+import { Brain, Info, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useNavigate } from 'react-router-dom';
+import { useData } from '@/context/DataContext';
 
 const AiModelInfo: React.FC = () => {
+  const navigate = useNavigate();
+  const { students } = useData();
+  
+  // Calculate some stats for the model card
+  const highRiskCount = students.filter(s => s.riskLevel === 'high').length;
+  const atRiskPercentage = students.length > 0 
+    ? Math.round((highRiskCount / students.length) * 100) 
+    : 0;
+  
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -38,22 +49,31 @@ const AiModelInfo: React.FC = () => {
       <CardContent>
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Tipo:</span>
-            <span className="font-medium">Decision Tree</span>
+            <span className="text-muted-foreground">Alunos analisados:</span>
+            <span className="font-medium">{students.length}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Fatores principais:</span>
-            <span className="font-medium">Frequência, Notas, Comportamento</span>
+            <span className="text-muted-foreground">Alunos em alto risco:</span>
+            <span className="font-medium">{highRiskCount}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Precisão:</span>
-            <span className="font-medium">85%</span>
+            <span className="text-muted-foreground">Taxa de risco:</span>
+            <span className="font-medium">{atRiskPercentage}%</span>
           </div>
           <div className="mt-4 pt-2 border-t">
-            <p className="text-xs text-muted-foreground">
-              Este modelo foi projetado para ser transparente e explicável, 
-              mostrando o caminho de decisão para cada previsão.
+            <p className="text-xs text-muted-foreground mb-3">
+              O modelo identifica padrões de risco com base em frequência, notas e 
+              comportamento para orientar intervenções preventivas.
             </p>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full flex items-center gap-1" 
+              onClick={() => navigate('/model')}
+            >
+              <span>Ver detalhes do modelo</span>
+              <ExternalLink className="h-3 w-3" />
+            </Button>
           </div>
         </div>
       </CardContent>

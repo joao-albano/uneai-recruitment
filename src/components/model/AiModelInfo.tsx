@@ -1,11 +1,14 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Info } from 'lucide-react';
+import { Brain, Info, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useNavigate } from 'react-router-dom';
 
 const AiModelInfo: React.FC = () => {
+  const navigate = useNavigate();
+  
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -50,10 +53,19 @@ const AiModelInfo: React.FC = () => {
             <span className="font-medium">85%</span>
           </div>
           <div className="mt-4 pt-2 border-t">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground mb-3">
               Este modelo foi projetado para ser transparente e explicável, 
               mostrando o caminho de decisão para cada previsão.
             </p>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full flex items-center gap-1" 
+              onClick={() => navigate('/dashboard')}
+            >
+              <span>Ver impacto no dashboard</span>
+              <ExternalLink className="h-3 w-3" />
+            </Button>
           </div>
         </div>
       </CardContent>

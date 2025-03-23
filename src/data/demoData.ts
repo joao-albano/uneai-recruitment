@@ -12,9 +12,14 @@ export const generateDemoStudents = (): StudentData[] => {
       attendance: 75,
       behavior: 3,
       riskLevel: 'high',
-      actionItems: ['Contact parents', 'Schedule counseling'],
+      actionItems: ['Contatar pais', 'Agendar aconselhamento'],
       parentName: 'Roberto Silva',
-      parentContact: '(11) 98765-4321'
+      parentContact: '(11) 98765-4321',
+      decisionPath: [
+        'Frequência: 75% - Abaixo do ideal (risco médio)',
+        'Nota média: 5.5 - Abaixo da média (risco alto)',
+        'Comportamento: 3/5 - Mediano (mantém risco alto)'
+      ]
     },
     {
       id: '2',
@@ -25,9 +30,14 @@ export const generateDemoStudents = (): StudentData[] => {
       attendance: 92,
       behavior: 4,
       riskLevel: 'low',
-      actionItems: ['Monitor performance'],
+      actionItems: ['Monitorar desempenho'],
       parentName: 'Marta Santos',
-      parentContact: '(11) 91234-5678'
+      parentContact: '(11) 91234-5678',
+      decisionPath: [
+        'Frequência: 92% - Excelente (risco baixo)',
+        'Nota média: 7.2 - Acima da média (mantém risco baixo)',
+        'Comportamento: 4/5 - Bom (mantém risco baixo)'
+      ]
     },
     {
       id: '3',
@@ -38,9 +48,14 @@ export const generateDemoStudents = (): StudentData[] => {
       attendance: 81,
       behavior: 2,
       riskLevel: 'medium',
-      actionItems: ['Academic support', 'Behavior intervention'],
+      actionItems: ['Apoio acadêmico', 'Intervenção comportamental'],
       parentName: 'Paulo Oliveira',
-      parentContact: '(11) 99876-5432'
+      parentContact: '(11) 99876-5432',
+      decisionPath: [
+        'Frequência: 81% - Adequada (risco baixo)',
+        'Nota média: 6.1 - Adequada (mantém risco baixo)',
+        'Comportamento: 2/5 - Preocupante (risco elevado para médio)'
+      ]
     },
     {
       id: '4',
@@ -52,7 +67,12 @@ export const generateDemoStudents = (): StudentData[] => {
       behavior: 5,
       riskLevel: 'low',
       parentName: 'Luisa Pereira',
-      parentContact: '(11) 98123-4567'
+      parentContact: '(11) 98123-4567',
+      decisionPath: [
+        'Frequência: 96% - Excelente (risco baixo)',
+        'Nota média: 8.5 - Excelente (mantém risco baixo)',
+        'Comportamento: 5/5 - Excelente (mantém risco baixo)'
+      ]
     },
     {
       id: '5',
@@ -63,9 +83,14 @@ export const generateDemoStudents = (): StudentData[] => {
       attendance: 68,
       behavior: 3,
       riskLevel: 'high',
-      actionItems: ['Parent meeting', 'Academic intervention'],
+      actionItems: ['Reunião com pais', 'Intervenção acadêmica'],
       parentName: 'Fernando Costa',
-      parentContact: '(11) 99123-8765'
+      parentContact: '(11) 99123-8765',
+      decisionPath: [
+        'Frequência: 68% - Crítica (risco alto)',
+        'Nota média: 4.8 - Crítica (mantém risco alto)',
+        'Comportamento: 3/5 - Mediano (mantém risco alto)'
+      ]
     },
     {
       id: '6',
@@ -77,7 +102,12 @@ export const generateDemoStudents = (): StudentData[] => {
       behavior: 4,
       riskLevel: 'low',
       parentName: 'Joana Martins',
-      parentContact: '(11) 97654-3210'
+      parentContact: '(11) 97654-3210',
+      decisionPath: [
+        'Frequência: 88% - Boa (risco baixo)',
+        'Nota média: 6.9 - Adequada (mantém risco baixo)',
+        'Comportamento: 4/5 - Bom (mantém risco baixo)'
+      ]
     },
     {
       id: '7',
@@ -88,9 +118,14 @@ export const generateDemoStudents = (): StudentData[] => {
       attendance: 79,
       behavior: 3,
       riskLevel: 'medium',
-      actionItems: ['Academic support'],
+      actionItems: ['Apoio acadêmico'],
       parentName: 'Ricardo Lima',
-      parentContact: '(11) 96543-2109'
+      parentContact: '(11) 96543-2109',
+      decisionPath: [
+        'Frequência: 79% - Adequada (risco baixo)',
+        'Nota média: 5.9 - Limítrofe (risco médio)',
+        'Comportamento: 3/5 - Mediano (mantém risco médio)'
+      ]
     },
     {
       id: '8',
@@ -102,7 +137,12 @@ export const generateDemoStudents = (): StudentData[] => {
       behavior: 4,
       riskLevel: 'low',
       parentName: 'Cristina Alves',
-      parentContact: '(11) 95432-1098'
+      parentContact: '(11) 95432-1098',
+      decisionPath: [
+        'Frequência: 93% - Excelente (risco baixo)',
+        'Nota média: 7.8 - Boa (mantém risco baixo)',
+        'Comportamento: 4/5 - Bom (mantém risco baixo)'
+      ]
     }
   ];
 };
@@ -115,7 +155,7 @@ export const generateDemoAlerts = (): AlertItem[] => {
       studentName: 'Ana Silva',
       studentClass: '9A',
       type: 'high-risk',
-      message: 'Ana Silva has multiple risk factors: low grades, attendance below 80%, and behavioral issues.',
+      message: 'Ana Silva possui múltiplos fatores de risco: notas baixas, frequência abaixo de 80% e questões comportamentais.',
       createdAt: new Date(Date.now() - 86400000 * 2),
       read: false,
       actionTaken: false
@@ -126,7 +166,7 @@ export const generateDemoAlerts = (): AlertItem[] => {
       studentName: 'Elena Costa',
       studentClass: '9C',
       type: 'high-risk',
-      message: 'Elena Costa has critical attendance issues (68%) and failing grades.',
+      message: 'Elena Costa tem problemas críticos de frequência (68%) e notas abaixo da média.',
       createdAt: new Date(Date.now() - 86400000),
       read: false,
       actionTaken: false
@@ -137,7 +177,7 @@ export const generateDemoAlerts = (): AlertItem[] => {
       studentName: 'Carla Oliveira',
       studentClass: '9B',
       type: 'medium-risk',
-      message: 'Carla Oliveira has borderline grades and behavioral concerns.',
+      message: 'Carla Oliveira possui notas limítrofes e preocupações comportamentais.',
       createdAt: new Date(),
       read: false,
       actionTaken: false
@@ -154,7 +194,7 @@ export const generateDemoSchedules = (): ScheduleItem[] => {
       date: new Date(Date.now() + 86400000),
       agentName: 'Coord. Mariana',
       status: 'scheduled',
-      notes: 'Discuss attendance and academic performance'
+      notes: 'Discutir frequência e desempenho acadêmico. Recomendado pelo modelo de IA: foco em plano de recuperação de notas.'
     },
     {
       id: '2',
@@ -163,7 +203,34 @@ export const generateDemoSchedules = (): ScheduleItem[] => {
       date: new Date(Date.now() + 86400000 * 3),
       agentName: 'Coord. Mariana',
       status: 'scheduled',
-      notes: 'Parent meeting to address attendance issues'
+      notes: 'Reunião com pais para tratar problemas de frequência. Estratégia sugerida pelo modelo: estabelecer metas claras de frequência.'
+    },
+    {
+      id: '3',
+      studentId: '3',
+      studentName: 'Carla Oliveira',
+      date: new Date(Date.now() - 86400000 * 2),
+      agentName: 'Coord. Mariana',
+      status: 'completed',
+      notes: 'Intervenção comportamental concluída. Recomendação de IA aplicada: estabelecimento de rotina de estudos estruturada.'
+    },
+    {
+      id: '4',
+      studentId: '7',
+      studentName: 'Gabriela Lima',
+      date: new Date(Date.now() - 86400000 * 5),
+      agentName: 'Prof. Ricardo',
+      status: 'completed',
+      notes: 'Apoio acadêmico realizado. Plano de estudos baseado em análise de IA sobre pontos fracos identificados.'
+    },
+    {
+      id: '5',
+      studentId: '2',
+      studentName: 'Bruno Santos',
+      date: new Date(Date.now() - 86400000 * 10),
+      agentName: 'Prof. Ricardo',
+      status: 'completed',
+      notes: 'Monitoramento preventivo conforme recomendação do modelo para manutenção do bom desempenho.'
     }
   ];
 };

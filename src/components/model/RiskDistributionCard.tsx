@@ -1,155 +1,95 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { AlertTriangle, CheckCircle2, PieChart as PieChartIcon, TrendingDown, TrendingUp } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { useData } from '@/context/DataContext';
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useNavigate } from 'react-router-dom';
 
 const RiskDistributionCard: React.FC = () => {
   const { students } = useData();
+  const navigate = useNavigate();
   
-  const highRiskCount = students.filter(s => s.riskLevel === 'high').length;
-  const mediumRiskCount = students.filter(s => s.riskLevel === 'medium').length;
-  const lowRiskCount = students.filter(s => s.riskLevel === 'low').length;
-  const totalStudents = students.length;
-  
-  const highRiskPercentage = totalStudents > 0 ? (highRiskCount / totalStudents) * 100 : 0;
-  const mediumRiskPercentage = totalStudents > 0 ? (mediumRiskCount / totalStudents) * 100 : 0;
-  const lowRiskPercentage = totalStudents > 0 ? (lowRiskCount / totalStudents) * 100 : 0;
-  
-  // Mock data for demonstration - in a real app this would come from historical data
-  const prevHighRiskPercentage = highRiskPercentage * 1.2; // Assuming 20% reduction from previous period
-  const highRiskTrend = highRiskPercentage < prevHighRiskPercentage ? 'down' : 'up';
+  // Calculate risk distribution
+  const highRiskCount = students.filter(student => student.riskLevel === 'high').length;
+  const mediumRiskCount = students.filter(student => student.riskLevel === 'medium').length;
+  const lowRiskCount = students.filter(student => student.riskLevel === 'low').length;
   
   const data = [
-    { name: 'Alto Risco', value: highRiskCount, percentage: parseFloat(highRiskPercentage.toFixed(1)), color: '#EF4444' },
-    { name: 'Médio Risco', value: mediumRiskCount, percentage: parseFloat(mediumRiskPercentage.toFixed(1)), color: '#F59E0B' },
-    { name: 'Baixo Risco', value: lowRiskCount, percentage: parseFloat(lowRiskPercentage.toFixed(1)), color: '#10B981' },
+    { name: 'Alto Risco', value: highRiskCount, color: '#ef4444' },
+    { name: 'Médio Risco', value: mediumRiskCount, color: '#f59e0b' },
+    { name: 'Baixo Risco', value: lowRiskCount, color: '#10b981' },
   ];
   
-  // Custom tooltip for pie chart
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-popover p-3 shadow-md rounded-md border">
-          <p className="font-medium text-sm">{`${payload[0].name}`}</p>
-          <p className="text-muted-foreground text-xs">{`${payload[0].value} alunos (${payload[0].payload.percentage}%)`}</p>
-        </div>
-      );
-    }
-    return null;
+  const handleViewStudents = (riskLevel: string) => {
+    navigate(`/students?risk=${riskLevel}`);
   };
   
   return (
-    <Card className="md:col-span-2">
+    <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-base font-medium">Distribuição de Risco</CardTitle>
-            <CardDescription>
-              Classificação dos alunos por nível de risco
-            </CardDescription>
-          </div>
-          <PieChartIcon className="h-5 w-5 text-muted-foreground" />
-        </div>
+        <CardTitle className="text-base font-medium">Distribuição de Risco</CardTitle>
+        <CardDescription>
+          Análise dos níveis de risco entre os alunos
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="chart" className="w-full">
-          <TabsList className="mb-4 w-full grid grid-cols-2">
-            <TabsTrigger value="chart">Gráfico</TabsTrigger>
-            <TabsTrigger value="bars">Barras de Progresso</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="chart" className="mt-0">
-            <div className="h-[220px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={data}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {data.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend 
-                    layout="horizontal" 
-                    verticalAlign="bottom" 
-                    align="center"
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+        <div className="h-60">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={80}
+                paddingAngle={2}
+                dataKey="value"
+                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                labelLine={false}
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip formatter={(value) => [`${value} alunos`, 'Quantidade']} />
+              <Legend verticalAlign="bottom" align="center" />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        
+        <div className="mt-4 grid grid-cols-3 gap-2">
+          <div className="text-center">
+            <div className="flex items-center justify-center">
+              <div className="h-3 w-3 rounded-full bg-red-500 mr-1"></div>
+              <span className="text-sm font-medium">{highRiskCount}</span>
             </div>
-          </TabsContent>
-          
-          <TabsContent value="bars" className="mt-0 space-y-4">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <AlertTriangle className="h-4 w-4 text-red-500 mr-2" />
-                    <span>Alto Risco</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="font-medium mr-2">{highRiskCount} alunos ({highRiskPercentage.toFixed(1)}%)</span>
-                    {highRiskTrend === 'down' ? (
-                      <TrendingDown className="h-4 w-4 text-green-500" />
-                    ) : (
-                      <TrendingUp className="h-4 w-4 text-red-500" />
-                    )}
-                  </div>
-                </div>
-                <Progress value={highRiskPercentage} className="h-2 bg-muted" indicatorClassName="bg-red-500" />
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <AlertTriangle className="h-4 w-4 text-orange-500 mr-2" />
-                    <span>Médio Risco</span>
-                  </div>
-                  <span className="font-medium">{mediumRiskCount} alunos ({mediumRiskPercentage.toFixed(1)}%)</span>
-                </div>
-                <Progress value={mediumRiskPercentage} className="h-2 bg-muted" indicatorClassName="bg-orange-500" />
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" />
-                    <span>Baixo Risco</span>
-                  </div>
-                  <span className="font-medium">{lowRiskCount} alunos ({lowRiskPercentage.toFixed(1)}%)</span>
-                </div>
-                <Progress value={lowRiskPercentage} className="h-2 bg-muted" indicatorClassName="bg-green-500" />
-              </div>
+            <span className="text-xs text-muted-foreground">Alto Risco</span>
+          </div>
+          <div className="text-center">
+            <div className="flex items-center justify-center">
+              <div className="h-3 w-3 rounded-full bg-amber-500 mr-1"></div>
+              <span className="text-sm font-medium">{mediumRiskCount}</span>
             </div>
-            
-            <div className="pt-3 mt-2 border-t text-sm text-muted-foreground">
-              <p>
-                {highRiskTrend === 'down' ? (
-                  <span className="flex items-center text-green-600">
-                    <TrendingDown className="h-4 w-4 mr-1 inline" />
-                    Redução de {((prevHighRiskPercentage - highRiskPercentage) / prevHighRiskPercentage * 100).toFixed(1)}% em alunos de alto risco desde o último período.
-                  </span>
-                ) : (
-                  <span className="flex items-center text-red-600">
-                    <TrendingUp className="h-4 w-4 mr-1 inline" />
-                    Aumento de {((highRiskPercentage - prevHighRiskPercentage) / prevHighRiskPercentage * 100).toFixed(1)}% em alunos de alto risco desde o último período.
-                  </span>
-                )}
-              </p>
+            <span className="text-xs text-muted-foreground">Médio Risco</span>
+          </div>
+          <div className="text-center">
+            <div className="flex items-center justify-center">
+              <div className="h-3 w-3 rounded-full bg-green-500 mr-1"></div>
+              <span className="text-sm font-medium">{lowRiskCount}</span>
             </div>
-          </TabsContent>
-        </Tabs>
+            <span className="text-xs text-muted-foreground">Baixo Risco</span>
+          </div>
+        </div>
+        
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="w-full mt-4"
+          onClick={() => navigate('/students')}
+        >
+          Ver todos os alunos
+        </Button>
       </CardContent>
     </Card>
   );
