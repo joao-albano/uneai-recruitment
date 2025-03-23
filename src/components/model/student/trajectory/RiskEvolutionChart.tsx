@@ -32,7 +32,7 @@ const RiskEvolutionChart: React.FC<RiskEvolutionChartProps> = ({ trajectoryData 
         <CardTitle className="text-xl text-center">Evolução do Nível de Risco</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[350px] w-full px-2 md:px-4">
+        <div className="h-[350px] w-full">
           <ChartContainer config={{
             riskScore: { theme: { light: "#ef4444", dark: "#ef4444" } },
           }}>
