@@ -3,7 +3,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import SidebarNavLink from './SidebarNavLink';
-import { BarChart3, FileUp, Bell, Calendar, ClipboardCheck, Users, Settings, Brain } from 'lucide-react';
+import { BarChart3, FileUp, Bell, Calendar, ClipboardCheck, Users, Settings, Brain, Cog } from 'lucide-react';
 
 interface SidebarNavigationGroupProps {
   collapsed: boolean;
@@ -70,11 +70,18 @@ const SidebarNavigationGroup: React.FC<SidebarNavigationGroupProps> = ({
           collapsed={collapsed}
         />
         
+        <SidebarNavLink 
+          to="/settings" 
+          icon={Settings} 
+          label="Configurações" 
+          collapsed={collapsed}
+        />
+        
         {isAdmin && (
           <SidebarNavLink 
-            to="/settings" 
-            icon={Settings} 
-            label="Configurações" 
+            to="/admin/settings" 
+            icon={Cog} 
+            label="Config. Avançadas" 
             collapsed={collapsed}
           />
         )}

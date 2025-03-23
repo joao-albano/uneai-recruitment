@@ -4,10 +4,10 @@ import { DataProvider } from '@/context/DataContext';
 import { useTheme } from '@/context/ThemeContext';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
-import SettingsTabs from '@/components/settings/SettingsTabs';
+import AdminSettingsTabs from '@/components/settings/AdminSettingsTabs';
 
-// Settings page content component
-const SettingsPageContent: React.FC = () => {
+// AdminSettings page content component
+const AdminSettingsPageContent: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { language } = useTheme();
   
@@ -25,16 +25,16 @@ const SettingsPageContent: React.FC = () => {
         <main className="flex-1 p-6">
           <div className="mb-8">
             <h1 className="text-3xl font-bold tracking-tight">
-              {language === 'pt-BR' ? 'Configurações' : 'Settings'}
+              {language === 'pt-BR' ? 'Configurações Administrativas' : 'Admin Settings'}
             </h1>
             <p className="text-muted-foreground mt-1">
               {language === 'pt-BR' 
-                ? 'Gerencie suas preferências e configurações pessoais'
-                : 'Manage your personal preferences and settings'}
+                ? 'Gerencie configurações avançadas e integrações do sistema'
+                : 'Manage advanced settings and system integrations'}
             </p>
           </div>
           
-          <SettingsTabs />
+          <AdminSettingsTabs />
         </main>
       </div>
     </div>
@@ -42,12 +42,12 @@ const SettingsPageContent: React.FC = () => {
 };
 
 // Wrapper with DataProvider
-const SettingsPage: React.FC = () => {
+const AdminSettingsPage: React.FC = () => {
   return (
     <DataProvider>
-      <SettingsPageContent />
+      <AdminSettingsPageContent />
     </DataProvider>
   );
 };
 
-export default SettingsPage;
+export default AdminSettingsPage;

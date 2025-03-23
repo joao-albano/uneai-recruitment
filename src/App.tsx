@@ -16,6 +16,7 @@ import SurveyPage from "./pages/SurveyPage";
 import SchedulePage from "./pages/SchedulePage";
 import StudentsPage from "./pages/StudentsPage";
 import SettingsPage from "./pages/SettingsPage";
+import AdminSettingsPage from "./pages/AdminSettingsPage";
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 import UsersPage from "./pages/UsersPage";
@@ -123,13 +124,21 @@ const App = () => (
                   </ProtectedRoute>
                 } 
               />
-              
-              {/* Admin Routes - Only accessible to admin users */}
               <Route 
                 path="/settings" 
                 element={
-                  <AdminRoute>
+                  <ProtectedRoute>
                     <SettingsPage />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Admin Routes - Only accessible to admin users */}
+              <Route 
+                path="/admin/settings" 
+                element={
+                  <AdminRoute>
+                    <AdminSettingsPage />
                   </AdminRoute>
                 } 
               />
