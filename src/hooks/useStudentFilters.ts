@@ -1,3 +1,4 @@
+
 import { useState, useMemo, useEffect } from 'react';
 import { StudentData, SchoolSegment } from '@/types/data';
 
@@ -15,6 +16,11 @@ const useStudentFilters = ({ students, classFilter }: UseStudentFiltersProps) =>
   
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  // Reset to page 1 when class filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [classFilter]);
 
   const toggleSort = (key: 'name' | 'riskLevel' | 'grade' | 'attendance') => {
     if (sortKey === key) {

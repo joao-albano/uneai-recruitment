@@ -36,6 +36,7 @@ const Dashboard: React.FC = () => {
   };
   
   const handleViewClassDetails = (className: string) => {
+    // Pass the class as a query parameter to filter students
     navigate(`/students?class=${className}`);
     
     toast({

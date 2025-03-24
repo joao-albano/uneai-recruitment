@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useData } from '@/context/DataContext';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,7 +8,7 @@ import StudentTable from './StudentTable';
 import StudentFilters from './StudentFilters';
 import StudentPagination from './StudentPagination';
 import useStudentFilters from '@/hooks/useStudentFilters';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { TableHeader, TableRow, TableHead } from '@/components/ui/table';
 import { ArrowUpDown } from 'lucide-react';
 
@@ -16,6 +17,16 @@ const StudentsContent: React.FC = () => {
   const [classFilter, setClassFilter] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Extract class filter from URL if present
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const classParam = searchParams.get('class');
+    if (classParam) {
+      setClassFilter(classParam);
+    }
+  }, [location.search]);
 
   useEffect(() => {
     if (students.length === 0) {
@@ -72,6 +83,16 @@ const StudentsContent: React.FC = () => {
 
   const clearClassFilter = () => {
     setClassFilter(null);
+    
+    // Update URL to remove class filter
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.delete('class');
+    navigate({
+      pathname: location.pathname,
+      search: searchParams.toString()
+    }, { replace: true });
+    
+    // Clear other filters if needed
     const shouldResetOtherFilters = clearAllFilters();
     
     if (shouldResetOtherFilters) {
