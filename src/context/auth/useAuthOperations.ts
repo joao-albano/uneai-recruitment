@@ -1,19 +1,54 @@
 
-import { useState, useEffect } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { UserProfile, Organization } from './types';
+import { useAuthState } from './hooks/useAuthState';
+import { fetchUserProfile } from './api/profileApi';
+import { loginWithEmail, loginWithPhone, logout } from './api/authApi';
 
 export const useAuthOperations = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [isSuperAdmin, setIsSuperAdmin] = useState<boolean>(false);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
-  const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const {
+    // State
+    isAuthenticated,
+    isAdmin,
+    isSuperAdmin,
+    userEmail,
+    currentUser,
+    currentOrganization,
+    session,
+    // Setters
+    setIsAuthenticated,
+    setIsAdmin,
+    setIsSuperAdmin,
+    setUserEmail,
+    setCurrentUser,
+    setCurrentOrganization,
+    setSession,
+    setUser
+  } = useAuthState();
   
+  // Handle user profile fetching
+  const handleProfileFetch = async (userId: string) => {
+    const userData = await fetchUserProfile(userId);
+    if (userData) {
+      setIsAdmin(userData.isAdmin);
+      setIsSuperAdmin(userData.isSuperAdmin);
+      setCurrentUser(userData.profile);
+      setCurrentOrganization(userData.organization);
+    }
+  };
+  
+  // Reset all auth state
+  const resetAuthState = () => {
+    setIsAuthenticated(false);
+    setIsAdmin(false);
+    setIsSuperAdmin(false);
+    setUserEmail(null);
+    setCurrentUser(null);
+    setCurrentOrganization(null);
+    setSession(null);
+    setUser(null);
+  };
+
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -26,16 +61,11 @@ export const useAuthOperations = () => {
           setIsAuthenticated(true);
           setUserEmail(newSession.user.email);
           
-          // Buscar o perfil do usuário no Supabase
-          fetchUserProfile(newSession.user.id);
+          // Fetch user profile
+          handleProfileFetch(newSession.user.id);
         } else {
-          // Limpar o estado quando não há sessão
-          setIsAuthenticated(false);
-          setIsAdmin(false);
-          setIsSuperAdmin(false);
-          setUserEmail(null);
-          setCurrentUser(null);
-          setCurrentOrganization(null);
+          // Clear state when no session exists
+          resetAuthState();
         }
       }
     );
@@ -49,160 +79,24 @@ export const useAuthOperations = () => {
         setIsAuthenticated(true);
         setUserEmail(existingSession.user.email);
         
-        // Buscar o perfil do usuário no Supabase
-        fetchUserProfile(existingSession.user.id);
+        // Fetch user profile
+        handleProfileFetch(existingSession.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
   }, []);
   
-  // Função para buscar o perfil do usuário e sua organização
-  const fetchUserProfile = async (userId: string) => {
-    try {
-      // Buscar o usuário de auth.users para obter metadados
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      
-      if (userError) {
-        console.error('Erro ao buscar dados do usuário:', userError);
-        return;
-      }
-      
-      // Extrair o nome completo dos metadados
-      const fullName = userData.user?.user_metadata?.full_name;
-      
-      // Buscar perfil do usuário
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-      
-      if (profileError) {
-        console.error('Erro ao buscar perfil:', profileError);
-        return;
-      }
-      
-      if (profile) {
-        setIsAdmin(profile.is_admin);
-        setIsSuperAdmin(profile.is_super_admin);
-        
-        // Se tiver organization_id, buscar dados da organização
-        if (profile.organization_id) {
-          const { data: org, error: orgError } = await supabase
-            .from('organizations')
-            .select('*')
-            .eq('id', profile.organization_id)
-            .single();
-          
-          if (orgError) {
-            console.error('Erro ao buscar organização:', orgError);
-          } else if (org) {
-            const organization: Organization = {
-              id: org.id,
-              name: org.name,
-              isMainOrg: org.is_main_org
-            };
-            
-            setCurrentOrganization(organization);
-            
-            // Atualizar o currentUser com todos os dados
-            setCurrentUser({
-              name: fullName || profile.email.split('@')[0],
-              email: profile.email,
-              role: profile.role,
-              organizationId: org.id,
-              organization: organization,
-              isSuperAdmin: profile.is_super_admin
-            });
-          }
-        } else {
-          // Se não tiver organização, atualizar apenas com os dados do perfil
-          setCurrentUser({
-            name: fullName || profile.email.split('@')[0],
-            email: profile.email,
-            role: profile.role,
-            isSuperAdmin: profile.is_super_admin
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Erro ao buscar dados do usuário:', error);
-    }
-  };
-  
+  // Login with email wrapper function
   const login = async (email: string, password: string) => {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      
-      if (error) {
-        console.error('Erro de login:', error.message);
-        
-        // Fornecer mensagem de erro mais específica para email não confirmado
-        if (error.message.includes('Email not confirmed')) {
-          return { success: false, error: 'Email not confirmed. Please check your inbox for the confirmation email.' };
-        }
-        
-        return { success: false, error: error.message };
-      }
-      
-      // Login bem-sucedido - onAuthStateChange vai atualizar o estado
-      console.log('Login bem-sucedido:', data);
-      return { success: true };
-    } catch (error) {
-      console.error('Erro de login:', error);
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Erro ao fazer login' 
-      };
-    }
+    return await loginWithEmail(email, password);
   };
   
-  const loginWithPhone = async (phone: string, password: string) => {
-    try {
-      // Formatando o telefone para padrão internacional (adicionando +55 para Brasil)
-      const formattedPhone = phone.startsWith('+') ? phone : `+55${phone.replace(/\D/g, '')}`;
-      
-      const { data, error } = await supabase.auth.signInWithPassword({
-        phone: formattedPhone,
-        password
-      });
-      
-      if (error) {
-        console.error('Erro de login com telefone:', error.message);
-        return { success: false, error: error.message };
-      }
-      
-      // Login bem-sucedido - onAuthStateChange vai atualizar o estado
-      console.log('Login com telefone bem-sucedido:', data);
-      return { success: true };
-    } catch (error) {
-      console.error('Erro de login com telefone:', error);
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Erro ao fazer login com telefone' 
-      };
-    }
-  };
-  
-  const logout = async () => {
-    try {
-      await supabase.auth.signOut();
-      
-      // Limpar o estado - onAuthStateChange também vai lidar com isso
-      setIsAuthenticated(false);
-      setIsAdmin(false);
-      setIsSuperAdmin(false);
-      setUserEmail(null);
-      setCurrentUser(null);
-      setCurrentOrganization(null);
-      setSession(null);
-      setUser(null);
-    } catch (error) {
-      console.error('Erro ao fazer logout:', error);
+  // Logout wrapper function
+  const handleLogout = async () => {
+    const { success } = await logout();
+    if (success) {
+      resetAuthState();
     }
   };
 
@@ -216,6 +110,6 @@ export const useAuthOperations = () => {
     session,
     login,
     loginWithPhone,
-    logout
+    logout: handleLogout
   };
 };
