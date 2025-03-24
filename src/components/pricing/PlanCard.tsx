@@ -37,6 +37,14 @@ const PlanCard: React.FC<PlanCardProps> = ({
   const { language } = useTheme();
   const isPtBR = language === 'pt-BR';
 
+  const formatCurrency = (value: number): string => {
+    // Use Intl.NumberFormat to properly format currency values
+    return new Intl.NumberFormat(isPtBR ? 'pt-BR' : 'en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value);
+  };
+
   const handleSelect = () => {
     onSelect({
       id,
@@ -62,7 +70,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
       </CardHeader>
       <CardContent className="flex-1">
         <div className="text-3xl font-bold mb-2">
-          {isPtBR ? 'R$' : '$'} {yearlyBilling ? (priceYearly / 12).toFixed(0) : priceMonthly}{' '}
+          {isPtBR ? 'R$' : '$'} {formatCurrency(yearlyBilling ? Math.round(priceYearly / 12) : priceMonthly)}{' '}
           <span className="text-sm font-normal text-muted-foreground">
             {isPtBR ? '/mês' : '/month'}
           </span>
@@ -71,8 +79,8 @@ const PlanCard: React.FC<PlanCardProps> = ({
         {yearlyBilling && (
           <div className="text-sm text-muted-foreground mb-6">
             {isPtBR 
-              ? `R$ ${priceYearly} cobrados anualmente` 
-              : `$${priceYearly} billed yearly`}
+              ? `R$ ${formatCurrency(priceYearly)} cobrados anualmente` 
+              : `$${formatCurrency(priceYearly)} billed yearly`}
           </div>
         )}
 

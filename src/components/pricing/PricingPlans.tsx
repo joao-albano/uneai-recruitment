@@ -13,13 +13,18 @@ type Plan = Omit<PlanCardProps, 'yearlyBilling' | 'onSelect'>;
 const PricingPlans: React.FC = () => {
   const { language } = useTheme();
   const { toast } = useToast();
-  const [yearlyBilling, setYearlyBilling] = useState(false);
+  const [yearlyBilling, setYearlyBilling] = useState(true);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   
   // Get plan options from the utility hook
   const planOptions = usePlanOptions();
   const isPtBR = language === 'pt-BR';
+  
+  // Function to calculate monthly price - divide annual by 12
+  const calculateMonthlyPrice = (yearlyPrice: number): number => {
+    return Math.round(yearlyPrice / 12);
+  };
   
   const plans: Plan[] = [
     {
@@ -28,7 +33,7 @@ const PricingPlans: React.FC = () => {
       description: isPtBR 
         ? 'Para pequenas escolas com necessidades básicas de monitoramento'
         : 'For small schools with basic monitoring needs',
-      priceMonthly: Math.round(getPriceValue(planOptions.find(p => p.id === 'basic')?.price || '') / 10),
+      priceMonthly: calculateMonthlyPrice(getPriceValue(planOptions.find(p => p.id === 'basic')?.price || '')),
       priceYearly: getPriceValue(planOptions.find(p => p.id === 'basic')?.price || ''),
       features: [
         { included: true, text: planOptions.find(p => p.id === 'basic')?.description || (isPtBR ? 'Até 200 alunos' : 'Up to 200 students') },
@@ -45,7 +50,7 @@ const PricingPlans: React.FC = () => {
       description: isPtBR 
         ? 'Para escolas médias com necessidades avançadas de monitoramento'
         : 'For medium-sized schools with advanced monitoring needs',
-      priceMonthly: Math.round(getPriceValue(planOptions.find(p => p.id === 'premium')?.price || '') / 10),
+      priceMonthly: calculateMonthlyPrice(getPriceValue(planOptions.find(p => p.id === 'premium')?.price || '')),
       priceYearly: getPriceValue(planOptions.find(p => p.id === 'premium')?.price || ''),
       features: [
         { included: true, text: planOptions.find(p => p.id === 'premium')?.description || (isPtBR ? 'Até 500 alunos' : 'Up to 500 students') },
@@ -63,7 +68,7 @@ const PricingPlans: React.FC = () => {
       description: isPtBR 
         ? 'Para redes de ensino completas com necessidades específicas'
         : 'For complete school networks with specific needs',
-      priceMonthly: Math.round(getPriceValue(planOptions.find(p => p.id === 'enterprise')?.price || '') / 10),
+      priceMonthly: calculateMonthlyPrice(getPriceValue(planOptions.find(p => p.id === 'enterprise')?.price || '')),
       priceYearly: getPriceValue(planOptions.find(p => p.id === 'enterprise')?.price || ''),
       features: [
         { included: true, text: planOptions.find(p => p.id === 'enterprise')?.description || (isPtBR ? 'Alunos ilimitados' : 'Unlimited students') },
