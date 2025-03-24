@@ -29,13 +29,25 @@ const MessageDetailDialog: React.FC<MessageDetailDialogProps> = ({
   
   if (!message) return null;
 
-  // Simulate the full conversation that would happen with this student/parent
+  // Conversa completa simulada com perguntas e respostas
   const conversationContent = `Olá ${message.parentName}, gostaríamos de fazer uma pesquisa sobre ${message.studentName}. Por favor, responda as seguintes perguntas:
+
 1. A família mudou de residência nos últimos 6 meses?
+Resposta: Não, estamos no mesmo endereço há mais de 2 anos.
+
 2. O aluno relatou episódios de bullying ou tratamento inadequado?
+Resposta: Sim, ela mencionou que alguns colegas fizeram comentários desagradáveis sobre o cabelo dela na semana passada.
+
 3. Como você avalia a integração social do aluno na escola? (1-5)
+Resposta: Eu diria 3. Ela tem alguns amigos próximos, mas às vezes se sente excluída de alguns grupos.
+
 4. Com que frequência o aluno enfrenta dificuldades para chegar à escola?
-5. Alguma observação adicional?`;
+Resposta: Raramente. Apenas quando há problemas no transporte público, o que acontece uma ou duas vezes por mês.
+
+5. Alguma observação adicional?
+Resposta: Gostaria de mencionar que ela tem demonstrado bastante interesse em aulas de música. Seria possível a escola oferecer atividades extracurriculares nessa área?
+
+De nada! Agradeço o contato e a preocupação com o desenvolvimento do(a) meu/minha filho(a).`;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -98,8 +110,8 @@ const MessageDetailDialog: React.FC<MessageDetailDialogProps> = ({
           </div>
 
           <div className="space-y-2">
-            <h4 className="text-sm font-medium">Conteúdo da mensagem</h4>
-            <div className="p-3 bg-muted rounded-md whitespace-pre-line text-sm">
+            <h4 className="text-sm font-medium">Conversa completa</h4>
+            <div className="p-3 bg-muted rounded-md whitespace-pre-line text-sm max-h-[350px] overflow-y-auto">
               {conversationContent}
             </div>
           </div>
