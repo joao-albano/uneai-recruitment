@@ -1,7 +1,8 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { useData } from '@/context/DataContext';
 import { v4 as uuidv4 } from 'uuid';
+import { useStudents } from '@/context/students/StudentsContext';
+import { useAlerts } from '@/context/alerts/AlertsContext';
 
 interface WhatsAppMessage {
   type: 'sent' | 'received';
@@ -12,7 +13,8 @@ interface WhatsAppMessage {
 
 export const useWhatsAppConversation = () => {
   const [messages, setMessages] = useState<WhatsAppMessage[]>([]);
-  const { alerts, students } = useData();
+  const { alerts } = useAlerts();
+  const { students } = useStudents();
   const conversationInitialized = useRef(false);
   const questionAnswerSequence = useRef<number>(0);
   
