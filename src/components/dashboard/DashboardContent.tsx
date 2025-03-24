@@ -76,30 +76,6 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         <PaymentNotificationBanner />
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <RiskCard 
-          title={language === 'pt-BR' ? 'Alto Risco' : 'High Risk'} 
-          value={highRiskCount.toString()} 
-          description={`${getPercentage(highRiskCount).toFixed(1)}% dos alunos`} 
-          icon={<AlertTriangle className="h-8 w-8 text-red-500" />}
-          className="border-red-200 bg-red-50"
-        />
-        <RiskCard 
-          title={language === 'pt-BR' ? 'Médio Risco' : 'Medium Risk'} 
-          value={mediumRiskCount.toString()} 
-          description={`${getPercentage(mediumRiskCount).toFixed(1)}% dos alunos`} 
-          icon={<AlertCircle className="h-8 w-8 text-amber-500" />}
-          className="border-amber-200 bg-amber-50"
-        />
-        <RiskCard 
-          title={language === 'pt-BR' ? 'Baixo Risco' : 'Low Risk'} 
-          value={lowRiskCount.toString()} 
-          description={`${getPercentage(lowRiskCount).toFixed(1)}% dos alunos`} 
-          icon={<CheckCircle className="h-8 w-8 text-green-500" />}
-          className="border-green-200 bg-green-50"
-        />
-      </div>
-      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <Card>
           <CardContent>
