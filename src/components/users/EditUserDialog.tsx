@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -32,7 +32,21 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
   isAdmin = false,
   isSuperAdmin = false
 }) => {
+  // Safety check - if no selected user, don't render the dialog
   if (!selectedUser) return null;
+  
+  // Clean up function to prevent memory leaks and state issues
+  const handleDialogClose = (isOpen: boolean) => {
+    try {
+      // If dialog is closing
+      if (!isOpen) {
+        // Use the callback to ensure we're working with latest state
+        onOpenChange(false);
+      }
+    } catch (error) {
+      console.error("Error handling dialog close:", error);
+    }
+  };
   
   // Tradução dos tipos de produto
   const productNames: Record<string, string> = {
@@ -50,32 +64,48 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
   
   // Manipuladores de eventos seguros
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!selectedUser) return;
     try {
-      setSelectedUser({...selectedUser, name: e.target.value});
+      setSelectedUser(prev => {
+        if (!prev) return null;
+        return {...prev, name: e.target.value};
+      });
     } catch (error) {
       console.error("Erro ao atualizar nome:", error);
     }
   };
   
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!selectedUser) return;
     try {
-      setSelectedUser({...selectedUser, email: e.target.value});
+      setSelectedUser(prev => {
+        if (!prev) return null;
+        return {...prev, email: e.target.value};
+      });
     } catch (error) {
       console.error("Erro ao atualizar email:", error);
     }
   };
   
   const handleRoleChange = (value: string) => {
+    if (!selectedUser) return;
     try {
-      setSelectedUser({...selectedUser, role: value});
+      setSelectedUser(prev => {
+        if (!prev) return null;
+        return {...prev, role: value};
+      });
     } catch (error) {
       console.error("Erro ao atualizar função:", error);
     }
   };
   
   const handleSuperAdminChange = (checked: boolean) => {
+    if (!selectedUser) return;
     try {
-      setSelectedUser({...selectedUser, isSuperAdmin: checked});
+      setSelectedUser(prev => {
+        if (!prev) return null;
+        return {...prev, isSuperAdmin: checked};
+      });
     } catch (error) {
       console.error("Erro ao atualizar status de Super Admin:", error);
     }
@@ -83,6 +113,8 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+    
     try {
       if (onSubmit) {
         onSubmit(e);
@@ -93,7 +125,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
   };
   
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleDialogClose}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>Editar Usuário</DialogTitle>
@@ -214,7 +246,11 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
           </div>
           
           <DialogFooter>
-            <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>
+            <Button 
+              variant="outline" 
+              type="button" 
+              onClick={() => onOpenChange(false)}
+            >
               Cancelar
             </Button>
             <Button type="submit">Salvar Alterações</Button>

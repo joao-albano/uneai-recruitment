@@ -24,22 +24,36 @@ const UsersList: React.FC<UsersListProps> = ({
   isAdmin = false,
   isSuperAdmin = false
 }) => {
-  // Função segura para chamar onEdit
+  // Improved function with better error handling
   const handleEdit = (user: UserType) => {
     try {
+      if (!user) {
+        console.error("Tentativa de editar um usuário inválido");
+        return;
+      }
+      
       if (onEdit) {
-        onEdit(user);
+        // Clone the user to avoid reference issues
+        const userClone = JSON.parse(JSON.stringify(user));
+        onEdit(userClone);
       }
     } catch (error) {
       console.error("Erro ao processar edição de usuário:", error);
     }
   };
 
-  // Função segura para chamar onDelete
+  // Improved function with better error handling
   const handleDelete = (user: UserType) => {
     try {
+      if (!user) {
+        console.error("Tentativa de excluir um usuário inválido");
+        return;
+      }
+      
       if (onDelete) {
-        onDelete(user);
+        // Clone the user to avoid reference issues
+        const userClone = JSON.parse(JSON.stringify(user));
+        onDelete(userClone);
       }
     } catch (error) {
       console.error("Erro ao processar exclusão de usuário:", error);
