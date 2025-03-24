@@ -10,6 +10,7 @@ interface ThemeContextType {
   language: Language;
   toggleTheme: () => void;
   setLanguage: (lang: Language) => void;
+  toggleLanguage: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -75,9 +76,22 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         : 'Language changed to English',
     });
   };
+  
+  const toggleLanguage = () => {
+    setLanguageState(prev => {
+      const newLang = prev === 'pt-BR' ? 'en-US' : 'pt-BR';
+      toast({
+        title: newLang === 'pt-BR' ? 'Idioma alterado' : 'Language changed',
+        description: newLang === 'pt-BR' 
+          ? 'Idioma alterado para Português (BR)'
+          : 'Language changed to English',
+      });
+      return newLang;
+    });
+  };
 
   return (
-    <ThemeContext.Provider value={{ theme, language, toggleTheme, setLanguage }}>
+    <ThemeContext.Provider value={{ theme, language, toggleTheme, setLanguage, toggleLanguage }}>
       {children}
     </ThemeContext.Provider>
   );

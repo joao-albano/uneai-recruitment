@@ -10,6 +10,7 @@ import { useTheme } from '@/context/ThemeContext';
 import PricingLink from './header/PricingLink';
 import PaymentNotification from './header/PaymentNotification';
 import { useTrialPeriod } from '@/hooks/useTrialPeriod';
+import { useAuth } from '@/context/AuthContext';
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -18,11 +19,23 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed }) => {
   const navigate = useNavigate();
-  const { language, toggleLanguage } = useTheme();
+  const { language, setLanguage } = useTheme();
   const { showBanner, isExpired } = useTrialPeriod();
+  const { currentUser } = useAuth();
+  
+  // Mock unread count for notification bell
+  const unreadCount = 3;
   
   // This would come from your payment system in a real app
   const hasPendingInvoice = false;
+  
+  // Create mock user data for UserMenu
+  const user = {
+    name: currentUser?.email?.split('@')[0] || 'User',
+    email: currentUser?.email || 'user@escola.edu',
+    role: currentUser?.role || 'user',
+    initials: (currentUser?.email?.[0] || 'U').toUpperCase(),
+  };
   
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 lg:px-6">
@@ -36,7 +49,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed }) => {
         <span className="sr-only">Toggle Menu</span>
       </Button>
       
-      <AppLogo variant={sidebarCollapsed ? 'full' : 'icon'} />
+      <AppLogo visible={true} />
 
       <div className="flex-1" />
       
@@ -57,8 +70,8 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed }) => {
         <PaymentNotification visible={hasPendingInvoice} />
         
         <PricingLink />
-        <NotificationBell />
-        <UserMenu />
+        <NotificationBell unreadCount={unreadCount} />
+        <UserMenu user={user} />
       </div>
     </header>
   );

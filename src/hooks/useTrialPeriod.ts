@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 const DEFAULT_TRIAL_PERIOD = 14;
 
 export const useTrialPeriod = () => {
-  const { user } = useAuth();
+  const { currentUser } = useAuth();
   const [daysRemaining, setDaysRemaining] = useState<number>(DEFAULT_TRIAL_PERIOD);
   const [showBanner, setShowBanner] = useState<boolean>(false);
   
@@ -15,14 +15,14 @@ export const useTrialPeriod = () => {
     // 1. Store the user creation date in your database
     // 2. Fetch subscription status from your payment provider
     
-    if (!user) {
+    if (!currentUser) {
       setShowBanner(false);
       return;
     }
     
     // For demo purposes, we're using localStorage to simulate a start date
     // In a real implementation, this would come from your backend
-    const trialStartKey = `trial_start_${user.id}`;
+    const trialStartKey = `trial_start_${currentUser.email}`;
     let trialStartDate = localStorage.getItem(trialStartKey);
     
     // If no start date is recorded, set it now
@@ -33,7 +33,7 @@ export const useTrialPeriod = () => {
     
     // Check if the user has an active subscription
     // This is a mock - in a real app, check your payment provider
-    const hasPaidPlan = localStorage.getItem(`user_plan_${user.id}`);
+    const hasPaidPlan = localStorage.getItem(`user_plan_${currentUser.email}`);
     
     if (hasPaidPlan) {
       // User has a paid plan, don't show the banner
@@ -52,7 +52,7 @@ export const useTrialPeriod = () => {
     
     setDaysRemaining(daysLeft);
     setShowBanner(true);
-  }, [user]);
+  }, [currentUser]);
   
   return {
     daysRemaining,

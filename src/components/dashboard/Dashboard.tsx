@@ -54,16 +54,6 @@ const Dashboard: React.FC = () => {
     });
   };
 
-  const convertedAlerts: Alert[] = alerts.map(alert => ({
-    id: alert.id,
-    studentId: alert.studentId,
-    studentName: alert.studentName,
-    studentClass: alert.studentClass,
-    type: alert.type,
-    actionTaken: alert.actionTaken,
-    createdAt: alert.createdAt.toString()
-  }));
-
   return (
     <div className="animate-fade-in">
       {shouldShowPaymentBanner && <PaymentNotificationBanner />}
@@ -101,18 +91,14 @@ const Dashboard: React.FC = () => {
           </CardContent>
         </Card>
       ) : (
-        <>
-          <DashboardContent
-            students={students}
-            alerts={convertedAlerts}
-            schedules={schedules}
-            allAlerts={alerts}
-            allSchedules={schedules}
-            onViewAlertDetails={handleViewAlertDetails}
-            onViewClassDetails={handleViewClassDetails}
-            onScheduleClick={handleScheduleClick}
-          />
-        </>
+        <DashboardContent
+          students={students}
+          alerts={alerts}
+          schedules={schedules}
+          onViewAlertDetails={handleViewAlertDetails}
+          onViewClassDetails={handleViewClassDetails}
+          onScheduleClick={handleScheduleClick}
+        />
       )}
     </div>
   );
