@@ -47,6 +47,7 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({
               />
             )}
           </div>
+          <span className="ml-2 text-lg font-light text-foreground/80">EduCare</span>
         </div>
       )}
       <div className="flex items-center">
