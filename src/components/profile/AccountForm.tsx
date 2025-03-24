@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/auth';
+import { Badge } from '@/components/ui/badge';
 
 const profileSchema = z.object({
   name: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
@@ -24,14 +25,14 @@ interface AccountFormProps {
 }
 
 const AccountForm: React.FC<AccountFormProps> = ({ user }) => {
-  const { currentUser } = useAuth();
+  const { currentUser, isSuperAdmin } = useAuth();
   
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       name: currentUser?.name || user.name,
       email: currentUser?.email || user.email,
-      role: currentUser?.role || user.role,
+      role: isSuperAdmin ? 'Super Admin' : (currentUser?.role || user.role),
     },
   });
 
@@ -41,10 +42,10 @@ const AccountForm: React.FC<AccountFormProps> = ({ user }) => {
       form.reset({
         name: currentUser.name || user.name,
         email: currentUser.email || user.email,
-        role: currentUser.role || user.role,
+        role: isSuperAdmin ? 'Super Admin' : (currentUser.role || user.role),
       });
     }
-  }, [currentUser, user, form]);
+  }, [currentUser, user, form, isSuperAdmin]);
 
   const onSubmit = (values: z.infer<typeof profileSchema>) => {
     console.log('Profile update:', values);
@@ -87,9 +88,19 @@ const AccountForm: React.FC<AccountFormProps> = ({ user }) => {
             <FormItem>
               <FormLabel>Função</FormLabel>
               <FormControl>
-                <Input {...field} disabled />
+                <div className="flex items-center">
+                  <Input {...field} disabled className="flex-1" />
+                  {isSuperAdmin && (
+                    <Badge className="ml-2 bg-amber-500 text-white">UNE CX</Badge>
+                  )}
+                </div>
               </FormControl>
               <FormMessage />
+              {isSuperAdmin && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Como Super Admin, você tem acesso completo a todo o sistema e todas as organizações.
+                </p>
+              )}
             </FormItem>
           )}
         />

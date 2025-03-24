@@ -20,7 +20,7 @@ const ProfilePage: React.FC = () => {
   const user = {
     name: currentUser?.name || 'Usuário',
     email: currentUser?.email || userEmail || '',
-    role: currentUser?.role || 'user',
+    role: currentUser?.isSuperAdmin ? 'superadmin' : (currentUser?.role || 'user'),
     initials: currentUser?.name ? 
       currentUser.name[0].toUpperCase() : 
       (currentUser?.email?.[0] || 'U').toUpperCase(),
@@ -30,8 +30,9 @@ const ProfilePage: React.FC = () => {
   // Debug user information
   useEffect(() => {
     console.log("Current user in profile:", currentUser);
+    console.log("Is Super Admin:", isSuperAdmin);
     console.log("User object:", user);
-  }, [currentUser]);
+  }, [currentUser, isSuperAdmin]);
   
   return (
     <DataProvider>
@@ -65,7 +66,7 @@ const ProfilePage: React.FC = () => {
                 />
               </div>
 
-              <ProfileTabs user={user} isAdmin={isAdmin} />
+              <ProfileTabs user={user} isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} />
             </div>
           </main>
         </div>

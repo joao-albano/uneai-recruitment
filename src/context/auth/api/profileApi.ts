@@ -34,6 +34,8 @@ export const fetchUserProfile = async (userId: string) => {
       // Even if profile fetch fails, we can still return basic user data
     }
     
+    console.log('Profile data from database:', profile);
+    
     let organization: Organization | undefined;
     
     // If profile has organization_id, fetch organization details
@@ -55,20 +57,24 @@ export const fetchUserProfile = async (userId: string) => {
       }
     }
     
+    // Determine if the user is a super admin (admin of UNE CX)
+    const isSuperAdmin = Boolean(profile?.is_super_admin);
+    console.log('Is super admin:', isSuperAdmin);
+    
     // Create user profile object with priority on user_metadata for name
     const userProfile: UserProfile = {
       name: fullName || profile?.email?.split('@')[0] || email?.split('@')[0],
       email: email || profile?.email,
-      role: profile?.role || 'user',
+      role: isSuperAdmin ? 'superadmin' : (profile?.role || 'user'),
       organizationId: profile?.organization_id,
       organization: organization,
-      isSuperAdmin: profile?.is_super_admin
+      isSuperAdmin: isSuperAdmin
     };
     
     return {
       profile: userProfile,
-      isAdmin: profile?.is_admin || false,
-      isSuperAdmin: profile?.is_super_admin || false,
+      isAdmin: profile?.is_admin || isSuperAdmin || false,
+      isSuperAdmin: isSuperAdmin || false,
       organization: organization || null
     };
   } catch (error) {
