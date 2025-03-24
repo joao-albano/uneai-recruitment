@@ -3,10 +3,13 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   ResponsiveContainer, 
-  PieChart, 
-  Pie, 
-  Cell, 
-  Tooltip
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid,
+  Tooltip,
+  Cell
 } from 'recharts';
 import { StudentData } from '@/context/DataContext';
 
@@ -48,29 +51,6 @@ const Chart: React.FC<ChartProps> = ({ students, title, description }) => {
     return null;
   };
   
-  const RADIAN = Math.PI / 180;
-  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, value }: any) => {
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-    
-    if (value === 0) return null;
-    
-    return (
-      <text 
-        x={x} 
-        y={y} 
-        fill="white" 
-        textAnchor={x > cx ? 'start' : 'end'} 
-        dominantBaseline="central"
-        fontSize={12}
-        fontWeight="bold"
-      >
-        {`${data[index].percentage.toFixed(0)}%`}
-      </text>
-    );
-  };
-  
   return (
     <Card className="shadow-md transition-all duration-300 hover:shadow-lg h-full">
       <CardHeader>
@@ -79,24 +59,30 @@ const Chart: React.FC<ChartProps> = ({ students, title, description }) => {
       </CardHeader>
       <CardContent className="h-72">
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              label={renderCustomizedLabel}
-              outerRadius={80}
+          <BarChart
+            data={data}
+            layout="vertical"
+            margin={{ top: 5, right: 30, left: 60, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis type="number" />
+            <YAxis 
+              type="category" 
+              dataKey="name"
+              width={60}
+              tickLine={false}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Bar 
+              dataKey="value" 
               fill="#8884d8"
-              dataKey="value"
-              nameKey="name"
+              radius={[0, 4, 4, 0]}
             >
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
-            </Pie>
-            <Tooltip content={<CustomTooltip />} />
-          </PieChart>
+            </Bar>
+          </BarChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
