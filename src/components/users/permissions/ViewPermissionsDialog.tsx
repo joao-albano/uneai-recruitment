@@ -68,4 +68,4 @@ const ViewPermissionsDialog: React.FC<ViewPermissionsDialogProps> = ({
   );
 };
 
-export default ViewPermissionsDialog;
+export default React.memo(ViewPermissionsDialog);

@@ -1,5 +1,5 @@
 
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu, 
@@ -43,6 +43,31 @@ const UserActions: React.FC<UserActionsProps> = ({
   isAdmin = false,
   isSuperAdmin = false
 }) => {
+  // Create memoized event handlers that properly handle the events
+  const handleEdit = React.useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onEdit(user);
+  }, [user, onEdit]);
+  
+  const handleDelete = React.useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onDelete(user);
+  }, [user, onDelete]);
+  
+  const handleManagePermissions = React.useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onManagePermissions();
+  }, [onManagePermissions]);
+  
+  const handleViewPermissions = React.useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onViewPermissions();
+  }, [onViewPermissions]);
+  
   return (
     <DropdownMenu 
       open={isDropdownOpen} 
@@ -57,20 +82,20 @@ const UserActions: React.FC<UserActionsProps> = ({
         <DropdownMenuLabel>Ações</DropdownMenuLabel>
         <DropdownMenuSeparator />
         
-        <DropdownMenuItem onClick={onEdit}>
+        <DropdownMenuItem onClick={handleEdit}>
           <Edit className="mr-2 h-4 w-4" />
           Editar
         </DropdownMenuItem>
         
         {/* Só permite gerenciar permissões se você for admin */}
         {isAdmin && (
-          <DropdownMenuItem onClick={onManagePermissions}>
+          <DropdownMenuItem onClick={handleManagePermissions}>
             <ShieldAlert className="mr-2 h-4 w-4" />
             Gerenciar Permissões
           </DropdownMenuItem>
         )}
         
-        <DropdownMenuItem onClick={onViewPermissions}>
+        <DropdownMenuItem onClick={handleViewPermissions}>
           <UserCheck className="mr-2 h-4 w-4" />
           Visualizar Permissões
         </DropdownMenuItem>
@@ -78,7 +103,7 @@ const UserActions: React.FC<UserActionsProps> = ({
         <DropdownMenuSeparator />
         
         <DropdownMenuItem 
-          onClick={onDelete}
+          onClick={handleDelete}
           disabled={
             // Não permite excluir o último admin da organização
             (isLastAdmin && user.role === "admin") ||

@@ -29,59 +29,55 @@ const UserCard: React.FC<UserCardProps> = ({
   isAdmin = false,
   isSuperAdmin = false
 }) => {
-  // Use estados apenas quando realmente necessário
+  // State management for dialogs and dropdown
   const [dialogState, setDialogState] = useState({
     showPermissionsDialog: false,
     showViewPermissionsDialog: false,
     isDropdownOpen: false
   });
   
-  // Handlers memoizados para evitar re-renderizações
-  const handleEdit = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onEdit(user);
-    setDialogState(prev => ({ ...prev, isDropdownOpen: false }));
-  }, [user, onEdit]);
+  // Optimize state updates with useCallback
+  const updateDialogState = useCallback((newState: Partial<typeof dialogState>) => {
+    setDialogState(prev => ({ ...prev, ...newState }));
+  }, []);
   
-  const handleDelete = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onDelete(user);
-    setDialogState(prev => ({ ...prev, isDropdownOpen: false }));
-  }, [user, onDelete]);
-  
-  const handleManagePermissions = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDialogState(prev => ({ 
-      ...prev, 
+  // Event handlers
+  const handleManagePermissions = useCallback(() => {
+    updateDialogState({ 
       showPermissionsDialog: true,
       isDropdownOpen: false 
-    }));
-  }, []);
+    });
+  }, [updateDialogState]);
   
-  const handleViewPermissions = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDialogState(prev => ({ 
-      ...prev, 
+  const handleViewPermissions = useCallback(() => {
+    updateDialogState({ 
       showViewPermissionsDialog: true,
       isDropdownOpen: false 
-    }));
-  }, []);
+    });
+  }, [updateDialogState]);
   
   const handleDropdownOpenChange = useCallback((open: boolean) => {
-    setDialogState(prev => ({ ...prev, isDropdownOpen: open }));
-  }, []);
+    updateDialogState({ isDropdownOpen: open });
+  }, [updateDialogState]);
   
   const handlePermissionsDialogChange = useCallback((open: boolean) => {
-    setDialogState(prev => ({ ...prev, showPermissionsDialog: open }));
-  }, []);
+    updateDialogState({ showPermissionsDialog: open });
+  }, [updateDialogState]);
   
   const handleViewPermissionsDialogChange = useCallback((open: boolean) => {
-    setDialogState(prev => ({ ...prev, showViewPermissionsDialog: open }));
-  }, []);
+    updateDialogState({ showViewPermissionsDialog: open });
+  }, [updateDialogState]);
+  
+  // Memoize the edit and delete handlers to prevent recreating functions
+  const handleEdit = useCallback((userToEdit: UserType) => {
+    onEdit(userToEdit);
+    updateDialogState({ isDropdownOpen: false });
+  }, [onEdit, updateDialogState]);
+  
+  const handleDelete = useCallback((userToDelete: UserType) => {
+    onDelete(userToDelete);
+    updateDialogState({ isDropdownOpen: false });
+  }, [onDelete, updateDialogState]);
   
   return (
     <Card className="shadow-sm hover:shadow transition-all">
@@ -112,7 +108,7 @@ const UserCard: React.FC<UserCardProps> = ({
         onManagePermissions={handleManagePermissions}
       />
       
-      {/* Only render dialogs when they're open to improve performance */}
+      {/* Lazy-load dialogs only when they're open */}
       {dialogState.showPermissionsDialog && (
         <PermissionsDialog 
           open={dialogState.showPermissionsDialog} 
@@ -132,5 +128,5 @@ const UserCard: React.FC<UserCardProps> = ({
   );
 };
 
-// Memoizando o componente para evitar re-renderizações desnecessárias
+// Memoize the component to prevent unnecessary re-renders
 export default memo(UserCard);

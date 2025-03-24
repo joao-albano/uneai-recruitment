@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
 import { Users, ShieldAlert } from "lucide-react";
@@ -14,6 +14,12 @@ const UserCardFooter: React.FC<UserCardFooterProps> = ({
   user,
   onManagePermissions
 }) => {
+  const handleManagePermissions = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onManagePermissions();
+  }, [onManagePermissions]);
+
   return (
     <CardFooter className="bg-muted/50 py-3 px-6">
       <div className="w-full flex justify-between items-center">
@@ -30,7 +36,7 @@ const UserCardFooter: React.FC<UserCardFooterProps> = ({
           variant="outline" 
           size="sm" 
           className="h-8"
-          onClick={onManagePermissions}
+          onClick={handleManagePermissions}
         >
           <ShieldAlert className="h-3.5 w-3.5 mr-1" />
           Permissões

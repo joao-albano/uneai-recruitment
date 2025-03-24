@@ -1,5 +1,5 @@
 
-import React, { useCallback, memo } from 'react';
+import React, { useCallback, memo, useMemo } from 'react';
 import { UserType } from './types';
 import UserCard from './UserCard';
 import { ProductSubscription } from '@/context/ProductContext';
@@ -14,9 +14,6 @@ interface UsersListProps {
   isAdmin?: boolean;
   isSuperAdmin?: boolean;
 }
-
-// Memoized UserCard to prevent unnecessary re-renders
-const MemoizedUserCard = memo(UserCard);
 
 const UsersList: React.FC<UsersListProps> = ({
   users,
@@ -35,7 +32,7 @@ const UsersList: React.FC<UsersListProps> = ({
     }
     
     // Clone the user to avoid reference issues
-    const userClone = JSON.parse(JSON.stringify(user));
+    const userClone = structuredClone(user);
     onEdit(userClone);
   }, [onEdit]);
 
@@ -45,38 +42,42 @@ const UsersList: React.FC<UsersListProps> = ({
       return;
     }
     
-    // Clone the user to avoid reference issues
-    const userClone = JSON.parse(JSON.stringify(user));
+    // Using structuredClone instead of JSON.parse/stringify for better performance
+    const userClone = structuredClone(user);
     onDelete(userClone);
   }, [onDelete]);
   
+  // Memoize the empty state to prevent unnecessary renders
+  const emptyState = useMemo(() => (
+    <div className="col-span-full flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border border-dashed text-center">
+      <Users className="h-12 w-12 text-muted-foreground mb-4" />
+      <h3 className="text-lg font-medium mb-1">Nenhum usuário encontrado</h3>
+      <p className="text-muted-foreground">
+        Clique em "Novo Usuário" para adicionar.
+      </p>
+    </div>
+  ), []);
+  
+  // Render all user cards using the memoized handlers
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4">
-      {users.map(user => (
-        <MemoizedUserCard 
-          key={user.id} 
-          user={user} 
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          isLastAdmin={isLastAdmin}
-          subscriptions={subscriptions}
-          isAdmin={isAdmin}
-          isSuperAdmin={isSuperAdmin}
-        />
-      ))}
-      
-      {users.length === 0 && (
-        <div className="col-span-full flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border border-dashed text-center">
-          <Users className="h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium mb-1">Nenhum usuário encontrado</h3>
-          <p className="text-muted-foreground">
-            Clique em "Novo Usuário" para adicionar.
-          </p>
-        </div>
-      )}
+      {users.length > 0 ? (
+        users.map(user => (
+          <UserCard 
+            key={user.id} 
+            user={user} 
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            isLastAdmin={isLastAdmin}
+            subscriptions={subscriptions}
+            isAdmin={isAdmin}
+            isSuperAdmin={isSuperAdmin}
+          />
+        ))
+      ) : emptyState}
     </div>
   );
 };
 
-// Usando memo para evitar re-renderizações desnecessárias da lista inteira
+// Memoize the entire component to prevent unnecessary rerenders
 export default memo(UsersList);
