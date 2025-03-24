@@ -1,7 +1,7 @@
 
 import { useMemo } from 'react';
 import { Schedule } from '@/types/schedule';
-import { demoStudents } from '@/data/demoStudents';
+import { generateDemoStudents } from '@/data/demoStudents';
 
 export const useScheduleFilters = (schedules: Schedule[], today: Date) => {
   // Calculate today's schedules
@@ -32,7 +32,7 @@ export const useScheduleFilters = (schedules: Schedule[], today: Date) => {
     const uniqueStudents = new Map();
     
     // Add students from demo data to ensure we always have a full list
-    demoStudents().forEach(student => {
+    generateDemoStudents().forEach(student => {
       uniqueStudents.set(student.id, {
         id: student.id,
         name: student.name,
