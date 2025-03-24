@@ -63,12 +63,17 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
     }
   };
 
+  // Let's add some debug console logs to help diagnose the issue
+  const studentId = form.getValues('studentId');
+  console.log('Student ID:', studentId);
+  console.log('Button disabled state:', sendingWhatsApp || !studentId);
+
   return (
     <Button 
       type="button" 
       variant="outline" 
       onClick={handleSendWhatsApp}
-      disabled={sendingWhatsApp || !form.getValues('studentId')}
+      disabled={sendingWhatsApp}
       className="h-11 px-4"
     >
       {sendingWhatsApp ? (
