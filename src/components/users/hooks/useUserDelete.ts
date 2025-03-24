@@ -31,10 +31,28 @@ export const useUserDelete = (fetchUsers: () => Promise<void>) => {
         return;
       }
       
-      // Usar a função RPC para excluir o usuário
-      const { error } = await supabase.rpc('delete_user', {
-        user_id: selectedUser.id.toString()
-      });
+      // Verificar se o usuário é o último admin de uma organização
+      if (selectedUser.role === 'admin') {
+        const { data: admins, error: adminsError } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('organization_id', selectedUser.organizationId)
+          .eq('is_admin', true);
+        
+        if (!adminsError && admins && admins.length <= 1) {
+          toast({
+            title: "Operação não permitida",
+            description: "Não é possível excluir o último administrador da organização.",
+            variant: "destructive"
+          });
+          return;
+        }
+      }
+      
+      // Excluir o usuário usando a API Admin
+      const { error } = await supabase.auth.admin.deleteUser(
+        selectedUser.id.toString()
+      );
       
       if (error) {
         console.error("Erro ao excluir usuário:", error);

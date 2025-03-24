@@ -30,24 +30,52 @@ export const useUserCreate = (fetchUsers: () => Promise<void>) => {
         return;
       }
       
-      // Usar a função RPC personalizada para criar o usuário
-      const { data, error } = await supabase.rpc('create_user_with_profile', {
+      // Usar o API diretamente para criar usuário e perfil
+      // Primeiro criar o usuário
+      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
         email,
         password,
-        name,
-        role: role || 'user',
-        is_admin: role === 'admin',
-        organization_id: newUser.organizationId
+        email_confirm: true,
+        user_metadata: { full_name: name }
       });
       
-      if (error) {
-        console.error("Erro ao criar usuário:", error);
+      if (authError) {
+        console.error("Erro ao criar usuário:", authError);
         toast({
           title: "Erro ao criar usuário",
-          description: error.message,
+          description: authError.message,
           variant: "destructive"
         });
         return;
+      }
+      
+      if (!authData.user) {
+        toast({
+          title: "Erro ao criar usuário",
+          description: "Não foi possível criar o usuário.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Agora, atualizar o perfil do usuário
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          role: role || 'user',
+          is_admin: role === 'admin',
+          organization_id: newUser.organizationId
+        })
+        .eq('id', authData.user.id);
+      
+      if (profileError) {
+        console.error("Erro ao atualizar perfil:", profileError);
+        toast({
+          title: "Perfil criado parcialmente",
+          description: "Usuário criado, mas houve um erro ao configurar o perfil.",
+          variant: "destructive"
+        });
+        // Continuar mesmo com erro para que o usuário seja mostrado
       }
       
       // Recarregar a lista de usuários

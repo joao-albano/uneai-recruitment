@@ -16,9 +16,7 @@ export const fetchUsers = async () => {
         is_admin,
         is_super_admin,
         organization_id,
-        organizations:organization_id (
-          name
-        )
+        organizations(name)
       `);
     
     if (error) {
@@ -57,21 +55,38 @@ export const fetchOrganizations = async () => {
  */
 export const createUser = async (userData: NewUserType) => {
   try {
-    const { data, error } = await supabase.rpc('create_user_with_profile', {
+    // Criar usuário usando a API de Admin
+    const { data, error } = await supabase.auth.admin.createUser({
       email: userData.email,
-      password: userData.password,
-      name: userData.name,
-      role: userData.role,
-      is_admin: userData.role === 'admin',
-      is_super_admin: userData.isSuperAdmin || false,
-      organization_id: userData.organizationId
+      password: userData.password || '',
+      email_confirm: true,
+      user_metadata: { full_name: userData.name }
     });
     
     if (error) {
       throw error;
     }
     
-    return data;
+    if (!data.user) {
+      throw new Error('Usuário não foi criado');
+    }
+    
+    // Atualizar o perfil do usuário com informações adicionais
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update({
+        role: userData.role,
+        is_admin: userData.role === 'admin',
+        is_super_admin: userData.isSuperAdmin || false,
+        organization_id: userData.organizationId
+      })
+      .eq('id', data.user.id);
+    
+    if (profileError) {
+      throw profileError;
+    }
+    
+    return data.user;
   } catch (error) {
     console.error('Erro ao criar usuário:', error);
     throw error;
@@ -83,15 +98,31 @@ export const createUser = async (userData: NewUserType) => {
  */
 export const updateUser = async (userId: string, userData: Partial<UserType>) => {
   try {
-    const { error } = await supabase.rpc('update_user_profile', {
-      user_id: userId,
-      name: userData.name,
-      email: userData.email,
-      role: userData.role,
-      is_admin: userData.role === 'admin',
-      is_super_admin: userData.isSuperAdmin,
-      organization_id: userData.organizationId
-    });
+    // Atualizar metadata do usuário se necessário
+    if (userData.name || userData.email) {
+      const { error: authError } = await supabase.auth.admin.updateUserById(
+        userId,
+        {
+          email: userData.email,
+          user_metadata: userData.name ? { full_name: userData.name } : undefined
+        }
+      );
+      
+      if (authError) {
+        throw authError;
+      }
+    }
+    
+    // Atualizar o perfil do usuário
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        role: userData.role,
+        is_admin: userData.role === 'admin',
+        is_super_admin: userData.isSuperAdmin,
+        organization_id: userData.organizationId
+      })
+      .eq('id', userId);
     
     if (error) {
       throw error;
@@ -109,9 +140,7 @@ export const updateUser = async (userId: string, userData: Partial<UserType>) =>
  */
 export const deleteUser = async (userId: string) => {
   try {
-    const { error } = await supabase.rpc('delete_user', {
-      user_id: userId
-    });
+    const { error } = await supabase.auth.admin.deleteUser(userId);
     
     if (error) {
       throw error;
