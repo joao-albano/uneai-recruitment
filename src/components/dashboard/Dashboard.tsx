@@ -6,10 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import DashboardContent from './DashboardContent';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Schedule } from '@/types/schedule';
-import { Alert } from '@/types/alert';
 import PaymentNotificationBanner from '../billing/PaymentNotificationBanner';
 import { useAuth } from '@/context/AuthContext';
+import { Alert } from '@/types/alert';
+import { ScheduleItem } from '@/types/data';
 
 const Dashboard: React.FC = () => {
   const { students, alerts, schedules, isLoading, generateDemoData } = useData();
@@ -45,7 +45,7 @@ const Dashboard: React.FC = () => {
     });
   };
 
-  const handleScheduleClick = (schedule: Schedule) => {
+  const handleScheduleClick = (schedule: ScheduleItem) => {
     navigate('/schedule');
     
     toast({
@@ -53,6 +53,17 @@ const Dashboard: React.FC = () => {
       description: 'Visualizando página de agendamentos',
     });
   };
+
+  // Convert AlertItem[] to Alert[] for compatibility with DashboardContent
+  const alertsForDashboard: Alert[] = alerts.map(alert => ({
+    id: alert.id,
+    studentId: alert.studentId,
+    studentName: alert.studentName,
+    studentClass: alert.studentClass,
+    type: alert.type,
+    actionTaken: alert.actionTaken,
+    createdAt: alert.createdAt.toISOString(),
+  }));
 
   return (
     <div className="animate-fade-in">
@@ -93,7 +104,7 @@ const Dashboard: React.FC = () => {
       ) : (
         <DashboardContent
           students={students}
-          alerts={alerts}
+          alerts={alertsForDashboard}
           schedules={schedules}
           onViewAlertDetails={handleViewAlertDetails}
           onViewClassDetails={handleViewClassDetails}

@@ -13,17 +13,18 @@ import { useTheme } from '@/context/ThemeContext';
 import FreePlanExpirationBanner from '../billing/FreePlanExpirationBanner';
 import { useTrialPeriod } from '@/hooks/useTrialPeriod';
 import PaymentNotificationBanner from '../billing/PaymentNotificationBanner';
-import { AlertIcon, AlertTriangle, CheckCircle } from 'lucide-react';
+import { AlertTriangle, AlertCircle, CheckCircle } from 'lucide-react';
 import { useData } from '@/context/DataContext';
-import { AlertItem, Schedule, StudentData } from '@/types/data';
+import { AlertItem, ScheduleItem, StudentData } from '@/types/data';
+import { Alert } from '@/types/alert';
 
 interface DashboardContentProps {
   students?: StudentData[];
-  alerts?: AlertItem[];
-  schedules?: Schedule[];
+  alerts?: Alert[];
+  schedules?: ScheduleItem[];
   onViewAlertDetails?: (alertId: string) => void;
   onViewClassDetails?: (className: string) => void;
-  onScheduleClick?: (schedule: Schedule) => void;
+  onScheduleClick?: (schedule: ScheduleItem) => void;
 }
 
 const DashboardContent: React.FC<DashboardContentProps> = ({
@@ -46,8 +47,8 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   
   const getPercentage = (count: number) => (totalStudents > 0 ? (count / totalStudents) * 100 : 0);
   
-  // Mock student for RiskExplanation
-  const mockStudent = students.length > 0 
+  // Mock student for RiskExplanation with proper type
+  const mockStudent: StudentData = students.length > 0 
     ? students.find(s => s.riskLevel === 'high') || students[0]
     : {
         id: 'mock',
@@ -59,7 +60,8 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         attendance: 70,
         behavior: 6,
         riskLevel: 'high',
-        decisionPath: ['Low attendance', 'Declining grades']
+        decisionPath: ['Low attendance', 'Declining grades'],
+        actionItems: ['Contact parents', 'Schedule counseling']
       };
   
   return (
@@ -97,7 +99,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           title={language === 'pt-BR' ? 'Médio Risco' : 'Medium Risk'} 
           value={mediumRiskCount.toString()} 
           description={`${getPercentage(mediumRiskCount).toFixed(1)}% dos alunos`} 
-          icon={<AlertIcon className="h-8 w-8 text-amber-500" />}
+          icon={<AlertCircle className="h-8 w-8 text-amber-500" />}
           className="border-amber-200 bg-amber-50"
         />
         <RiskCard 
@@ -122,8 +124,9 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
               mediumRiskCount={mediumRiskCount}
               lowRiskCount={lowRiskCount}
               totalStudents={totalStudents}
-              title={language === 'pt-BR' ? 'Estatísticas de Risco' : 'Risk Statistics'}
-              subtitle={language === 'pt-BR' ? 'Visão geral da distribuição de risco' : 'Overview of risk distribution'}
+              highRiskPercentage={getPercentage(highRiskCount).toFixed(1)}
+              alerts={alerts as unknown as AlertItem[]}
+              schedules={schedules as ScheduleItem[]}
             />
           </CardContent>
         </Card>
@@ -135,7 +138,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <UpcomingAppointments schedules={schedules} onScheduleClick={onScheduleClick} />
+        <UpcomingAppointments schedules={schedules as unknown as any[]} onScheduleClick={onScheduleClick as any} />
         <AlertsSection alerts={alerts} onViewAlertDetails={onViewAlertDetails} />
       </div>
 
