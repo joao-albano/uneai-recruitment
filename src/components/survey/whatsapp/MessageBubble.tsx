@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { User, MessageSquare, Clock, Check } from 'lucide-react';
+import { User, MessageSquare, Clock, Check, CheckCheck } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -12,6 +12,9 @@ interface WhatsAppMessageProps {
 }
 
 const MessageBubble: React.FC<WhatsAppMessageProps> = ({ type, content, time, id }) => {
+  // Determine if message is recent (less than 1 minute old)
+  const isRecent = Date.now() - time.getTime() < 60000;
+  
   return (
     <div 
       key={id} 
@@ -36,7 +39,9 @@ const MessageBubble: React.FC<WhatsAppMessageProps> = ({ type, content, time, id
             {format(time, 'HH:mm', { locale: ptBR })}
           </span>
           {type === 'sent' && (
-            <Check className="h-3 w-3 ml-1 opacity-70" />
+            isRecent ? 
+              <Check className="h-3 w-3 ml-1 opacity-70" /> : 
+              <CheckCheck className="h-3 w-3 ml-1 opacity-70" />
           )}
         </div>
       </div>

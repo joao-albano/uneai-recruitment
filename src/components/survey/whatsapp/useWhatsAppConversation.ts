@@ -1,6 +1,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useData } from '@/context/DataContext';
+import { v4 as uuidv4 } from 'uuid';
 
 interface WhatsAppMessage {
   type: 'sent' | 'received';
@@ -13,6 +14,7 @@ export const useWhatsAppConversation = () => {
   const [messages, setMessages] = useState<WhatsAppMessage[]>([]);
   const { alerts, students } = useData();
   const conversationInitialized = useRef(false);
+  const questionAnswerSequence = useRef<number>(0);
   
   // Survey questions
   const surveyQuestions = [
@@ -42,6 +44,7 @@ export const useWhatsAppConversation = () => {
     // Only initialize the conversation once when there's at least one alert
     if (whatsAppAlerts.length > 0 && !conversationInitialized.current) {
       conversationInitialized.current = true;
+      questionAnswerSequence.current = 0;
       const lastAlert = whatsAppAlerts[whatsAppAlerts.length - 1];
       const student = students.find(s => s.id === lastAlert.studentId);
       
@@ -49,16 +52,12 @@ export const useWhatsAppConversation = () => {
         // Reset messages
         setMessages([]);
         
-        // Create a unique ID for each message
-        const createMessageId = (prefix: string, index: number) => 
-          `${prefix}-${lastAlert.id}-${index}-${Date.now()}`;
-        
         // Initial message sent by the school
         const initialMessage = {
           type: 'sent' as const,
           content: `Olá ${student.parentName}, gostaríamos de fazer uma pesquisa sobre ${student.name}. Por favor, responda as seguintes perguntas quando puder:`,
           time: lastAlert.createdAt,
-          id: createMessageId('initial', 0)
+          id: uuidv4()
         };
         
         setMessages([initialMessage]);
@@ -68,68 +67,88 @@ export const useWhatsAppConversation = () => {
           const responseMessage = {
             type: 'received' as const,
             content: `Olá, sou o responsável por ${student.name}. Acabei de visualizar as perguntas e responderei agora.`,
-            time: new Date(new Date().getTime() + 2 * 60 * 1000), // 2 minutes later
-            id: createMessageId('response', 0)
+            time: new Date(),
+            id: uuidv4()
           };
           
           setMessages(prevMessages => [...prevMessages, responseMessage]);
           
-          // Start questions and answers sequence with delays
-          surveyQuestions.forEach((question, index) => {
-            // Send question with progressive delay
-            setTimeout(() => {
-              const questionMessage = {
-                type: 'sent' as const,
-                content: `${index + 1}. ${question}`,
-                time: new Date(new Date().getTime() + (index + 1) * 60 * 1000),
-                id: createMessageId('question', index)
-              };
-              
-              setMessages(prevMessages => [...prevMessages, questionMessage]);
-              
-              // Simulate parent response with delay
-              setTimeout(() => {
-                const answerMessage = {
-                  type: 'received' as const,
-                  content: parentResponses[index],
-                  time: new Date(new Date().getTime() + (index + 1.5) * 60 * 1000),
-                  id: createMessageId('answer', index)
-                };
-                
-                setMessages(prevMessages => [...prevMessages, answerMessage]);
-                
-                // Add the final thank you message after the last answer
-                if (index === surveyQuestions.length - 1) {
-                  setTimeout(() => {
-                    const thankYouMessage = {
-                      type: 'sent' as const,
-                      content: `Muito obrigado pelas respostas! Suas informações são muito importantes para o acompanhamento pedagógico de ${student.name}. Se precisar de algo, estamos à disposição.`,
-                      time: new Date(new Date().getTime() + 10 * 60 * 1000),
-                      id: createMessageId('thanks', 0)
-                    };
-                    
-                    setMessages(prevMessages => [...prevMessages, thankYouMessage]);
-                    
-                    // Parent final acknowledgment
-                    setTimeout(() => {
-                      const finalMessage = {
-                        type: 'received' as const,
-                        content: `De nada! Agradeço o contato e a preocupação com o desenvolvimento do(a) meu/minha filho(a).`,
-                        time: new Date(new Date().getTime() + 12 * 60 * 1000),
-                        id: createMessageId('final', 0)
-                      };
-                      
-                      setMessages(prevMessages => [...prevMessages, finalMessage]);
-                    }, 2000);
-                  }, 2000);
-                }
-              }, 2000 + index * 500); // Staggered response times
-            }, 3000 + index * 3000); // Staggered question times
-          });
-        }, 3000);
+          // Start the question-answer sequence
+          startQuestionAnswerSequence(student.name);
+        }, 2000);
       }
     }
-  }, [alerts, students, surveyQuestions, parentResponses]);
+  }, [alerts, students]);
+
+  // Function to send the next question in sequence
+  const startQuestionAnswerSequence = (studentName: string) => {
+    // Start with first question after short delay
+    setTimeout(() => sendNextQuestionAndWaitForAnswer(studentName), 1500);
+  };
+
+  // Function to send a question and wait for answer before sending next question
+  const sendNextQuestionAndWaitForAnswer = (studentName: string) => {
+    const currentIndex = questionAnswerSequence.current;
+    
+    if (currentIndex >= surveyQuestions.length) {
+      // All questions have been asked, send thank you message
+      sendThankYouMessage(studentName);
+      return;
+    }
+    
+    // Send question
+    const questionMessage = {
+      type: 'sent' as const,
+      content: `${currentIndex + 1}. ${surveyQuestions[currentIndex]}`,
+      time: new Date(),
+      id: uuidv4()
+    };
+    
+    setMessages(prevMessages => [...prevMessages, questionMessage]);
+    
+    // Wait for answer
+    setTimeout(() => {
+      // Add parent response
+      const answerMessage = {
+        type: 'received' as const,
+        content: parentResponses[currentIndex],
+        time: new Date(),
+        id: uuidv4()
+      };
+      
+      setMessages(prevMessages => [...prevMessages, answerMessage]);
+      
+      // Increment sequence counter
+      questionAnswerSequence.current += 1;
+      
+      // Send next question after a delay
+      setTimeout(() => sendNextQuestionAndWaitForAnswer(studentName), 2000);
+    }, 3000); // Parent takes time to respond
+  };
+
+  // Function to send thank you message at the end
+  const sendThankYouMessage = (studentName: string) => {
+    const thankYouMessage = {
+      type: 'sent' as const,
+      content: `Muito obrigado pelas respostas! Suas informações são muito importantes para o acompanhamento pedagógico de ${studentName}. Se precisar de algo, estamos à disposição.`,
+      time: new Date(),
+      id: uuidv4()
+    };
+    
+    setMessages(prevMessages => [...prevMessages, thankYouMessage]);
+    
+    // Parent final acknowledgment
+    setTimeout(() => {
+      const finalMessage = {
+        type: 'received' as const,
+        content: `De nada! Agradeço o contato e a preocupação com o desenvolvimento do(a) meu/minha filho(a).`,
+        time: new Date(),
+        id: uuidv4()
+      };
+      
+      setMessages(prevMessages => [...prevMessages, finalMessage]);
+    }, 2000);
+  };
   
   return { messages };
 };
