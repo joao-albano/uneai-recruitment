@@ -1,16 +1,18 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, User, Settings, UserCog } from 'lucide-react';
+import { LogOut, User, Settings, UserCog, Building, DollarSign } from 'lucide-react';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
   DropdownMenuItem, 
   DropdownMenuSeparator,
-  DropdownMenuTrigger 
+  DropdownMenuTrigger,
+  DropdownMenuLabel
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useAuth } from '@/context/AuthContext';
+import { Badge } from '@/components/ui/badge';
 
 interface UserMenuProps {
   user: {
@@ -23,7 +25,7 @@ interface UserMenuProps {
 
 const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, isAdmin, isSuperAdmin, currentOrganization } = useAuth();
   
   const handleLogout = () => {
     logout();
@@ -44,31 +46,62 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <div className="flex items-center justify-start gap-2 p-2">
-          <div className="flex flex-col space-y-1 leading-none">
-            <p className="font-medium">{user.name}</p>
-            <p className="text-xs text-muted-foreground">{user.email}</p>
-          </div>
+        <div className="flex flex-col space-y-1 p-2">
+          <p className="font-medium">{user.name}</p>
+          <p className="text-xs text-muted-foreground">{user.email}</p>
+          {currentOrganization && (
+            <Badge 
+              variant="outline" 
+              className={cn(
+                "mt-1 justify-start",
+                isSuperAdmin ? "bg-amber-50 text-amber-700 border-amber-200" : ""
+              )}
+            >
+              <Building className="h-3 w-3 mr-1" />
+              {currentOrganization.name}
+              {isSuperAdmin && " (UNE CX)"}
+            </Badge>
+          )}
         </div>
         <DropdownMenuSeparator />
+        
         <DropdownMenuItem onClick={() => navigate('/profile')}>
           <User className="mr-2 h-4 w-4" />
           <span>Meu Perfil</span>
         </DropdownMenuItem>
         
-        {user.role === 'admin' && (
-          <DropdownMenuItem onClick={() => navigate('/settings')}>
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Configurações</span>
-          </DropdownMenuItem>
+        {isAdmin && (
+          <>
+            <DropdownMenuLabel className="text-xs text-muted-foreground">
+              Administração
+            </DropdownMenuLabel>
+            
+            <DropdownMenuItem onClick={() => navigate('/users')}>
+              <UserCog className="mr-2 h-4 w-4" />
+              <span>Gerenciar Usuários</span>
+            </DropdownMenuItem>
+            
+            {isSuperAdmin && (
+              <>
+                <DropdownMenuItem onClick={() => navigate('/admin/organizations')}>
+                  <Building className="mr-2 h-4 w-4" />
+                  <span>Organizações</span>
+                </DropdownMenuItem>
+                
+                <DropdownMenuItem onClick={() => navigate('/admin/plans')}>
+                  <DollarSign className="mr-2 h-4 w-4" />
+                  <span>Planos</span>
+                </DropdownMenuItem>
+              </>
+            )}
+            
+            <DropdownMenuItem onClick={() => navigate('/settings')}>
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Configurações</span>
+            </DropdownMenuItem>
+          </>
         )}
         
-        {user.role === 'admin' && (
-          <DropdownMenuItem onClick={() => navigate('/users')}>
-            <UserCog className="mr-2 h-4 w-4" />
-            <span>Gerenciar Usuários</span>
-          </DropdownMenuItem>
-        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
@@ -77,6 +110,11 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
       </DropdownMenuContent>
     </DropdownMenu>
   );
+};
+
+// Função de utilitário para concatenar classes condicionalmente
+const cn = (...classes: (string | boolean | undefined)[]): string => {
+  return classes.filter(Boolean).join(' ');
 };
 
 export default UserMenu;

@@ -11,6 +11,7 @@ interface UsersListProps {
   isLastAdmin: boolean;
   subscriptions: ProductSubscription[];
   isAdmin: boolean;
+  isSuperAdmin: boolean;
 }
 
 const UsersList: React.FC<UsersListProps> = ({ 
@@ -19,7 +20,8 @@ const UsersList: React.FC<UsersListProps> = ({
   onDelete, 
   isLastAdmin,
   subscriptions,
-  isAdmin
+  isAdmin,
+  isSuperAdmin
 }) => {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -34,6 +36,7 @@ const UsersList: React.FC<UsersListProps> = ({
             sub.organizationId === user.organizationId
           )}
           isAdmin={isAdmin}
+          isSuperAdmin={isSuperAdmin}
         />
       ))}
     </div>

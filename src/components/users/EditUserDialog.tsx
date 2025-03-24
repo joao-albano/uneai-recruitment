@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { ProductSubscription } from '@/context/ProductContext';
 import { UserType } from './types';
+import { Badge } from "@/components/ui/badge";
+import { InfoIcon } from "lucide-react";
 
 interface EditUserDialogProps {
   open: boolean;
@@ -17,6 +19,7 @@ interface EditUserDialogProps {
   onSubmit: (e: React.FormEvent) => void;
   subscriptions?: ProductSubscription[];
   isAdmin?: boolean;
+  isSuperAdmin?: boolean;
 }
 
 const EditUserDialog: React.FC<EditUserDialogProps> = ({
@@ -26,7 +29,8 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
   setSelectedUser,
   onSubmit,
   subscriptions = [],
-  isAdmin = false
+  isAdmin = false,
+  isSuperAdmin = false
 }) => {
   if (!selectedUser) return null;
   
@@ -41,6 +45,9 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
     sub => sub.organizationId === selectedUser.organizationId
   );
   
+  // Verificar se o usuário é o super admin da UNE CX
+  const isUneCxAdmin = selectedUser.isSuperAdmin;
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
@@ -53,6 +60,18 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
         
         <form onSubmit={onSubmit}>
           <div className="grid gap-4 py-4">
+            {isUneCxAdmin && (
+              <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mb-2">
+                <div className="flex items-center gap-2">
+                  <InfoIcon className="h-4 w-4 text-amber-500" />
+                  <p className="text-sm text-amber-700 font-medium">Administrador principal do sistema</p>
+                </div>
+                <p className="text-xs text-amber-600 mt-1">
+                  Este usuário possui privilégios de administração em todo o sistema UNE CX.
+                </p>
+              </div>
+            )}
+            
             <div className="grid gap-2">
               <Label htmlFor="edit-name">Nome</Label>
               <Input 
@@ -75,10 +94,19 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
             </div>
             
             <div className="grid gap-2">
-              <Label htmlFor="edit-role">Função</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="edit-role">Função</Label>
+                {selectedUser.organizationName && (
+                  <Badge variant="outline" className="text-xs">
+                    {selectedUser.organizationName}
+                  </Badge>
+                )}
+              </div>
+              
               <Select 
                 value={selectedUser.role}
                 onValueChange={(value) => setSelectedUser({...selectedUser, role: value})}
+                disabled={isUneCxAdmin && !isSuperAdmin} // Apenas super admin pode mudar a função do admin UNE CX
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione uma função" />
@@ -86,11 +114,39 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
                 <SelectContent>
                   <SelectItem value="user">Usuário</SelectItem>
                   <SelectItem value="admin">Administrador</SelectItem>
+                  {isSuperAdmin && (
+                    <SelectItem value="superadmin">Super Admin (UNE CX)</SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </div>
             
-            {isAdmin && userOrgSubscriptions.length > 0 && (
+            {/* Super Admin pode alterar se um usuário é super admin ou não */}
+            {isSuperAdmin && !isUneCxAdmin && (
+              <div className="grid gap-2 pt-3 border-t">
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="super-admin-toggle" 
+                    checked={selectedUser.isSuperAdmin || false}
+                    onCheckedChange={(checked) => 
+                      setSelectedUser({...selectedUser, isSuperAdmin: checked as boolean})
+                    }
+                  />
+                  <Label 
+                    htmlFor="super-admin-toggle"
+                    className="text-sm font-medium"
+                  >
+                    Administrador da UNE CX
+                  </Label>
+                </div>
+                <p className="text-xs text-muted-foreground ml-6">
+                  Administradores da UNE CX têm acesso completo a todas as organizações e recursos do sistema.
+                </p>
+              </div>
+            )}
+            
+            {/* Produtos ativos só podem ser editados por Super Admins ou Admins da mesma organização */}
+            {((isAdmin && userOrgSubscriptions.length > 0) || isSuperAdmin) && (
               <div className="grid gap-2 pt-3 border-t">
                 <Label className="mb-2">Produtos Ativos</Label>
                 <div className="grid gap-2">
@@ -99,6 +155,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
                       <Checkbox 
                         id={`product-${sub.id}`} 
                         checked={sub.active} 
+                        disabled={!isSuperAdmin && selectedUser.organizationId !== selectedUser.organizationId}
                         // Na implementação real, isso chamaria uma API para atualizar a assinatura
                       />
                       <Label 

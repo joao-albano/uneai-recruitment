@@ -7,6 +7,7 @@ export type UserType = {
   initials: string;
   organizationId?: string;
   organizationName?: string;
+  isSuperAdmin?: boolean; // Novo campo para identificar admin da UNE CX
 };
 
 export type NewUserType = {
@@ -17,4 +18,5 @@ export type NewUserType = {
   initials: string;
   organizationId?: string;
   organizationName?: string;
+  isSuperAdmin?: boolean; // Novo campo para identificar admin da UNE CX
 };

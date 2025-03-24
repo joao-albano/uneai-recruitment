@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, MoreHorizontal, ShieldAlert, Trash, User, Package } from "lucide-react";
+import { Edit, MoreHorizontal, ShieldAlert, Shield, Trash, User, Package, Building } from "lucide-react";
 import PermissionsDialog from './permissions/PermissionsDialog';
 import { ProductSubscription } from '@/context/ProductContext';
 import { UserType } from './types';
@@ -17,6 +17,7 @@ interface UserCardProps {
   isLastAdmin: boolean;
   userSubscriptions: ProductSubscription[];
   isAdmin: boolean;
+  isSuperAdmin: boolean;
 }
 
 const UserCard: React.FC<UserCardProps> = ({ 
@@ -25,7 +26,8 @@ const UserCard: React.FC<UserCardProps> = ({
   onDelete, 
   isLastAdmin,
   userSubscriptions,
-  isAdmin
+  isAdmin,
+  isSuperAdmin
 }) => {
   const [showPermissionsDialog, setShowPermissionsDialog] = useState(false);
   
@@ -36,20 +38,41 @@ const UserCard: React.FC<UserCardProps> = ({
     'recruitment': 'Recrutamento'
   };
   
+  // Definir a cor da borda do avatar baseada no tipo de usuário
+  const getAvatarBorderClass = () => {
+    if (user.isSuperAdmin) {
+      return 'border-2 border-amber-500'; // Super admin (UNE CX)
+    } else if (user.role === 'admin') {
+      return 'border-2 border-primary'; // Admin normal
+    }
+    return ''; // Usuário regular
+  };
+  
+  // Verificar se pode editar este usuário
+  const canEdit = isSuperAdmin || 
+    (isAdmin && user.organizationId === user.organizationId && !user.isSuperAdmin);
+  
+  // Verificar se pode excluir este usuário
+  const canDelete = (isSuperAdmin || 
+    (isAdmin && user.organizationId === user.organizationId)) && 
+    !(user.role === 'admin' && isLastAdmin) && 
+    !user.isSuperAdmin; // Super admins não podem ser excluídos
+  
   return (
     <Card className="shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <Avatar className={user.role === 'admin' ? 'border-2 border-primary' : ''}>
+            <Avatar className={getAvatarBorderClass()}>
               <AvatarFallback>{user.initials}</AvatarFallback>
             </Avatar>
             <div>
               <CardTitle className="text-base font-semibold">{user.name}</CardTitle>
               <CardDescription className="text-xs">{user.email}</CardDescription>
               {user.organizationId && (
-                <CardDescription className="text-xs">
-                  Org: {user.organizationName || user.organizationId}
+                <CardDescription className="text-xs flex items-center gap-1">
+                  <Building className="h-3 w-3" />
+                  {user.organizationName || user.organizationId}
                 </CardDescription>
               )}
             </div>
@@ -64,14 +87,17 @@ const UserCard: React.FC<UserCardProps> = ({
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Ações</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => onEdit(user)}>
+              <DropdownMenuItem 
+                onClick={() => onEdit(user)}
+                disabled={!canEdit}
+              >
                 <Edit className="mr-2 h-4 w-4" />
                 Editar
               </DropdownMenuItem>
               <DropdownMenuItem 
                 className="text-destructive" 
                 onClick={() => onDelete(user)}
-                disabled={user.role === 'admin' && isLastAdmin}
+                disabled={!canDelete}
               >
                 <Trash className="mr-2 h-4 w-4" />
                 Remover
@@ -84,10 +110,17 @@ const UserCard: React.FC<UserCardProps> = ({
         <div className="space-y-3">
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-1.5">
-              {user.role === 'admin' ? (
+              {user.isSuperAdmin ? (
                 <>
-                  <ShieldAlert className="h-4 w-4 text-primary" />
-                  <span className="font-medium text-primary">Administrador</span>
+                  <ShieldAlert className="h-4 w-4 text-amber-500" />
+                  <span className="font-medium text-amber-700">Super Admin (UNE CX)</span>
+                </>
+              ) : user.role === 'admin' ? (
+                <>
+                  <Shield className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-primary">
+                    Admin {user.organizationName ? `(${user.organizationName})` : ''}
+                  </span>
                 </>
               ) : (
                 <>
@@ -108,14 +141,18 @@ const UserCard: React.FC<UserCardProps> = ({
           </div>
           
           {/* Assinaturas do usuário */}
-          {(userSubscriptions.length > 0 || isAdmin) && (
+          {(userSubscriptions.length > 0 || user.isSuperAdmin) && (
             <div className="pt-2 border-t">
               <div className="flex items-center gap-1.5 mb-1.5 text-sm">
                 <Package className="h-4 w-4 text-muted-foreground" />
                 <span className="text-muted-foreground">Produtos Ativos</span>
               </div>
               <div className="flex flex-wrap gap-1.5">
-                {userSubscriptions.length > 0 ? (
+                {user.isSuperAdmin ? (
+                  <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                    Acesso completo (UNE CX)
+                  </span>
+                ) : userSubscriptions.length > 0 ? (
                   userSubscriptions
                     .filter(sub => sub.active)
                     .map(sub => (
@@ -129,7 +166,7 @@ const UserCard: React.FC<UserCardProps> = ({
                     ))
                 ) : (
                   <span className="text-xs text-muted-foreground">
-                    {isAdmin ? 'Acesso completo' : 'Nenhum produto ativo'}
+                    Nenhum produto ativo
                   </span>
                 )}
               </div>

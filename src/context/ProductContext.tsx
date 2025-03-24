@@ -41,24 +41,31 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
   // Padrão para o produto de retenção de alunos
   const [currentProduct, setCurrentProduct] = useState<ProductType>('retention');
   const [userSubscriptions, setUserSubscriptions] = useState<ProductSubscription[]>([]);
-  const { currentUser, isAdmin } = useAuth();
+  const { currentUser, isAdmin, isSuperAdmin } = useAuth();
   
   // Determina quais produtos o usuário tem acesso com base em suas assinaturas
   const availableProducts = React.useMemo(() => {
-    // Se for admin, tem acesso a todos os produtos
-    if (isAdmin) {
+    // Se for super admin da UNE CX, tem acesso a todos os produtos
+    if (isSuperAdmin) {
       return ['retention', 'billing', 'recruitment'] as ProductType[];
     }
     
-    // Caso contrário, apenas os produtos com assinaturas ativas
+    // Se for admin da escola, tem acesso aos produtos contratados pela escola
+    if (isAdmin) {
+      return userSubscriptions
+        .filter(sub => sub.active && sub.organizationId === currentUser?.organizationId)
+        .map(sub => sub.productType);
+    }
+    
+    // Caso contrário, apenas os produtos com assinaturas ativas para sua organização
     return userSubscriptions
-      .filter(sub => sub.active)
+      .filter(sub => sub.active && sub.organizationId === currentUser?.organizationId)
       .map(sub => sub.productType);
-  }, [isAdmin, userSubscriptions]);
+  }, [isAdmin, isSuperAdmin, userSubscriptions, currentUser]);
 
   // Verifica se o usuário tem acesso a um produto específico
   const hasAccessToProduct = (product: ProductType): boolean => {
-    if (isAdmin) return true;
+    if (isSuperAdmin) return true; // Super admin tem acesso a tudo
     return availableProducts.includes(product);
   };
 
@@ -71,7 +78,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
         {
           id: '1',
           productType: 'retention',
-          organizationId: '1',
+          organizationId: '1', // Escola de Letras
           active: true,
           expiresAt: null,
           features: ['basic', 'advanced']
@@ -79,8 +86,32 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
         {
           id: '2',
           productType: 'billing',
-          organizationId: '1',
-          active: currentUser.email === 'admin@escola.edu', // Apenas admin tem acesso ao billing
+          organizationId: '1', // Escola de Letras
+          active: true, // Agora todos têm acesso ao billing para demonstração
+          expiresAt: null,
+          features: ['basic']
+        },
+        {
+          id: '3',
+          productType: 'recruitment',
+          organizationId: '1', // Escola de Letras
+          active: false, // Este módulo não está ativo para Escola de Letras
+          expiresAt: null,
+          features: ['basic']
+        },
+        {
+          id: '4',
+          productType: 'retention',
+          organizationId: '2', // Outra Escola
+          active: true,
+          expiresAt: null,
+          features: ['basic']
+        },
+        {
+          id: '5',
+          productType: 'billing',
+          organizationId: '2', // Outra Escola
+          active: false, // Este módulo não está ativo para Outra Escola
           expiresAt: null,
           features: ['basic']
         }

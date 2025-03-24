@@ -1,6 +1,6 @@
 
 import { ReactNode } from "react";
-import { AdminRoute } from "@/components/auth/ProtectedRoutes";
+import { AdminRoute, SuperAdminRoute } from "@/components/auth/ProtectedRoutes";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
 import AdminSettingsPage from "@/pages/AdminSettingsPage";
 import AdminPaymentsPage from "@/pages/AdminPaymentsPage";
@@ -13,6 +13,7 @@ interface RouteConfig {
 }
 
 export const adminRoutes: RouteConfig[] = [
+  // Rotas acessíveis para todos os admins (tanto super quanto escola)
   {
     path: "/admin/dashboard",
     element: (
@@ -22,35 +23,37 @@ export const adminRoutes: RouteConfig[] = [
     )
   },
   {
-    path: "/admin/settings",
-    element: (
-      <AdminRoute>
-        <AdminSettingsPage />
-      </AdminRoute>
-    )
-  },
-  {
-    path: "/admin/payments",
-    element: (
-      <AdminRoute>
-        <AdminPaymentsPage />
-      </AdminRoute>
-    )
-  },
-  {
-    path: "/admin/plans",
-    element: (
-      <AdminRoute>
-        <AdminPlansPage />
-      </AdminRoute>
-    )
-  },
-  {
     path: "/users",
     element: (
       <AdminRoute>
         <UsersPage />
       </AdminRoute>
+    )
+  },
+  
+  // Rotas acessíveis apenas para super admins (UNE CX)
+  {
+    path: "/admin/settings",
+    element: (
+      <SuperAdminRoute>
+        <AdminSettingsPage />
+      </SuperAdminRoute>
+    )
+  },
+  {
+    path: "/admin/payments",
+    element: (
+      <SuperAdminRoute>
+        <AdminPaymentsPage />
+      </SuperAdminRoute>
+    )
+  },
+  {
+    path: "/admin/plans",
+    element: (
+      <SuperAdminRoute>
+        <AdminPlansPage />
+      </SuperAdminRoute>
     )
   }
 ];

@@ -10,6 +10,7 @@ import SidebarAdminSection from './SidebarAdminSection';
 import SidebarBillingSection from './SidebarBillingSection';
 import SidebarMonitoringSection from './SidebarMonitoringSection';
 import { useProduct } from '@/context/ProductContext';
+import { useAuth } from '@/context/AuthContext';
 import { AlertTriangle } from 'lucide-react';
 
 interface SidebarContentProps {
@@ -27,7 +28,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
   sidebarWidth,
   currentUser
 }) => {
-  const isAdmin = currentUser?.role === 'admin';
+  const { isAdmin, isSuperAdmin } = useAuth();
   const { currentProduct, hasAccessToProduct } = useProduct();
   
   return (
@@ -45,8 +46,8 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
       />
       
       <div className="flex-1 px-3 py-2 overflow-y-auto">
-        {/* Verifica acesso ao produto atual */}
-        {hasAccessToProduct(currentProduct) ? (
+        {/* Se for super admin, tem acesso a tudo, não precisa verificar */}
+        {isSuperAdmin || hasAccessToProduct(currentProduct) ? (
           <>
             {/* Renderiza menu com base no produto selecionado */}
             {currentProduct === 'retention' && (
@@ -74,12 +75,13 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
           </div>
         )}
         
-        {/* Os billings são mostrados para todos os usuários para que possam gerenciar suas assinaturas */}
-        <SidebarBillingSection collapsed={collapsed} />
-        
+        {/* Menus de administração são exibidos com base no nível de acesso */}
         {isAdmin && (
           <SidebarAdminSection collapsed={collapsed} />
         )}
+        
+        {/* Os billings são mostrados para todos os usuários para que possam gerenciar suas assinaturas */}
+        <SidebarBillingSection collapsed={collapsed} />
       </div>
       
       <div className="px-3 mt-auto">

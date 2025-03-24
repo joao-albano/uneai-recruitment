@@ -15,7 +15,7 @@ import { useProduct } from '@/context/ProductContext';
 const UsersContent: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { isAdmin } = useAuth();
+  const { isAdmin, isSuperAdmin, currentUser } = useAuth();
   const { userSubscriptions } = useProduct();
   
   const {
@@ -42,10 +42,21 @@ const UsersContent: React.FC = () => {
     setSidebarOpen(!sidebarOpen);
   };
   
-  // Filtra usuários da mesma organização, se não for admin
-  const filteredUsers = isAdmin 
-    ? users 
-    : users.filter(user => user.organizationId === "1"); // Mockado, seria o ID real da organização do usuário
+  // Filtra usuários com base na organização e nível de acesso
+  const filteredUsers = React.useMemo(() => {
+    if (isSuperAdmin) {
+      // Super admin vê todos os usuários
+      return users;
+    } else if (isAdmin && currentUser?.organizationId) {
+      // Admin da escola vê apenas usuários da mesma organização
+      return users.filter(user => user.organizationId === currentUser.organizationId);
+    } else {
+      // Usuário regular vê apenas usuários da mesma organização
+      return users.filter(user => 
+        user.organizationId === currentUser?.organizationId
+      );
+    }
+  }, [users, isAdmin, isSuperAdmin, currentUser]);
   
   return (
     <div className="min-h-screen flex w-full">
@@ -77,6 +88,7 @@ const UsersContent: React.FC = () => {
             isLastAdmin={isLastAdmin}
             subscriptions={userSubscriptions}
             isAdmin={isAdmin}
+            isSuperAdmin={isSuperAdmin}
           />
           
           <CreateUserDialog 
@@ -95,6 +107,7 @@ const UsersContent: React.FC = () => {
             onSubmit={handleEditUser}
             subscriptions={userSubscriptions}
             isAdmin={isAdmin}
+            isSuperAdmin={isSuperAdmin}
           />
           
           <DeleteUserDialog 
