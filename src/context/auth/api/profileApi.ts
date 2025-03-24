@@ -15,8 +15,12 @@ export const fetchUserProfile = async (userId: string) => {
       return null;
     }
     
-    // Extract full name from metadata
-    const fullName = userData.user?.user_metadata?.full_name;
+    // Extract user metadata
+    const userMetadata = userData.user?.user_metadata;
+    const fullName = userMetadata?.full_name;
+    const email = userMetadata?.email || userData.user?.email;
+    
+    console.log('User metadata:', userMetadata);
     
     // Fetch profile from profiles table - fix the schema issue
     const { data: profile, error: profileError } = await supabase
@@ -27,13 +31,13 @@ export const fetchUserProfile = async (userId: string) => {
     
     if (profileError) {
       console.error('Error fetching profile:', profileError);
-      return null;
+      // Even if profile fetch fails, we can still return basic user data
     }
     
     let organization: Organization | undefined;
     
     // If profile has organization_id, fetch organization details
-    if (profile.organization_id) {
+    if (profile?.organization_id) {
       const { data: org, error: orgError } = await supabase
         .from('organizations')
         .select('*')
@@ -51,20 +55,20 @@ export const fetchUserProfile = async (userId: string) => {
       }
     }
     
-    // Create user profile object
+    // Create user profile object with priority on user_metadata for name
     const userProfile: UserProfile = {
-      name: fullName || profile.email.split('@')[0],
-      email: profile.email,
-      role: profile.role,
-      organizationId: profile.organization_id,
+      name: fullName || profile?.email?.split('@')[0] || email?.split('@')[0],
+      email: email || profile?.email,
+      role: profile?.role || 'user',
+      organizationId: profile?.organization_id,
       organization: organization,
-      isSuperAdmin: profile.is_super_admin
+      isSuperAdmin: profile?.is_super_admin
     };
     
     return {
       profile: userProfile,
-      isAdmin: profile.is_admin,
-      isSuperAdmin: profile.is_super_admin,
+      isAdmin: profile?.is_admin || false,
+      isSuperAdmin: profile?.is_super_admin || false,
       organization: organization || null
     };
   } catch (error) {

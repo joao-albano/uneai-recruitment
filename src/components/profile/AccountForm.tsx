@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -7,6 +7,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useAuth } from '@/context/auth';
 
 const profileSchema = z.object({
   name: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
@@ -23,14 +24,27 @@ interface AccountFormProps {
 }
 
 const AccountForm: React.FC<AccountFormProps> = ({ user }) => {
+  const { currentUser } = useAuth();
+  
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: user.name,
-      email: user.email,
-      role: user.role,
+      name: currentUser?.name || user.name,
+      email: currentUser?.email || user.email,
+      role: currentUser?.role || user.role,
     },
   });
+
+  // Update form values when currentUser changes
+  useEffect(() => {
+    if (currentUser) {
+      form.reset({
+        name: currentUser.name || user.name,
+        email: currentUser.email || user.email,
+        role: currentUser.role || user.role,
+      });
+    }
+  }, [currentUser, user, form]);
 
   const onSubmit = (values: z.infer<typeof profileSchema>) => {
     console.log('Profile update:', values);

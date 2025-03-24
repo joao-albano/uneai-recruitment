@@ -18,12 +18,20 @@ const ProfilePage: React.FC = () => {
 
   // Create user object based on auth context data
   const user = {
-    name: currentUser?.name || currentUser?.email?.split('@')[0] || 'Usuário',
+    name: currentUser?.name || 'Usuário',
     email: currentUser?.email || userEmail || '',
     role: currentUser?.role || 'user',
-    initials: (currentUser?.name?.[0] || currentUser?.email?.[0] || 'U').toUpperCase(),
+    initials: currentUser?.name ? 
+      currentUser.name[0].toUpperCase() : 
+      (currentUser?.email?.[0] || 'U').toUpperCase(),
     organization: currentOrganization?.name
   };
+  
+  // Debug user information
+  useEffect(() => {
+    console.log("Current user in profile:", currentUser);
+    console.log("User object:", user);
+  }, [currentUser]);
   
   return (
     <DataProvider>

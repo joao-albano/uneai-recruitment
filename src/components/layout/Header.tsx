@@ -38,7 +38,9 @@ const Header: React.FC<HeaderProps> = ({
     name: currentUser?.name || currentUser?.email?.split('@')[0] || 'Usuário',
     email: currentUser?.email || 'user@escola.edu',
     role: currentUser?.role || 'user',
-    initials: (currentUser?.name?.[0] || currentUser?.email?.[0] || 'U').toUpperCase(),
+    initials: currentUser?.name ? 
+      currentUser.name[0].toUpperCase() : 
+      (currentUser?.email?.[0] || 'U').toUpperCase(),
   };
   
   return (

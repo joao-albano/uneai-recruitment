@@ -30,7 +30,9 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   // Use the name from the authentication context or fall back to the provided user prop
   const displayName = currentUser?.name || user.name;
   const displayEmail = currentUser?.email || user.email;
-  const displayInitials = (currentUser?.name?.[0] || currentUser?.email?.[0] || user.initials).toUpperCase();
+  const displayInitials = currentUser?.name ? 
+    currentUser.name[0].toUpperCase() : 
+    (currentUser?.email?.[0] || user.initials).toUpperCase();
   
   const handleLogout = async () => {
     await logout();
