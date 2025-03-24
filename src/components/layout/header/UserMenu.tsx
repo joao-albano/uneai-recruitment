@@ -25,7 +25,7 @@ interface UserMenuProps {
 
 const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   const navigate = useNavigate();
-  const { logout, isAdmin, currentUser } = useAuth();
+  const { logout, isAdmin, currentUser, isSuperAdmin } = useAuth();
   
   // Use the name from the authentication context or fall back to the provided user prop
   const displayName = currentUser?.name || user.name;
@@ -33,6 +33,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   const displayInitials = currentUser?.name ? 
     currentUser.name[0].toUpperCase() : 
     (currentUser?.email?.[0] || user.initials).toUpperCase();
+  
+  // Determine role label based on super admin status
+  const roleLabel = isSuperAdmin ? 'Super Admin' : 
+                   (currentUser?.role === 'admin' ? 'Administrador' : 'Usuário');
   
   const handleLogout = async () => {
     await logout();
@@ -63,6 +67,11 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{displayName}</p>
             <p className="text-xs leading-none text-muted-foreground">{displayEmail}</p>
+            {isSuperAdmin && (
+              <span className="text-[10px] font-medium text-amber-600 mt-1">
+                Super Admin - UNE CX
+              </span>
+            )}
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

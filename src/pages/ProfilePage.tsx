@@ -20,7 +20,9 @@ const ProfilePage: React.FC = () => {
   const user = {
     name: currentUser?.name || 'Usuário',
     email: currentUser?.email || userEmail || '',
-    role: currentUser?.isSuperAdmin ? 'superadmin' : (currentUser?.role || 'user'),
+    role: isSuperAdmin ? 'Super Admin' : 
+          (currentUser?.role === 'superadmin' ? 'Super Admin' : 
+          currentUser?.role === 'admin' ? 'Administrador' : 'Usuário'),
     initials: currentUser?.name ? 
       currentUser.name[0].toUpperCase() : 
       (currentUser?.email?.[0] || 'U').toUpperCase(),
@@ -60,7 +62,7 @@ const ProfilePage: React.FC = () => {
                 <ProfileHeader 
                   name={user.name}
                   email={user.email}
-                  role={isSuperAdmin ? 'Super Admin' : (isAdmin ? 'Administrador' : 'Usuário')}
+                  role={user.role}
                   initials={user.initials}
                   organization={user.organization}
                 />

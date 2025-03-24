@@ -22,7 +22,7 @@ export const fetchUserProfile = async (userId: string) => {
     
     console.log('User metadata:', userMetadata);
     
-    // Fetch profile from profiles table - fix the schema issue
+    // Fetch profile from profiles table
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
@@ -61,7 +61,7 @@ export const fetchUserProfile = async (userId: string) => {
     const isSuperAdmin = Boolean(profile?.is_super_admin);
     console.log('Is super admin:', isSuperAdmin);
     
-    // Create user profile object with priority on user_metadata for name
+    // Create user profile object with priority on DB role and super admin status
     const userProfile: UserProfile = {
       name: fullName || profile?.email?.split('@')[0] || email?.split('@')[0],
       email: email || profile?.email,
