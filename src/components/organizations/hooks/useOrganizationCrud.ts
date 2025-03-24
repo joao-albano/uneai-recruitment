@@ -41,26 +41,21 @@ export const useOrganizationCrud = (
         ]
       };
       
+      // Importante: Fechar o diálogo primeiro
+      resetNewOrganization();
+      setShowCreateDialog(false);
+      
       // Simula atraso da API
       await new Promise(resolve => setTimeout(resolve, 300));
       
-      // IMPORTANTE: Primeiro limpa o estado da UI
-      resetNewOrganization();
-      setShowCreateDialog(false);
+      // Finaliza o carregamento
       setIsLoading(false);
       
-      // Depois atualiza os dados com um pequeno atraso
-      setTimeout(() => {
-        setOrganizations(prev => {
-          const updatedOrgs = [...prev, newOrg];
-          return updatedOrgs;
-        });
-        
-        // Pequeno atraso antes de mostrar toast para garantir que a UI foi atualizada
-        setTimeout(() => {
-          toast.success("Organização criada com sucesso");
-        }, 100);
-      }, 50);
+      // Atualiza os dados após fechamento da UI
+      setOrganizations(prev => [...prev, newOrg]);
+      
+      // Mostra notificação de sucesso
+      toast.success("Organização criada com sucesso");
     } catch (error) {
       console.error("Erro ao criar organização:", error);
       toast.error("Erro ao criar organização");
@@ -84,31 +79,26 @@ export const useOrganizationCrud = (
     try {
       setIsLoading(true);
       
+      // Cria uma cópia profunda da organização selecionada
+      const updatedOrg = JSON.parse(JSON.stringify(selectedOrganization));
+      
+      // Primeiro fecha a UI
+      setShowEditDialog(false);
+      setSelectedOrganization(null);
+      
       // Simula atraso da API
       await new Promise(resolve => setTimeout(resolve, 300));
       
-      // Cria uma cópia segura da organização selecionada
-      const updatedOrg = JSON.parse(JSON.stringify(selectedOrganization));
-      
-      // Prepara a lista atualizada, mas NÃO atualiza o estado ainda
-      const updatedOrganizations = organizations.map(org => 
-        org.id === updatedOrg.id ? updatedOrg : org
-      );
-      
-      // IMPORTANTE: Primeiro limpa o estado da UI
-      setShowEditDialog(false);
-      setSelectedOrganization(null);
+      // Finaliza o carregamento
       setIsLoading(false);
       
-      // Depois atualiza os dados com um pequeno atraso
-      setTimeout(() => {
-        setOrganizations(updatedOrganizations);
-        
-        // Pequeno atraso antes de mostrar toast para garantir que a UI foi atualizada
-        setTimeout(() => {
-          toast.success("Organização atualizada com sucesso");
-        }, 100);
-      }, 50);
+      // Depois atualiza os dados
+      setOrganizations(organizations.map(org => 
+        org.id === updatedOrg.id ? updatedOrg : org
+      ));
+      
+      // Notificação de sucesso
+      toast.success("Organização atualizada com sucesso");
     } catch (error) {
       console.error("Erro ao atualizar organização:", error);
       toast.error("Erro ao atualizar organização");
@@ -132,28 +122,22 @@ export const useOrganizationCrud = (
     try {
       setIsLoading(true);
       
+      // Primeiro fecha a UI
+      setShowDeleteDialog(false);
+      const orgId = selectedOrganization.id;
+      setSelectedOrganization(null);
+      
       // Simula atraso da API
       await new Promise(resolve => setTimeout(resolve, 300));
       
-      // Prepara a lista filtrada, mas NÃO atualiza o estado ainda
-      const filteredOrganizations = organizations.filter(
-        org => org.id !== selectedOrganization.id
-      );
-      
-      // IMPORTANTE: Primeiro limpa o estado da UI
-      setShowDeleteDialog(false);
-      setSelectedOrganization(null);
+      // Finaliza o carregamento
       setIsLoading(false);
       
-      // Depois atualiza os dados com um pequeno atraso
-      setTimeout(() => {
-        setOrganizations(filteredOrganizations);
-        
-        // Pequeno atraso antes de mostrar toast para garantir que a UI foi atualizada
-        setTimeout(() => {
-          toast.success("Organização excluída com sucesso");
-        }, 100);
-      }, 50);
+      // Depois atualiza os dados
+      setOrganizations(organizations.filter(org => org.id !== orgId));
+      
+      // Notificação de sucesso
+      toast.success("Organização excluída com sucesso");
     } catch (error) {
       console.error("Erro ao excluir organização:", error);
       toast.error("Erro ao excluir organização");

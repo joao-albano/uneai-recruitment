@@ -20,12 +20,12 @@ const OrganizationProductsForm: React.FC<OrganizationProductsFormProps> = ({
   // Se não for superadmin, não renderiza o componente
   if (!isSuperAdmin) return null;
   
-  // Função para alternar o estado ativo do produto
+  // Função para alternar o estado ativo do produto de forma segura
   const toggleProductActive = (productType: ProductType) => {
     if (!selectedOrganization) return;
     
     try {
-      // Cria uma cópia profunda do objeto antes de modificá-lo
+      // Cria uma cópia profunda do objeto para evitar problemas de referência
       const updatedOrg = JSON.parse(JSON.stringify(selectedOrganization)) as OrganizationType;
       
       // Garante que products seja um array
@@ -36,15 +36,19 @@ const OrganizationProductsForm: React.FC<OrganizationProductsFormProps> = ({
       const productIndex = updatedOrg.products.findIndex(p => p.type === productType);
       
       if (productIndex >= 0) {
-        // Atualiza produto existente
+        // Cria uma cópia do array de produtos
         const updatedProducts = [...updatedOrg.products];
+        
+        // Atualiza o produto específico
         updatedProducts[productIndex] = {
           ...updatedProducts[productIndex],
           active: !updatedProducts[productIndex].active
         };
+        
+        // Atribui o novo array ao objeto
         updatedOrg.products = updatedProducts;
       } else {
-        // Adiciona novo produto
+        // Adiciona novo produto de forma imutável
         updatedOrg.products = [
           ...updatedOrg.products,
           { type: productType, active: true }

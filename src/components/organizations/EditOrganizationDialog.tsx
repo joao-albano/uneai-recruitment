@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -45,12 +45,10 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
     onOpenChange(false);
   };
   
-  // Função para lidar com a submissão do formulário com segurança
+  // Função para lidar com a submissão do formulário sem problemas de evento
   const handleSubmitWithSafety = (e: React.FormEvent) => {
     e.preventDefault();
-    // Cria uma cópia para evitar problemas de mutabilidade
-    const formData = { ...e };
-    onSubmit(formData);
+    onSubmit(e);
   };
   
   return (
