@@ -1,137 +1,189 @@
-import React, { useEffect, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { useProduct } from '@/context/ProductContext';
+
+import React, { useState } from 'react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Check, ChevronsRight } from "lucide-react";
+import { useProduct, ProductType } from '@/context/ProductContext';
 import { useAuth } from '@/context/auth';
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
-import { ProductType } from '@/context/ProductContext';
-
-// Definição de um produto no ecossistema
-interface Product {
-  id: ProductType;
-  name: string;
-  description: string;
-  icon: React.ReactNode;
-  route: string;
-  isActive: boolean;
-  comingSoon?: boolean;
-  badge?: string;
-}
 
 const ProductHub: React.FC = () => {
-  const navigate = useNavigate();
-  const { isAdmin } = useAuth();
-  const { setCurrentProduct } = useProduct();
+  const [subscribing, setSubscribing] = useState<string | null>(null);
+  const { userSubscriptions, subscribeToProduct } = useProduct();
+  const { user, isAdmin } = useAuth();
+  const { toast } = useToast();
   
-  // Lista de produtos disponíveis no ecossistema
-  const products: Product[] = [
-    {
-      id: 'retention',
-      name: 'Retenção de Alunos',
-      description: 'Sistema para monitoramento e prevenção de evasão escolar com inteligência artificial.',
-      icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8 text-blue-500"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
-      route: '/dashboard',
-      isActive: true,
-      badge: 'Ativo'
-    },
-    {
-      id: 'billing',
-      name: 'Cobrança de Mensalidades',
-      description: 'Gerenciamento de mensalidades, emissão de boletos e controle de inadimplência.',
-      icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8 text-green-500"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>,
-      route: '/billing-system',
-      isActive: false,
-      comingSoon: true
-    },
-    {
-      id: 'recruitment',
-      name: 'Captação de Alunos',
-      description: 'Processo de captação, funil de vendas e acompanhamento de matrículas.',
-      icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8 text-purple-500"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>,
-      route: '/recruitment',
-      isActive: false,
-      comingSoon: true
-    }
-  ];
-  
-  // Função para navegar para o produto selecionado
-  const handleProductSelect = (product: Product) => {
-    if (product.isActive) {
-      // Define o produto selecionado no contexto antes de navegar
-      setCurrentProduct(product.id);
-      navigate(product.route);
+  const handleSubscribe = async (productId: ProductType) => {
+    try {
+      setSubscribing(productId);
+      const success = await subscribeToProduct(productId);
+      
+      if (success) {
+        toast({
+          title: "Produto assinado com sucesso",
+          description: "Você agora pode acessar todas as funcionalidades."
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao assinar produto:', error);
+      toast({
+        title: "Erro ao assinar produto",
+        description: "Ocorreu um erro ao processar sua assinatura. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setSubscribing(null);
     }
   };
   
+  const isSubscribed = (productId: string): boolean => {
+    return userSubscriptions.some(sub => 
+      sub.productType === productId && sub.status === 'active'
+    );
+  };
+  
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Plataforma Une.AI</h1>
-        <p className="text-muted-foreground mt-1">
-          Selecione o sistema que deseja a
+    <div className="container mx-auto py-10 px-4">
+      <div className="mb-8 text-center">
+        <h1 className="text-3xl font-bold">Hub de Produtos UNE CX</h1>
+        <p className="text-muted-foreground mt-2">
+          Descubra e acesse todas as soluções disponíveis para sua instituição
         </p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {products.map((product) => (
-          <Card 
-            key={product.id} 
-            className={`hover:shadow-md transition-all ${product.isActive ? 'cursor-pointer' : 'opacity-80'}`}
-            onClick={() => product.isActive && handleProductSelect(product)}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <div className="p-2 bg-slate-100 rounded-full">{product.icon}</div>
-              <div>
-                {product.badge && (
-                  <Badge className="bg-blue-500">{product.badge}</Badge>
-                )}
-                {product.comingSoon && (
-                  <Badge variant="outline">Em breve</Badge>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <h3 className="font-semibold text-xl">{product.name}</h3>
-              <p className="text-sm text-muted-foreground mt-2">{product.description}</p>
-            </CardContent>
-            <CardFooter>
-              {product.isActive ? (
-                <Button 
-                  className="w-full" 
-                  onClick={() => handleProductSelect(product)}
-                >
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Produto 1: Retenção de Alunos */}
+        <Card className="overflow-hidden transition-all hover:shadow-md">
+          <CardHeader className="bg-primary/5">
+            <CardTitle>Retenção de Alunos</CardTitle>
+            <CardDescription>
+              Reduza a evasão escolar com inteligência artificial
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <ul className="space-y-2">
+              <li className="flex items-center">
+                <Check className="mr-2 h-4 w-4 text-primary" />
+                <span>Identificação de alunos em risco</span>
+              </li>
+              <li className="flex items-center">
+                <Check className="mr-2 h-4 w-4 text-primary" />
+                <span>Questionários e formulários</span>
+              </li>
+              <li className="flex items-center">
+                <Check className="mr-2 h-4 w-4 text-primary" />
+                <span>Agendamento de intervenções</span>
+              </li>
+            </ul>
+          </CardContent>
+          <CardFooter>
+            {isSubscribed('retention') ? (
+              <Button className="w-full" variant="outline" asChild>
+                <a href="/dashboard">
                   Acessar
-                </Button>
-              ) : (
-                <Button 
-                  className="w-full" 
-                  variant="outline" 
-                  disabled
-                >
-                  {product.comingSoon ? 'Em breve' : 'Indisponível'}
-                </Button>
-              )}
-            </CardFooter>
-          </Card>
-        ))}
+                  <ChevronsRight className="ml-2 h-4 w-4" />
+                </a>
+              </Button>
+            ) : (
+              <Button 
+                className="w-full" 
+                onClick={() => handleSubscribe('retention')}
+                disabled={subscribing === 'retention'}
+              >
+                {subscribing === 'retention' ? 'Assinando...' : 'Assinar'}
+              </Button>
+            )}
+          </CardFooter>
+        </Card>
+        
+        {/* Produto 2: Cobrança */}
+        <Card className="overflow-hidden transition-all hover:shadow-md">
+          <CardHeader className="bg-primary/5">
+            <CardTitle>Gestão de Cobrança</CardTitle>
+            <CardDescription>
+              Otimize seu processo de cobrança e reduza a inadimplência
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <ul className="space-y-2">
+              <li className="flex items-center">
+                <Check className="mr-2 h-4 w-4 text-primary" />
+                <span>Automação de cobranças</span>
+              </li>
+              <li className="flex items-center">
+                <Check className="mr-2 h-4 w-4 text-primary" />
+                <span>Conciliação financeira</span>
+              </li>
+              <li className="flex items-center">
+                <Check className="mr-2 h-4 w-4 text-primary" />
+                <span>Relatórios financeiros</span>
+              </li>
+            </ul>
+          </CardContent>
+          <CardFooter>
+            {isSubscribed('billing') ? (
+              <Button className="w-full" variant="outline" asChild>
+                <a href="/billing/dashboard">
+                  Acessar
+                  <ChevronsRight className="ml-2 h-4 w-4" />
+                </a>
+              </Button>
+            ) : (
+              <Button 
+                className="w-full" 
+                onClick={() => handleSubscribe('billing')}
+                disabled={subscribing === 'billing'}
+              >
+                {subscribing === 'billing' ? 'Assinando...' : 'Assinar'}
+              </Button>
+            )}
+          </CardFooter>
+        </Card>
+        
+        {/* Produto 3: Recrutamento */}
+        <Card className="overflow-hidden transition-all hover:shadow-md">
+          <CardHeader className="bg-primary/5">
+            <CardTitle>Recrutamento</CardTitle>
+            <CardDescription>
+              Otimize o processo de captação de alunos
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <ul className="space-y-2">
+              <li className="flex items-center">
+                <Check className="mr-2 h-4 w-4 text-primary" />
+                <span>Gestão de leads</span>
+              </li>
+              <li className="flex items-center">
+                <Check className="mr-2 h-4 w-4 text-primary" />
+                <span>Automação de comunicação</span>
+              </li>
+              <li className="flex items-center">
+                <Check className="mr-2 h-4 w-4 text-primary" />
+                <span>Relatórios de conversão</span>
+              </li>
+            </ul>
+          </CardContent>
+          <CardFooter>
+            {isSubscribed('recruitment') ? (
+              <Button className="w-full" variant="outline" asChild>
+                <a href="/recruitment/dashboard">
+                  Acessar
+                  <ChevronsRight className="ml-2 h-4 w-4" />
+                </a>
+              </Button>
+            ) : (
+              <Button 
+                className="w-full" 
+                onClick={() => handleSubscribe('recruitment')}
+                disabled={subscribing === 'recruitment'}
+              >
+                {subscribing === 'recruitment' ? 'Assinando...' : 'Assinar'}
+              </Button>
+            )}
+          </CardFooter>
+        </Card>
       </div>
-      
-      {isAdmin && (
-        <div className="mt-10 p-4 border rounded-lg bg-slate-50">
-          <h2 className="text-xl font-semibold mb-2">Área Administrativa</h2>
-          <p className="text-sm text-muted-foreground mb-4">Como administrador, você tem acesso a configurações adicionais.</p>
-          <div className="flex space-x-3">
-            <Button onClick={() => navigate('/admin/dashboard')} variant="outline">
-              Dashboard Admin
-            </Button>
-            <Button onClick={() => navigate('/users')} variant="outline">
-              Gerenciar Usuários
-            </Button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

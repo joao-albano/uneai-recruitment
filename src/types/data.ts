@@ -1,3 +1,4 @@
+
 // Define types for our data
 import { WhatsAppConfig } from '@/utils/whatsappIntegration';
 import { WhatsAppMessage } from './whatsapp';
@@ -83,6 +84,7 @@ export type DataContextType = {
   updateSchedule: (updatedSchedule: ScheduleItem) => void;
   generateDemoData: () => void;
   sendWhatsAppSurvey: (studentId: string) => void;
+  // Added new methods for student CRUD operations
   addStudent: (student: Student) => void;
   updateStudent: (student: Student) => void;
   deleteStudent: (id: string) => void;

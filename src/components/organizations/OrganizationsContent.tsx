@@ -50,6 +50,18 @@ const OrganizationsContent: React.FC = () => {
     );
   }
   
+  // Wrapper function to adapt the form values format to the expected format
+  const handleEditSubmit = (values: { name?: string; isActive?: boolean; }) => {
+    if (selectedOrganization) {
+      const updatedOrg = {
+        ...selectedOrganization,
+        ...(values.name && { name: values.name }),
+        ...(typeof values.isActive !== 'undefined' && { isActive: values.isActive })
+      };
+      handleEditOrganization(updatedOrg);
+    }
+  };
+  
   return (
     <div className="min-h-screen flex w-full">
       <Sidebar 
@@ -97,7 +109,7 @@ const OrganizationsContent: React.FC = () => {
               open={showEditDialog}
               onOpenChange={setShowEditDialog}
               organization={selectedOrganization}
-              onSubmit={handleEditOrganization}
+              onSubmit={handleEditSubmit}
             />
           )}
           

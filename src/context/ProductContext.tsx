@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useToast } from '@/hooks/use-toast';
@@ -16,7 +17,7 @@ interface ProductContextType {
   currentProduct: ProductType | null;
   setCurrentProduct: (product: ProductType) => void;
   userSubscriptions: ProductSubscription[];
-	subscribeToProduct: (productType: ProductType) => Promise<boolean>;
+  subscribeToProduct: (productType: ProductType) => Promise<boolean>;
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
@@ -69,7 +70,7 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
     currentProduct,
     setCurrentProduct,
     userSubscriptions,
-		subscribeToProduct
+    subscribeToProduct
   };
 
   return (

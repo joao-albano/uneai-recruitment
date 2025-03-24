@@ -5,24 +5,13 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { NewUserType } from './types';
 
 interface CreateUserDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  newUser: {
-    name: string;
-    email: string;
-    role: string;
-    password: string;
-    initials: string;
-  };
-  setNewUser: React.Dispatch<React.SetStateAction<{
-    name: string;
-    email: string;
-    role: string;
-    password: string;
-    initials: string;
-  }>>;
+  newUser: NewUserType;
+  setNewUser: React.Dispatch<React.SetStateAction<NewUserType>>;
   onSubmit: (e: React.FormEvent) => void;
 }
 
@@ -33,60 +22,85 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   setNewUser,
   onSubmit
 }) => {
+  // Handle input changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewUser({ ...newUser, [name]: value });
+  };
+  
+  // Handle select changes
+  const handleSelectChange = (name: string, value: string) => {
+    setNewUser({ ...newUser, [name]: value });
+  };
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Adicionar Usuário</DialogTitle>
           <DialogDescription>
-            Crie um novo usuário para acessar o sistema
+            Preencha os dados do novo usuário.
           </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={onSubmit}>
           <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Nome*</Label>
-              <Input 
-                id="name" 
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                Nome
+              </Label>
+              <Input
+                id="name"
+                name="name"
                 value={newUser.name}
-                onChange={(e) => setNewUser({...newUser, name: e.target.value})}
-                placeholder="Nome completo"
+                onChange={handleChange}
+                className="col-span-3"
                 required
               />
             </div>
             
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email*</Label>
-              <Input 
-                id="email" 
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="email" className="text-right">
+                Email
+              </Label>
+              <Input
+                id="email"
+                name="email"
                 type="email"
                 value={newUser.email}
-                onChange={(e) => setNewUser({...newUser, email: e.target.value})}
-                placeholder="email@example.com"
+                onChange={handleChange}
+                className="col-span-3"
                 required
               />
             </div>
             
-            <div className="grid gap-2">
-              <Label htmlFor="password">Senha*</Label>
-              <Input 
-                id="password" 
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="password" className="text-right">
+                Senha
+              </Label>
+              <Input
+                id="password"
+                name="password"
                 type="password"
                 value={newUser.password}
-                onChange={(e) => setNewUser({...newUser, password: e.target.value})}
+                onChange={handleChange}
+                className="col-span-3"
                 required
+                autoComplete="new-password"
               />
             </div>
             
-            <div className="grid gap-2">
-              <Label htmlFor="role">Função</Label>
-              <Select 
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="role" className="text-right">
+                Perfil
+              </Label>
+              <Select
+                name="role"
                 value={newUser.role}
-                onValueChange={(value) => setNewUser({...newUser, role: value})}
+                onValueChange={(value) => handleSelectChange('role', value)}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione uma função" />
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Selecione um perfil" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="user">Usuário</SelectItem>
@@ -97,10 +111,10 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
           </div>
           
           <DialogFooter>
-            <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button type="submit">Criar Usuário</Button>
+            <Button type="submit">Adicionar</Button>
           </DialogFooter>
         </form>
       </DialogContent>
