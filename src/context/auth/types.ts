@@ -29,6 +29,6 @@ export interface AuthContextType {
   currentOrganization: Organization | null;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   loginWithPhone: (phone: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  logout: () => Promise<void>;
+  logout: () => Promise<boolean>; // Changed from Promise<void> to Promise<boolean> to match implementation
   session: Session | null;
 }

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -27,20 +26,20 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   const navigate = useNavigate();
   const { logout, isAdmin, currentUser, isSuperAdmin } = useAuth();
   
-  // Use the name from the authentication context or fall back to the provided user prop
   const displayName = currentUser?.name || user.name;
   const displayEmail = currentUser?.email || user.email;
   const displayInitials = currentUser?.name ? 
     currentUser.name[0].toUpperCase() : 
     (currentUser?.email?.[0] || user.initials).toUpperCase();
   
-  // Determine role label based on super admin status
   const roleLabel = isSuperAdmin ? 'Super Admin' : 
                    (currentUser?.role === 'admin' ? 'Administrador' : 'Usuário');
   
   const handleLogout = async () => {
-    await logout();
-    navigate('/login');
+    const success = await logout();
+    if (success) {
+      navigate('/login');
+    }
   };
   
   const goToProfile = () => {
@@ -57,7 +56,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
         <Button variant="ghost" className="p-0 relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
             <AvatarFallback className="bg-primary text-primary-foreground">
-              {displayInitials}
+              {user.initials}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -65,8 +64,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{displayName}</p>
-            <p className="text-xs leading-none text-muted-foreground">{displayEmail}</p>
+            <p className="text-sm font-medium leading-none">{user.name}</p>
+            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
             {isSuperAdmin && (
               <span className="text-[10px] font-medium text-amber-600 mt-1">
                 Super Admin - UNE CX

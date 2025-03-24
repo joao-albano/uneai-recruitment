@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Settings, LogOut } from 'lucide-react';
@@ -12,6 +13,11 @@ interface SidebarSettingsSectionProps {
 
 const SidebarSettingsSection: React.FC<SidebarSettingsSectionProps> = ({ collapsed }) => {
   const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    // No need to check the return value here as we're redirecting anyway
+  };
 
   return (
     <>
@@ -29,7 +35,7 @@ const SidebarSettingsSection: React.FC<SidebarSettingsSectionProps> = ({ collaps
             "w-full justify-start px-2 my-1 gap-3", 
             collapsed && "justify-center p-2"
           )}
-          onClick={() => logout()}
+          onClick={handleLogout}
         >
           <LogOut className="h-5 w-5" />
           {!collapsed && <span>Sair</span>}

@@ -14,7 +14,7 @@ export const AuthContext = createContext<AuthContextType>({
   session: null,
   login: async () => ({ success: false }),
   loginWithPhone: async () => ({ success: false }),
-  logout: async () => {},
+  logout: async () => false, // Changed to return boolean to match type
 });
 
 // Auth provider component
