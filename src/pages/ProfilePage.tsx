@@ -16,12 +16,12 @@ const ProfilePage: React.FC = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  // Criar objeto de usuário com base nos dados atualizados do contexto de autenticação
+  // Create user object based on auth context data
   const user = {
-    name: currentUser?.email?.split('@')[0] || 'Usuário',
-    email: userEmail || '',
+    name: currentUser?.name || currentUser?.email?.split('@')[0] || 'Usuário',
+    email: currentUser?.email || userEmail || '',
     role: currentUser?.role || 'user',
-    initials: (currentUser?.email?.[0] || 'U').toUpperCase(),
+    initials: (currentUser?.name?.[0] || currentUser?.email?.[0] || 'U').toUpperCase(),
     organization: currentOrganization?.name
   };
   
@@ -51,7 +51,7 @@ const ProfilePage: React.FC = () => {
                 <ProfileHeader 
                   name={user.name}
                   email={user.email}
-                  role={isSuperAdmin ? 'Super Admin' : (isAdmin ? 'admin' : 'user')}
+                  role={isSuperAdmin ? 'Super Admin' : (isAdmin ? 'Administrador' : 'Usuário')}
                   initials={user.initials}
                   organization={user.organization}
                 />

@@ -28,7 +28,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <div className="bg-white rounded-lg border shadow-sm hover:shadow-md transition-all duration-300 p-6 flex flex-col h-full">
       <div className="flex items-center justify-between mb-4">
-        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${iconColor} bg-opacity-15`}>
+        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${iconColor}`}>
           {icon}
         </div>
         <div>

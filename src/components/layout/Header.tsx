@@ -33,7 +33,7 @@ const Header: React.FC<HeaderProps> = ({
   // This would come from your payment system in a real app
   const hasPendingInvoice = false;
   
-  // Create user data for UserMenu com base nos dados do contexto
+  // Create user data for UserMenu based on auth context data
   const user = {
     name: currentUser?.name || currentUser?.email?.split('@')[0] || 'Usuário',
     email: currentUser?.email || 'user@escola.edu',
@@ -58,7 +58,7 @@ const Header: React.FC<HeaderProps> = ({
       <div className="flex-1" />
       
       <div className="flex items-center gap-2">
-        {/* Adicionando botão para voltar ao ProductHub */}
+        {/* Adding button to return to ProductHub */}
         <ProductHubLink />
         
         {/* Show trial expiration notification */}

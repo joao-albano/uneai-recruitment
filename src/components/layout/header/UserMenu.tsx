@@ -27,9 +27,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   const navigate = useNavigate();
   const { logout, isAdmin, currentUser } = useAuth();
   
-  // Usar o nome do contexto de autenticação ou recorrer ao que foi passado
+  // Use the name from the authentication context or fall back to the provided user prop
   const displayName = currentUser?.name || user.name;
-  const displayInitials = (currentUser?.name?.[0] || user.initials).toUpperCase();
+  const displayEmail = currentUser?.email || user.email;
+  const displayInitials = (currentUser?.name?.[0] || currentUser?.email?.[0] || user.initials).toUpperCase();
   
   const handleLogout = async () => {
     await logout();
@@ -59,7 +60,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{displayName}</p>
-            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+            <p className="text-xs leading-none text-muted-foreground">{displayEmail}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

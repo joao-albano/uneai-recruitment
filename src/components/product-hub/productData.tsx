@@ -11,7 +11,7 @@ export const getProducts = (): ProductInfo[] => [
     title: 'Retenção de Alunos',
     description: 'Sistema para monitoramento e prevenção de evasão escolar com inteligência artificial.',
     icon: <BrainCircuit className="w-7 h-7 text-white" />,
-    iconColor: 'bg-blue-500',
+    iconColor: 'bg-purple-600',
     isActive: true
   },
   {
@@ -19,7 +19,7 @@ export const getProducts = (): ProductInfo[] => [
     title: 'Cobrança de Mensalidades',
     description: 'Gerenciamento de mensalidades, emissão de boletos e controle de inadimplência.',
     icon: <Receipt className="w-7 h-7 text-white" />,
-    iconColor: 'bg-green-500',
+    iconColor: 'bg-green-600',
     isActive: false
   },
   {
@@ -27,7 +27,7 @@ export const getProducts = (): ProductInfo[] => [
     title: 'Captação de Alunos',
     description: 'Processo de captação, funil de vendas e acompanhamento de matrículas.',
     icon: <Users className="w-7 h-7 text-white" />,
-    iconColor: 'bg-purple-500',
+    iconColor: 'bg-blue-600',
     isActive: false
   }
 ];
