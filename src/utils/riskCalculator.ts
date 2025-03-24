@@ -1,5 +1,6 @@
 
 import { StudentData } from "../context/DataContext";
+import { getOpenAIConfig } from "./aiAnalysis";
 
 // Default risk thresholds - these define our decision boundaries
 const DEFAULT_GRADE_THRESHOLD_HIGH = 5.0;
@@ -37,6 +38,12 @@ const getThresholds = () => {
     BEHAVIOR_THRESHOLD_HIGH: DEFAULT_BEHAVIOR_THRESHOLD_HIGH,
     BEHAVIOR_THRESHOLD_MEDIUM: DEFAULT_BEHAVIOR_THRESHOLD_MEDIUM,
   };
+};
+
+// Check if OpenAI integration should be used for risk calculation
+export const shouldUseAIForRiskAnalysis = (): boolean => {
+  const config = getOpenAIConfig();
+  return !!config.apiKey; // Return true if API key is configured
 };
 
 // Decision Tree logic implementation for risk prediction
