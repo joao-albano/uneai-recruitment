@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, ReactNode } from 'react';
 import { StudentsProvider, useStudents } from './students/StudentsContext';
 import { SurveysProvider, useSurveys } from './surveys/SurveysContext';
@@ -44,11 +43,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         <AlertsProvider>
           <SchedulesProvider>
             <UploadsProvider>
-              <WhatsAppProvider>
-                <AppStateProvider>
+              <AppStateProvider>
+                <WhatsAppProvider>
                   <DataProviderInner>{children}</DataProviderInner>
-                </AppStateProvider>
-              </WhatsAppProvider>
+                </WhatsAppProvider>
+              </AppStateProvider>
             </UploadsProvider>
           </SchedulesProvider>
         </AlertsProvider>
