@@ -12,6 +12,7 @@ interface StudentTableProps {
   handleAddAsData: (studentId: string) => void;
   classFilter: string | null;
   clearClassFilter: () => void;
+  isMobile?: boolean;
 }
 
 const StudentTable: React.FC<StudentTableProps> = ({ 
@@ -20,7 +21,8 @@ const StudentTable: React.FC<StudentTableProps> = ({
   handleSchedule,
   handleAddAsData,
   classFilter,
-  clearClassFilter
+  clearClassFilter,
+  isMobile
 }) => {
   return (
     <TableBody>

@@ -14,12 +14,14 @@ export interface StudentPaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  isMobile?: boolean;
 }
 
 const StudentPagination: React.FC<StudentPaginationProps> = ({
   currentPage,
   totalPages,
-  onPageChange
+  onPageChange,
+  isMobile
 }) => {
   // Always render pagination controls even with just one page
   // This ensures consistent UI and helps with debugging

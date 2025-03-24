@@ -12,6 +12,7 @@ interface UpcomingSchedulesProps {
   onCancelSchedule: (id: string) => void;
   onNewSchedule: () => void;
   onEditSchedule: (schedule: Schedule) => void;
+  isMobile?: boolean;
 }
 
 const UpcomingSchedules: React.FC<UpcomingSchedulesProps> = ({
@@ -19,6 +20,7 @@ const UpcomingSchedules: React.FC<UpcomingSchedulesProps> = ({
   onCancelSchedule,
   onNewSchedule,
   onEditSchedule,
+  isMobile
 }) => {
   return (
     <Card className="shadow-md">

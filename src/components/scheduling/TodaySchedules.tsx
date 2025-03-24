@@ -19,6 +19,7 @@ interface TodaySchedulesProps {
   onMarkCompleted: (id: string) => void;
   onCancelSchedule: (id: string) => void;
   onNewSchedule: () => void;
+  isMobile?: boolean;
 }
 
 const TodaySchedules: React.FC<TodaySchedulesProps> = ({
@@ -26,6 +27,7 @@ const TodaySchedules: React.FC<TodaySchedulesProps> = ({
   onMarkCompleted,
   onCancelSchedule,
   onNewSchedule,
+  isMobile
 }) => {
   return (
     <Card className="shadow-md">

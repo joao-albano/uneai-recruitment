@@ -10,9 +10,10 @@ interface Schedule {
 
 interface ScheduleStatsProps {
   schedules: Schedule[];
+  isMobile?: boolean;
 }
 
-const ScheduleStats: React.FC<ScheduleStatsProps> = ({ schedules }) => {
+const ScheduleStats: React.FC<ScheduleStatsProps> = ({ schedules, isMobile }) => {
   const scheduledCount = schedules.filter(s => s.status === 'scheduled').length;
   const completedCount = schedules.filter(s => s.status === 'completed').length;
   const canceledCount = schedules.filter(s => s.status === 'canceled').length;

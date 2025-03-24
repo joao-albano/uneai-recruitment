@@ -24,6 +24,7 @@ export interface StudentFiltersProps {
   classFilter: string | null;
   setClassFilter: (value: string | null) => void;
   clearFilters: () => void;
+  isMobile?: boolean;
 }
 
 const StudentFilters: React.FC<StudentFiltersProps> = ({
@@ -36,7 +37,8 @@ const StudentFilters: React.FC<StudentFiltersProps> = ({
   hasActiveFilters,
   classFilter,
   setClassFilter,
-  clearFilters
+  clearFilters,
+  isMobile
 }) => {
   return (
     <div className="space-y-4">
