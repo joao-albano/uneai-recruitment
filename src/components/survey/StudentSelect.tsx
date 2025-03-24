@@ -15,8 +15,7 @@ const StudentSelect: React.FC<StudentSelectProps> = ({ form }) => {
   const { students } = useStudents();
 
   useEffect(() => {
-    // Log for debugging
-    console.log('Available students:', students.length);
+    console.log('Available students in StudentSelect:', students);
   }, [students]);
 
   const handleStudentSelect = (studentId: string) => {
@@ -61,11 +60,17 @@ const StudentSelect: React.FC<StudentSelectProps> = ({ form }) => {
                 </SelectTrigger>
               </FormControl>
               <SelectContent align="start" side="bottom" className="w-full">
-                {students.map((student) => (
-                  <SelectItem key={student.id} value={student.id}>
-                    {student.name} - Turma {student.class} - {student.segment}
+                {students && students.length > 0 ? (
+                  students.map((student) => (
+                    <SelectItem key={student.id} value={student.id}>
+                      {student.name} - Turma {student.class} - {student.segment}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="no-students" disabled>
+                    Nenhum aluno disponível
                   </SelectItem>
-                ))}
+                )}
               </SelectContent>
             </Select>
             <FormMessage />

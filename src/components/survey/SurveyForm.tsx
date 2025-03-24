@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useStudents } from '@/context/students/StudentsContext';
 import { useAlerts } from '@/context/alerts/AlertsContext';
 import { useSurveys } from '@/context/surveys/SurveysContext';
+import { useAppState } from '@/context/app/AppStateContext';
 import { formSchema, FormValues } from './SurveyFormSchema';
 import StudentSelect from './StudentSelect';
 import ParentInfo from './ParentInfo';
@@ -25,10 +25,16 @@ const SurveyForm: React.FC = () => {
   const { students } = useStudents();
   const { addSurvey } = useSurveys();
   const { addAlert } = useAlerts();
+  const { generateDemoData, isLoading } = useAppState();
   
   useEffect(() => {
-    console.log('Student count in form:', students.length);
-  }, [students]);
+    if (students.length === 0) {
+      console.log('Nenhum estudante encontrado. Carregando dados de demonstração...');
+      generateDemoData();
+    } else {
+      console.log('Estudantes já carregados:', students.length);
+    }
+  }, [students, generateDemoData]);
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -101,41 +107,48 @@ const SurveyForm: React.FC = () => {
           </CardHeader>
           
           <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <div className="space-y-6">
-                  <div className="flex justify-end mb-2">
-                    <WhatsAppButton 
-                      form={form} 
-                      sendingWhatsApp={sendingWhatsApp} 
-                      setSendingWhatsApp={setSendingWhatsApp} 
-                    />
+            {isLoading ? (
+              <div className="flex justify-center items-center py-8">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                <span className="ml-2">Carregando alunos...</span>
+              </div>
+            ) : (
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                  <div className="space-y-6">
+                    <div className="flex justify-end mb-2">
+                      <WhatsAppButton 
+                        form={form} 
+                        sendingWhatsApp={sendingWhatsApp} 
+                        setSendingWhatsApp={setSendingWhatsApp} 
+                      />
+                    </div>
+                  
+                    <StudentSelect form={form} />
+                    <ParentInfo form={form} />
+                    <RiskFactors form={form} />
                   </div>
-                
-                  <StudentSelect form={form} />
-                  <ParentInfo form={form} />
-                  <RiskFactors form={form} />
-                </div>
-                
-                <Button 
-                  type="submit" 
-                  className="w-full py-6"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
-                      Enviando...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="mr-2 h-5 w-5" />
-                      Enviar pesquisa
-                    </>
-                  )}
-                </Button>
-              </form>
-            </Form>
+                  
+                  <Button 
+                    type="submit" 
+                    className="w-full py-6"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
+                        Enviando...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="mr-2 h-5 w-5" />
+                        Enviar pesquisa
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </Form>
+            )}
           </CardContent>
         </Card>
       )}
