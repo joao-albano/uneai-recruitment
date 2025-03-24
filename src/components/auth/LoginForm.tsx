@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -38,7 +39,7 @@ const LoginForm = ({ onSwitchTab }: LoginFormProps) => {
     // Use our auth context login function
     if (login(values.email, values.password)) {
       toast.success('Login realizado com sucesso!');
-      navigate('/dashboard');
+      navigate('/hub'); // Redireciona para o hub de produtos
     } else {
       toast.error('Email ou senha incorretos');
     }

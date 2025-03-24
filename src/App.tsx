@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -27,6 +28,7 @@ import AdminPaymentsPage from "./pages/AdminPaymentsPage";
 import AdminPlansPage from "./pages/AdminPlansPage";
 import NotFound from "./pages/NotFound";
 import ModelStudentPage from "./pages/ModelStudentPage";
+import ProductHubPage from "./pages/ProductHubPage";
 
 const queryClient = new QueryClient();
 
@@ -39,7 +41,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              {/* Redirect root to login if not authenticated, otherwise to index */}
+              {/* Redirect root to login if not authenticated, otherwise to hub */}
               <Route path="/" element={<Navigate to="/login" />} />
               
               {/* Public route - LoginPage */}
@@ -47,6 +49,16 @@ const App = () => (
               
               {/* Public route - PricingPage */}
               <Route path="/pricing" element={<PricingPage />} />
+              
+              {/* Protected route - Product Hub */}
+              <Route 
+                path="/hub" 
+                element={
+                  <ProtectedRoute>
+                    <ProductHubPage />
+                  </ProtectedRoute>
+                } 
+              />
               
               {/* Protected route - Index (landing page) */}
               <Route 

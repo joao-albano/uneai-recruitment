@@ -13,10 +13,10 @@ const LoginPage = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect to dashboard if already authenticated
+  // Redirect to product hub if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard');
+      navigate('/hub');
     }
   }, [isAuthenticated, navigate]);
 
