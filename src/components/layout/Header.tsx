@@ -1,14 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useData } from '@/context/DataContext';
-import { useAuth } from '@/context/AuthContext';
-import AppLogo from './header/AppLogo';
-import PricingLink from './header/PricingLink';
-import NotificationBell from './header/NotificationBell';
 import UserMenu from './header/UserMenu';
+import NotificationBell from './header/NotificationBell';
+import AppLogo from './header/AppLogo';
+import { useTheme } from '@/context/ThemeContext';
+import PricingLink from './header/PricingLink';
 import PaymentNotification from './header/PaymentNotification';
+import { useTrialPeriod } from '@/hooks/useTrialPeriod';
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -16,53 +17,48 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed }) => {
-  const { isAdmin, userEmail } = useAuth();
+  const navigate = useNavigate();
+  const { language, toggleLanguage } = useTheme();
+  const { showBanner, isExpired } = useTrialPeriod();
   
-  // For demo purposes - we'll assume there's a pending invoice
-  const hasPendingInvoice = true;
-  const shouldShowPaymentButton = hasPendingInvoice && !isAdmin;
+  // This would come from your payment system in a real app
+  const hasPendingInvoice = false;
   
-  let alerts = [];
-  try {
-    const dataContext = useData();
-    alerts = dataContext.alerts || [];
-  } catch (error) {
-    console.log("DataProvider not available, using fallback for alerts");
-  }
-  
-  const unreadAlerts = Array.isArray(alerts) ? alerts.filter(alert => !alert.read).length : 0;
-  
-  const user = {
-    name: isAdmin ? 'Admin' : 'Usuário',
-    email: userEmail || (isAdmin ? 'admin@escola.edu' : 'user@escola.edu'),
-    role: isAdmin ? 'admin' : 'user',
-    initials: isAdmin ? 'AD' : 'US'
-  };
-
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/95 px-6 backdrop-blur transition-all">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 lg:px-6">
       <Button
-        variant="ghost"
+        variant="outline"
         size="icon"
         className="mr-2 lg:hidden"
         onClick={toggleSidebar}
       >
-        <Menu className="h-6 w-6" />
-        <span className="sr-only">Toggle sidebar</span>
+        <Menu className="h-5 w-5" />
+        <span className="sr-only">Toggle Menu</span>
       </Button>
       
-      <AppLogo visible={sidebarCollapsed || window.innerWidth < 1024} />
+      <AppLogo variant={sidebarCollapsed ? 'full' : 'icon'} />
+
+      <div className="flex-1" />
       
-      <div className="ml-auto flex items-center gap-4">
-        <PaymentNotification visible={shouldShowPaymentButton} />
+      <div className="flex items-center gap-2">
+        {/* Show trial expiration notification */}
+        {showBanner && isExpired && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="gap-1 border-red-300 text-red-700 hover:bg-red-50 hover:text-red-800"
+            onClick={() => navigate('/pricing')}
+          >
+            {language === 'pt-BR' ? 'Período de Avaliação Expirado' : 'Trial Period Expired'}
+          </Button>
+        )}
+        
+        {/* Show payment notification */}
+        <PaymentNotification visible={hasPendingInvoice} />
         
         <PricingLink />
-        
-        <NotificationBell unreadCount={unreadAlerts} />
-        
-        <div className="h-8 w-px bg-border/50" />
-        
-        <UserMenu user={user} />
+        <NotificationBell />
+        <UserMenu />
       </div>
     </header>
   );

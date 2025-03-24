@@ -6,7 +6,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { useData } from '@/context/DataContext';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
-import { Settings } from 'lucide-react';
+import { Settings, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import UsageStats from './dashboard/UsageStats';
 import RiskDistribution from './dashboard/RiskDistribution';
@@ -50,12 +50,20 @@ const AdminDashboardContent: React.FC = () => {
               : 'System data analysis and metrics'}
           </p>
         </div>
-        <Button variant="outline" asChild>
-          <Link to="/admin/settings">
-            <Settings className="mr-2 h-4 w-4" />
-            {language === 'pt-BR' ? 'Configurações Administrativas' : 'Admin Settings'}
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" asChild>
+            <Link to="/admin/plans">
+              <DollarSign className="mr-2 h-4 w-4" />
+              {language === 'pt-BR' ? 'Gerenciar Planos' : 'Manage Plans'}
+            </Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link to="/admin/settings">
+              <Settings className="mr-2 h-4 w-4" />
+              {language === 'pt-BR' ? 'Configurações Administrativas' : 'Admin Settings'}
+            </Link>
+          </Button>
+        </div>
       </div>
       
       <Tabs 
