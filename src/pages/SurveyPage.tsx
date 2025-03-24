@@ -6,6 +6,7 @@ import { AlertsProvider } from '@/context/alerts/AlertsContext';
 import { WhatsAppProvider } from '@/context/whatsapp/WhatsAppContext';
 import { AppStateProvider } from '@/context/app/AppStateContext';
 import { SchedulesProvider } from '@/context/schedules/SchedulesContext';
+import { UploadsProvider } from '@/context/uploads/UploadsContext';
 import SurveyPageContent from '@/components/survey/SurveyPageContent';
 import { Layout } from '@/components/layout/Layout';
 import { generateDemoStudents } from '@/data/demoStudents';
@@ -25,13 +26,15 @@ const SurveyPage: React.FC = () => {
       <SurveysProvider>
         <AlertsProvider>
           <SchedulesProvider>
-            <AppStateProvider>
-              <WhatsAppProvider>
-                <Layout>
-                  <SurveyPageContent />
-                </Layout>
-              </WhatsAppProvider>
-            </AppStateProvider>
+            <UploadsProvider>
+              <AppStateProvider>
+                <WhatsAppProvider>
+                  <Layout>
+                    <SurveyPageContent />
+                  </Layout>
+                </WhatsAppProvider>
+              </AppStateProvider>
+            </UploadsProvider>
           </SchedulesProvider>
         </AlertsProvider>
       </SurveysProvider>
