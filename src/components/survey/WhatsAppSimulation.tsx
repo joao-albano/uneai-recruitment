@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 const WhatsAppSimulation: React.FC = () => {
-  const [messages, setMessages] = useState<{type: 'sent' | 'received', content: string, time: Date}[]>([]);
+  const [messages, setMessages] = useState<{type: 'sent' | 'received', content: string, time: Date, id: string}[]>([]);
   const { alerts, students } = useData();
   
   // Complete survey questions array to simulate a full conversation
@@ -39,11 +39,19 @@ const WhatsAppSimulation: React.FC = () => {
       const student = students.find(s => s.id === lastAlert.studentId);
       
       if (student) {
+        // Reset messages first to ensure we don't get duplicates when this effect runs again
+        setMessages([]);
+        
+        // Create a unique ID for each message to prevent duplicates
+        const createMessageId = (prefix: string, index: number) => 
+          `${prefix}-${lastAlert.id}-${index}`;
+        
         // Initial message sent by the school
         const initialMessage = {
           type: 'sent' as const,
           content: `Olá ${student.parentName}, gostaríamos de fazer uma pesquisa sobre ${student.name}. Por favor, responda as seguintes perguntas quando puder:`,
-          time: lastAlert.createdAt
+          time: lastAlert.createdAt,
+          id: createMessageId('initial', 0)
         };
         
         setMessages([initialMessage]);
@@ -53,9 +61,17 @@ const WhatsAppSimulation: React.FC = () => {
           const responseMessage = {
             type: 'received' as const,
             content: `Olá, sou o responsável por ${student.name}. Acabei de visualizar as perguntas e responderei agora.`,
-            time: new Date(lastAlert.createdAt.getTime() + 2 * 60 * 1000) // 2 minutes later
+            time: new Date(lastAlert.createdAt.getTime() + 2 * 60 * 1000), // 2 minutes later
+            id: createMessageId('response', 0)
           };
-          setMessages(prev => [...prev, responseMessage]);
+          
+          setMessages(prev => {
+            // Check if this message already exists to prevent duplicates
+            if (prev.some(msg => msg.id === responseMessage.id)) {
+              return prev;
+            }
+            return [...prev, responseMessage];
+          });
           
           // Start questions and answers sequence with delays
           let questionDelay = 3;
@@ -65,9 +81,18 @@ const WhatsAppSimulation: React.FC = () => {
               const questionMessage = {
                 type: 'sent' as const,
                 content: `${index + 1}. ${question}`,
-                time: new Date(lastAlert.createdAt.getTime() + questionDelay * 60 * 1000)
+                time: new Date(lastAlert.createdAt.getTime() + questionDelay * 60 * 1000),
+                id: createMessageId('question', index)
               };
-              setMessages(prev => [...prev, questionMessage]);
+              
+              setMessages(prev => {
+                // Check if this message already exists
+                if (prev.some(msg => msg.id === questionMessage.id)) {
+                  return prev;
+                }
+                return [...prev, questionMessage];
+              });
+              
               questionDelay += 1;
               
               // Simulate parent response with delay
@@ -75,9 +100,17 @@ const WhatsAppSimulation: React.FC = () => {
                 const answerMessage = {
                   type: 'received' as const,
                   content: parentResponses[index],
-                  time: new Date(lastAlert.createdAt.getTime() + (questionDelay + 1) * 60 * 1000)
+                  time: new Date(lastAlert.createdAt.getTime() + (questionDelay + 1) * 60 * 1000),
+                  id: createMessageId('answer', index)
                 };
-                setMessages(prev => [...prev, answerMessage]);
+                
+                setMessages(prev => {
+                  // Check if this message already exists
+                  if (prev.some(msg => msg.id === answerMessage.id)) {
+                    return prev;
+                  }
+                  return [...prev, answerMessage];
+                });
               }, 2000);
             }, 2000 * (index + 1));
           });
@@ -87,18 +120,34 @@ const WhatsAppSimulation: React.FC = () => {
             const thankYouMessage = {
               type: 'sent' as const,
               content: `Muito obrigado pelas respostas! Suas informações são muito importantes para o acompanhamento pedagógico de ${student.name}. Se precisar de algo, estamos à disposição.`,
-              time: new Date(lastAlert.createdAt.getTime() + 12 * 60 * 1000)
+              time: new Date(lastAlert.createdAt.getTime() + 12 * 60 * 1000),
+              id: createMessageId('thanks', 0)
             };
-            setMessages(prev => [...prev, thankYouMessage]);
+            
+            setMessages(prev => {
+              // Check if this message already exists
+              if (prev.some(msg => msg.id === thankYouMessage.id)) {
+                return prev;
+              }
+              return [...prev, thankYouMessage];
+            });
             
             // Parent final acknowledgment
             setTimeout(() => {
               const finalMessage = {
                 type: 'received' as const,
                 content: `De nada! Agradeço o contato e a preocupação com o desenvolvimento do(a) meu/minha filho(a).`,
-                time: new Date(lastAlert.createdAt.getTime() + 13 * 60 * 1000)
+                time: new Date(lastAlert.createdAt.getTime() + 13 * 60 * 1000),
+                id: createMessageId('final', 0)
               };
-              setMessages(prev => [...prev, finalMessage]);
+              
+              setMessages(prev => {
+                // Check if this message already exists
+                if (prev.some(msg => msg.id === finalMessage.id)) {
+                  return prev;
+                }
+                return [...prev, finalMessage];
+              });
             }, 2000);
           }, 12000);
         }, 3000);
@@ -122,7 +171,7 @@ const WhatsAppSimulation: React.FC = () => {
     <div className="flex flex-col space-y-4 pt-4 max-h-[500px] overflow-y-auto pr-2">
       {messages.map((message, index) => (
         <div 
-          key={index} 
+          key={message.id} 
           className={`flex ${message.type === 'sent' ? 'justify-end' : 'justify-start'}`}
         >
           {message.type === 'received' && (
