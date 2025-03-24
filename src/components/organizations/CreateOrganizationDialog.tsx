@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { NewOrganizationType, OrganizationProduct } from './types';
 import { Checkbox } from "@/components/ui/checkbox";
-import { ProductType, getProductDisplayName } from '@/components/users/utils/userUtils';
+import { ProductType } from '@/context/ProductContext';
+import { getProductDisplayName } from '@/components/users/utils/userUtils';
 
 interface CreateOrganizationDialogProps {
   open: boolean;
@@ -28,9 +29,9 @@ const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
   const toggleProductActive = (productType: ProductType) => {
     // Criar uma cópia do array de produtos atual ou inicializar se não existir
     const currentProducts = newOrganization.products ? [...newOrganization.products] : [
-      { type: 'retention', active: true },
-      { type: 'billing', active: false },
-      { type: 'recruitment', active: false }
+      { type: 'retention' as ProductType, active: true },
+      { type: 'billing' as ProductType, active: false },
+      { type: 'recruitment' as ProductType, active: false }
     ];
     
     // Atualizar o estado do produto
@@ -65,7 +66,7 @@ const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
     return product ? product.active : false;
   };
   
-  // Lista de todos os tipos de produtos disponíveis - corrigindo o tipo explicitamente
+  // Lista de todos os tipos de produtos disponíveis - definindo explicitamente como ProductType[]
   const allProductTypes: ProductType[] = ['retention', 'billing', 'recruitment'];
   
   return (
