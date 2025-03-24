@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import MessageStatusBadge from './MessageStatusBadge';
 import { useData } from '@/context/DataContext';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface MessageDetailDialogProps {
   message: WhatsAppMessage | null;
@@ -124,9 +125,11 @@ De nada! Agradeço o contato e a preocupação com o desenvolvimento do(a) meu/m
             </button>
             
             {isConversationExpanded && (
-              <div className="p-3 bg-muted rounded-md whitespace-pre-line text-sm max-h-[350px] overflow-y-auto">
-                {conversationContent}
-              </div>
+              <ScrollArea className="rounded-md bg-muted whitespace-pre-line text-sm h-[250px]">
+                <div className="p-3">
+                  {conversationContent}
+                </div>
+              </ScrollArea>
             )}
           </div>
         </div>

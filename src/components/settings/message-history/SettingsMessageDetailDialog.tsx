@@ -99,8 +99,8 @@ De nada! Agradeço o contato e a preocupação com o desenvolvimento do(a) meu/m
             </button>
             
             {isConversationExpanded && (
-              <ScrollArea className="h-[350px] rounded-md border p-4">
-                <div className="whitespace-pre-wrap">
+              <ScrollArea className="rounded-md border h-[250px]">
+                <div className="whitespace-pre-wrap p-4">
                   {conversationContent}
                 </div>
               </ScrollArea>
