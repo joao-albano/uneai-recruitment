@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -30,9 +30,12 @@ const UserCard: React.FC<UserCardProps> = ({
   isAdmin = false,
   isSuperAdmin = false
 }) => {
-  const [showPermissionsDialog, setShowPermissionsDialog] = useState(false);
-  const [showViewPermissionsDialog, setShowViewPermissionsDialog] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  // Use estados apenas quando realmente necessário
+  const [dialogState, setDialogState] = useState({
+    showPermissionsDialog: false,
+    showViewPermissionsDialog: false,
+    isDropdownOpen: false
+  });
   
   // Definindo a cor do avatar baseado no papel do usuário
   const avatarColor = user.isSuperAdmin
@@ -41,53 +44,51 @@ const UserCard: React.FC<UserCardProps> = ({
     ? "bg-blue-100 text-blue-800"
     : "bg-gray-100 text-gray-800";
 
-  // Memoized handlers to prevent unnecessary re-renders
+  // Handlers memoizados para evitar re-renderizações
   const handleEdit = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (onEdit) {
-      try {
-        // Clone user to avoid reference issues
-        const userClone = JSON.parse(JSON.stringify(user));
-        onEdit(userClone);
-        setIsDropdownOpen(false);
-      } catch (error) {
-        console.error("Erro ao editar usuário:", error);
-      }
-    }
+    onEdit(user);
+    setDialogState(prev => ({ ...prev, isDropdownOpen: false }));
   }, [user, onEdit]);
   
   const handleDelete = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (onDelete) {
-      try {
-        // Clone user to avoid reference issues
-        const userClone = JSON.parse(JSON.stringify(user));
-        onDelete(userClone);
-        setIsDropdownOpen(false);
-      } catch (error) {
-        console.error("Erro ao excluir usuário:", error);
-      }
-    }
+    onDelete(user);
+    setDialogState(prev => ({ ...prev, isDropdownOpen: false }));
   }, [user, onDelete]);
   
   const handleManagePermissions = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setShowPermissionsDialog(true);
-    setIsDropdownOpen(false);
+    setDialogState(prev => ({ 
+      ...prev, 
+      showPermissionsDialog: true,
+      isDropdownOpen: false 
+    }));
   }, []);
   
   const handleViewPermissions = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setShowViewPermissionsDialog(true);
-    setIsDropdownOpen(false);
+    setDialogState(prev => ({ 
+      ...prev, 
+      showViewPermissionsDialog: true,
+      isDropdownOpen: false 
+    }));
   }, []);
   
   const handleDropdownOpenChange = useCallback((open: boolean) => {
-    setIsDropdownOpen(open);
+    setDialogState(prev => ({ ...prev, isDropdownOpen: open }));
+  }, []);
+  
+  const handlePermissionsDialogChange = useCallback((open: boolean) => {
+    setDialogState(prev => ({ ...prev, showPermissionsDialog: open }));
+  }, []);
+  
+  const handleViewPermissionsDialogChange = useCallback((open: boolean) => {
+    setDialogState(prev => ({ ...prev, showViewPermissionsDialog: open }));
   }, []);
   
   return (
@@ -128,7 +129,10 @@ const UserCard: React.FC<UserCardProps> = ({
             </div>
           </div>
           
-          <DropdownMenu open={isDropdownOpen} onOpenChange={handleDropdownOpenChange}>
+          <DropdownMenu 
+            open={dialogState.isDropdownOpen} 
+            onOpenChange={handleDropdownOpenChange}
+          >
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8">
                 <MoreHorizontal className="h-4 w-4" />
@@ -200,18 +204,18 @@ const UserCard: React.FC<UserCardProps> = ({
       </CardFooter>
       
       {/* Only render dialogs when they're open to improve performance */}
-      {showPermissionsDialog && (
+      {dialogState.showPermissionsDialog && (
         <PermissionsDialog 
-          open={showPermissionsDialog} 
-          onOpenChange={setShowPermissionsDialog} 
+          open={dialogState.showPermissionsDialog} 
+          onOpenChange={handlePermissionsDialogChange} 
           user={user} 
         />
       )}
       
-      {showViewPermissionsDialog && (
+      {dialogState.showViewPermissionsDialog && (
         <ViewPermissionsDialog 
-          open={showViewPermissionsDialog} 
-          onOpenChange={setShowViewPermissionsDialog} 
+          open={dialogState.showViewPermissionsDialog} 
+          onOpenChange={handleViewPermissionsDialogChange} 
           user={user} 
         />
       )}
@@ -219,4 +223,5 @@ const UserCard: React.FC<UserCardProps> = ({
   );
 };
 
-export default UserCard;
+// Memoizando o componente para evitar re-renderizações desnecessárias
+export default memo(UserCard);

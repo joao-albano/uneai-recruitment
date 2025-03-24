@@ -29,33 +29,25 @@ const UsersList: React.FC<UsersListProps> = ({
 }) => {
   // Create stable callback functions
   const handleEdit = useCallback((user: UserType) => {
-    try {
-      if (!user) {
-        console.error("Tentativa de editar um usuário inválido");
-        return;
-      }
-      
-      // Clone the user to avoid reference issues
-      const userClone = JSON.parse(JSON.stringify(user));
-      onEdit(userClone);
-    } catch (error) {
-      console.error("Erro ao processar edição de usuário:", error);
+    if (!user) {
+      console.error("Tentativa de editar um usuário inválido");
+      return;
     }
+    
+    // Clone the user to avoid reference issues
+    const userClone = JSON.parse(JSON.stringify(user));
+    onEdit(userClone);
   }, [onEdit]);
 
   const handleDelete = useCallback((user: UserType) => {
-    try {
-      if (!user) {
-        console.error("Tentativa de excluir um usuário inválido");
-        return;
-      }
-      
-      // Clone the user to avoid reference issues
-      const userClone = JSON.parse(JSON.stringify(user));
-      onDelete(userClone);
-    } catch (error) {
-      console.error("Erro ao processar exclusão de usuário:", error);
+    if (!user) {
+      console.error("Tentativa de excluir um usuário inválido");
+      return;
     }
+    
+    // Clone the user to avoid reference issues
+    const userClone = JSON.parse(JSON.stringify(user));
+    onDelete(userClone);
   }, [onDelete]);
   
   return (
@@ -86,4 +78,5 @@ const UsersList: React.FC<UsersListProps> = ({
   );
 };
 
-export default UsersList;
+// Usando memo para evitar re-renderizações desnecessárias da lista inteira
+export default memo(UsersList);

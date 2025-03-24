@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { userProfiles } from './permissionsData';
 import { UserType } from '../types';
@@ -18,17 +18,23 @@ const ViewPermissionsDialog: React.FC<ViewPermissionsDialogProps> = ({
   onOpenChange,
   user
 }) => {
-  // Determinar as permissões do usuário com base no papel
-  let userPermissions: string[] = [];
-  
-  if (user.role === 'admin' || user.isSuperAdmin) {
-    userPermissions = userProfiles.admin;
-  } else {
-    // Simulando permissões básicas para usuários não admin
-    userPermissions = userProfiles.basico;
-  }
-  
-  const profileName = user.role === 'admin' ? 'Administrador' : 'Usuário Básico';
+  // Usando useMemo para evitar recálculos desnecessários
+  const { userPermissions, profileName } = useMemo(() => {
+    let permissions: string[] = [];
+    
+    if (user.role === 'admin' || user.isSuperAdmin) {
+      permissions = userProfiles.admin;
+    } else {
+      permissions = userProfiles.basico;
+    }
+    
+    const profile = user.role === 'admin' ? 'Administrador' : 'Usuário Básico';
+    
+    return { 
+      userPermissions: permissions,
+      profileName: profile
+    };
+  }, [user.role, user.isSuperAdmin]);
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
