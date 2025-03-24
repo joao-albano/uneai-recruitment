@@ -53,7 +53,7 @@ export const useUserCrudOperations = (
         .toUpperCase();
       
       const userToAdd: UserType = {
-        id: users.length + 1,
+        id: String(users.length + 1), // Convert to string
         name,
         email,
         role: role || 'user',

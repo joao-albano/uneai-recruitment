@@ -2,14 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-
-type UserType = {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  initials: string;
-};
+import { UserType } from './types';
 
 interface DeleteUserDialogProps {
   open: boolean;
