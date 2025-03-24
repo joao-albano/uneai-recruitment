@@ -1,241 +1,236 @@
-import React from 'react';
+
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
 import {
+  ChevronRight,
+  Menu,
   Home,
-  LayoutDashboard,
-  CreditCard,
-  Settings,
-  AlertTriangle,
-  FileUp,
+  BarChart2,
+  LineChart,
+  Upload,
+  Bell,
+  FileSpreadsheet,
   Calendar,
   Users,
-  User,
-  BarChartBig,
-  Contact2,
-  Coins,
-  Scale,
-  LucideIcon
+  Settings,
+  LogOut,
+  DollarSign
 } from 'lucide-react';
-import { NavLink, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import SidebarHeader from './sidebar/SidebarHeader';
+import SidebarFooter from './sidebar/SidebarFooter';
+import SidebarNavigationGroup from './sidebar/SidebarNavigationGroup';
+import SidebarNavLink from './sidebar/SidebarNavLink';
 import { useAuth } from '@/context/AuthContext';
-import { useTheme } from '@/context/ThemeContext';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
 
 interface SidebarProps {
-  isOpen: boolean;
+  isOpen?: boolean;
   onClose: () => void;
   collapsed: boolean;
   setCollapsed: (collapsed: boolean) => void;
 }
 
-interface SidebarNavigationGroupProps {
-  collapsed: boolean;
-}
-
-const SidebarNavigationGroup: React.FC<SidebarNavigationGroupProps> = ({
-  collapsed
+const Sidebar: React.FC<SidebarProps> = ({
+  isOpen,
+  onClose,
+  collapsed,
+  setCollapsed,
 }) => {
-  const { user } = useAuth();
-  const { language } = useTheme();
-  const isPtBR = language === 'pt-BR';
-  const location = useLocation();
+  const { currentUser, logout } = useAuth();
+  const [sidebarWidth, setSidebarWidth] = useState(collapsed ? 80 : 280);
+  
+  const isAdmin = currentUser?.role === 'admin';
+  
+  const handleToggleCollapse = () => {
+    const newCollapsed = !collapsed;
+    setCollapsed(newCollapsed);
+    setSidebarWidth(newCollapsed ? 80 : 280);
+  };
 
-  const navigationItems = [
-    {
-      href: '/home',
-      icon: Home,
-      label: isPtBR ? 'Início' : 'Home',
-      adminOnly: false,
-    },
-    {
-      href: '/dashboard',
-      icon: LayoutDashboard,
-      label: isPtBR ? 'Painel' : 'Dashboard',
-      adminOnly: false,
-    },
-    {
-      href: '/model',
-      icon: BarChartBig,
-      label: isPtBR ? 'Modelo Preditivo' : 'Predictive Model',
-      adminOnly: false,
-    },
-    {
-      href: '/upload',
-      icon: FileUp,
-      label: isPtBR ? 'Upload de Dados' : 'Data Upload',
-      adminOnly: false,
-    },
-    {
-      href: '/alerts',
-      icon: AlertTriangle,
-      label: isPtBR ? 'Alertas' : 'Alerts',
-      adminOnly: false,
-    },
-    {
-      href: '/survey',
-      icon: Contact2,
-      label: isPtBR ? 'Questionários' : 'Surveys',
-      adminOnly: false,
-    },
-    {
-      href: '/schedule',
-      icon: Calendar,
-      label: isPtBR ? 'Agendamentos' : 'Schedule',
-      adminOnly: false,
-    },
-    {
-      href: '/students',
-      icon: Users,
-      label: isPtBR ? 'Alunos' : 'Students',
-      adminOnly: false,
-    },
-    {
-      href: '/profile',
-      icon: User,
-      label: isPtBR ? 'Perfil' : 'Profile',
-      adminOnly: false,
-    },
-    {
-      href: '/settings',
-      icon: Settings,
-      label: isPtBR ? 'Configurações' : 'Settings',
-      adminOnly: false,
-    },
-    {
-      href: '/user-billing',
-      icon: CreditCard,
-      label: isPtBR ? 'Cobrança' : 'Billing',
-      adminOnly: false,
-    },
-    {
-      href: '/users',
-      icon: Users,
-      label: isPtBR ? 'Usuários' : 'Users',
-      adminOnly: true,
-    },
-    {
-      href: '/admin/dashboard',
-      icon: LayoutDashboard,
-      label: isPtBR ? 'Painel Admin' : 'Admin Dashboard',
-      adminOnly: true,
-    },
-    {
-      href: '/admin/payments',
-      icon: Coins,
-      label: isPtBR ? 'Pagamentos' : 'Payments',
-      adminOnly: true,
-    },
-    {
-      href: '/admin/plans',
-      icon: Scale,
-      label: isPtBR ? 'Planos' : 'Plans',
-      adminOnly: true,
-    },
-    {
-      href: '/admin/settings',
-      icon: Settings,
-      label: isPtBR ? 'Configurações Admin' : 'Admin Settings',
-      adminOnly: true,
-    },
-  ];
-
-  const filteredNavigationItems = navigationItems.filter(item => {
-    if (item.adminOnly) {
-      return user?.isAdmin;
-    }
-    return true;
-  });
-
-  return (
-    <>
-      {filteredNavigationItems.map((item) => (
-        <NavLink
-          key={item.href}
-          to={item.href}
-          className={({ isActive }) =>
-            cn(
-              "group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-secondary hover:text-foreground",
-              isActive ? "bg-secondary text-foreground" : "text-muted-foreground",
-              collapsed && "justify-center"
-            )
-          }
+  // Content for both the main sidebar and the mobile sheet
+  const sidebarContent = (
+    <div 
+      className={cn(
+        "h-full flex flex-col py-4 transition-all duration-300",
+        collapsed ? "w-20" : "w-70"
+      )}
+      style={{ width: `${sidebarWidth}px` }}
+    >
+      <SidebarHeader 
+        collapsed={collapsed} 
+        onToggleCollapse={handleToggleCollapse} 
+      />
+      
+      <div className="flex-1 px-3 py-2 overflow-y-auto">
+        <SidebarNavigationGroup 
+          title={collapsed ? "" : "Navigation"} 
+          collapsed={collapsed}
         >
-          <item.icon className="mr-2 h-4 w-4" />
-          {!collapsed && <span>{item.label}</span>}
-        </NavLink>
-      ))}
-    </>
-  );
-};
-
-const SidebarHeader: React.FC = () => {
-  const { language } = useTheme();
-  const isPtBR = language === 'pt-BR';
-
-  return (
-    <div className="flex items-center justify-center h-16 shrink-0">
-      <span className="font-bold text-lg">{isPtBR ? 'Monitor Escolar' : 'School Monitor'}</span>
+          <SidebarNavLink 
+            to="/home" 
+            icon={<Home className="h-5 w-5" />} 
+            label="Home" 
+            collapsed={collapsed}
+          />
+          <SidebarNavLink 
+            to="/dashboard" 
+            icon={<BarChart2 className="h-5 w-5" />} 
+            label="Dashboard" 
+            collapsed={collapsed}
+          />
+          <SidebarNavLink 
+            to="/model" 
+            icon={<LineChart className="h-5 w-5" />} 
+            label="Model" 
+            collapsed={collapsed}
+          />
+          <SidebarNavLink 
+            to="/upload" 
+            icon={<Upload className="h-5 w-5" />} 
+            label="Uploads" 
+            collapsed={collapsed}
+          />
+        </SidebarNavigationGroup>
+        
+        <SidebarNavigationGroup 
+          title={collapsed ? "" : "Monitoring"} 
+          collapsed={collapsed}
+        >
+          <SidebarNavLink 
+            to="/alerts" 
+            icon={<Bell className="h-5 w-5" />} 
+            label="Alerts" 
+            collapsed={collapsed}
+          />
+          <SidebarNavLink 
+            to="/survey" 
+            icon={<FileSpreadsheet className="h-5 w-5" />} 
+            label="Survey" 
+            collapsed={collapsed}
+          />
+          <SidebarNavLink 
+            to="/schedule" 
+            icon={<Calendar className="h-5 w-5" />} 
+            label="Schedule" 
+            collapsed={collapsed}
+          />
+          <SidebarNavLink 
+            to="/students" 
+            icon={<Users className="h-5 w-5" />} 
+            label="Students" 
+            collapsed={collapsed}
+          />
+        </SidebarNavigationGroup>
+        
+        <SidebarNavigationGroup 
+          title={collapsed ? "" : "Billing"} 
+          collapsed={collapsed}
+        >
+          <SidebarNavLink 
+            to="/pricing" 
+            icon={<DollarSign className="h-5 w-5" />} 
+            label="Pricing" 
+            collapsed={collapsed}
+          />
+          <SidebarNavLink 
+            to="/user-billing" 
+            icon={<DollarSign className="h-5 w-5" />} 
+            label="My Billing" 
+            collapsed={collapsed}
+          />
+        </SidebarNavigationGroup>
+        
+        {isAdmin && (
+          <SidebarNavigationGroup 
+            title={collapsed ? "" : "Administration"} 
+            collapsed={collapsed}
+          >
+            <SidebarNavLink 
+              to="/admin/dashboard" 
+              icon={<BarChart2 className="h-5 w-5" />} 
+              label="Admin Dashboard" 
+              collapsed={collapsed}
+            />
+            <SidebarNavLink 
+              to="/users" 
+              icon={<Users className="h-5 w-5" />} 
+              label="Users" 
+              collapsed={collapsed}
+            />
+            <SidebarNavLink 
+              to="/admin/payments" 
+              icon={<DollarSign className="h-5 w-5" />} 
+              label="Payments" 
+              collapsed={collapsed}
+            />
+            <SidebarNavLink 
+              to="/admin/plans" 
+              icon={<DollarSign className="h-5 w-5" />} 
+              label="Plans" 
+              collapsed={collapsed}
+            />
+          </SidebarNavigationGroup>
+        )}
+      </div>
+      
+      <div className="px-3 mt-auto">
+        <Separator className="my-2" />
+        
+        <SidebarNavLink 
+          to="/settings" 
+          icon={<Settings className="h-5 w-5" />} 
+          label="Settings" 
+          collapsed={collapsed}
+        />
+        
+        <Link to="/login" className="w-full">
+          <Button 
+            variant="ghost" 
+            className={cn(
+              "w-full justify-start px-2 my-1 gap-3", 
+              collapsed && "justify-center p-2"
+            )}
+            onClick={() => logout && logout()}
+          >
+            <LogOut className="h-5 w-5" />
+            {!collapsed && <span>Logout</span>}
+          </Button>
+        </Link>
+      </div>
+      
+      <SidebarFooter collapsed={collapsed} />
     </div>
   );
-};
-
-const SidebarFooter: React.FC = () => {
-  const { signOut } = useAuth();
-  const { language } = useTheme();
-  const isPtBR = language === 'pt-BR';
-
-  return (
-    <div className="p-2">
-      <Button variant="outline" className="w-full" onClick={signOut}>
-        {isPtBR ? 'Sair' : 'Sign Out'}
-      </Button>
+  
+  // Sidebar for desktop view
+  const desktopSidebar = (
+    <div
+      className={cn(
+        "hidden md:block h-full border-r transition-all duration-300",
+        collapsed ? "w-20" : "w-70"
+      )}
+      style={{ width: `${sidebarWidth}px` }}
+    >
+      {sidebarContent}
     </div>
   );
-};
-
-const Sidebar: React.FC<SidebarProps> = ({ 
-  isOpen, 
-  onClose, 
-  collapsed, 
-  setCollapsed 
-}) => {
-  const { language } = useTheme();
-  const isPtBR = language === 'pt-BR';
+  
+  // Sheet for mobile view
+  const mobileSidebar = (
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent side="left" className="p-0 border-r max-w-[280px]">
+        {sidebarContent}
+      </SheetContent>
+    </Sheet>
+  );
   
   return (
     <>
-      <Sheet open={isOpen} onOpenChange={onClose}>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="sm" className="md:hidden">
-            {isPtBR ? 'Menu' : 'Menu'}
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="p-0 w-72">
-          <SidebarHeader />
-          <nav className="flex-1 overflow-auto p-2">
-            <SidebarNavigationGroup 
-              collapsed={false}
-            />
-          </nav>
-          <SidebarFooter />
-        </SheetContent>
-      </Sheet>
-      
-      <div
-        className={cn(
-          "hidden md:flex flex-col border-r bg-background transition-all duration-300",
-          collapsed ? "w-[70px]" : "w-[240px]"
-        )}
-      >
-        <SidebarHeader />
-        <nav className="flex-1 overflow-auto p-2">
-          <SidebarNavigationGroup 
-            collapsed={collapsed}
-          />
-        </nav>
-        <SidebarFooter />
-      </div>
+      {desktopSidebar}
+      {mobileSidebar}
     </>
   );
 };
