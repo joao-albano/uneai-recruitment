@@ -5,9 +5,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { NewOrganizationType } from './types';
+import { NewOrganizationType, OrganizationProduct } from './types';
 import { Checkbox } from "@/components/ui/checkbox";
-import { ProductType } from '@/context/ProductContext';
+import { ProductType, getProductDisplayName } from '@/components/users/utils/userUtils';
 
 interface CreateOrganizationDialogProps {
   open: boolean;
@@ -16,20 +16,6 @@ interface CreateOrganizationDialogProps {
   setNewOrganization: React.Dispatch<React.SetStateAction<NewOrganizationType>>;
   onSubmit: (e: React.FormEvent) => void;
 }
-
-// Função utilitária para obter o nome de exibição do produto
-const getProductDisplayName = (productType: ProductType): string => {
-  switch (productType) {
-    case 'retention':
-      return 'Retenção de Alunos';
-    case 'billing':
-      return 'Cobrança de Mensalidades';
-    case 'recruitment':
-      return 'Captação de Alunos';
-    default:
-      return productType;
-  }
-};
 
 const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
   open,
@@ -79,7 +65,7 @@ const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
     return product ? product.active : false;
   };
   
-  // Lista de todos os tipos de produtos disponíveis
+  // Lista de todos os tipos de produtos disponíveis - corrigindo o tipo explicitamente
   const allProductTypes: ProductType[] = ['retention', 'billing', 'recruitment'];
   
   return (

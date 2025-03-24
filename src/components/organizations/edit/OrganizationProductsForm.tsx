@@ -4,20 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ProductType, useProduct } from '@/context/ProductContext';
 import { OrganizationType } from '../types';
-
-// Função utilitária para obter o nome de exibição do produto
-const getProductDisplayName = (productType: ProductType): string => {
-  switch (productType) {
-    case 'retention':
-      return 'Retenção de Alunos';
-    case 'billing':
-      return 'Cobrança de Mensalidades';
-    case 'recruitment':
-      return 'Captação de Alunos';
-    default:
-      return productType;
-  }
-};
+import { getProductDisplayName } from '@/components/users/utils/userUtils';
 
 interface OrganizationProductsFormProps {
   selectedOrganization: OrganizationType;
