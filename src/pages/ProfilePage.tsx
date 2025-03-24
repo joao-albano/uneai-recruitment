@@ -11,18 +11,27 @@ import { supabase } from '@/integrations/supabase/client';
 const ProfilePage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { isAdmin, userEmail, currentUser, currentOrganization, isSuperAdmin, session } = useAuth();
   
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  // Atualizar informações do usuário
+  // Atualizar informações do usuário de forma segura
   useEffect(() => {
     const refreshUserProfile = async () => {
       if (session?.user?.id) {
-        // Forçar uma atualização do perfil do usuário para garantir que as informações estejam atualizadas
-        await supabase.auth.refreshSession();
+        try {
+          // Em vez de chamar refreshSession que pode causar deslogamento,
+          // apenas atualizamos a página quando os dados necessários são carregados
+          setIsLoading(false);
+        } catch (error) {
+          console.error("Erro ao atualizar perfil:", error);
+          setIsLoading(false);
+        }
+      } else {
+        setIsLoading(false);
       }
     };
     
@@ -49,6 +58,12 @@ const ProfilePage: React.FC = () => {
     console.log("User role:", currentUser?.role);
     console.log("User object:", user);
   }, [currentUser, isSuperAdmin]);
+  
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+    </div>;
+  }
   
   return (
     <DataProvider>

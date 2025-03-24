@@ -28,13 +28,17 @@ export const useAuthOperations = () => {
   
   // Handle user profile fetching
   const handleProfileFetch = async (userId: string) => {
-    const userData = await fetchUserProfile(userId);
-    if (userData) {
-      console.log('Setting auth states with user data:', userData);
-      setIsAdmin(userData.isAdmin || false);
-      setIsSuperAdmin(userData.isSuperAdmin || false);
-      setCurrentUser(userData.profile);
-      setCurrentOrganization(userData.organization);
+    try {
+      const userData = await fetchUserProfile(userId);
+      if (userData) {
+        console.log('Setting auth states with user data:', userData);
+        setIsAdmin(userData.isAdmin || false);
+        setIsSuperAdmin(userData.isSuperAdmin || false);
+        setCurrentUser(userData.profile);
+        setCurrentOrganization(userData.organization);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar perfil do usuário:", error);
     }
   };
   
@@ -51,10 +55,14 @@ export const useAuthOperations = () => {
   };
 
   useEffect(() => {
+    let isSubscribed = true;
+    
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, newSession) => {
         console.log('Auth state changed:', event);
+        if (!isSubscribed) return;
+        
         setSession(newSession);
         setUser(newSession?.user ?? null);
         
@@ -64,7 +72,7 @@ export const useAuthOperations = () => {
           
           // Fetch user profile
           handleProfileFetch(newSession.user.id);
-        } else {
+        } else if (event === 'SIGNED_OUT') {
           // Clear state when no session exists
           resetAuthState();
         }
@@ -72,21 +80,34 @@ export const useAuthOperations = () => {
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session: existingSession } }) => {
-      console.log('Existing session:', existingSession);
-      setSession(existingSession);
-      setUser(existingSession?.user ?? null);
-      
-      if (existingSession) {
-        setIsAuthenticated(true);
-        setUserEmail(existingSession.user.email);
+    const initializeAuth = async () => {
+      try {
+        const { data: { session: existingSession } } = await supabase.auth.getSession();
+        console.log('Existing session:', existingSession);
         
-        // Fetch user profile
-        handleProfileFetch(existingSession.user.id);
+        if (!isSubscribed) return;
+        
+        setSession(existingSession);
+        setUser(existingSession?.user ?? null);
+        
+        if (existingSession) {
+          setIsAuthenticated(true);
+          setUserEmail(existingSession.user.email);
+          
+          // Fetch user profile
+          handleProfileFetch(existingSession.user.id);
+        }
+      } catch (error) {
+        console.error("Erro ao inicializar autenticação:", error);
       }
-    });
+    };
+    
+    initializeAuth();
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isSubscribed = false;
+      subscription.unsubscribe();
+    };
   }, []);
   
   // Login with email wrapper function
@@ -96,9 +117,15 @@ export const useAuthOperations = () => {
   
   // Logout wrapper function
   const handleLogout = async () => {
-    const { success } = await logout();
-    if (success) {
-      resetAuthState();
+    try {
+      const { success } = await logout();
+      if (success) {
+        resetAuthState();
+      }
+      return success;
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+      return false;
     }
   };
 

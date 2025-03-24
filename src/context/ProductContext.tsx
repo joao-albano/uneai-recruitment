@@ -71,7 +71,7 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
         } else {
           // Usuários normais só têm acesso aos produtos atribuídos
           // Aqui precisamos usar o email do usuário ou outro identificador disponível
-          // já que o UserProfile não tem um campo id
+          // já que o UserProfile pode não ter um campo id
           const { data: userProducts } = await supabase
             .from('user_products')
             .select('product_type, is_active')
@@ -150,7 +150,7 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
   
   const value: ProductContextType = {
     currentProduct,
-    setCurrentProduct,
+    setCurrentProduct: setProduct,
     userSubscriptions,
     subscribeToProduct,
     availableProducts,

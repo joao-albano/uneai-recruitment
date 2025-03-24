@@ -30,7 +30,7 @@ export const fetchUserProfile = async (userId: string) => {
       .eq('id', userId)
       .single();
     
-    if (profileError) {
+    if (profileError && profileError.code !== 'PGRST106') {
       console.error('Error fetching profile:', profileError);
       // Even if profile fetch fails, we can still return basic user data
     }
@@ -58,13 +58,16 @@ export const fetchUserProfile = async (userId: string) => {
       }
     }
     
-    // Determine if the user is a super admin (admin of UNE CX)
-    const isSuperAdmin = Boolean(profile?.is_super_admin);
+    // Determine if the user is a super admin based on email domain
+    // This is a temporary solution while we fix the profile fetching
+    const email_domain = email?.split('@')[1];
+    const isSuperAdmin = email_domain === 'une.cx' || Boolean(profile?.is_super_admin);
     console.log('Is super admin:', isSuperAdmin);
     console.log('Role from database:', profile?.role);
     
     // Create user profile object with priority on DB role and super admin status
     const userProfile: UserProfile = {
+      id: userId, // Add ID to user profile
       name: fullName || profile?.email?.split('@')[0] || email?.split('@')[0],
       email: email || profile?.email,
       role: isSuperAdmin ? 'superadmin' : (profile?.role || 'user'),
