@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import Chart from './Chart';
@@ -27,6 +26,7 @@ interface DashboardContentProps {
   onViewClassDetails?: (className: string) => void;
   onScheduleClick?: (schedule: ScheduleItem) => void;
   isMobile?: boolean;
+  showTrialBanner?: boolean;
 }
 
 const DashboardContent: React.FC<DashboardContentProps> = ({
@@ -36,11 +36,12 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   onViewAlertDetails = () => {},
   onViewClassDetails = () => {},
   onScheduleClick = () => {},
-  isMobile = false
+  isMobile = false,
+  showTrialBanner = false
 }) => {
   const { language } = useTheme();
-  const { showBanner, daysRemaining } = useTrialPeriod();
-  const hasPendingInvoice = false; // This would come from your payment system in a real app
+  const { daysRemaining } = useTrialPeriod();
+  const hasPendingInvoice = false;
   const navigate = useNavigate();
   
   const highRiskCount = students.filter(s => s.riskLevel === 'high').length;
@@ -57,7 +58,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   ).length;
 
   const aiAssistedCount = Math.min(completedInterventionsCount, 
-    Math.floor(completedInterventionsCount * 0.8)); // Assume 80% of interventions are AI-assisted
+    Math.floor(completedInterventionsCount * 0.8));
   
   const mockStudent: StudentData = students.length > 0 
     ? students.find(s => s.riskLevel === 'high') || students[0]
@@ -81,7 +82,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   
   return (
     <div>
-      {showBanner && (
+      {showTrialBanner && (
         <FreePlanExpirationBanner daysRemaining={daysRemaining} />
       )}
       

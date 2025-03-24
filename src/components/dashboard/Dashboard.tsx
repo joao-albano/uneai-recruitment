@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useData } from '@/context/DataContext';
@@ -16,12 +15,15 @@ const Dashboard: React.FC = () => {
   const { students, alerts, schedules, isLoading, generateDemoData } = useData();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { isAdmin } = useAuth();
+  const { isAdmin, currentUser } = useAuth();
   const isMobile = useIsMobile();
   
   // For demo purposes - we'll assume there's a pending invoice
   const hasPendingInvoice = true;
   const shouldShowPaymentBanner = hasPendingInvoice && !isAdmin;
+  
+  // Only show trial banner for non-admin users
+  const shouldShowTrialBanner = !isAdmin && currentUser?.role === 'user';
   
   useEffect(() => {
     if (students.length === 0 && !isLoading) {
@@ -112,6 +114,7 @@ const Dashboard: React.FC = () => {
           onViewClassDetails={handleViewClassDetails}
           onScheduleClick={handleScheduleClick}
           isMobile={isMobile}
+          showTrialBanner={shouldShowTrialBanner}
         />
       )}
     </div>
