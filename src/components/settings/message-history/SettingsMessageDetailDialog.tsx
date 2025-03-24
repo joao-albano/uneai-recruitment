@@ -30,6 +30,14 @@ const SettingsMessageDetailDialog: React.FC<SettingsMessageDetailDialogProps> = 
   
   if (!message) return null;
 
+  // Simulate the full conversation that would happen with this student/parent
+  const conversationContent = `Olá ${message.parentName}, gostaríamos de fazer uma pesquisa sobre ${message.studentName}. Por favor, responda as seguintes perguntas:
+1. A família mudou de residência nos últimos 6 meses?
+2. O aluno relatou episódios de bullying ou tratamento inadequado?
+3. Como você avalia a integração social do aluno na escola? (1-5)
+4. Com que frequência o aluno enfrenta dificuldades para chegar à escola?
+5. Alguma observação adicional?`;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
@@ -69,7 +77,7 @@ const SettingsMessageDetailDialog: React.FC<SettingsMessageDetailDialogProps> = 
             </h4>
             <ScrollArea className="h-[200px] rounded-md border p-4">
               <div className="whitespace-pre-wrap">
-                {message.message}
+                {conversationContent}
               </div>
             </ScrollArea>
           </div>
