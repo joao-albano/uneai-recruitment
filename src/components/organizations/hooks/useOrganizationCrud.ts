@@ -26,7 +26,7 @@ export const useOrganizationCrud = (
     try {
       setIsLoading(true);
       
-      // Here we would call API to create organization
+      // Aqui chamaríamos a API para criar a organização
       const newOrgId = Math.random().toString(36).substring(7);
       const newOrg: OrganizationType = {
         id: newOrgId,
@@ -41,24 +41,26 @@ export const useOrganizationCrud = (
         ]
       };
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Simula atraso da API
+      await new Promise(resolve => setTimeout(resolve, 300));
       
-      // First reset UI state before updating data
+      // IMPORTANTE: Limpar o estado da UI ANTES de atualizar dados
       resetNewOrganization();
       setShowCreateDialog(false);
       
-      // Then update data and show success message
-      setOrganizations(prev => [...prev, newOrg]);
-      
-      // Small delay before showing toast to ensure UI has updated
+      // Depois atualiza os dados com um pequeno atraso
       setTimeout(() => {
-        toast.success("Organização criada com sucesso");
+        setOrganizations(prev => [...prev, newOrg]);
+        setIsLoading(false);
+        
+        // Pequeno atraso antes de mostrar toast para garantir que a UI foi atualizada
+        setTimeout(() => {
+          toast.success("Organização criada com sucesso");
+        }, 100);
       }, 100);
     } catch (error) {
       console.error("Erro ao criar organização:", error);
       toast.error("Erro ao criar organização");
-    } finally {
       setIsLoading(false);
     }
   }, [newOrganization, resetNewOrganization, setOrganizations, setShowCreateDialog, setIsLoading]);
@@ -79,32 +81,34 @@ export const useOrganizationCrud = (
     try {
       setIsLoading(true);
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Simula atraso da API
+      await new Promise(resolve => setTimeout(resolve, 300));
       
-      // Create a completely new array with the updated organization
+      // Cria uma cópia segura da organização selecionada
+      const updatedOrg = JSON.parse(JSON.stringify(selectedOrganization));
+      
+      // Prepara a lista atualizada, mas NÃO atualiza o estado ainda
       const updatedOrganizations = organizations.map(org => 
-        org.id === selectedOrganization.id ? JSON.parse(JSON.stringify(selectedOrganization)) : org
+        org.id === updatedOrg.id ? updatedOrg : org
       );
       
-      // Important: Close the dialog and reset selected organization BEFORE updating data and showing toast
-      const tempSelectedOrg = selectedOrganization; // Save a reference to log if needed
-      
-      // Clear UI state first
+      // IMPORTANTE: Limpar o estado da UI ANTES de atualizar dados
       setSelectedOrganization(null);
       setShowEditDialog(false);
-      setIsLoading(false);
       
-      // Then update data and show success message with a small delay
+      // Depois atualiza os dados com um pequeno atraso
       setTimeout(() => {
         setOrganizations(updatedOrganizations);
-        toast.success("Organização atualizada com sucesso");
+        setIsLoading(false);
+        
+        // Pequeno atraso antes de mostrar toast para garantir que a UI foi atualizada
+        setTimeout(() => {
+          toast.success("Organização atualizada com sucesso");
+        }, 100);
       }, 100);
-      
     } catch (error) {
       console.error("Erro ao atualizar organização:", error);
       toast.error("Erro ao atualizar organização");
-      // Make sure loading state is reset even if there's an error
       setIsLoading(false);
     }
   }, [organizations, selectedOrganization, setOrganizations, setSelectedOrganization, setShowEditDialog, setIsLoading]);
@@ -115,7 +119,7 @@ export const useOrganizationCrud = (
       return;
     }
     
-    // Do not allow deleting the main UNE CX organization
+    // Não permitir excluir a organização principal do UNE CX
     if (selectedOrganization.isMainOrg) {
       toast.error("Não é possível excluir a organização principal (UNE CX)");
       setShowDeleteDialog(false);
@@ -125,31 +129,31 @@ export const useOrganizationCrud = (
     try {
       setIsLoading(true);
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Simula atraso da API
+      await new Promise(resolve => setTimeout(resolve, 300));
       
-      // Prepare the filtered list but don't update state yet
+      // Prepara a lista filtrada, mas NÃO atualiza o estado ainda
       const filteredOrganizations = organizations.filter(
         org => org.id !== selectedOrganization.id
       );
       
-      // Close dialog and reset selection BEFORE updating the list and showing toast
-      const tempSelectedOrg = selectedOrganization; // Save a reference to log if needed
-      
-      // Clear UI state first
+      // IMPORTANTE: Limpar o estado da UI ANTES de atualizar dados
       setSelectedOrganization(null);
       setShowDeleteDialog(false);
-      setIsLoading(false);
       
-      // Then update data and show success with a small delay
+      // Depois atualiza os dados com um pequeno atraso
       setTimeout(() => {
         setOrganizations(filteredOrganizations);
-        toast.success("Organização excluída com sucesso");
+        setIsLoading(false);
+        
+        // Pequeno atraso antes de mostrar toast para garantir que a UI foi atualizada
+        setTimeout(() => {
+          toast.success("Organização excluída com sucesso");
+        }, 100);
       }, 100);
     } catch (error) {
       console.error("Erro ao excluir organização:", error);
       toast.error("Erro ao excluir organização");
-      // Make sure loading state is reset even if there's an error
       setIsLoading(false);
     }
   }, [organizations, selectedOrganization, setOrganizations, setSelectedOrganization, setShowDeleteDialog, setIsLoading]);

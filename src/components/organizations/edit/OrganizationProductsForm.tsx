@@ -17,18 +17,18 @@ const OrganizationProductsForm: React.FC<OrganizationProductsFormProps> = ({
   setSelectedOrganization,
   isSuperAdmin
 }) => {
-  // If not super admin, don't render the component
+  // Se não for superadmin, não renderiza o componente
   if (!isSuperAdmin) return null;
   
-  // Function to toggle product active state
+  // Função para alternar o estado ativo do produto
   const toggleProductActive = (productType: ProductType) => {
     if (!selectedOrganization) return;
     
     try {
-      // Create a new version of selectedOrganization with updated products
+      // Cria uma cópia profunda para evitar problemas de referência
       const updatedOrg = JSON.parse(JSON.stringify(selectedOrganization)) as OrganizationType;
       
-      // Ensure products is an array
+      // Garante que products seja um array
       if (!updatedOrg.products) {
         updatedOrg.products = [];
       }
@@ -36,23 +36,27 @@ const OrganizationProductsForm: React.FC<OrganizationProductsFormProps> = ({
       const productIndex = updatedOrg.products.findIndex(p => p.type === productType);
       
       if (productIndex >= 0) {
-        // Update existing product
-        updatedOrg.products[productIndex].active = !updatedOrg.products[productIndex].active;
+        // Atualiza produto existente
+        updatedOrg.products[productIndex] = {
+          ...updatedOrg.products[productIndex],
+          active: !updatedOrg.products[productIndex].active
+        };
       } else {
-        // Add new product
+        // Adiciona novo produto
         updatedOrg.products.push({
           type: productType,
           active: true
         });
       }
       
+      // Atualiza o estado com a nova cópia
       setSelectedOrganization(updatedOrg);
     } catch (error) {
       console.error("Erro ao alterar produto:", error);
     }
   };
   
-  // Check if a product is active
+  // Verifica se um produto está ativo
   const isProductActive = (productType: ProductType): boolean => {
     if (!selectedOrganization || !selectedOrganization.products) return false;
     
@@ -60,7 +64,7 @@ const OrganizationProductsForm: React.FC<OrganizationProductsFormProps> = ({
     return product ? product.active : false;
   };
   
-  // List of all available product types
+  // Lista de todos os tipos de produtos disponíveis
   const allProductTypes: ProductType[] = ['retention', 'billing', 'recruitment'];
   
   return (

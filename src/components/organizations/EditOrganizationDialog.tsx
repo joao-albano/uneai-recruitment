@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -27,33 +27,32 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
 }) => {
   const { isSuperAdmin } = useAuth();
   
-  // If no organization is selected, don't render the dialog
+  // Se não houver organização selecionada, não renderiza o diálogo
   if (!selectedOrganization) return null;
   
-  // Handle form field updates safely with deep copies
+  // Atualiza campos do formulário com segurança usando cópias profundas
   const updateField = (field: string, value: any) => {
     if (!selectedOrganization) return;
     
-    // Create a deep copy of the organization to avoid reference issues
+    // Cria uma cópia profunda da organização para evitar problemas de referência
     const updatedOrg = JSON.parse(JSON.stringify(selectedOrganization));
     updatedOrg[field] = value;
     setSelectedOrganization(updatedOrg);
   };
   
-  // Handle dialog close - make sure to clean up if canceled
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      // Give the component time to animate before removing data
-      setTimeout(() => {
-        onOpenChange(open);
-      }, 100);
-    } else {
-      onOpenChange(open);
-    }
+  // Função segura para lidar com o fechamento do diálogo
+  const handleCloseDialog = () => {
+    onOpenChange(false);
+  };
+  
+  // Função para lidar com a submissão do formulário com segurança
+  const handleSubmitWithSafety = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(e);
   };
   
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Editar Organização</DialogTitle>
@@ -62,7 +61,7 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={onSubmit}>
+        <form onSubmit={handleSubmitWithSafety}>
           <div className="grid gap-4 py-4">
             {selectedOrganization.isMainOrg && (
               <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mb-2">
@@ -100,7 +99,7 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
               />
             </div>
             
-            {/* Adicionando o componente de gerenciamento de produtos */}
+            {/* Componente de gerenciamento de produtos */}
             <OrganizationProductsForm 
               selectedOrganization={selectedOrganization}
               setSelectedOrganization={setSelectedOrganization}
@@ -109,7 +108,7 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
           </div>
           
           <DialogFooter>
-            <Button variant="outline" type="button" onClick={() => handleOpenChange(false)}>
+            <Button variant="outline" type="button" onClick={handleCloseDialog}>
               Cancelar
             </Button>
             <Button type="submit">Salvar Alterações</Button>
