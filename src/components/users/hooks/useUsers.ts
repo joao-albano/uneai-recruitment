@@ -34,9 +34,7 @@ export const useUsers = () => {
           is_admin,
           is_super_admin,
           organization_id,
-          organizations:organization_id (
-            name
-          )
+          organizations(name)
         `);
       
       if (error) {
@@ -63,6 +61,15 @@ export const useUsers = () => {
           .join('')
           .toUpperCase();
         
+        let organizationName: string | undefined;
+        
+        // Verificar se organizations existe e tem dados antes de acessar a propriedade name
+        if (profile.organizations && Array.isArray(profile.organizations) && profile.organizations.length > 0) {
+          organizationName = profile.organizations[0]?.name;
+        } else if (profile.organizations && typeof profile.organizations === 'object') {
+          organizationName = (profile.organizations as any).name;
+        }
+        
         return {
           id: Number(profile.id), // Convertendo UUID para número para compatibilidade
           name: fullName,
@@ -70,7 +77,7 @@ export const useUsers = () => {
           role: profile.role,
           initials: initials,
           organizationId: profile.organization_id,
-          organizationName: profile.organizations?.name,
+          organizationName: organizationName,
           isSuperAdmin: profile.is_super_admin
         };
       }));
