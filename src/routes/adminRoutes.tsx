@@ -6,6 +6,7 @@ import AdminSettingsPage from "@/pages/AdminSettingsPage";
 import AdminPaymentsPage from "@/pages/AdminPaymentsPage";
 import AdminPlansPage from "@/pages/AdminPlansPage";
 import UsersPage from "@/pages/UsersPage";
+import OrganizationsPage from "@/pages/OrganizationsPage";
 
 interface RouteConfig {
   path: string;
@@ -32,6 +33,14 @@ export const adminRoutes: RouteConfig[] = [
   },
   
   // Rotas acessíveis apenas para super admins (UNE CX)
+  {
+    path: "/admin/organizations",
+    element: (
+      <SuperAdminRoute>
+        <OrganizationsPage />
+      </SuperAdminRoute>
+    )
+  },
   {
     path: "/admin/settings",
     element: (

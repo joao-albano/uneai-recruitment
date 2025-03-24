@@ -29,7 +29,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
   currentUser
 }) => {
   const { isAdmin, isSuperAdmin } = useAuth();
-  const { currentProduct, hasAccessToProduct } = useProduct();
+  const { currentProduct, hasAccessToProduct, availableProducts } = useProduct();
   
   return (
     <div 
@@ -46,7 +46,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
       />
       
       <div className="flex-1 px-3 py-2 overflow-y-auto">
-        {/* Se for super admin, tem acesso a tudo, não precisa verificar */}
+        {/* Se for super admin (UNE CX), tem acesso a tudo */}
         {isSuperAdmin || hasAccessToProduct(currentProduct) ? (
           <>
             {/* Renderiza menu com base no produto selecionado */}
@@ -66,12 +66,24 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
             )}
           </>
         ) : (
-          // Mensagem de sem acesso
-          <div className="flex flex-col items-center justify-center text-center h-40 px-4">
+          // Mensagem de sem acesso mais detalhada
+          <div className="flex flex-col items-center justify-center text-center h-40 px-4 mt-4">
             <AlertTriangle className="text-amber-500 mb-2 h-10 w-10" />
-            <p className="text-sm text-muted-foreground">
-              Você não tem acesso a este produto. Contate o administrador.
+            <p className="text-sm text-muted-foreground mb-2">
+              Sua organização não possui acesso a este produto.
             </p>
+            {availableProducts.length > 0 && (
+              <p className="text-xs text-muted-foreground">
+                Produtos disponíveis: {availableProducts.map(p => {
+                  switch(p) {
+                    case 'retention': return 'Retenção';
+                    case 'billing': return 'Cobrança';
+                    case 'recruitment': return 'Recrutamento';
+                    default: return p;
+                  }
+                }).join(', ')}
+              </p>
+            )}
           </div>
         )}
         
@@ -80,7 +92,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
           <SidebarAdminSection collapsed={collapsed} />
         )}
         
-        {/* Os billings são mostrados para todos os usuários para que possam gerenciar suas assinaturas */}
+        {/* O billing é mostrado para todos os usuários para que possam gerenciar suas assinaturas */}
         <SidebarBillingSection collapsed={collapsed} />
       </div>
       
