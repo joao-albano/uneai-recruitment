@@ -1,7 +1,7 @@
+
 import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -10,6 +10,7 @@ import { useAuth } from '@/context/auth';
 import { OrganizationType } from './types';
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 
 interface EditOrganizationDialogProps {
   open: boolean;
@@ -31,17 +32,23 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
   organization,
   onSubmit
 }) => {
-  const {
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: organization.name,
       isActive: organization.isActive,
     },
   });
+
+  // Update form values when organization changes
+  useEffect(() => {
+    if (organization) {
+      form.reset({
+        name: organization.name,
+        isActive: organization.isActive
+      });
+    }
+  }, [organization, form]);
 
   const submitHandler = (values: z.infer<typeof formSchema>) => {
     onSubmit(values);
@@ -58,10 +65,10 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
         
-        <Form>
-          <form onSubmit={handleSubmit(submitHandler)} className="grid gap-4 py-4">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(submitHandler)} className="grid gap-4 py-4">
             <FormField
-              control={control}
+              control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
@@ -75,7 +82,7 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
             />
             
             <FormField
-              control={control}
+              control={form.control}
               name="isActive"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">

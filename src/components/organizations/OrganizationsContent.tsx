@@ -92,13 +92,14 @@ const OrganizationsContent: React.FC = () => {
             onSubmit={handleCreateOrganization}
           />
           
-          <EditOrganizationDialog 
-            open={showEditDialog}
-            onOpenChange={setShowEditDialog}
-            selectedOrganization={selectedOrganization}
-            setSelectedOrganization={setSelectedOrganization}
-            onSubmit={handleEditOrganization}
-          />
+          {selectedOrganization && (
+            <EditOrganizationDialog 
+              open={showEditDialog}
+              onOpenChange={setShowEditDialog}
+              organization={selectedOrganization}
+              onSubmit={handleEditOrganization}
+            />
+          )}
           
           <DeleteOrganizationDialog 
             open={showDeleteDialog}

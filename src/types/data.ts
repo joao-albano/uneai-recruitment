@@ -1,4 +1,3 @@
-
 // Define types for our data
 import { WhatsAppConfig } from '@/utils/whatsappIntegration';
 import { WhatsAppMessage } from './whatsapp';
@@ -60,6 +59,8 @@ export type UploadRecord = {
   errorCount?: number;
 };
 
+export type Student = StudentData;
+
 export type DataContextType = {
   students: StudentData[];
   surveys: SurveyData[];
@@ -82,4 +83,7 @@ export type DataContextType = {
   updateSchedule: (updatedSchedule: ScheduleItem) => void;
   generateDemoData: () => void;
   sendWhatsAppSurvey: (studentId: string) => void;
+  addStudent: (student: Student) => void;
+  updateStudent: (student: Student) => void;
+  deleteStudent: (id: string) => void;
 };

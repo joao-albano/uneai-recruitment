@@ -6,10 +6,11 @@ import { useProduct } from '@/context/ProductContext';
 import { useAuth } from '@/context/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { ProductType } from '@/context/ProductContext';
 
 // Definição de um produto no ecossistema
 interface Product {
-  id: string;
+  id: ProductType;
   name: string;
   description: string;
   icon: React.ReactNode;
@@ -69,7 +70,7 @@ const ProductHub: React.FC = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Plataforma Une.AI</h1>
         <p className="text-muted-foreground mt-1">
-          Selecione o sistema que deseja acessar
+          Selecione o sistema que deseja a
         </p>
       </div>
       
