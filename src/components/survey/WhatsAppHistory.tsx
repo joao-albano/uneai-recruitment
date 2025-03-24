@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
 import { isAfter, isBefore, isEqual } from 'date-fns';
-import { useData } from '@/context/DataContext';
 import { WhatsAppMessage } from '@/types/whatsapp';
 import { SchoolSegment } from '@/types/data';
+import { useWhatsApp } from '@/context/whatsapp/WhatsAppContext';
+import { useStudents } from '@/context/students/StudentsContext';
 import EmptyMessageState from './message-history/EmptyMessageState';
 import MessageDetailDialog from './message-history/MessageDetailDialog';
 import MessageList from './message-history/MessageList';
@@ -13,7 +14,8 @@ import ActiveFilters from './message-history/ActiveFilters';
 import MessagePagination from './message-history/MessagePagination';
 
 export const WhatsAppHistory: React.FC = () => {
-  const { whatsAppMessages, students } = useData();
+  const { whatsAppMessages } = useWhatsApp();
+  const { students } = useStudents();
   const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
