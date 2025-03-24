@@ -38,17 +38,19 @@ const ViewPermissionsDialog: React.FC<ViewPermissionsDialogProps> = ({
             <ShieldAlert className="h-5 w-5 text-primary" />
             <DialogTitle>Permissões do Usuário</DialogTitle>
           </div>
-          <DialogDescription className="flex items-center justify-between">
-            <span>
-              Visualizando permissões de <span className="font-semibold">{user.name}</span>
-            </span>
-            <Badge 
-              variant="outline" 
-              className={user.isSuperAdmin ? "bg-amber-50 text-amber-700 border-amber-200" : ""}
-            >
-              <Check className="mr-1 h-3 w-3" />
-              {user.isSuperAdmin ? "Super Admin" : profileName}
-            </Badge>
+          <DialogDescription>
+            <div className="flex items-center justify-between">
+              <span>
+                Visualizando permissões de <span className="font-semibold">{user.name}</span>
+              </span>
+              <Badge 
+                variant="outline" 
+                className={user.isSuperAdmin ? "bg-amber-50 text-amber-700 border-amber-200" : ""}
+              >
+                <Check className="mr-1 h-3 w-3" />
+                {user.isSuperAdmin ? "Super Admin" : profileName}
+              </Badge>
+            </div>
           </DialogDescription>
         </DialogHeader>
         

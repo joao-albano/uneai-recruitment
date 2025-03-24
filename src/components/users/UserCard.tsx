@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -32,6 +32,7 @@ const UserCard: React.FC<UserCardProps> = ({
 }) => {
   const [showPermissionsDialog, setShowPermissionsDialog] = useState(false);
   const [showViewPermissionsDialog, setShowViewPermissionsDialog] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   
   // Definindo a cor do avatar baseado no papel do usuário
   const avatarColor = user.isSuperAdmin
@@ -40,18 +41,54 @@ const UserCard: React.FC<UserCardProps> = ({
     ? "bg-blue-100 text-blue-800"
     : "bg-gray-100 text-gray-800";
 
-  // Função segura para chamar onEdit com um evento de clique
-  const handleEdit = (e: React.MouseEvent) => {
+  // Memoized handlers to prevent unnecessary re-renders
+  const handleEdit = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (user && onEdit) {
+    if (onEdit) {
       try {
-        onEdit(user);
+        // Clone user to avoid reference issues
+        const userClone = JSON.parse(JSON.stringify(user));
+        onEdit(userClone);
+        setIsDropdownOpen(false);
       } catch (error) {
         console.error("Erro ao editar usuário:", error);
       }
     }
-  };
+  }, [user, onEdit]);
+  
+  const handleDelete = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onDelete) {
+      try {
+        // Clone user to avoid reference issues
+        const userClone = JSON.parse(JSON.stringify(user));
+        onDelete(userClone);
+        setIsDropdownOpen(false);
+      } catch (error) {
+        console.error("Erro ao excluir usuário:", error);
+      }
+    }
+  }, [user, onDelete]);
+  
+  const handleManagePermissions = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowPermissionsDialog(true);
+    setIsDropdownOpen(false);
+  }, []);
+  
+  const handleViewPermissions = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowViewPermissionsDialog(true);
+    setIsDropdownOpen(false);
+  }, []);
+  
+  const handleDropdownOpenChange = useCallback((open: boolean) => {
+    setIsDropdownOpen(open);
+  }, []);
   
   return (
     <Card className="shadow-sm hover:shadow transition-all">
@@ -91,7 +128,7 @@ const UserCard: React.FC<UserCardProps> = ({
             </div>
           </div>
           
-          <DropdownMenu>
+          <DropdownMenu open={isDropdownOpen} onOpenChange={handleDropdownOpenChange}>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8">
                 <MoreHorizontal className="h-4 w-4" />
@@ -108,13 +145,13 @@ const UserCard: React.FC<UserCardProps> = ({
               
               {/* Só permite gerenciar permissões se você for admin */}
               {isAdmin && (
-                <DropdownMenuItem onClick={() => setShowPermissionsDialog(true)}>
+                <DropdownMenuItem onClick={handleManagePermissions}>
                   <ShieldAlert className="mr-2 h-4 w-4" />
                   Gerenciar Permissões
                 </DropdownMenuItem>
               )}
               
-              <DropdownMenuItem onClick={() => setShowViewPermissionsDialog(true)}>
+              <DropdownMenuItem onClick={handleViewPermissions}>
                 <UserCheck className="mr-2 h-4 w-4" />
                 Visualizar Permissões
               </DropdownMenuItem>
@@ -122,7 +159,7 @@ const UserCard: React.FC<UserCardProps> = ({
               <DropdownMenuSeparator />
               
               <DropdownMenuItem 
-                onClick={() => onDelete(user)}
+                onClick={handleDelete}
                 disabled={
                   // Não permite excluir o último admin da organização
                   (isLastAdmin && user.role === "admin") ||
@@ -154,7 +191,7 @@ const UserCard: React.FC<UserCardProps> = ({
             variant="outline" 
             size="sm" 
             className="h-8"
-            onClick={() => setShowPermissionsDialog(true)}
+            onClick={handleManagePermissions}
           >
             <ShieldAlert className="h-3.5 w-3.5 mr-1" />
             Permissões
@@ -162,7 +199,7 @@ const UserCard: React.FC<UserCardProps> = ({
         </div>
       </CardFooter>
       
-      {/* Dialog para gerenciar permissões */}
+      {/* Only render dialogs when they're open to improve performance */}
       {showPermissionsDialog && (
         <PermissionsDialog 
           open={showPermissionsDialog} 
@@ -171,7 +208,6 @@ const UserCard: React.FC<UserCardProps> = ({
         />
       )}
       
-      {/* Dialog para visualizar permissões */}
       {showViewPermissionsDialog && (
         <ViewPermissionsDialog 
           open={showViewPermissionsDialog} 

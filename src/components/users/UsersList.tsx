@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useCallback, memo } from 'react';
 import { UserType } from './types';
 import UserCard from './UserCard';
 import { ProductSubscription } from '@/context/ProductContext';
@@ -15,6 +15,9 @@ interface UsersListProps {
   isSuperAdmin?: boolean;
 }
 
+// Memoized UserCard to prevent unnecessary re-renders
+const MemoizedUserCard = memo(UserCard);
+
 const UsersList: React.FC<UsersListProps> = ({
   users,
   onEdit,
@@ -24,46 +27,41 @@ const UsersList: React.FC<UsersListProps> = ({
   isAdmin = false,
   isSuperAdmin = false
 }) => {
-  // Improved function with better error handling
-  const handleEdit = (user: UserType) => {
+  // Create stable callback functions
+  const handleEdit = useCallback((user: UserType) => {
     try {
       if (!user) {
         console.error("Tentativa de editar um usuário inválido");
         return;
       }
       
-      if (onEdit) {
-        // Clone the user to avoid reference issues
-        const userClone = JSON.parse(JSON.stringify(user));
-        onEdit(userClone);
-      }
+      // Clone the user to avoid reference issues
+      const userClone = JSON.parse(JSON.stringify(user));
+      onEdit(userClone);
     } catch (error) {
       console.error("Erro ao processar edição de usuário:", error);
     }
-  };
+  }, [onEdit]);
 
-  // Improved function with better error handling
-  const handleDelete = (user: UserType) => {
+  const handleDelete = useCallback((user: UserType) => {
     try {
       if (!user) {
         console.error("Tentativa de excluir um usuário inválido");
         return;
       }
       
-      if (onDelete) {
-        // Clone the user to avoid reference issues
-        const userClone = JSON.parse(JSON.stringify(user));
-        onDelete(userClone);
-      }
+      // Clone the user to avoid reference issues
+      const userClone = JSON.parse(JSON.stringify(user));
+      onDelete(userClone);
     } catch (error) {
       console.error("Erro ao processar exclusão de usuário:", error);
     }
-  };
+  }, [onDelete]);
   
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4">
       {users.map(user => (
-        <UserCard 
+        <MemoizedUserCard 
           key={user.id} 
           user={user} 
           onEdit={handleEdit}
