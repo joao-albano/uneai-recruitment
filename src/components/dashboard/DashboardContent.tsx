@@ -55,7 +55,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         name: 'Student Example',
         registrationNumber: '123456',
         class: '9A',
-        segment: 'ENSINO MÉDIO',
+        segment: 'ENSINO MÉDIO' as any,
         grade: 7,
         attendance: 70,
         behavior: 6,
@@ -66,17 +66,6 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">
-          {language === 'pt-BR' ? 'Dashboard' : 'Dashboard'}
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          {language === 'pt-BR' 
-            ? 'Visão geral do desempenho dos alunos' 
-            : 'Overview of student performance'}
-        </p>
-      </div>
-      
       {/* Free trial expiration banner */}
       {showBanner && (
         <FreePlanExpirationBanner daysRemaining={daysRemaining} />

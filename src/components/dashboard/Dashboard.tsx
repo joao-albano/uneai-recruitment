@@ -72,7 +72,7 @@ const Dashboard: React.FC = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground mt-1">
-          Visão geral do risco de evasão escolar
+          Visão geral do desempenho dos alunos
         </p>
       </div>
       
