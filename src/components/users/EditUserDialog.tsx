@@ -5,14 +5,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-type UserType = {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  initials: string;
-};
+import { Checkbox } from "@/components/ui/checkbox";
+import { ProductSubscription } from '@/context/ProductContext';
+import { UserType } from './types';
 
 interface EditUserDialogProps {
   open: boolean;
@@ -20,6 +15,8 @@ interface EditUserDialogProps {
   selectedUser: UserType | null;
   setSelectedUser: React.Dispatch<React.SetStateAction<UserType | null>>;
   onSubmit: (e: React.FormEvent) => void;
+  subscriptions?: ProductSubscription[];
+  isAdmin?: boolean;
 }
 
 const EditUserDialog: React.FC<EditUserDialogProps> = ({
@@ -27,13 +24,26 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
   onOpenChange,
   selectedUser,
   setSelectedUser,
-  onSubmit
+  onSubmit,
+  subscriptions = [],
+  isAdmin = false
 }) => {
   if (!selectedUser) return null;
   
+  // Tradução dos tipos de produto
+  const productNames: Record<string, string> = {
+    'retention': 'Retenção',
+    'billing': 'Cobrança',
+    'recruitment': 'Recrutamento'
+  };
+  
+  const userOrgSubscriptions = subscriptions.filter(
+    sub => sub.organizationId === selectedUser.organizationId
+  );
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>Editar Usuário</DialogTitle>
           <DialogDescription>
@@ -79,6 +89,29 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
                 </SelectContent>
               </Select>
             </div>
+            
+            {isAdmin && userOrgSubscriptions.length > 0 && (
+              <div className="grid gap-2 pt-3 border-t">
+                <Label className="mb-2">Produtos Ativos</Label>
+                <div className="grid gap-2">
+                  {userOrgSubscriptions.map(sub => (
+                    <div key={sub.id} className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={`product-${sub.id}`} 
+                        checked={sub.active} 
+                        // Na implementação real, isso chamaria uma API para atualizar a assinatura
+                      />
+                      <Label 
+                        htmlFor={`product-${sub.id}`}
+                        className="text-sm font-normal"
+                      >
+                        {productNames[sub.productType] || sub.productType}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           
           <DialogFooter>

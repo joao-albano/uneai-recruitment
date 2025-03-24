@@ -9,10 +9,14 @@ import CreateUserDialog from "./CreateUserDialog";
 import EditUserDialog from "./EditUserDialog";
 import DeleteUserDialog from "./DeleteUserDialog";
 import { useUsers } from './hooks/useUsers';
+import { useAuth } from '@/context/AuthContext';
+import { useProduct } from '@/context/ProductContext';
 
 const UsersContent: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const { isAdmin } = useAuth();
+  const { userSubscriptions } = useProduct();
   
   const {
     users,
@@ -38,6 +42,11 @@ const UsersContent: React.FC = () => {
     setSidebarOpen(!sidebarOpen);
   };
   
+  // Filtra usuários da mesma organização, se não for admin
+  const filteredUsers = isAdmin 
+    ? users 
+    : users.filter(user => user.organizationId === "1"); // Mockado, seria o ID real da organização do usuário
+  
   return (
     <div className="min-h-screen flex w-full">
       <Sidebar 
@@ -54,18 +63,20 @@ const UsersContent: React.FC = () => {
         />
         
         <main className="flex-1 p-6">
-          <UsersHeader userCount={users.length} />
+          <UsersHeader userCount={filteredUsers.length} />
           
           <UsersToolbar 
-            userCount={users.length}
+            userCount={filteredUsers.length}
             onOpenCreateDialog={() => setShowCreateDialog(true)}
           />
           
           <UsersList 
-            users={users}
+            users={filteredUsers}
             onEdit={handleOpenEditDialog}
             onDelete={handleOpenDeleteDialog}
             isLastAdmin={isLastAdmin}
+            subscriptions={userSubscriptions}
+            isAdmin={isAdmin}
           />
           
           <CreateUserDialog 
@@ -82,6 +93,8 @@ const UsersContent: React.FC = () => {
             selectedUser={selectedUser}
             setSelectedUser={setSelectedUser}
             onSubmit={handleEditUser}
+            subscriptions={userSubscriptions}
+            isAdmin={isAdmin}
           />
           
           <DeleteUserDialog 

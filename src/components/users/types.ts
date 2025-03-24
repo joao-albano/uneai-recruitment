@@ -5,6 +5,8 @@ export type UserType = {
   email: string;
   role: string;
   initials: string;
+  organizationId?: string;
+  organizationName?: string;
 };
 
 export type NewUserType = {
@@ -13,4 +15,6 @@ export type NewUserType = {
   role: string;
   password: string;
   initials: string;
+  organizationId?: string;
+  organizationName?: string;
 };
