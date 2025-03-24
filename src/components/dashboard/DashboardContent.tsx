@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import Chart from './Chart';
 import RiskStats from './RiskStats';
 import ClassesOverview from './ClassesOverview';
@@ -133,11 +134,10 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <Card className="md:mb-0">
-          <CardContent className="p-0">
-            <Chart students={students} title={language === 'pt-BR' ? 'Distribuição de Risco' : 'Risk Distribution'} />
-          </CardContent>
-        </Card>
+        <Chart 
+          students={students} 
+          title={language === 'pt-BR' ? 'Distribuição de Risco' : 'Risk Distribution'} 
+        />
         <RiskStats 
           highRiskCount={highRiskCount}
           mediumRiskCount={mediumRiskCount}

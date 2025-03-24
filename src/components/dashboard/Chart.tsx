@@ -52,7 +52,7 @@ const Chart: React.FC<ChartProps> = ({ students, title, description }) => {
   };
   
   return (
-    <Card className="shadow-md transition-all duration-300 hover:shadow-lg h-full">
+    <Card className="shadow-sm hover:shadow-md transition-shadow h-full">
       <CardHeader>
         <CardTitle className="text-lg font-semibold">{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
