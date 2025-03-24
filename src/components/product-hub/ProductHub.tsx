@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/AuthContext';
+import { useProduct, ProductType } from '@/context/ProductContext';
 
 // Definição de um produto no ecossistema
 interface Product {
-  id: string;
+  id: ProductType;
   name: string;
   description: string;
   icon: React.ReactNode;
@@ -21,6 +22,7 @@ interface Product {
 const ProductHub: React.FC = () => {
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
+  const { setCurrentProduct } = useProduct();
   
   // Lista de produtos disponíveis no ecossistema
   const products: Product[] = [
@@ -56,6 +58,8 @@ const ProductHub: React.FC = () => {
   // Função para navegar para o produto selecionado
   const handleProductSelect = (product: Product) => {
     if (product.isActive) {
+      // Define o produto selecionado no contexto antes de navegar
+      setCurrentProduct(product.id);
       navigate(product.route);
     }
   };

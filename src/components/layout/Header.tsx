@@ -9,6 +9,7 @@ import AppLogo from './header/AppLogo';
 import { useTheme } from '@/context/ThemeContext';
 import PricingLink from './header/PricingLink';
 import PaymentNotification from './header/PaymentNotification';
+import ProductHubLink from './header/ProductHubLink';
 import { useTrialPeriod } from '@/hooks/useTrialPeriod';
 import { useAuth } from '@/context/AuthContext';
 
@@ -57,6 +58,9 @@ const Header: React.FC<HeaderProps> = ({
       <div className="flex-1" />
       
       <div className="flex items-center gap-2">
+        {/* Adicionando botão para voltar ao ProductHub */}
+        <ProductHubLink />
+        
         {/* Show trial expiration notification */}
         {showBanner && isExpired && (
           <Button 
