@@ -8,6 +8,7 @@ import UserCard from "./UserCard";
 import CreateUserDialog from "./CreateUserDialog";
 import EditUserDialog from "./EditUserDialog";
 import DeleteUserDialog from "./DeleteUserDialog";
+import UserPermissionsHelp from "./UserPermissionsHelp";
 
 export type UserType = {
   id: number;
@@ -147,10 +148,13 @@ const UsersContent: React.FC = () => {
                 {users.length} usuário(s) cadastrado(s)
               </p>
             </div>
-            <Button onClick={() => setShowCreateDialog(true)}>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Adicionar Usuário
-            </Button>
+            <div className="flex items-center gap-2">
+              <UserPermissionsHelp />
+              <Button onClick={() => setShowCreateDialog(true)}>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Adicionar Usuário
+              </Button>
+            </div>
           </div>
           
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

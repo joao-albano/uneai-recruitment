@@ -22,6 +22,35 @@ interface PermissionsDialogProps {
   user: UserType;
 }
 
+// Definições detalhadas dos perfis para o componente de ajuda
+export const userProfileDescriptions = {
+  admin: {
+    title: 'Administrador',
+    description: 'Acesso completo a todas as funcionalidades do sistema, incluindo configurações avançadas, gerenciamento de usuários e permissões.',
+    icon: ShieldAlert,
+  },
+  gestor: {
+    title: 'Gestor',
+    description: 'Acesso a estatísticas avançadas, gerenciamento básico de usuários, criação e exportação de relatórios, e configurações gerais.',
+    icon: Users,
+  },
+  coordenador: {
+    title: 'Coordenador',
+    description: 'Visualização do dashboard, usuários e relatórios. Pode gerenciar agendamentos e verificar alertas do sistema.',
+    icon: Calendar,
+  },
+  professor: {
+    title: 'Professor',
+    description: 'Acesso básico ao dashboard, relatórios e agendamentos. Pode visualizar e criar seus próprios agendamentos.',
+    icon: Book,
+  },
+  basico: {
+    title: 'Básico',
+    description: 'Acesso mínimo ao sistema. Visualização do dashboard básico, agendamentos e alertas.',
+    icon: Users,
+  }
+};
+
 const PermissionsDialog: React.FC<PermissionsDialogProps> = ({ open, onOpenChange, user }) => {
   const { toast } = useToast();
   
