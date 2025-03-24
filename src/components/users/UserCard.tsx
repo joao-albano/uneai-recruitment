@@ -1,10 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Edit, MoreHorizontal, ShieldAlert, Trash, User } from "lucide-react";
+import PermissionsDialog from './PermissionsDialog';
 
 type UserType = {
   id: number;
@@ -22,6 +23,8 @@ interface UserCardProps {
 }
 
 const UserCard: React.FC<UserCardProps> = ({ user, onEdit, onDelete, isLastAdmin }) => {
+  const [showPermissionsDialog, setShowPermissionsDialog] = useState(false);
+  
   return (
     <Card className="shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="pb-2">
@@ -76,12 +79,23 @@ const UserCard: React.FC<UserCardProps> = ({ user, onEdit, onDelete, isLastAdmin
               </>
             )}
           </div>
-          <Button variant="ghost" size="sm" className="h-7 px-2">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-7 px-2"
+            onClick={() => setShowPermissionsDialog(true)}
+          >
             <ShieldAlert className="h-3.5 w-3.5 mr-1" />
             <span className="text-xs">Permissões</span>
           </Button>
         </div>
       </CardContent>
+      
+      <PermissionsDialog 
+        open={showPermissionsDialog}
+        onOpenChange={setShowPermissionsDialog}
+        user={user}
+      />
     </Card>
   );
 };
