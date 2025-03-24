@@ -30,8 +30,9 @@ export const useAuthOperations = () => {
   const handleProfileFetch = async (userId: string) => {
     const userData = await fetchUserProfile(userId);
     if (userData) {
-      setIsAdmin(userData.isAdmin);
-      setIsSuperAdmin(userData.isSuperAdmin);
+      console.log('Setting auth states with user data:', userData);
+      setIsAdmin(userData.isAdmin || false);
+      setIsSuperAdmin(userData.isSuperAdmin || false);
       setCurrentUser(userData.profile);
       setCurrentOrganization(userData.organization);
     }
@@ -72,6 +73,7 @@ export const useAuthOperations = () => {
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session: existingSession } }) => {
+      console.log('Existing session:', existingSession);
       setSession(existingSession);
       setUser(existingSession?.user ?? null);
       

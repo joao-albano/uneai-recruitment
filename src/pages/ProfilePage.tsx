@@ -33,6 +33,7 @@ const ProfilePage: React.FC = () => {
   useEffect(() => {
     console.log("Current user in profile:", currentUser);
     console.log("Is Super Admin:", isSuperAdmin);
+    console.log("User role:", currentUser?.role);
     console.log("User object:", user);
   }, [currentUser, isSuperAdmin]);
   

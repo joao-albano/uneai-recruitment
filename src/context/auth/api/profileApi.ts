@@ -21,6 +21,7 @@ export const fetchUserProfile = async (userId: string) => {
     const email = userMetadata?.email || userData.user?.email;
     
     console.log('User metadata:', userMetadata);
+    console.log('User email to check:', email);
     
     // Fetch profile from profiles table
     const { data: profile, error: profileError } = await supabase
@@ -60,6 +61,7 @@ export const fetchUserProfile = async (userId: string) => {
     // Determine if the user is a super admin (admin of UNE CX)
     const isSuperAdmin = Boolean(profile?.is_super_admin);
     console.log('Is super admin:', isSuperAdmin);
+    console.log('Role from database:', profile?.role);
     
     // Create user profile object with priority on DB role and super admin status
     const userProfile: UserProfile = {
@@ -70,6 +72,8 @@ export const fetchUserProfile = async (userId: string) => {
       organization: organization,
       isSuperAdmin: isSuperAdmin
     };
+    
+    console.log('Final user profile created:', userProfile);
     
     return {
       profile: userProfile,

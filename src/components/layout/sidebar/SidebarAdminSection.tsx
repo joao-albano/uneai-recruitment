@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BarChart2, Users, DollarSign, Building, Settings } from 'lucide-react';
 import SidebarNavigationGroup from './SidebarNavigationGroup';
@@ -10,6 +11,13 @@ interface SidebarAdminSectionProps {
 
 const SidebarAdminSection: React.FC<SidebarAdminSectionProps> = ({ collapsed }) => {
   const { isSuperAdmin, isAdmin } = useAuth();
+  
+  console.log('SidebarAdminSection - isAdmin:', isAdmin, 'isSuperAdmin:', isSuperAdmin);
+  
+  // Não mostrar a seção se o usuário não for admin nem superadmin
+  if (!isAdmin && !isSuperAdmin) {
+    return null;
+  }
   
   return (
     <SidebarNavigationGroup 

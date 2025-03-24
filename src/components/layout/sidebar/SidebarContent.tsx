@@ -31,6 +31,8 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
   const { isAdmin, isSuperAdmin } = useAuth();
   const { currentProduct, hasAccessToProduct, availableProducts } = useProduct();
   
+  console.log('SidebarContent - isAdmin:', isAdmin, 'isSuperAdmin:', isSuperAdmin);
+  
   return (
     <div 
       className={cn(

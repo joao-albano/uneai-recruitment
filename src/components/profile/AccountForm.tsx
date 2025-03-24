@@ -32,16 +32,18 @@ const AccountForm: React.FC<AccountFormProps> = ({ user }) => {
     defaultValues: {
       name: currentUser?.name || user.name,
       email: currentUser?.email || user.email,
-      role: currentUser?.role || user.role,
+      role: user.role,
     },
   });
 
   // Update form values when currentUser changes
   useEffect(() => {
     if (currentUser) {
-      const displayRole = currentUser.isSuperAdmin ? 'Super Admin' : 
+      const displayRole = isSuperAdmin ? 'Super Admin' : 
                          (currentUser.role === 'superadmin' ? 'Super Admin' : 
                          currentUser.role === 'admin' ? 'Administrador' : 'Usuário');
+      
+      console.log("Setting form with role:", displayRole);
       
       form.reset({
         name: currentUser.name || user.name,
@@ -49,7 +51,7 @@ const AccountForm: React.FC<AccountFormProps> = ({ user }) => {
         role: displayRole,
       });
     }
-  }, [currentUser, user, form]);
+  }, [currentUser, user, form, isSuperAdmin]);
 
   const onSubmit = (values: z.infer<typeof profileSchema>) => {
     console.log('Profile update:', values);
