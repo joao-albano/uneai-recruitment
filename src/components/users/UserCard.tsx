@@ -1,80 +1,80 @@
 
 import React, { useState } from 'react';
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { Edit, MoreHorizontal, ShieldAlert, Shield, Trash, User, Package, Building } from "lucide-react";
-import PermissionsDialog from './permissions/PermissionsDialog';
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { MoreHorizontal, Edit, Trash, Users, ShieldAlert, Building, UserCheck } from "lucide-react";
 import { ProductSubscription } from '@/context/ProductContext';
 import { UserType } from './types';
+import PermissionsDialog from './permissions/PermissionsDialog';
+import ViewPermissionsDialog from './permissions/ViewPermissionsDialog';
 
 interface UserCardProps {
   user: UserType;
   onEdit: (user: UserType) => void;
   onDelete: (user: UserType) => void;
-  isLastAdmin: boolean;
-  userSubscriptions: ProductSubscription[];
-  isAdmin: boolean;
-  isSuperAdmin: boolean;
+  isLastAdmin?: boolean;
+  subscriptions?: ProductSubscription[];
+  isAdmin?: boolean;
+  isSuperAdmin?: boolean;
 }
 
-const UserCard: React.FC<UserCardProps> = ({ 
-  user, 
-  onEdit, 
-  onDelete, 
-  isLastAdmin,
-  userSubscriptions,
-  isAdmin,
-  isSuperAdmin
+const UserCard: React.FC<UserCardProps> = ({
+  user,
+  onEdit,
+  onDelete,
+  isLastAdmin = false,
+  subscriptions = [],
+  isAdmin = false,
+  isSuperAdmin = false
 }) => {
   const [showPermissionsDialog, setShowPermissionsDialog] = useState(false);
+  const [showViewPermissionsDialog, setShowViewPermissionsDialog] = useState(false);
   
-  // Tradução dos tipos de produto
-  const productNames: Record<string, string> = {
-    'retention': 'Retenção',
-    'billing': 'Cobrança',
-    'recruitment': 'Recrutamento'
-  };
-  
-  // Definir a cor da borda do avatar baseada no tipo de usuário
-  const getAvatarBorderClass = () => {
-    if (user.isSuperAdmin) {
-      return 'border-2 border-amber-500'; // Super admin (UNE CX)
-    } else if (user.role === 'admin') {
-      return 'border-2 border-primary'; // Admin normal
-    }
-    return ''; // Usuário regular
-  };
-  
-  // Verificar se pode editar este usuário
-  const canEdit = isSuperAdmin || 
-    (isAdmin && user.organizationId === user.organizationId && !user.isSuperAdmin);
-  
-  // Verificar se pode excluir este usuário
-  const canDelete = (isSuperAdmin || 
-    (isAdmin && user.organizationId === user.organizationId)) && 
-    !(user.role === 'admin' && isLastAdmin) && 
-    !user.isSuperAdmin; // Super admins não podem ser excluídos
+  // Definindo a cor do avatar baseado no papel do usuário
+  const avatarColor = user.isSuperAdmin
+    ? "bg-amber-100 text-amber-800"
+    : user.role === "admin"
+    ? "bg-blue-100 text-blue-800"
+    : "bg-gray-100 text-gray-800";
   
   return (
-    <Card className="shadow-sm hover:shadow-md transition-shadow">
-      <CardHeader className="pb-2">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <Avatar className={getAvatarBorderClass()}>
+    <Card className="shadow-sm hover:shadow transition-all">
+      <CardContent className="p-6">
+        <div className="flex justify-between items-start">
+          <div className="flex items-center gap-4">
+            <Avatar className={`h-12 w-12 ${avatarColor}`}>
               <AvatarFallback>{user.initials}</AvatarFallback>
             </Avatar>
+            
             <div>
-              <CardTitle className="text-base font-semibold">{user.name}</CardTitle>
-              <CardDescription className="text-xs">{user.email}</CardDescription>
-              {user.organizationId && (
-                <CardDescription className="text-xs flex items-center gap-1">
-                  <Building className="h-3 w-3" />
-                  {user.organizationName || user.organizationId}
-                </CardDescription>
-              )}
+              <h3 className="font-medium text-base">{user.name}</h3>
+              <p className="text-sm text-muted-foreground">{user.email}</p>
+              
+              <div className="flex items-center gap-2 mt-1">
+                <Badge 
+                  variant={user.role === "admin" ? "default" : "secondary"}
+                  className={user.role === "admin" 
+                    ? (user.isSuperAdmin ? "bg-amber-100 text-amber-800 hover:bg-amber-100" : "bg-blue-100 text-blue-800 hover:bg-blue-100") 
+                    : ""
+                  }
+                >
+                  {user.isSuperAdmin 
+                    ? "Super Admin" 
+                    : user.role === "admin" 
+                    ? "Admin" 
+                    : "Usuário"}
+                </Badge>
+                
+                {user.organizationName && (
+                  <Badge variant="outline" className="text-xs">
+                    <Building className="h-3 w-3 mr-1" />
+                    {user.organizationName}
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
           
@@ -87,99 +87,85 @@ const UserCard: React.FC<UserCardProps> = ({
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Ações</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                onClick={() => onEdit(user)}
-                disabled={!canEdit}
-              >
+              
+              <DropdownMenuItem onClick={() => onEdit(user)}>
                 <Edit className="mr-2 h-4 w-4" />
                 Editar
               </DropdownMenuItem>
+              
+              {/* Só permite gerenciar permissões se você for admin */}
+              {isAdmin && (
+                <DropdownMenuItem onClick={() => setShowPermissionsDialog(true)}>
+                  <ShieldAlert className="mr-2 h-4 w-4" />
+                  Gerenciar Permissões
+                </DropdownMenuItem>
+              )}
+              
+              <DropdownMenuItem onClick={() => setShowViewPermissionsDialog(true)}>
+                <UserCheck className="mr-2 h-4 w-4" />
+                Visualizar Permissões
+              </DropdownMenuItem>
+              
+              <DropdownMenuSeparator />
+              
               <DropdownMenuItem 
-                className="text-destructive" 
                 onClick={() => onDelete(user)}
-                disabled={!canDelete}
+                disabled={
+                  // Não permite excluir o último admin da organização
+                  (isLastAdmin && user.role === "admin") ||
+                  // Não permite excluir o super admin a menos que você seja super admin
+                  (user.isSuperAdmin && !isSuperAdmin)
+                }
+                className="text-destructive"
               >
                 <Trash className="mr-2 h-4 w-4" />
-                Remover
+                Excluir
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-1.5">
-              {user.isSuperAdmin ? (
-                <>
-                  <ShieldAlert className="h-4 w-4 text-amber-500" />
-                  <span className="font-medium text-amber-700">Super Admin (UNE CX)</span>
-                </>
-              ) : user.role === 'admin' ? (
-                <>
-                  <Shield className="h-4 w-4 text-primary" />
-                  <span className="font-medium text-primary">
-                    Admin {user.organizationName ? `(${user.organizationName})` : ''}
-                  </span>
-                </>
-              ) : (
-                <>
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Usuário</span>
-                </>
-              )}
-            </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-7 px-2"
-              onClick={() => setShowPermissionsDialog(true)}
-            >
-              <ShieldAlert className="h-3.5 w-3.5 mr-1" />
-              <span className="text-xs">Permissões</span>
-            </Button>
-          </div>
-          
-          {/* Assinaturas do usuário */}
-          {(userSubscriptions.length > 0 || user.isSuperAdmin) && (
-            <div className="pt-2 border-t">
-              <div className="flex items-center gap-1.5 mb-1.5 text-sm">
-                <Package className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Produtos Ativos</span>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {user.isSuperAdmin ? (
-                  <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
-                    Acesso completo (UNE CX)
-                  </span>
-                ) : userSubscriptions.length > 0 ? (
-                  userSubscriptions
-                    .filter(sub => sub.active)
-                    .map(sub => (
-                      <Badge 
-                        key={sub.id} 
-                        variant="outline" 
-                        className="text-xs bg-green-50 border-green-200 text-green-700"
-                      >
-                        {productNames[sub.productType] || sub.productType}
-                      </Badge>
-                    ))
-                ) : (
-                  <span className="text-xs text-muted-foreground">
-                    Nenhum produto ativo
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
       </CardContent>
       
-      <PermissionsDialog 
-        open={showPermissionsDialog}
-        onOpenChange={setShowPermissionsDialog}
-        user={user}
-      />
+      <CardFooter className="bg-muted/50 py-3 px-6">
+        <div className="w-full flex justify-between items-center">
+          <div className="flex items-center gap-1.5">
+            <Users className="h-4 w-4 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">
+              {user.role === "admin" 
+                ? "Acesso administrativo" 
+                : "Acesso de usuário"}
+            </span>
+          </div>
+          
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-8"
+            onClick={() => setShowPermissionsDialog(true)}
+          >
+            <ShieldAlert className="h-3.5 w-3.5 mr-1" />
+            Permissões
+          </Button>
+        </div>
+      </CardFooter>
+      
+      {/* Dialog para gerenciar permissões */}
+      {showPermissionsDialog && (
+        <PermissionsDialog 
+          open={showPermissionsDialog} 
+          onOpenChange={setShowPermissionsDialog} 
+          user={user} 
+        />
+      )}
+      
+      {/* Dialog para visualizar permissões */}
+      {showViewPermissionsDialog && (
+        <ViewPermissionsDialog 
+          open={showViewPermissionsDialog} 
+          onOpenChange={setShowViewPermissionsDialog} 
+          user={user} 
+        />
+      )}
     </Card>
   );
 };

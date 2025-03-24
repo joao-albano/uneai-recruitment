@@ -1,6 +1,8 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
+import { userProfileDescriptions } from './types';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 interface ProfileSelectorProps {
   selectedProfile: string;
@@ -16,46 +18,31 @@ const ProfileSelector: React.FC<ProfileSelectorProps> = ({
   return (
     <div className="flex flex-wrap items-center gap-2 mb-4">
       <span className="text-sm font-medium">Aplicar perfil:</span>
-      <Button 
-        variant={selectedProfile === 'admin' ? 'default' : 'outline'} 
-        size="sm"
-        onClick={() => onSelectProfile('admin')}
-        disabled={isAdmin}
-      >
-        Administrador
-      </Button>
-      <Button 
-        variant={selectedProfile === 'gestor' ? 'default' : 'outline'} 
-        size="sm"
-        onClick={() => onSelectProfile('gestor')}
-        disabled={isAdmin}
-      >
-        Gestor
-      </Button>
-      <Button 
-        variant={selectedProfile === 'coordenador' ? 'default' : 'outline'} 
-        size="sm"
-        onClick={() => onSelectProfile('coordenador')}
-        disabled={isAdmin}
-      >
-        Coordenador
-      </Button>
-      <Button 
-        variant={selectedProfile === 'professor' ? 'default' : 'outline'} 
-        size="sm"
-        onClick={() => onSelectProfile('professor')}
-        disabled={isAdmin}
-      >
-        Professor
-      </Button>
-      <Button 
-        variant={selectedProfile === 'basico' ? 'default' : 'outline'} 
-        size="sm"
-        onClick={() => onSelectProfile('basico')}
-        disabled={isAdmin}
-      >
-        Básico
-      </Button>
+      
+      {Object.entries(userProfileDescriptions).map(([profileKey, profile]) => {
+        const Icon = profile.icon;
+        
+        return (
+          <HoverCard key={profileKey} openDelay={300}>
+            <HoverCardTrigger asChild>
+              <Button 
+                variant={selectedProfile === profileKey ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => onSelectProfile(profileKey)}
+                disabled={isAdmin}
+                className="flex items-center gap-1.5"
+              >
+                <Icon className="h-3.5 w-3.5" />
+                {profile.title}
+              </Button>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-80 p-3 text-sm">
+              <p className="font-medium mb-1">{profile.title}</p>
+              <p className="text-xs text-muted-foreground">{profile.description}</p>
+            </HoverCardContent>
+          </HoverCard>
+        );
+      })}
     </div>
   );
 };
