@@ -6,15 +6,28 @@ import Sidebar from '@/components/layout/Sidebar';
 import { useAuth } from '@/context/auth';
 import ProfileHeader from '@/components/profile/ProfileHeader';
 import ProfileTabs from '@/components/profile/ProfileTabs';
+import { supabase } from '@/integrations/supabase/client';
 
 const ProfilePage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { isAdmin, userEmail, currentUser, currentOrganization, isSuperAdmin } = useAuth();
+  const { isAdmin, userEmail, currentUser, currentOrganization, isSuperAdmin, session } = useAuth();
   
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
+
+  // Atualizar informações do usuário
+  useEffect(() => {
+    const refreshUserProfile = async () => {
+      if (session?.user?.id) {
+        // Forçar uma atualização do perfil do usuário para garantir que as informações estejam atualizadas
+        await supabase.auth.refreshSession();
+      }
+    };
+    
+    refreshUserProfile();
+  }, [session]);
 
   // Create user object based on auth context data
   const user = {
