@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { OrganizationType, NewOrganizationType } from '../types';
 import { ProductType } from '@/context/ProductContext';
 import { toast } from "sonner";
@@ -27,8 +27,9 @@ export const useOrganizations = () => {
     loadOrganizations();
   }, []);
 
-  const loadOrganizations = () => {
+  const loadOrganizations = useCallback(() => {
     try {
+      setIsLoading(true);
       // Here we would fetch organizations from API
       // For now, using mock data
       const mockOrganizations: OrganizationType[] = [
@@ -74,10 +75,25 @@ export const useOrganizations = () => {
     } catch (error) {
       console.error("Erro ao carregar organizações:", error);
       toast.error("Erro ao carregar organizações");
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, []);
 
-  const handleOpenEditDialog = (organization: OrganizationType) => {
+  const resetNewOrganization = useCallback(() => {
+    setNewOrganization({
+      name: '',
+      isActive: true,
+      isMainOrg: false,
+      products: [
+        { type: 'retention' as ProductType, active: true },
+        { type: 'billing' as ProductType, active: false },
+        { type: 'recruitment' as ProductType, active: false }
+      ]
+    });
+  }, []);
+
+  const handleOpenEditDialog = useCallback((organization: OrganizationType) => {
     try {
       // Usar uma cópia profunda para evitar problemas de referência
       const orgCopy = structuredClone(organization);
@@ -87,9 +103,9 @@ export const useOrganizations = () => {
       console.error("Erro ao abrir diálogo de edição:", error);
       toast.error("Erro ao abrir diálogo de edição");
     }
-  };
+  }, []);
 
-  const handleOpenDeleteDialog = (organization: OrganizationType) => {
+  const handleOpenDeleteDialog = useCallback((organization: OrganizationType) => {
     try {
       // Usar uma cópia profunda para evitar problemas de referência
       const orgCopy = structuredClone(organization);
@@ -99,9 +115,9 @@ export const useOrganizations = () => {
       console.error("Erro ao abrir diálogo de exclusão:", error);
       toast.error("Erro ao abrir diálogo de exclusão");
     }
-  };
+  }, []);
 
-  const handleCreateOrganization = async (e: React.FormEvent) => {
+  const handleCreateOrganization = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!newOrganization.name.trim()) {
@@ -130,17 +146,8 @@ export const useOrganizations = () => {
       // Simular um atraso de API
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      setOrganizations([...organizations, newOrg]);
-      setNewOrganization({
-        name: '',
-        isActive: true,
-        isMainOrg: false,
-        products: [
-          { type: 'retention' as ProductType, active: true },
-          { type: 'billing' as ProductType, active: false },
-          { type: 'recruitment' as ProductType, active: false }
-        ]
-      });
+      setOrganizations(prev => [...prev, newOrg]);
+      resetNewOrganization();
       
       toast.success("Organização criada com sucesso");
       setShowCreateDialog(false);
@@ -150,9 +157,9 @@ export const useOrganizations = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [newOrganization, resetNewOrganization]);
 
-  const handleEditOrganization = async (e: React.FormEvent) => {
+  const handleEditOrganization = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!selectedOrganization) {
@@ -179,7 +186,7 @@ export const useOrganizations = () => {
       setOrganizations(updatedOrganizations);
       toast.success("Organização atualizada com sucesso");
       
-      // Importante: resetar o estado após a atualização
+      // Resetar o estado após a atualização
       setSelectedOrganization(null);
       setShowEditDialog(false);
     } catch (error) {
@@ -188,9 +195,9 @@ export const useOrganizations = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [organizations, selectedOrganization]);
 
-  const handleDeleteOrganization = async () => {
+  const handleDeleteOrganization = useCallback(async () => {
     if (!selectedOrganization) {
       toast.error("Nenhuma organização selecionada");
       return;
@@ -217,7 +224,7 @@ export const useOrganizations = () => {
       setOrganizations(filteredOrganizations);
       toast.success("Organização excluída com sucesso");
       
-      // Importante: resetar o estado após a exclusão
+      // Resetar o estado após a exclusão
       setSelectedOrganization(null);
       setShowDeleteDialog(false);
     } catch (error) {
@@ -226,7 +233,7 @@ export const useOrganizations = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [organizations, selectedOrganization]);
 
   return {
     organizations,

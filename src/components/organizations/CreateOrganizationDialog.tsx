@@ -29,11 +29,7 @@ const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
   const toggleProductActive = (productType: ProductType) => {
     try {
       // Criar uma cópia do array de produtos atual ou inicializar se não existir
-      const currentProducts = newOrganization.products ? [...newOrganization.products] : [
-        { type: 'retention' as ProductType, active: true },
-        { type: 'billing' as ProductType, active: false },
-        { type: 'recruitment' as ProductType, active: false }
-      ];
+      const currentProducts = newOrganization.products ? [...newOrganization.products] : [];
       
       // Atualizar o estado do produto
       const productIndex = currentProducts.findIndex(p => p.type === productType);

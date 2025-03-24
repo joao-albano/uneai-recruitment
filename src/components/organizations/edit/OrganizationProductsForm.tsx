@@ -22,11 +22,13 @@ const OrganizationProductsForm: React.FC<OrganizationProductsFormProps> = ({
   
   // Função para alternar o estado ativo de um produto
   const toggleProductActive = (productType: ProductType) => {
+    if (!selectedOrganization) return;
+    
     try {
       // Criar nova versão do selectedOrganization com produtos atualizados
       const updatedOrg = structuredClone(selectedOrganization);
       
-      // Atualizar o active status do produto na organização
+      // Garantir que products seja um array
       if (!updatedOrg.products) {
         updatedOrg.products = [];
       }
@@ -52,7 +54,7 @@ const OrganizationProductsForm: React.FC<OrganizationProductsFormProps> = ({
   
   // Verificar se um produto está ativo
   const isProductActive = (productType: ProductType): boolean => {
-    if (!selectedOrganization.products) return false;
+    if (!selectedOrganization || !selectedOrganization.products) return false;
     
     const product = selectedOrganization.products.find(p => p.type === productType);
     return product ? product.active : false;
