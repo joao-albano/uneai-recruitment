@@ -30,52 +30,25 @@ export const useUserCreate = (fetchUsers: () => Promise<void>) => {
         return;
       }
       
-      // Usar o API diretamente para criar usuário e perfil
-      // Primeiro criar o usuário
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+      // Usar o RPC function para criar o usuário
+      const { data, error } = await supabase.rpc('create_user_with_profile', {
         email,
         password,
-        email_confirm: true,
-        user_metadata: { full_name: name }
+        name,
+        role: role || 'user',
+        organization_id: newUser.organizationId,
+        is_admin: role === 'admin',
+        is_super_admin: false
       });
       
-      if (authError) {
-        console.error("Erro ao criar usuário:", authError);
+      if (error) {
+        console.error("Erro ao criar usuário:", error);
         toast({
           title: "Erro ao criar usuário",
-          description: authError.message,
+          description: error.message,
           variant: "destructive"
         });
         return;
-      }
-      
-      if (!authData.user) {
-        toast({
-          title: "Erro ao criar usuário",
-          description: "Não foi possível criar o usuário.",
-          variant: "destructive"
-        });
-        return;
-      }
-      
-      // Agora, atualizar o perfil do usuário
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          role: role || 'user',
-          is_admin: role === 'admin',
-          organization_id: newUser.organizationId
-        })
-        .eq('id', authData.user.id);
-      
-      if (profileError) {
-        console.error("Erro ao atualizar perfil:", profileError);
-        toast({
-          title: "Perfil criado parcialmente",
-          description: "Usuário criado, mas houve um erro ao configurar o perfil.",
-          variant: "destructive"
-        });
-        // Continuar mesmo com erro para que o usuário seja mostrado
       }
       
       // Recarregar a lista de usuários

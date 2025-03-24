@@ -41,42 +41,22 @@ export const useUserEdit = (fetchUsers: () => Promise<void>) => {
       const isAdmin = role === 'admin';
       const isSuperAdmin = selectedUser.isSuperAdmin;
       
-      // Atualizar o usuário usando a API Admin
-      if (name || email) {
-        const { error: authError } = await supabase.auth.admin.updateUserById(
-          selectedUser.id.toString(),
-          {
-            email: email,
-            user_metadata: { full_name: name }
-          }
-        );
-        
-        if (authError) {
-          console.error("Erro ao atualizar usuário:", authError);
-          toast({
-            title: "Erro ao atualizar",
-            description: authError.message,
-            variant: "destructive"
-          });
-          return;
-        }
-      }
+      // Atualizar o usuário usando a RPC function
+      const { error } = await supabase.rpc('update_user_profile', {
+        user_id: selectedUser.id.toString(),
+        name: name || undefined,
+        email: email || undefined,
+        role: role || undefined,
+        organization_id: selectedUser.organizationId,
+        is_admin: isAdmin,
+        is_super_admin: isSuperAdmin
+      });
       
-      // Atualizar o perfil separadamente
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          role,
-          is_admin: isAdmin,
-          is_super_admin: isSuperAdmin
-        })
-        .eq('id', selectedUser.id.toString());
-      
-      if (profileError) {
-        console.error("Erro ao atualizar perfil:", profileError);
+      if (error) {
+        console.error("Erro ao atualizar usuário:", error);
         toast({
           title: "Erro ao atualizar",
-          description: profileError.message,
+          description: error.message,
           variant: "destructive"
         });
         return;

@@ -49,10 +49,10 @@ export const useUserDelete = (fetchUsers: () => Promise<void>) => {
         }
       }
       
-      // Excluir o usuário usando a API Admin
-      const { error } = await supabase.auth.admin.deleteUser(
-        selectedUser.id.toString()
-      );
+      // Excluir o usuário usando a RPC function
+      const { error } = await supabase.rpc('delete_user', {
+        user_id: selectedUser.id.toString()
+      });
       
       if (error) {
         console.error("Erro ao excluir usuário:", error);
