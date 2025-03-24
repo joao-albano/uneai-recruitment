@@ -17,7 +17,10 @@ interface HeaderProps {
   sidebarCollapsed: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed }) => {
+const Header: React.FC<HeaderProps> = ({ 
+  toggleSidebar, 
+  sidebarCollapsed 
+}) => {
   const navigate = useNavigate();
   const { language, setLanguage } = useTheme();
   const { showBanner, isExpired } = useTrialPeriod();
@@ -49,7 +52,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed }) => {
         <span className="sr-only">Toggle Menu</span>
       </Button>
       
-      <AppLogo visible={true} />
+      <AppLogo visible={sidebarCollapsed} />
 
       <div className="flex-1" />
       
