@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '@/context/DataContext';
 import { Card, CardContent } from '@/components/ui/card';
@@ -21,7 +20,6 @@ const StudentsContent: React.FC = () => {
   const location = useLocation();
   const { isAdmin } = useAuth();
 
-  // Extract class filter from URL if present
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const classParam = searchParams.get('class');
@@ -66,18 +64,7 @@ const StudentsContent: React.FC = () => {
         description: `Visualizando alertas para ${student.name}`,
       });
       
-      // In a real app, you would navigate to the alerts page or show a modal
-      // For now we'll just show a toast with appropriate messaging depending on role
-      if (isAdmin) {
-        // For admin, proceed to full alerts view
-        navigate(`/alerts?studentId=${studentId}`);
-      } else {
-        // For regular users, show limited information
-        toast({
-          title: "Informação",
-          description: "Você tem acesso limitado aos alertas. Contate um administrador para mais detalhes.",
-        });
-      }
+      navigate(`/alerts?studentId=${studentId}`);
     }
   };
 
@@ -90,7 +77,6 @@ const StudentsContent: React.FC = () => {
         description: `Agendando atendimento para ${student.name}`,
       });
       
-      // Navigate to the scheduling page with the student ID pre-selected
       navigate(`/schedule?studentId=${studentId}`);
     }
   };
@@ -110,7 +96,6 @@ const StudentsContent: React.FC = () => {
   const clearClassFilter = () => {
     setClassFilter(null);
     
-    // Update URL to remove class filter
     const searchParams = new URLSearchParams(location.search);
     searchParams.delete('class');
     navigate({
@@ -118,7 +103,6 @@ const StudentsContent: React.FC = () => {
       search: searchParams.toString()
     }, { replace: true });
     
-    // Clear other filters if needed
     const shouldResetOtherFilters = clearAllFilters();
     
     if (shouldResetOtherFilters) {

@@ -28,18 +28,8 @@ const StudentActionMenu: React.FC<StudentActionMenuProps> = ({
   const { toast } = useToast();
 
   const handleViewAlertsClick = () => {
-    if (isAdmin) {
-      handleViewAlerts(studentId);
-    } else {
-      toast({
-        title: "Acesso restrito",
-        description: "Apenas administradores podem visualizar todos os alertas",
-        variant: "destructive"
-      });
-      
-      // Still call the function, it will show limited alerts for users
-      handleViewAlerts(studentId);
-    }
+    // Permitir que todos os usuários vejam alertas, similar à funcionalidade do sininho
+    handleViewAlerts(studentId);
   };
 
   const handleScheduleClick = () => {
