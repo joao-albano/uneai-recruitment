@@ -1,12 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Button } from "@/components/ui/button";
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import InviteUserDialog from './dialogs/InviteUserDialog';
 import CreateUserDialog from './CreateUserDialog';
 import EditUserDialog from './dialogs/EditUserDialog';
@@ -26,6 +23,7 @@ const UsersContent: React.FC = () => {
   
   const {
     users,
+    loading,
     newUser,
     selectedUser,
     showCreateDialog,
@@ -50,6 +48,10 @@ const UsersContent: React.FC = () => {
   
   // Filtra usuários com base na organização e nível de acesso
   const filteredUsers = React.useMemo(() => {
+    if (loading) {
+      return [];
+    }
+    
     if (isSuperAdmin) {
       // Super admin vê todos os usuários
       return users;
@@ -62,7 +64,32 @@ const UsersContent: React.FC = () => {
         user.organizationId === currentUser?.organizationId
       );
     }
-  }, [users, isAdmin, isSuperAdmin, currentUser]);
+  }, [users, isAdmin, isSuperAdmin, currentUser, loading]);
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen flex w-full">
+        <Sidebar 
+          isOpen={sidebarOpen} 
+          onClose={toggleSidebar} 
+          collapsed={sidebarCollapsed}
+          setCollapsed={setSidebarCollapsed}
+        />
+        
+        <div className="flex-1 flex flex-col">
+          <Header 
+            toggleSidebar={toggleSidebar} 
+            sidebarCollapsed={sidebarCollapsed} 
+          />
+          
+          <main className="flex-1 p-6 flex items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
+            <span className="ml-2">Carregando usuários...</span>
+          </main>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen flex w-full">

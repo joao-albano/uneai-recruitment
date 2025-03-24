@@ -175,7 +175,36 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_user_with_profile: {
+        Args: {
+          email: string
+          password: string
+          name: string
+          role?: string
+          organization_id?: string
+          is_admin?: boolean
+          is_super_admin?: boolean
+        }
+        Returns: string
+      }
+      delete_user: {
+        Args: {
+          user_id: string
+        }
+        Returns: undefined
+      }
+      update_user_profile: {
+        Args: {
+          user_id: string
+          name?: string
+          email?: string
+          role?: string
+          organization_id?: string
+          is_admin?: boolean
+          is_super_admin?: boolean
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
