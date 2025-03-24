@@ -13,11 +13,20 @@ export interface ProductSubscription {
   status: 'active' | 'inactive' | 'pending';
 }
 
+export interface OrganizationProduct {
+  id: string;
+  productType: ProductType;
+  isActive: boolean;
+}
+
 interface ProductContextType {
   currentProduct: ProductType | null;
   setCurrentProduct: (product: ProductType) => void;
   userSubscriptions: ProductSubscription[];
   subscribeToProduct: (productType: ProductType) => Promise<boolean>;
+  availableProducts: ProductType[];
+  hasAccessToProduct: (productType: ProductType) => boolean;
+  organizations: any[]; // Para satisfazer o tipo
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
@@ -28,8 +37,20 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
   const { toast } = useToast();
   const { userEmail } = useAuth();
   
+  // Lista de produtos disponíveis
+  const availableProducts: ProductType[] = ['retention', 'billing', 'recruitment'];
+  
+  // Lista simulada de organizações para uso em componentes
+  const organizations: any[] = [];
+  
   const setProduct = (product: ProductType) => {
     setCurrentProduct(product);
+  };
+  
+  const hasAccessToProduct = (productType: ProductType): boolean => {
+    return userSubscriptions.some(sub => 
+      sub.productType === productType && sub.status === 'active'
+    );
   };
   
   const subscribeToProduct = async (productType: ProductType) => {
@@ -70,7 +91,10 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
     currentProduct,
     setCurrentProduct,
     userSubscriptions,
-    subscribeToProduct
+    subscribeToProduct,
+    availableProducts,
+    hasAccessToProduct,
+    organizations
   };
 
   return (

@@ -1,10 +1,9 @@
 
 import React from 'react';
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { ProductSubscription } from '@/context/ProductContext';
 import { UserType } from '../types';
-import { ProductSubscription, useProduct } from '@/context/ProductContext';
-import { getProductDisplayName } from '../utils/userUtils';
 
 interface UserSubscriptionsProps {
   selectedUser: UserType;
@@ -19,38 +18,45 @@ const UserSubscriptions: React.FC<UserSubscriptionsProps> = ({
   isAdmin,
   isSuperAdmin
 }) => {
-  const { organizations } = useProduct();
+  // Só mostrar assinaturas para admins ou superadmins
+  if (!isAdmin && !isSuperAdmin) return null;
   
-  // Encontrar a organização do usuário
-  const userOrg = organizations.find(org => org.id === selectedUser.organizationId);
-  
-  // Encontrar os produtos ativos para a organização do usuário
-  const orgActiveProducts = userOrg?.products?.filter(p => p.active) || [];
-  
-  if ((!isAdmin && orgActiveProducts.length === 0) && !isSuperAdmin) return null;
+  // Filtrar assinaturas do usuário
+  const userSubscriptions = subscriptions.filter(
+    sub => sub.id.includes(selectedUser.id)
+  );
   
   return (
-    <div className="grid gap-2 pt-3 border-t">
-      <Label className="mb-2">Produtos Ativos para a Organização</Label>
-      <div className="grid gap-2">
-        {orgActiveProducts.map(product => (
-          <div key={product.type} className="flex items-center space-x-2">
-            <Checkbox 
-              id={`product-${product.type}`} 
-              checked={product.active} 
-              disabled={true} // Usuários não podem mudar os produtos da organização
-            />
-            <Label 
-              htmlFor={`product-${product.type}`}
-              className="text-sm font-normal"
-            >
-              {getProductDisplayName(product.type)}
-            </Label>
-          </div>
-        ))}
-        {orgActiveProducts.length === 0 && (
-          <p className="text-sm text-muted-foreground">
-            Não há produtos ativos para esta organização.
+    <div className="space-y-2">
+      <Label>Assinaturas de Produtos</Label>
+      
+      <div className="border rounded-md p-3">
+        {userSubscriptions.length > 0 ? (
+          <ul className="space-y-2">
+            {userSubscriptions.map((sub) => (
+              <li key={sub.id} className="flex justify-between items-center">
+                <div>
+                  <span className="capitalize">
+                    {sub.productType === 'retention' ? 'Retenção' : 
+                     sub.productType === 'billing' ? 'Financeiro' : 
+                     sub.productType === 'recruitment' ? 'Recrutamento' : 
+                     sub.productType}
+                  </span>
+                  <span className="text-xs text-muted-foreground ml-2">
+                    desde {new Date(sub.startDate).toLocaleDateString()}
+                  </span>
+                </div>
+                
+                <Badge variant={sub.status === 'active' ? 'default' : 'outline'}>
+                  {sub.status === 'active' ? 'Ativo' : 
+                   sub.status === 'pending' ? 'Pendente' : 'Inativo'}
+                </Badge>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-muted-foreground py-1">
+            Este usuário não possui assinaturas de produtos.
           </p>
         )}
       </div>

@@ -60,6 +60,7 @@ export type UploadRecord = {
   errorCount?: number;
 };
 
+// Alias Student to StudentData
 export type Student = StudentData;
 
 export type DataContextType = {
@@ -84,7 +85,7 @@ export type DataContextType = {
   updateSchedule: (updatedSchedule: ScheduleItem) => void;
   generateDemoData: () => void;
   sendWhatsAppSurvey: (studentId: string) => void;
-  // Added new methods for student CRUD operations
+  // Métodos CRUD para estudantes
   addStudent: (student: Student) => void;
   updateStudent: (student: Student) => void;
   deleteStudent: (id: string) => void;
