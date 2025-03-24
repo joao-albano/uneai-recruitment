@@ -127,6 +127,12 @@ export const useAuthOperations = () => {
       
       if (error) {
         console.error('Erro de login:', error.message);
+        
+        // Fornecer mensagem de erro mais específica para email não confirmado
+        if (error.message.includes('Email not confirmed')) {
+          return { success: false, error: 'Email not confirmed. Please check your inbox for the confirmation email.' };
+        }
+        
         return { success: false, error: error.message };
       }
       

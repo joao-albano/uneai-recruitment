@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -8,6 +9,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/auth';
+import { supabase } from '@/integrations/supabase/client';
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -24,6 +28,8 @@ const LoginForm = ({ onSwitchTab }: LoginFormProps) => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [isResendingEmail, setIsResendingEmail] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
   
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -33,8 +39,40 @@ const LoginForm = ({ onSwitchTab }: LoginFormProps) => {
     },
   });
 
+  const handleResendConfirmationEmail = async () => {
+    const email = form.getValues('email');
+    
+    if (!email) {
+      toast.error('Por favor, digite seu email primeiro');
+      return;
+    }
+    
+    setIsResendingEmail(true);
+    
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email
+      });
+      
+      if (error) {
+        console.error('Erro ao reenviar email:', error);
+        toast.error('Não foi possível reenviar o email de confirmação');
+      } else {
+        toast.success('Email de confirmação reenviado. Por favor, verifique sua caixa de entrada');
+        setEmailError(null);
+      }
+    } catch (error) {
+      console.error('Erro ao reenviar email:', error);
+      toast.error('Ocorreu um erro ao reenviar o email de confirmação');
+    } finally {
+      setIsResendingEmail(false);
+    }
+  };
+
   const onSubmit = async (values: LoginFormValues) => {
     setIsLoading(true);
+    setEmailError(null);
     
     try {
       console.log('Login attempt:', values);
@@ -46,7 +84,12 @@ const LoginForm = ({ onSwitchTab }: LoginFormProps) => {
         toast.success('Login realizado com sucesso!');
         navigate('/hub'); // Redireciona para o hub de produtos
       } else {
-        toast.error(result.error || 'Email ou senha incorretos');
+        // Verificar se o erro é de email não confirmado
+        if (result.error?.includes('Email not confirmed')) {
+          setEmailError('Email não confirmado. Por favor, verifique sua caixa de entrada ou reenvie o email de confirmação.');
+        } else {
+          toast.error(result.error || 'Email ou senha incorretos');
+        }
       }
     } catch (error) {
       console.error('Erro no login:', error);
@@ -86,6 +129,25 @@ const LoginForm = ({ onSwitchTab }: LoginFormProps) => {
               </FormItem>
             )}
           />
+          
+          {emailError && (
+            <Alert variant="destructive" className="mt-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Atenção</AlertTitle>
+              <AlertDescription>
+                {emailError}
+                <Button 
+                  variant="link" 
+                  className="p-0 h-auto font-normal ml-1"
+                  onClick={handleResendConfirmationEmail}
+                  disabled={isResendingEmail}
+                >
+                  {isResendingEmail ? 'Reenviando...' : 'Reenviar email de confirmação'}
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? 'Entrando...' : 'Entrar'}
           </Button>
