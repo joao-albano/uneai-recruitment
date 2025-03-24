@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Send } from 'lucide-react';
@@ -7,7 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { useData } from '@/context/DataContext';
+import { useStudents } from '@/context/students/StudentsContext';
+import { useAlerts } from '@/context/alerts/AlertsContext';
+import { useSurveys } from '@/context/surveys/SurveysContext';
 import { formSchema, FormValues } from './SurveyFormSchema';
 import StudentSelect from './StudentSelect';
 import ParentInfo from './ParentInfo';
@@ -20,7 +22,13 @@ const SurveyForm: React.FC = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
   const { toast } = useToast();
-  const { students, addSurvey, addAlert } = useData();
+  const { students } = useStudents();
+  const { addSurvey } = useSurveys();
+  const { addAlert } = useAlerts();
+  
+  useEffect(() => {
+    console.log('Student count in form:', students.length);
+  }, [students]);
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),

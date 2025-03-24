@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { useData } from '@/context/DataContext';
+import React, { useEffect } from 'react';
+import { useStudents } from '@/context/students/StudentsContext';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from '@/components/ui/input';
@@ -12,9 +12,16 @@ interface StudentSelectProps {
 }
 
 const StudentSelect: React.FC<StudentSelectProps> = ({ form }) => {
-  const { students } = useData();
+  const { students } = useStudents();
+
+  useEffect(() => {
+    // Log for debugging
+    console.log('Available students:', students.length);
+  }, [students]);
 
   const handleStudentSelect = (studentId: string) => {
+    console.log('Student selected:', studentId);
+    
     if (studentId) {
       const student = students.find(s => s.id === studentId);
       if (student) {
@@ -45,7 +52,7 @@ const StudentSelect: React.FC<StudentSelectProps> = ({ form }) => {
           <FormItem>
             <FormLabel className="text-base font-medium mb-2 block">Selecione o aluno</FormLabel>
             <Select
-              onValueChange={(value) => handleStudentSelect(value)}
+              onValueChange={handleStudentSelect}
               value={field.value}
             >
               <FormControl>

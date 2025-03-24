@@ -1,19 +1,25 @@
 
 import React from 'react';
-import { DataProvider } from '@/context/DataContext';
+import { StudentsProvider } from '@/context/students/StudentsContext';
+import { SurveysProvider } from '@/context/surveys/SurveysContext';
+import { AlertsProvider } from '@/context/alerts/AlertsContext';
 import { WhatsAppProvider } from '@/context/whatsapp/WhatsAppContext';
 import SurveyPageContent from '@/components/survey/SurveyPageContent';
 import { Layout } from '@/components/layout/Layout';
 
 const SurveyPage: React.FC = () => {
   return (
-    <DataProvider>
-      <WhatsAppProvider>
-        <Layout>
-          <SurveyPageContent />
-        </Layout>
-      </WhatsAppProvider>
-    </DataProvider>
+    <StudentsProvider>
+      <SurveysProvider>
+        <AlertsProvider>
+          <WhatsAppProvider>
+            <Layout>
+              <SurveyPageContent />
+            </Layout>
+          </WhatsAppProvider>
+        </AlertsProvider>
+      </SurveysProvider>
+    </StudentsProvider>
   );
 };
 
