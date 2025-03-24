@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { DataProvider } from '@/context/DataContext';
 import { Layout } from '@/components/layout/Layout';
 import Dashboard from '@/components/dashboard/Dashboard';

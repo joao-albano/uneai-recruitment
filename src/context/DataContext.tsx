@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, ReactNode } from 'react';
 import { StudentsProvider, useStudents } from './students/StudentsContext';
 import { SurveysProvider, useSurveys } from './surveys/SurveysContext';
@@ -60,8 +61,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 const DataProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { students, setStudents } = useStudents();
   const { surveys, addSurvey } = useSurveys();
-  const { schedules, addSchedule, updateScheduleStatus, updateSchedule, setSchedules } = useSchedules();
-  const { alerts, addAlert, markAlertAsRead, markAlertActionTaken, setAlerts } = useAlerts();
+  const { schedules, addSchedule, updateScheduleStatus, updateSchedule } = useSchedules();
+  const { alerts, addAlert, markAlertAsRead, markAlertActionTaken } = useAlerts();
   const { uploadHistory, addUploadRecord, clearUploadHistory } = useUploads();
   const { whatsAppConfig, whatsAppMessages, addWhatsAppMessage, sendWhatsAppSurvey: sendWhatsAppSurveyToStudent } = useWhatsApp();
   const { isLoading, generateDemoData } = useAppState();
