@@ -25,7 +25,7 @@ export const useOrganizations = () => {
   } = useOrganizationState();
 
   // Get data loading functionality
-  useOrganizationData(setOrganizations, setIsLoading);
+  const { loadOrganizations } = useOrganizationData(setOrganizations, setIsLoading);
 
   // Get dialog handling functionality
   const {
@@ -43,16 +43,7 @@ export const useOrganizations = () => {
     handleEditOrganization,
     handleDeleteOrganization
   } = useOrganizationCrud(
-    organizations,
-    setOrganizations,
-    newOrganization,
-    selectedOrganization,
-    setSelectedOrganization,
-    setShowCreateDialog,
-    setShowEditDialog,
-    setShowDeleteDialog,
-    setIsLoading,
-    resetNewOrganization
+    loadOrganizations
   );
 
   // Return everything needed by components
