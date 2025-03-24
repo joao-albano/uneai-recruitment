@@ -13,9 +13,10 @@ interface ProfileTabsProps {
     role: string;
   };
   isAdmin: boolean;
+  isSuperAdmin: boolean;
 }
 
-const ProfileTabs: React.FC<ProfileTabsProps> = ({ user, isAdmin }) => {
+const ProfileTabs: React.FC<ProfileTabsProps> = ({ user, isAdmin, isSuperAdmin }) => {
   return (
     <Tabs defaultValue="account" className="w-full">
       <TabsList className="grid w-full grid-cols-2 max-w-md">
