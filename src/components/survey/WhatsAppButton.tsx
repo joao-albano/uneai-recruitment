@@ -3,9 +3,11 @@ import React from 'react';
 import { MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { useData } from '@/context/DataContext';
 import { UseFormReturn } from 'react-hook-form';
 import { FormValues } from './SurveyFormSchema';
+import { useWhatsApp } from '@/context/whatsapp/WhatsAppContext';
+import { useStudents } from '@/context/students/StudentsContext';
+import { useAlerts } from '@/context/alerts/AlertsContext';
 
 interface WhatsAppButtonProps {
   form: UseFormReturn<FormValues>;
@@ -19,7 +21,9 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
   setSendingWhatsApp 
 }) => {
   const { toast } = useToast();
-  const { sendWhatsAppSurvey, whatsAppConfig } = useData();
+  const { students } = useStudents();
+  const { addAlert } = useAlerts();
+  const { whatsAppConfig, sendWhatsAppSurvey: sendWhatsAppSurveyToStudent } = useWhatsApp();
 
   const handleSendWhatsApp = () => {
     try {
@@ -35,8 +39,14 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
 
       setSendingWhatsApp(true);
       
+      // Find the student
+      const student = students.find(s => s.id === studentId);
+      if (!student) {
+        throw new Error('Aluno não encontrado');
+      }
+      
       // Send WhatsApp survey
-      sendWhatsAppSurvey(studentId);
+      sendWhatsAppSurveyToStudent(student, addAlert);
       
       const configEnabled = whatsAppConfig && whatsAppConfig.provider !== 'disabled';
       
@@ -63,7 +73,7 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
     }
   };
 
-  // Let's add some debug console logs to help diagnose the issue
+  // Debug console logs
   const studentId = form.getValues('studentId');
   console.log('Student ID:', studentId);
   console.log('Button disabled state:', sendingWhatsApp || !studentId);
