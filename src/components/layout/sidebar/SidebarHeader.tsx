@@ -6,16 +6,27 @@ import { useTheme } from '@/context/ThemeContext';
 
 interface SidebarHeaderProps {
   collapsed: boolean;
-  setCollapsed: (collapsed: boolean) => void;
-  onClose: () => void;
+  onToggleCollapse: () => void;
+  onClose?: () => void;
+  setCollapsed?: (collapsed: boolean) => void;
 }
 
 const SidebarHeader: React.FC<SidebarHeaderProps> = ({ 
   collapsed, 
-  setCollapsed, 
-  onClose 
+  onToggleCollapse,
+  onClose,
+  setCollapsed 
 }) => {
   const { theme } = useTheme();
+  
+  // Use onToggleCollapse directly, or fallback to setCollapsed for backward compatibility
+  const handleToggleCollapse = () => {
+    if (onToggleCollapse) {
+      onToggleCollapse();
+    } else if (setCollapsed) {
+      setCollapsed(!collapsed);
+    }
+  };
 
   return (
     <div className="flex h-16 items-center justify-between border-b px-4">
@@ -42,19 +53,21 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({
         <Button 
           variant="ghost" 
           size="icon" 
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={handleToggleCollapse}
           className="hidden lg:flex"
         >
           {collapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
         </Button>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={onClose} 
-          className="lg:hidden"
-        >
-          <X className="h-5 w-5" />
-        </Button>
+        {onClose && (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={onClose} 
+            className="lg:hidden"
+          >
+            <X className="h-5 w-5" />
+          </Button>
+        )}
       </div>
     </div>
   );

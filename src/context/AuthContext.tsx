@@ -2,11 +2,18 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 
+// Define User type
+interface User {
+  email: string;
+  role: string;
+}
+
 // Auth context type definition
 export interface AuthContextType {
   isAuthenticated: boolean;
   isAdmin: boolean;
   userEmail: string | null;
+  currentUser: User | null;
   login: (email: string, password: string) => boolean;
   logout: () => void;
 }
@@ -28,6 +35,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   
   // Check localStorage on initial load
   useEffect(() => {
@@ -39,6 +47,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setIsAuthenticated(true);
       setIsAdmin(adminStatus === "true");
       setUserEmail(storedEmail);
+      
+      // Set currentUser based on stored data
+      if (storedEmail) {
+        setCurrentUser({
+          email: storedEmail,
+          role: adminStatus === "true" ? "admin" : "user"
+        });
+      }
     }
   }, []);
   
@@ -48,6 +64,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setIsAuthenticated(true);
       setIsAdmin(true);
       setUserEmail(email);
+      setCurrentUser({ email, role: "admin" });
       localStorage.setItem("isAuthenticated", "true");
       localStorage.setItem("isAdmin", "true");
       localStorage.setItem("userEmail", email);
@@ -56,6 +73,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setIsAuthenticated(true);
       setIsAdmin(false);
       setUserEmail(email);
+      setCurrentUser({ email, role: "user" });
       localStorage.setItem("isAuthenticated", "true");
       localStorage.setItem("isAdmin", "false");
       localStorage.setItem("userEmail", email);
@@ -68,13 +86,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsAuthenticated(false);
     setIsAdmin(false);
     setUserEmail(null);
+    setCurrentUser(null);
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("isAdmin");
     localStorage.removeItem("userEmail");
   };
   
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isAdmin, userEmail, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isAdmin, userEmail, currentUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

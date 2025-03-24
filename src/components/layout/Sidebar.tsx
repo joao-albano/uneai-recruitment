@@ -62,6 +62,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <SidebarHeader 
         collapsed={collapsed} 
         onToggleCollapse={handleToggleCollapse} 
+        onClose={onClose}
       />
       
       <div className="flex-1 px-3 py-2 overflow-y-auto">
@@ -71,25 +72,25 @@ const Sidebar: React.FC<SidebarProps> = ({
         >
           <SidebarNavLink 
             to="/home" 
-            icon={<Home className="h-5 w-5" />} 
+            icon={Home} 
             label="Home" 
             collapsed={collapsed}
           />
           <SidebarNavLink 
             to="/dashboard" 
-            icon={<BarChart2 className="h-5 w-5" />} 
+            icon={BarChart2} 
             label="Dashboard" 
             collapsed={collapsed}
           />
           <SidebarNavLink 
             to="/model" 
-            icon={<LineChart className="h-5 w-5" />} 
+            icon={LineChart} 
             label="Model" 
             collapsed={collapsed}
           />
           <SidebarNavLink 
             to="/upload" 
-            icon={<Upload className="h-5 w-5" />} 
+            icon={Upload} 
             label="Uploads" 
             collapsed={collapsed}
           />
@@ -101,25 +102,25 @@ const Sidebar: React.FC<SidebarProps> = ({
         >
           <SidebarNavLink 
             to="/alerts" 
-            icon={<Bell className="h-5 w-5" />} 
+            icon={Bell} 
             label="Alerts" 
             collapsed={collapsed}
           />
           <SidebarNavLink 
             to="/survey" 
-            icon={<FileSpreadsheet className="h-5 w-5" />} 
+            icon={FileSpreadsheet} 
             label="Survey" 
             collapsed={collapsed}
           />
           <SidebarNavLink 
             to="/schedule" 
-            icon={<Calendar className="h-5 w-5" />} 
+            icon={Calendar} 
             label="Schedule" 
             collapsed={collapsed}
           />
           <SidebarNavLink 
             to="/students" 
-            icon={<Users className="h-5 w-5" />} 
+            icon={Users} 
             label="Students" 
             collapsed={collapsed}
           />
@@ -131,13 +132,13 @@ const Sidebar: React.FC<SidebarProps> = ({
         >
           <SidebarNavLink 
             to="/pricing" 
-            icon={<DollarSign className="h-5 w-5" />} 
+            icon={DollarSign} 
             label="Pricing" 
             collapsed={collapsed}
           />
           <SidebarNavLink 
             to="/user-billing" 
-            icon={<DollarSign className="h-5 w-5" />} 
+            icon={DollarSign} 
             label="My Billing" 
             collapsed={collapsed}
           />
@@ -150,25 +151,25 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             <SidebarNavLink 
               to="/admin/dashboard" 
-              icon={<BarChart2 className="h-5 w-5" />} 
+              icon={BarChart2} 
               label="Admin Dashboard" 
               collapsed={collapsed}
             />
             <SidebarNavLink 
               to="/users" 
-              icon={<Users className="h-5 w-5" />} 
+              icon={Users} 
               label="Users" 
               collapsed={collapsed}
             />
             <SidebarNavLink 
               to="/admin/payments" 
-              icon={<DollarSign className="h-5 w-5" />} 
+              icon={DollarSign} 
               label="Payments" 
               collapsed={collapsed}
             />
             <SidebarNavLink 
               to="/admin/plans" 
-              icon={<DollarSign className="h-5 w-5" />} 
+              icon={DollarSign} 
               label="Plans" 
               collapsed={collapsed}
             />
@@ -181,7 +182,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         
         <SidebarNavLink 
           to="/settings" 
-          icon={<Settings className="h-5 w-5" />} 
+          icon={Settings} 
           label="Settings" 
           collapsed={collapsed}
         />
