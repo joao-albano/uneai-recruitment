@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
@@ -23,6 +23,7 @@ import SidebarFooter from './sidebar/SidebarFooter';
 import SidebarNavigationGroup from './sidebar/SidebarNavigationGroup';
 import SidebarNavLink from './sidebar/SidebarNavLink';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -39,6 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { currentUser, logout } = useAuth();
   const [sidebarWidth, setSidebarWidth] = useState(collapsed ? 80 : 280);
+  const { language } = useTheme();
   
   const isAdmin = currentUser?.role === 'admin';
   
@@ -65,13 +67,13 @@ const Sidebar: React.FC<SidebarProps> = ({
       
       <div className="flex-1 px-3 py-2 overflow-y-auto">
         <SidebarNavigationGroup 
-          title="Navigation" 
+          title="Navegação" 
           collapsed={collapsed}
         >
           <SidebarNavLink 
             to="/home" 
             icon={Home} 
-            label="Home" 
+            label="Início" 
             collapsed={collapsed}
           />
           <SidebarNavLink 
@@ -83,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <SidebarNavLink 
             to="/model" 
             icon={LineChart} 
-            label="Model" 
+            label="Modelo" 
             collapsed={collapsed}
           />
           <SidebarNavLink 
@@ -95,80 +97,80 @@ const Sidebar: React.FC<SidebarProps> = ({
         </SidebarNavigationGroup>
         
         <SidebarNavigationGroup 
-          title="Monitoring" 
+          title="Monitoramento" 
           collapsed={collapsed}
         >
           <SidebarNavLink 
             to="/alerts" 
             icon={Bell} 
-            label="Alerts" 
+            label="Alertas" 
             collapsed={collapsed}
           />
           <SidebarNavLink 
             to="/survey" 
             icon={FileSpreadsheet} 
-            label="Survey" 
+            label="Questionários" 
             collapsed={collapsed}
           />
           <SidebarNavLink 
             to="/schedule" 
             icon={Calendar} 
-            label="Schedule" 
+            label="Agenda" 
             collapsed={collapsed}
           />
           <SidebarNavLink 
             to="/students" 
             icon={Users} 
-            label="Students" 
+            label="Alunos" 
             collapsed={collapsed}
           />
         </SidebarNavigationGroup>
         
         <SidebarNavigationGroup 
-          title="Billing" 
+          title="Faturamento" 
           collapsed={collapsed}
         >
           <SidebarNavLink 
             to="/pricing" 
             icon={DollarSign} 
-            label="Pricing" 
+            label="Preços" 
             collapsed={collapsed}
           />
           <SidebarNavLink 
             to="/user-billing" 
             icon={DollarSign} 
-            label="My Billing" 
+            label="Meu Faturamento" 
             collapsed={collapsed}
           />
         </SidebarNavigationGroup>
         
         {isAdmin && (
           <SidebarNavigationGroup 
-            title="Administration" 
+            title="Administração" 
             collapsed={collapsed}
           >
             <SidebarNavLink 
               to="/admin/dashboard" 
               icon={BarChart2} 
-              label="Admin Dashboard" 
+              label="Painel Admin" 
               collapsed={collapsed}
             />
             <SidebarNavLink 
               to="/users" 
               icon={Users} 
-              label="Users" 
+              label="Usuários" 
               collapsed={collapsed}
             />
             <SidebarNavLink 
               to="/admin/payments" 
               icon={DollarSign} 
-              label="Payments" 
+              label="Pagamentos" 
               collapsed={collapsed}
             />
             <SidebarNavLink 
               to="/admin/plans" 
               icon={DollarSign} 
-              label="Plans" 
+              label="Planos" 
               collapsed={collapsed}
             />
           </SidebarNavigationGroup>
@@ -181,7 +183,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         <SidebarNavLink 
           to="/settings" 
           icon={Settings} 
-          label="Settings" 
+          label="Configurações" 
           collapsed={collapsed}
         />
         
@@ -195,7 +197,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             onClick={() => logout()}
           >
             <LogOut className="h-5 w-5" />
-            {!collapsed && <span>Logout</span>}
+            {!collapsed && <span>Sair</span>}
           </Button>
         </Link>
       </div>
