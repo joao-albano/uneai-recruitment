@@ -1,6 +1,5 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
 
 // Define User type
 interface User {
@@ -18,8 +17,15 @@ export interface AuthContextType {
   logout: () => void;
 }
 
-// Create the context
-const AuthContext = createContext<AuthContextType | null>(null);
+// Create the context with a default value matching the interface
+const AuthContext = createContext<AuthContextType>({
+  isAuthenticated: false,
+  isAdmin: false,
+  userEmail: null,
+  currentUser: null,
+  login: () => false,
+  logout: () => {},
+});
 
 // Custom hook to use the auth context
 export const useAuth = () => {

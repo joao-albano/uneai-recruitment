@@ -5,8 +5,6 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import {
-  ChevronRight,
-  Menu,
   Home,
   BarChart2,
   LineChart,
@@ -67,7 +65,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       
       <div className="flex-1 px-3 py-2 overflow-y-auto">
         <SidebarNavigationGroup 
-          title={collapsed ? "" : "Navigation"} 
+          title="Navigation" 
           collapsed={collapsed}
         >
           <SidebarNavLink 
@@ -97,7 +95,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </SidebarNavigationGroup>
         
         <SidebarNavigationGroup 
-          title={collapsed ? "" : "Monitoring"} 
+          title="Monitoring" 
           collapsed={collapsed}
         >
           <SidebarNavLink 
@@ -127,7 +125,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </SidebarNavigationGroup>
         
         <SidebarNavigationGroup 
-          title={collapsed ? "" : "Billing"} 
+          title="Billing" 
           collapsed={collapsed}
         >
           <SidebarNavLink 
@@ -146,7 +144,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         
         {isAdmin && (
           <SidebarNavigationGroup 
-            title={collapsed ? "" : "Administration"} 
+            title="Administration" 
             collapsed={collapsed}
           >
             <SidebarNavLink 
@@ -194,7 +192,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               "w-full justify-start px-2 my-1 gap-3", 
               collapsed && "justify-center p-2"
             )}
-            onClick={() => logout && logout()}
+            onClick={() => logout()}
           >
             <LogOut className="h-5 w-5" />
             {!collapsed && <span>Logout</span>}

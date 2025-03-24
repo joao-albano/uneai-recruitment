@@ -6,7 +6,7 @@ import { LucideIcon } from 'lucide-react';
 
 interface SidebarNavLinkProps {
   to: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   label: string;
   collapsed: boolean;
 }

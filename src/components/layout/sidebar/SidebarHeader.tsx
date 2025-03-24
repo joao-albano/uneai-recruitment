@@ -6,7 +6,7 @@ import { useTheme } from '@/context/ThemeContext';
 
 interface SidebarHeaderProps {
   collapsed: boolean;
-  onToggleCollapse: () => void;
+  onToggleCollapse?: () => void;
   onClose?: () => void;
   setCollapsed?: (collapsed: boolean) => void;
 }
