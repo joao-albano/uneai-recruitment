@@ -75,11 +75,13 @@ const UploadPage: React.FC = () => {
                         </p>
                         <ul className="list-disc pl-6 mt-2 space-y-1 text-sm">
                           <li><strong>nome</strong> - Nome completo do aluno</li>
+                          <li><strong>registro</strong> - Número de matrícula do aluno</li>
                           <li><strong>turma</strong> - Turma do aluno (ex: 9A, 8B)</li>
+                          <li><strong>segmento</strong> - Segmento escolar (ENSINO MÉDIO, FUNDAMENTAL I, etc.)</li>
                           <li><strong>nota</strong> - Nota média do aluno (de 0 a 10)</li>
                           <li><strong>frequencia</strong> - Porcentagem de presença (de 0 a 100)</li>
-                          <li><strong>responsavel</strong> - Nome do responsável pelo aluno</li>
-                          <li><strong>contato</strong> - Número de telefone do responsável no formato (XX) XXXXX-XXXX</li>
+                          <li><strong>nome_responsavel</strong> - Nome do responsável pelo aluno</li>
+                          <li><strong>contato_responsavel</strong> - Número de telefone do responsável no formato (XX) XXXXX-XXXX</li>
                         </ul>
                       </div>
                       

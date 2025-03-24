@@ -41,14 +41,14 @@ const UploadFormContent: React.FC = () => {
   };
   
   const requiredColumns = [
-    { name: 'nome', description: 'Nome completo do aluno', example: 'João Silva' },
-    { name: 'registro', description: 'Número de matrícula do aluno', example: '12345' },
-    { name: 'turma', description: 'Turma do aluno', example: '9A' },
-    { name: 'segmento', description: 'Segmento escolar', example: 'ENSINO MÉDIO' },
-    { name: 'nota', description: 'Nota média (0-10)', example: '7.5' },
-    { name: 'frequencia', description: 'Porcentagem de presença (0-100)', example: '85' },
-    { name: 'responsavel', description: 'Nome do responsável', example: 'Roberto Silva' },
-    { name: 'contato', description: 'Telefone do responsável', example: '(11) 98765-4321' },
+    { name: 'nome', description: 'Nome completo do aluno', example: 'João Silva', required: true },
+    { name: 'registro', description: 'Número de matrícula do aluno', example: '12345', required: true },
+    { name: 'turma', description: 'Turma do aluno', example: '9A', required: true },
+    { name: 'segmento', description: 'Segmento escolar (ENSINO MÉDIO, FUNDAMENTAL I, etc.)', example: 'ENSINO MÉDIO', required: true },
+    { name: 'nota', description: 'Nota média (0-10)', example: '7.5', required: true },
+    { name: 'frequencia', description: 'Porcentagem de presença (0-100)', example: '85', required: true },
+    { name: 'nome_responsavel', description: 'Nome do responsável', example: 'Maria da Silva' },
+    { name: 'contato_responsavel', description: 'Telefone do responsável', example: '(11) 98765-4321' },
   ];
   
   return (
