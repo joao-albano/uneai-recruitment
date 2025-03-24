@@ -79,7 +79,7 @@ const SignupForm = ({ onSwitchTab, onSuccess }: SignupFormProps) => {
         return;
       }
       
-      // Criar nova organização
+      // Tentativa 1: Criar nova organização usando POST direto na URL
       const { data: newOrg, error: orgError } = await supabase
         .from('organizations')
         .insert([
@@ -93,12 +93,16 @@ const SignupForm = ({ onSwitchTab, onSuccess }: SignupFormProps) => {
       
       if (orgError) {
         console.error('Erro ao criar organização:', orgError);
-        toast.error('Erro ao criar organização');
+        
+        // Mesmo com erro na criação da organização, permitimos que o usuário prossiga
+        // Será possível vincular a organização posteriormente
+        toast.error('Não foi possível criar a organização, mas sua conta foi criada');
+        onSuccess(values.email);
         return;
       }
       
-      // Vincular organização ao usuário (atualizando o perfil criado pelo trigger)
-      if (data.user) {
+      // Se chegou aqui, a organização foi criada com sucesso
+      if (data.user && newOrg) {
         const { error: profileError } = await supabase
           .from('profiles')
           .update({
