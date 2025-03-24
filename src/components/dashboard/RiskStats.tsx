@@ -28,7 +28,7 @@ const RiskStats: React.FC<RiskStatsProps> = ({
   const navigate = useNavigate();
   
   return (
-    <Card className="shadow-sm hover:shadow-md transition-shadow">
+    <Card className="shadow-sm hover:shadow-md transition-shadow mt-8">
       <CardContent className="p-6">
         <div className="space-y-6">
           {/* Overview Section */}
