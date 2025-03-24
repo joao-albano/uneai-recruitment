@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
@@ -32,12 +33,12 @@ const Header: React.FC<HeaderProps> = ({
   // This would come from your payment system in a real app
   const hasPendingInvoice = false;
   
-  // Create mock user data for UserMenu
+  // Create user data for UserMenu com base nos dados do contexto
   const user = {
-    name: currentUser?.email?.split('@')[0] || 'User',
+    name: currentUser?.name || currentUser?.email?.split('@')[0] || 'Usuário',
     email: currentUser?.email || 'user@escola.edu',
     role: currentUser?.role || 'user',
-    initials: (currentUser?.email?.[0] || 'U').toUpperCase(),
+    initials: (currentUser?.name?.[0] || currentUser?.email?.[0] || 'U').toUpperCase(),
   };
   
   return (

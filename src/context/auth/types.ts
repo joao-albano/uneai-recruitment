@@ -10,6 +10,7 @@ export interface Organization {
 
 // Define User profile type
 export interface UserProfile {
+  name?: string; // Nome do usuário
   email: string;
   role: string;
   organizationId?: string;

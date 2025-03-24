@@ -60,6 +60,17 @@ export const useAuthOperations = () => {
   // Função para buscar o perfil do usuário e sua organização
   const fetchUserProfile = async (userId: string) => {
     try {
+      // Buscar o usuário de auth.users para obter metadados
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) {
+        console.error('Erro ao buscar dados do usuário:', userError);
+        return;
+      }
+      
+      // Extrair o nome completo dos metadados
+      const fullName = userData.user?.user_metadata?.full_name;
+      
       // Buscar perfil do usuário
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
@@ -97,6 +108,7 @@ export const useAuthOperations = () => {
             
             // Atualizar o currentUser com todos os dados
             setCurrentUser({
+              name: fullName || profile.email.split('@')[0],
               email: profile.email,
               role: profile.role,
               organizationId: org.id,
@@ -107,6 +119,7 @@ export const useAuthOperations = () => {
         } else {
           // Se não tiver organização, atualizar apenas com os dados do perfil
           setCurrentUser({
+            name: fullName || profile.email.split('@')[0],
             email: profile.email,
             role: profile.role,
             isSuperAdmin: profile.is_super_admin

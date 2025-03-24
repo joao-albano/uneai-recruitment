@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DataProvider } from '@/context/DataContext';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
@@ -10,17 +10,19 @@ import ProfileTabs from '@/components/profile/ProfileTabs';
 const ProfilePage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { isAdmin, userEmail } = useAuth();
+  const { isAdmin, userEmail, currentUser, currentOrganization, isSuperAdmin } = useAuth();
   
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  // Criar objeto de usuário com base nos dados atualizados do contexto de autenticação
   const user = {
-    name: isAdmin ? 'Admin' : 'Usuário',
-    email: userEmail || (isAdmin ? 'admin@escola.edu' : 'user@escola.edu'),
-    role: isAdmin ? 'admin' : 'user',
-    initials: isAdmin ? 'AD' : 'US'
+    name: currentUser?.email?.split('@')[0] || 'Usuário',
+    email: userEmail || '',
+    role: currentUser?.role || 'user',
+    initials: (currentUser?.email?.[0] || 'U').toUpperCase(),
+    organization: currentOrganization?.name
   };
   
   return (
@@ -49,8 +51,9 @@ const ProfilePage: React.FC = () => {
                 <ProfileHeader 
                   name={user.name}
                   email={user.email}
-                  role={user.role}
+                  role={isSuperAdmin ? 'Super Admin' : (isAdmin ? 'admin' : 'user')}
                   initials={user.initials}
+                  organization={user.organization}
                 />
               </div>
 

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -24,7 +25,11 @@ interface UserMenuProps {
 
 const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   const navigate = useNavigate();
-  const { logout, isAdmin } = useAuth();
+  const { logout, isAdmin, currentUser } = useAuth();
+  
+  // Usar o nome do contexto de autenticação ou recorrer ao que foi passado
+  const displayName = currentUser?.name || user.name;
+  const displayInitials = (currentUser?.name?.[0] || user.initials).toUpperCase();
   
   const handleLogout = async () => {
     await logout();
@@ -45,7 +50,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
         <Button variant="ghost" className="p-0 relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
             <AvatarFallback className="bg-primary text-primary-foreground">
-              {user.initials}
+              {displayInitials}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -53,7 +58,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.name}</p>
+            <p className="text-sm font-medium leading-none">{displayName}</p>
             <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
           </div>
         </DropdownMenuLabel>
