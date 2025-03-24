@@ -1,9 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { WhatsAppMessage } from '@/types/whatsapp';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, ChevronDown, ChevronUp } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -26,6 +26,7 @@ const MessageDetailDialog: React.FC<MessageDetailDialogProps> = ({
   onOpenChange 
 }) => {
   const { students } = useData();
+  const [isConversationExpanded, setIsConversationExpanded] = useState(false);
   
   if (!message) return null;
 
@@ -110,10 +111,23 @@ De nada! Agradeço o contato e a preocupação com o desenvolvimento do(a) meu/m
           </div>
 
           <div className="space-y-2">
-            <h4 className="text-sm font-medium">Conversa completa</h4>
-            <div className="p-3 bg-muted rounded-md whitespace-pre-line text-sm max-h-[350px] overflow-y-auto">
-              {conversationContent}
-            </div>
+            <button 
+              onClick={() => setIsConversationExpanded(!isConversationExpanded)}
+              className="flex w-full items-center justify-between rounded-md bg-muted p-2 text-sm font-medium"
+            >
+              <span>Conversa completa</span>
+              {isConversationExpanded ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </button>
+            
+            {isConversationExpanded && (
+              <div className="p-3 bg-muted rounded-md whitespace-pre-line text-sm max-h-[350px] overflow-y-auto">
+                {conversationContent}
+              </div>
+            )}
           </div>
         </div>
       </DialogContent>

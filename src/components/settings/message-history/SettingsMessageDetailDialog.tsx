@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
 import { WhatsAppMessage } from '@/types/whatsapp';
 import { useTheme } from '@/context/ThemeContext';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { 
   Dialog, 
   DialogContent, 
@@ -27,6 +28,7 @@ const SettingsMessageDetailDialog: React.FC<SettingsMessageDetailDialogProps> = 
 }) => {
   const { language } = useTheme();
   const dateLocale = language === 'pt-BR' ? ptBR : enUS;
+  const [isConversationExpanded, setIsConversationExpanded] = useState(false);
   
   if (!message) return null;
 
@@ -52,7 +54,7 @@ De nada! Agradeço o contato e a preocupação com o desenvolvimento do(a) meu/m
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>
             {language === 'pt-BR' ? 'Detalhes da Mensagem' : 'Message Details'}
@@ -84,14 +86,25 @@ De nada! Agradeço o contato e a preocupação com o desenvolvimento do(a) meu/m
           </div>
           
           <div>
-            <h4 className="text-sm font-medium text-muted-foreground mb-1">
-              {language === 'pt-BR' ? 'Conversa Completa' : 'Complete Conversation'}
-            </h4>
-            <ScrollArea className="h-[350px] rounded-md border p-4">
-              <div className="whitespace-pre-wrap">
-                {conversationContent}
-              </div>
-            </ScrollArea>
+            <button
+              onClick={() => setIsConversationExpanded(!isConversationExpanded)}
+              className="flex w-full items-center justify-between rounded-md border p-2 text-sm font-medium mb-2"
+            >
+              <span>{language === 'pt-BR' ? 'Conversa Completa' : 'Complete Conversation'}</span>
+              {isConversationExpanded ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </button>
+            
+            {isConversationExpanded && (
+              <ScrollArea className="h-[350px] rounded-md border p-4">
+                <div className="whitespace-pre-wrap">
+                  {conversationContent}
+                </div>
+              </ScrollArea>
+            )}
           </div>
         </div>
       </DialogContent>
