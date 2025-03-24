@@ -20,6 +20,7 @@ export const fetchUsers = async () => {
       `);
     
     if (error) {
+      console.error('Erro ao buscar usuários:', error);
       throw error;
     }
     
@@ -40,6 +41,7 @@ export const fetchOrganizations = async () => {
       .select('id, name');
     
     if (error) {
+      console.error('Erro ao buscar organizações:', error);
       throw error;
     }
     
@@ -67,6 +69,7 @@ export const createUser = async (userData: NewUserType) => {
     });
     
     if (error) {
+      console.error('Erro ao criar usuário:', error);
       throw error;
     }
     
@@ -94,6 +97,7 @@ export const updateUser = async (userId: string, userData: Partial<UserType>) =>
     });
     
     if (error) {
+      console.error('Erro ao atualizar usuário:', error);
       throw error;
     }
     
@@ -115,6 +119,7 @@ export const deleteUser = async (userId: string) => {
     });
     
     if (error) {
+      console.error('Erro ao excluir usuário:', error);
       throw error;
     }
     

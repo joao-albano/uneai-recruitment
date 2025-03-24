@@ -1,7 +1,7 @@
 
 import { useCallback } from 'react';
 import { UserType } from '../types';
-import { supabase } from '@/integrations/supabase/client';
+import { deleteUser } from '../api/userManagementApi';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth';
 
@@ -22,7 +22,7 @@ export const useUserDelete = (fetchUsers: () => Promise<void>) => {
       }
       
       // Verificar se o usuário está tentando excluir a própria conta
-      if (currentUser && selectedUser.id === Number(currentUser.id)) {
+      if (currentUser && selectedUser.id === currentUser.id) {
         toast({
           title: "Operação não permitida",
           description: "Não é possível excluir sua própria conta.",
@@ -31,38 +31,8 @@ export const useUserDelete = (fetchUsers: () => Promise<void>) => {
         return;
       }
       
-      // Verificar se o usuário é o último admin de uma organização
-      if (selectedUser.role === 'admin') {
-        const { data: admins, error: adminsError } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('organization_id', selectedUser.organizationId)
-          .eq('is_admin', true);
-        
-        if (!adminsError && admins && admins.length <= 1) {
-          toast({
-            title: "Operação não permitida",
-            description: "Não é possível excluir o último administrador da organização.",
-            variant: "destructive"
-          });
-          return;
-        }
-      }
-      
-      // Excluir o usuário usando a RPC function
-      const { error } = await supabase.rpc('delete_user', {
-        user_id: selectedUser.id.toString()
-      });
-      
-      if (error) {
-        console.error("Erro ao excluir usuário:", error);
-        toast({
-          title: "Erro ao excluir",
-          description: error.message,
-          variant: "destructive"
-        });
-        return;
-      }
+      // Chamar a função de API para excluir o usuário
+      await deleteUser(selectedUser.id.toString());
       
       // Recarregar a lista de usuários
       await fetchUsers();

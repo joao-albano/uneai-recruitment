@@ -1,7 +1,7 @@
 
 import { useCallback } from 'react';
 import { NewUserType } from '../types';
-import { supabase } from '@/integrations/supabase/client';
+import { createUser } from '../api/userManagementApi';
 import { useToast } from '@/hooks/use-toast';
 
 export const useUserCreate = (fetchUsers: () => Promise<void>) => {
@@ -30,26 +30,16 @@ export const useUserCreate = (fetchUsers: () => Promise<void>) => {
         return;
       }
       
-      // Usar o RPC function para criar o usuário
-      const { data, error } = await supabase.rpc('create_user_with_profile', {
+      // Chamar a função de API para criar o usuário
+      await createUser({
         email,
         password,
         name,
         role: role || 'user',
-        organization_id: newUser.organizationId,
-        is_admin: role === 'admin',
-        is_super_admin: false
+        organizationId: newUser.organizationId,
+        isSuperAdmin: false,
+        initials: ''
       });
-      
-      if (error) {
-        console.error("Erro ao criar usuário:", error);
-        toast({
-          title: "Erro ao criar usuário",
-          description: error.message,
-          variant: "destructive"
-        });
-        return;
-      }
       
       // Recarregar a lista de usuários
       await fetchUsers();

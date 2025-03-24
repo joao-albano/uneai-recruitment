@@ -1,7 +1,7 @@
 
 import { useState, useCallback } from 'react';
 import { UserType } from '../types';
-import { supabase } from '@/integrations/supabase/client';
+import { fetchUsers } from '../api/userManagementApi';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth';
 
@@ -13,45 +13,25 @@ export const useUserFetch = () => {
   const { currentUser } = useAuth();
   
   // Carregar usuários do Supabase
-  const fetchUsers = useCallback(async () => {
+  const fetchUsersData = useCallback(async () => {
     try {
       setLoading(true);
       
-      // Buscar todos os perfis de usuários
-      const { data, error } = await supabase
-        .from('profiles')
-        .select(`
-          id,
-          email,
-          role,
-          is_admin,
-          is_super_admin,
-          organization_id,
-          organizations(name)
-        `);
+      // Buscar todos os perfis de usuários usando nossa API function
+      const profiles = await fetchUsers();
       
-      if (error) {
-        console.error('Erro ao buscar usuários:', error);
-        toast({
-          title: "Erro ao carregar usuários",
-          description: error.message,
-          variant: "destructive"
-        });
+      if (!profiles) {
+        setUsers([]);
+        setLoading(false);
         return;
       }
       
       // Mapear dados do supabase para o formato esperado pelo componente
-      const mappedUsers: UserType[] = await Promise.all(data.map(async (profile) => {
-        // Buscar dados adicionais do usuário do auth.users
-        const { data: userData } = await supabase.auth.admin.getUserById(profile.id);
-        
+      const mappedUsers: UserType[] = profiles.map((profile: any) => {
         // Gerar iniciais do nome
-        const fullName = userData?.user?.user_metadata?.full_name || profile.email?.split('@')[0] || '';
+        const fullName = profile.email?.split('@')[0] || '';
         const initials = fullName
-          .split(' ')
           .slice(0, 2)
-          .map(word => word[0])
-          .join('')
           .toUpperCase();
         
         let organizationName: string | undefined;
@@ -64,7 +44,7 @@ export const useUserFetch = () => {
         }
         
         return {
-          id: Number(profile.id), // Convertendo UUID para número para compatibilidade
+          id: profile.id,
           name: fullName,
           email: profile.email,
           role: profile.role,
@@ -73,13 +53,13 @@ export const useUserFetch = () => {
           organizationName: organizationName,
           isSuperAdmin: profile.is_super_admin
         };
-      }));
+      });
       
       // Filtrar o usuário atual da lista
       const filteredUsers = mappedUsers.filter(user => 
         // Se o currentUser for null ou undefined, não filtra nada
         // Caso contrário, exclui o usuário atual da lista
-        !currentUser || user.id !== Number(currentUser.id)
+        !currentUser || user.id !== currentUser.id
       );
       
       setUsers(filteredUsers);
@@ -113,6 +93,6 @@ export const useUserFetch = () => {
     users,
     loading,
     isLastAdmin,
-    fetchUsers
+    fetchUsers: fetchUsersData
   };
 };
