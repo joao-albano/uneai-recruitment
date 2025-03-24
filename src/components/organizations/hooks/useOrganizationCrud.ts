@@ -78,19 +78,21 @@ export const useOrganizationCrud = (
       
       // Here we would call API to update organization
       const updatedOrganizations = organizations.map(org => 
-        org.id === selectedOrganization.id ? selectedOrganization : org
+        org.id === selectedOrganization.id ? {...selectedOrganization} : org
       );
       
       setOrganizations(updatedOrganizations);
-      toast.success("Organização atualizada com sucesso");
       
-      // Resetar o estado após a atualização
+      // Important: Close the dialog and reset selected organization BEFORE toast
       setSelectedOrganization(null);
       setShowEditDialog(false);
+      
+      toast.success("Organização atualizada com sucesso");
     } catch (error) {
       console.error("Erro ao atualizar organização:", error);
       toast.error("Erro ao atualizar organização");
     } finally {
+      // Make sure loading state is reset even if there's an error
       setIsLoading(false);
     }
   }, [organizations, selectedOrganization, setOrganizations, setSelectedOrganization, setShowEditDialog, setIsLoading]);
@@ -119,16 +121,17 @@ export const useOrganizationCrud = (
         org => org.id !== selectedOrganization.id
       );
       
-      setOrganizations(filteredOrganizations);
-      toast.success("Organização excluída com sucesso");
-      
-      // Resetar o estado após a exclusão
+      // Close dialog and reset selection BEFORE updating the list and showing toast
       setSelectedOrganization(null);
       setShowDeleteDialog(false);
+      
+      setOrganizations(filteredOrganizations);
+      toast.success("Organização excluída com sucesso");
     } catch (error) {
       console.error("Erro ao excluir organização:", error);
       toast.error("Erro ao excluir organização");
     } finally {
+      // Make sure loading state is reset even if there's an error
       setIsLoading(false);
     }
   }, [organizations, selectedOrganization, setOrganizations, setSelectedOrganization, setShowDeleteDialog, setIsLoading]);

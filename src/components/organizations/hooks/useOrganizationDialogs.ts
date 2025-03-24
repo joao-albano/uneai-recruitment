@@ -10,8 +10,8 @@ export const useOrganizationDialogs = (
 ) => {
   const handleOpenEditDialog = useCallback((organization: OrganizationType) => {
     try {
-      // Usar uma cópia profunda para evitar problemas de referência
-      const orgCopy = structuredClone(organization);
+      // Create a deep copy to avoid reference issues
+      const orgCopy = JSON.parse(JSON.stringify(organization)) as OrganizationType;
       setSelectedOrganization(orgCopy);
       setShowEditDialog(true);
     } catch (error) {
@@ -22,8 +22,8 @@ export const useOrganizationDialogs = (
 
   const handleOpenDeleteDialog = useCallback((organization: OrganizationType) => {
     try {
-      // Usar uma cópia profunda para evitar problemas de referência
-      const orgCopy = structuredClone(organization);
+      // Create a deep copy to avoid reference issues
+      const orgCopy = JSON.parse(JSON.stringify(organization)) as OrganizationType;
       setSelectedOrganization(orgCopy);
       setShowDeleteDialog(true);
     } catch (error) {
