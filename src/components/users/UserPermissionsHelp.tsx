@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { HelpCircle, Users, Book, ShieldAlert, Calendar } from "lucide-react";
-import { userProfileDescriptions } from './PermissionsDialog';
+import { userProfileDescriptions } from './permissions/types';
 
 const UserPermissionsHelp = () => {
   return (

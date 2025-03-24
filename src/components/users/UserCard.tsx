@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Edit, MoreHorizontal, ShieldAlert, Trash, User } from "lucide-react";
-import PermissionsDialog from './PermissionsDialog';
+import PermissionsDialog from './permissions/PermissionsDialog';
 
 type UserType = {
   id: number;
