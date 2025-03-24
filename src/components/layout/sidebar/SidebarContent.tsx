@@ -10,7 +10,7 @@ import SidebarAdminSection from './SidebarAdminSection';
 import SidebarBillingSection from './SidebarBillingSection';
 import SidebarMonitoringSection from './SidebarMonitoringSection';
 import { useProduct } from '@/context/ProductContext';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth';
 import { AlertTriangle } from 'lucide-react';
 
 interface SidebarContentProps {

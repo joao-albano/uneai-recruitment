@@ -1,62 +1,10 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+
+import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { UserProfile, Organization } from './types';
 
-// Define Organization type
-interface Organization {
-  id: string;
-  name: string;
-  isMainOrg?: boolean; // Identificador para a UNE CX
-}
-
-// Define User type
-interface UserProfile {
-  email: string;
-  role: string;
-  organizationId?: string;
-  organization?: Organization;
-  isSuperAdmin?: boolean; // Admin da UNE CX
-}
-
-// Auth context type definition
-export interface AuthContextType {
-  isAuthenticated: boolean;
-  isAdmin: boolean;
-  isSuperAdmin: boolean;
-  userEmail: string | null;
-  currentUser: UserProfile | null;
-  currentOrganization: Organization | null;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  loginWithPhone: (phone: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  logout: () => Promise<void>;
-  session: Session | null;
-}
-
-// Create the context with a default value matching the interface
-const AuthContext = createContext<AuthContextType>({
-  isAuthenticated: false,
-  isAdmin: false,
-  isSuperAdmin: false,
-  userEmail: null,
-  currentUser: null,
-  currentOrganization: null,
-  session: null,
-  login: async () => ({ success: false }),
-  loginWithPhone: async () => ({ success: false }),
-  logout: async () => {},
-});
-
-// Custom hook to use the auth context
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
-
-// Auth provider component
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const useAuthOperations = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState<boolean>(false);
@@ -238,21 +186,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.error('Erro ao fazer logout:', error);
     }
   };
-  
-  return (
-    <AuthContext.Provider value={{ 
-      isAuthenticated, 
-      isAdmin, 
-      isSuperAdmin,
-      userEmail, 
-      currentUser, 
-      currentOrganization,
-      session,
-      login, 
-      loginWithPhone,
-      logout 
-    }}>
-      {children}
-    </AuthContext.Provider>
-  );
+
+  return {
+    isAuthenticated,
+    isAdmin,
+    isSuperAdmin,
+    userEmail,
+    currentUser,
+    currentOrganization,
+    session,
+    login,
+    loginWithPhone,
+    logout
+  };
 };

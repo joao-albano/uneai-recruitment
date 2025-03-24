@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { BarChart2, Users, DollarSign, Building, Settings } from 'lucide-react';
 import SidebarNavigationGroup from './SidebarNavigationGroup';
 import SidebarNavLink from './SidebarNavLink';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth';
 
 interface SidebarAdminSectionProps {
   collapsed: boolean;
