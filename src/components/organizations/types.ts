@@ -1,4 +1,6 @@
 
+import { ProductType } from '@/context/ProductContext';
+
 export type OrganizationType = {
   id: string;
   name: string;
@@ -9,7 +11,7 @@ export type OrganizationType = {
 };
 
 export type OrganizationProduct = {
-  type: 'retention' | 'billing' | 'recruitment';
+  type: ProductType;
   active: boolean;
 };
 

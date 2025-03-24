@@ -22,6 +22,32 @@ export const updateUserSuperAdminStatus = (user: UserType, isSuperAdmin: boolean
   };
 };
 
+// Função para atualizar o nome do usuário
+export const updateUserName = (user: UserType, name: string): UserType => {
+  return {
+    ...user,
+    name
+  };
+};
+
+// Função para atualizar o email do usuário
+export const updateUserEmail = (user: UserType, email: string): UserType => {
+  return {
+    ...user,
+    email
+  };
+};
+
+// Função para atualizar o papel do usuário
+export const updateUserRole = (user: UserType, role: string): UserType => {
+  return {
+    ...user,
+    role,
+    // Se o papel for superadmin, também definimos isSuperAdmin como true
+    isSuperAdmin: role === 'superadmin' ? true : user.isSuperAdmin
+  };
+};
+
 // Obter nome de exibição do produto
 export const getProductDisplayName = (productType: ProductType): string => {
   switch(productType) {

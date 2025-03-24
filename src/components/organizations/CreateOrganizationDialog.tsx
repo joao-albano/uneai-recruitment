@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -67,7 +66,7 @@ const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
   };
   
   // Lista de todos os tipos de produtos disponíveis
-  const allProductTypes: ProductType[] = ['retention', 'billing', 'recruitment'];
+  const allProductTypes: ProductType[] = ['retention', 'billing', 'recruitment', 'secretary', 'pedagogical'];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

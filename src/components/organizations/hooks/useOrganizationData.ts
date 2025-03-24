@@ -23,7 +23,9 @@ export const useOrganizationData = (
           products: [
             { type: 'retention' as ProductType, active: true },
             { type: 'billing' as ProductType, active: true },
-            { type: 'recruitment' as ProductType, active: true }
+            { type: 'recruitment' as ProductType, active: true },
+            { type: 'secretary' as ProductType, active: true },
+            { type: 'pedagogical' as ProductType, active: true }
           ]
         },
         {
@@ -35,7 +37,9 @@ export const useOrganizationData = (
           products: [
             { type: 'retention' as ProductType, active: true },
             { type: 'billing' as ProductType, active: true },
-            { type: 'recruitment' as ProductType, active: false }
+            { type: 'recruitment' as ProductType, active: false },
+            { type: 'secretary' as ProductType, active: false },
+            { type: 'pedagogical' as ProductType, active: false }
           ]
         },
         {
@@ -47,7 +51,9 @@ export const useOrganizationData = (
           products: [
             { type: 'retention' as ProductType, active: true },
             { type: 'billing' as ProductType, active: false },
-            { type: 'recruitment' as ProductType, active: false }
+            { type: 'recruitment' as ProductType, active: false },
+            { type: 'secretary' as ProductType, active: false },
+            { type: 'pedagogical' as ProductType, active: false }
           ]
         }
       ];

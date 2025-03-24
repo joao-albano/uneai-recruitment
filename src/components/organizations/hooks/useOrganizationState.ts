@@ -12,7 +12,9 @@ export const useOrganizationState = () => {
     products: [
       { type: 'retention' as ProductType, active: true },
       { type: 'billing' as ProductType, active: false },
-      { type: 'recruitment' as ProductType, active: false }
+      { type: 'recruitment' as ProductType, active: false },
+      { type: 'secretary' as ProductType, active: false },
+      { type: 'pedagogical' as ProductType, active: false }
     ]
   });
   const [selectedOrganization, setSelectedOrganization] = useState<OrganizationType | null>(null);
@@ -29,7 +31,9 @@ export const useOrganizationState = () => {
       products: [
         { type: 'retention' as ProductType, active: true },
         { type: 'billing' as ProductType, active: false },
-        { type: 'recruitment' as ProductType, active: false }
+        { type: 'recruitment' as ProductType, active: false },
+        { type: 'secretary' as ProductType, active: false },
+        { type: 'pedagogical' as ProductType, active: false }
       ]
     });
   };

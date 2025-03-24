@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useToast } from '@/hooks/use-toast';
@@ -73,7 +72,7 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
           const { data: userProducts } = await supabase
             .from('user_products')
             .select('product_type, is_active')
-            .eq('user_id', currentUser?.id)
+            .eq('user_id', currentUser?.id || '')
             .eq('is_active', true);
           
           if (userProducts && userProducts.length > 0) {

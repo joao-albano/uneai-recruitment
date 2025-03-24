@@ -71,7 +71,7 @@ const OrganizationProductsForm: React.FC<OrganizationProductsFormProps> = ({
   };
   
   // Lista de todos os tipos de produtos disponíveis
-  const allProductTypes: ProductType[] = ['retention', 'billing', 'recruitment'];
+  const allProductTypes: ProductType[] = ['retention', 'billing', 'recruitment', 'secretary', 'pedagogical'];
   
   return (
     <div className="grid gap-2 pt-4 border-t">
