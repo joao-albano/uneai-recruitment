@@ -26,16 +26,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const isComingSoon = !isActive;
   
   return (
-    <div className="bg-white rounded-lg border p-6 flex flex-col h-full">
-      <div className="flex mb-2">
-        <div className={`w-10 h-10 ${iconColor}`}>
+    <div className="bg-white rounded-lg border shadow-sm hover:shadow-md transition-all duration-300 p-6 flex flex-col h-full">
+      <div className="flex items-center justify-between mb-4">
+        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${iconColor} bg-opacity-15`}>
           {icon}
         </div>
-        <div className="ml-auto">
+        <div>
           {isActive ? (
             <Badge className="bg-blue-500 hover:bg-blue-600">Ativo</Badge>
           ) : (
-            <Badge variant="secondary">Em breve</Badge>
+            <Badge variant="outline" className="text-gray-500">Em breve</Badge>
           )}
         </div>
       </div>

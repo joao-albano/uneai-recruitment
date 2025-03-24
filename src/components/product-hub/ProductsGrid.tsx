@@ -19,7 +19,7 @@ interface ProductsGridProps {
 
 const ProductsGrid: React.FC<ProductsGridProps> = ({ products, onNavigateToProduct }) => {
   return (
-    <div className="grid gap-6 md:grid-cols-3">
+    <div className="grid gap-8 md:grid-cols-3 sm:grid-cols-2">
       {products.map((product) => (
         <ProductCard
           key={product.id}
