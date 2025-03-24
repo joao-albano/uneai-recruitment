@@ -2,6 +2,7 @@
 import React from 'react';
 import { OrganizationType } from './types';
 import OrganizationCard from './OrganizationCard';
+import { Building } from 'lucide-react';
 
 interface OrganizationsListProps {
   organizations: OrganizationType[];
