@@ -60,25 +60,25 @@ const SidebarNavigationGroup: React.FC<SidebarNavigationGroupProps> = ({
           <>
             <SidebarNavLink 
               to="/dashboard" 
-              icon={<Home className="h-5 w-5" />} 
+              icon={Home} 
               label={isPtBR ? 'Dashboard' : 'Dashboard'} 
               collapsed={collapsed} 
             />
             <SidebarNavLink 
               to="/model" 
-              icon={<Blocks className="h-5 w-5" />} 
+              icon={Blocks} 
               label={isPtBR ? 'Modelo de IA' : 'AI Model'} 
               collapsed={collapsed} 
             />
             <SidebarNavLink 
               to="/alerts" 
-              icon={<Bell className="h-5 w-5" />} 
+              icon={Bell} 
               label={isPtBR ? 'Alertas' : 'Alerts'} 
               collapsed={collapsed} 
             />
             <SidebarNavLink 
               to="/upload" 
-              icon={<Upload className="h-5 w-5" />} 
+              icon={Upload} 
               label={isPtBR ? 'Upload de Dados' : 'Data Upload'} 
               collapsed={collapsed} 
             />
@@ -90,19 +90,19 @@ const SidebarNavigationGroup: React.FC<SidebarNavigationGroupProps> = ({
           <>
             <SidebarNavLink 
               to="/students" 
-              icon={<Users className="h-5 w-5" />} 
+              icon={Users} 
               label={isPtBR ? 'Alunos' : 'Students'} 
               collapsed={collapsed} 
             />
             <SidebarNavLink 
               to="/survey" 
-              icon={<FileText className="h-5 w-5" />} 
+              icon={FileText} 
               label={isPtBR ? 'Formulários' : 'Forms'} 
               collapsed={collapsed} 
             />
             <SidebarNavLink 
               to="/schedule" 
-              icon={<Calendar className="h-5 w-5" />} 
+              icon={Calendar} 
               label={isPtBR ? 'Agenda' : 'Schedule'} 
               collapsed={collapsed} 
             />
@@ -114,31 +114,31 @@ const SidebarNavigationGroup: React.FC<SidebarNavigationGroupProps> = ({
           <>
             <SidebarNavLink 
               to="/admin/dashboard" 
-              icon={<BarChart className="h-5 w-5" />} 
+              icon={BarChart} 
               label={isPtBR ? 'Estatísticas' : 'Statistics'} 
               collapsed={collapsed} 
             />
             <SidebarNavLink 
               to="/users" 
-              icon={<GraduationCap className="h-5 w-5" />} 
+              icon={GraduationCap} 
               label={isPtBR ? 'Usuários' : 'Users'} 
               collapsed={collapsed} 
             />
             <SidebarNavLink 
               to="/admin/settings" 
-              icon={<Settings className="h-5 w-5" />} 
+              icon={Settings} 
               label={isPtBR ? 'Configurações' : 'Settings'} 
               collapsed={collapsed} 
             />
             <SidebarNavLink 
               to="/admin/payments" 
-              icon={<DollarSign className="h-5 w-5" />} 
+              icon={DollarSign} 
               label={isPtBR ? 'Pagamentos' : 'Payments'} 
               collapsed={collapsed} 
             />
             <SidebarNavLink 
               to="/admin/plans" 
-              icon={<Tag className="h-5 w-5" />} 
+              icon={Tag} 
               label={isPtBR ? 'Gerenciar Planos' : 'Manage Plans'} 
               collapsed={collapsed} 
             />
@@ -150,19 +150,19 @@ const SidebarNavigationGroup: React.FC<SidebarNavigationGroupProps> = ({
           <>
             <SidebarNavLink 
               to="/settings" 
-              icon={<Settings className="h-5 w-5" />} 
+              icon={Settings} 
               label={isPtBR ? 'Configurações' : 'Settings'} 
               collapsed={collapsed} 
             />
             <SidebarNavLink 
               to="/user-billing" 
-              icon={<CreditCard className="h-5 w-5" />} 
+              icon={CreditCard} 
               label={isPtBR ? 'Faturamento' : 'Billing'} 
               collapsed={collapsed} 
             />
             <SidebarNavLink 
               to="/pricing" 
-              icon={<Tag className="h-5 w-5" />} 
+              icon={Tag} 
               label={isPtBR ? 'Planos' : 'Pricing'} 
               collapsed={collapsed} 
             />

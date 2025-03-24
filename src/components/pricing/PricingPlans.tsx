@@ -1,30 +1,14 @@
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { Check } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { useToast } from '@/hooks/use-toast';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
-import PaymentDialog from './PaymentDialog';
 import { usePlanOptions } from '@/utils/billing/planOptions';
+import { getPriceValue } from '@/utils/billing/priceUtils';
+import PaymentDialog from './PaymentDialog';
+import BillingToggle from './BillingToggle';
+import PlanCard, { PlanCardProps } from './PlanCard';
 
-type PlanFeature = {
-  included: boolean;
-  text: string;
-};
-
-type Plan = {
-  id: string;
-  name: string;
-  description: string;
-  priceMonthly: number;
-  priceYearly: number;
-  features: PlanFeature[];
-  highlightPlan?: boolean;
-};
+type Plan = Omit<PlanCardProps, 'yearlyBilling' | 'onSelect'>;
 
 const PricingPlans: React.FC = () => {
   const { language } = useTheme();
@@ -35,17 +19,7 @@ const PricingPlans: React.FC = () => {
   
   // Get plan options from the utility hook
   const planOptions = usePlanOptions();
-
   const isPtBR = language === 'pt-BR';
-  
-  // Convert price strings to numbers for calculations
-  const getPriceValue = (priceString: string): number => {
-    const numericValue = priceString
-      .replace(/[^\d.,]/g, '') // Remove all non-numeric characters except . and ,
-      .replace(',', '.'); // Replace comma with dot for parsing
-    
-    return parseFloat(numericValue);
-  };
   
   const plans: Plan[] = [
     {
@@ -122,76 +96,19 @@ const PricingPlans: React.FC = () => {
 
   return (
     <>
-      <div className="flex items-center justify-center mb-8">
-        <div className="flex items-center gap-2">
-          <Label htmlFor="billing-toggle" className={cn("text-sm", !yearlyBilling && "font-medium")}>
-            {isPtBR ? 'Mensal' : 'Monthly'}
-          </Label>
-          <Switch
-            id="billing-toggle"
-            checked={yearlyBilling}
-            onCheckedChange={onToggleBilling}
-          />
-          <Label htmlFor="billing-toggle" className={cn("text-sm", yearlyBilling && "font-medium")}>
-            {isPtBR ? 'Anual (2 meses grátis)' : 'Yearly (2 months free)'}
-          </Label>
-        </div>
-      </div>
+      <BillingToggle 
+        yearlyBilling={yearlyBilling}
+        onToggleBilling={onToggleBilling}
+      />
 
       <div className="grid md:grid-cols-3 gap-8">
         {plans.map((plan) => (
-          <Card 
-            key={plan.id} 
-            className={cn(
-              "flex flex-col h-full", 
-              plan.highlightPlan && "border-primary shadow-lg"
-            )}
-          >
-            <CardHeader>
-              <CardTitle>{plan.name}</CardTitle>
-              <CardDescription className="text-md">{plan.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="flex-1">
-              <div className="text-3xl font-bold mb-2">
-                {isPtBR ? 'R$' : '$'} {yearlyBilling ? (plan.priceYearly / 12).toFixed(0) : plan.priceMonthly}{' '}
-                <span className="text-sm font-normal text-muted-foreground">
-                  {isPtBR ? '/mês' : '/month'}
-                </span>
-              </div>
-
-              {yearlyBilling && (
-                <div className="text-sm text-muted-foreground mb-6">
-                  {isPtBR 
-                    ? `R$ ${plan.priceYearly} cobrados anualmente` 
-                    : `$${plan.priceYearly} billed yearly`}
-                </div>
-              )}
-
-              <ul className="space-y-2 mt-6">
-                {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    {feature.included ? (
-                      <Check className="h-5 w-5 text-green-500 shrink-0" />
-                    ) : (
-                      <Check className="h-5 w-5 text-muted-foreground opacity-25 shrink-0" />
-                    )}
-                    <span className={feature.included ? "" : "text-muted-foreground"}>
-                      {feature.text}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-            <CardFooter>
-              <Button 
-                className="w-full" 
-                onClick={() => handlePlanSelect(plan)}
-                variant={plan.highlightPlan ? "default" : "outline"}
-              >
-                {isPtBR ? 'Selecionar Plano' : 'Select Plan'}
-              </Button>
-            </CardFooter>
-          </Card>
+          <PlanCard
+            key={plan.id}
+            {...plan}
+            yearlyBilling={yearlyBilling}
+            onSelect={handlePlanSelect}
+          />
         ))}
       </div>
 
