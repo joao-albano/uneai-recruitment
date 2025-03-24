@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import PaymentDialog from './PaymentDialog';
+import { usePlanOptions } from '@/utils/billing/planOptions';
 
 type PlanFeature = {
   included: boolean;
@@ -31,20 +32,32 @@ const PricingPlans: React.FC = () => {
   const [yearlyBilling, setYearlyBilling] = useState(false);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  
+  // Get plan options from the utility hook
+  const planOptions = usePlanOptions();
 
   const isPtBR = language === 'pt-BR';
+  
+  // Convert price strings to numbers for calculations
+  const getPriceValue = (priceString: string): number => {
+    const numericValue = priceString
+      .replace(/[^\d.,]/g, '') // Remove all non-numeric characters except . and ,
+      .replace(',', '.'); // Replace comma with dot for parsing
+    
+    return parseFloat(numericValue);
+  };
   
   const plans: Plan[] = [
     {
       id: 'basic',
-      name: isPtBR ? 'Básico' : 'Basic',
+      name: planOptions.find(p => p.id === 'basic')?.name || (isPtBR ? 'Básico' : 'Basic'),
       description: isPtBR 
         ? 'Para pequenas escolas com necessidades básicas de monitoramento'
         : 'For small schools with basic monitoring needs',
-      priceMonthly: 299,
-      priceYearly: 2990,
+      priceMonthly: Math.round(getPriceValue(planOptions.find(p => p.id === 'basic')?.price || '') / 10),
+      priceYearly: getPriceValue(planOptions.find(p => p.id === 'basic')?.price || ''),
       features: [
-        { included: true, text: isPtBR ? 'Até 200 alunos' : 'Up to 200 students' },
+        { included: true, text: planOptions.find(p => p.id === 'basic')?.description || (isPtBR ? 'Até 200 alunos' : 'Up to 200 students') },
         { included: true, text: isPtBR ? 'Alertas básicos' : 'Basic alerts' },
         { included: true, text: isPtBR ? 'Acesso ao modelo preditivo' : 'Predictive model access' },
         { included: true, text: isPtBR ? 'Suporte por email' : 'Email support' },
@@ -54,14 +67,14 @@ const PricingPlans: React.FC = () => {
     },
     {
       id: 'premium',
-      name: isPtBR ? 'Premium' : 'Premium',
+      name: planOptions.find(p => p.id === 'premium')?.name || 'Premium',
       description: isPtBR 
         ? 'Para escolas médias com necessidades avançadas de monitoramento'
         : 'For medium-sized schools with advanced monitoring needs',
-      priceMonthly: 599,
-      priceYearly: 5990,
+      priceMonthly: Math.round(getPriceValue(planOptions.find(p => p.id === 'premium')?.price || '') / 10),
+      priceYearly: getPriceValue(planOptions.find(p => p.id === 'premium')?.price || ''),
       features: [
-        { included: true, text: isPtBR ? 'Até 500 alunos' : 'Up to 500 students' },
+        { included: true, text: planOptions.find(p => p.id === 'premium')?.description || (isPtBR ? 'Até 500 alunos' : 'Up to 500 students') },
         { included: true, text: isPtBR ? 'Alertas avançados' : 'Advanced alerts' },
         { included: true, text: isPtBR ? 'Dashboard administrativo' : 'Administrative dashboard' },
         { included: true, text: isPtBR ? 'Suporte prioritário' : 'Priority support' },
@@ -72,14 +85,14 @@ const PricingPlans: React.FC = () => {
     },
     {
       id: 'enterprise',
-      name: isPtBR ? 'Enterprise' : 'Enterprise',
+      name: planOptions.find(p => p.id === 'enterprise')?.name || 'Enterprise',
       description: isPtBR 
         ? 'Para redes de ensino completas com necessidades específicas'
         : 'For complete school networks with specific needs',
-      priceMonthly: 999,
-      priceYearly: 9990,
+      priceMonthly: Math.round(getPriceValue(planOptions.find(p => p.id === 'enterprise')?.price || '') / 10),
+      priceYearly: getPriceValue(planOptions.find(p => p.id === 'enterprise')?.price || ''),
       features: [
-        { included: true, text: isPtBR ? 'Alunos ilimitados' : 'Unlimited students' },
+        { included: true, text: planOptions.find(p => p.id === 'enterprise')?.description || (isPtBR ? 'Alunos ilimitados' : 'Unlimited students') },
         { included: true, text: isPtBR ? 'Sistema completo' : 'Complete system' },
         { included: true, text: isPtBR ? 'Customização do modelo' : 'Model customization' },
         { included: true, text: isPtBR ? 'Suporte 24/7' : 'Support 24/7' },

@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { CheckCircle } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { useToast } from '@/hooks/use-toast';
-import { usePlanOptions, PlanOption } from '@/utils/billing/planOptions';
+import { usePlanOptions } from '@/utils/billing/planOptions';
 
 interface ChangePlanDialogProps {
   open: boolean;
