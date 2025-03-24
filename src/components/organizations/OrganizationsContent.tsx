@@ -8,6 +8,7 @@ import DeleteOrganizationDialog from './DeleteOrganizationDialog';
 import OrganizationsList from './OrganizationsList';
 import OrganizationsHeader from './OrganizationsHeader';
 import { OrganizationType } from './types';
+import { z } from 'zod';
 
 const OrganizationsContent: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -19,7 +20,7 @@ const OrganizationsContent: React.FC = () => {
   const [newOrganization, setNewOrganization] = useState({ name: '', isActive: true });
 
   // Get organization data and functions from hooks
-  const { loadOrganizations } = useOrganizationData();
+  const { loadOrganizations } = useOrganizationData(setOrganizations, setLoading);
   
   // CRUD operations
   const {
@@ -29,12 +30,7 @@ const OrganizationsContent: React.FC = () => {
   } = useOrganizationCrud(loadOrganizations);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const orgs = await loadOrganizations();
-      setOrganizations(orgs || []);
-      setLoading(false);
-    };
-    fetchData();
+    loadOrganizations();
   }, [loadOrganizations]);
 
   // Open dialogs
@@ -58,8 +54,7 @@ const OrganizationsContent: React.FC = () => {
     setShowCreateDialog(false);
     
     // Refresh organizations list
-    const orgs = await loadOrganizations();
-    setOrganizations(orgs || []);
+    loadOrganizations();
   };
   
   const handleEditSubmit = async (values: { name?: string; isActive?: boolean }) => {
@@ -68,8 +63,7 @@ const OrganizationsContent: React.FC = () => {
       setShowEditDialog(false);
       
       // Refresh organizations list
-      const orgs = await loadOrganizations();
-      setOrganizations(orgs || []);
+      loadOrganizations();
     }
   };
   
@@ -79,8 +73,7 @@ const OrganizationsContent: React.FC = () => {
       setShowDeleteDialog(false);
       
       // Refresh organizations list
-      const orgs = await loadOrganizations();
-      setOrganizations(orgs || []);
+      loadOrganizations();
     }
   };
 

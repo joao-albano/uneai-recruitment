@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { generateDemoStudents } from '@/data/demoStudents';
@@ -140,9 +141,12 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       studentName: student.name,
       parentName: student.parentName || "Responsável",
       to: student.parentContact,
+      recipientNumber: student.parentContact, // Add required property
       messageType: 'survey',
       status: 'sent',
       sentAt: new Date(),
+      createdAt: new Date(), // Add required property
+      message: `Olá ${student.parentName || "Responsável"}, gostaríamos de fazer uma pesquisa sobre ${student.name}.`, // Add required property
       content: `Olá ${student.parentName || "Responsável"}, gostaríamos de fazer uma pesquisa sobre ${student.name}.`,
     };
     

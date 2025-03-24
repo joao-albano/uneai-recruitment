@@ -61,10 +61,5 @@ export const useOrganizationData = (
     }
   }, [setOrganizations, setIsLoading]);
 
-  // Load organizations when the component mounts
-  useEffect(() => {
-    loadOrganizations();
-  }, [loadOrganizations]);
-
   return { loadOrganizations };
 };

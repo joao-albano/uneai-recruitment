@@ -15,7 +15,7 @@ interface CreateOrganizationDialogProps {
   onOpenChange: (open: boolean) => void;
   newOrganization: NewOrganizationType;
   setNewOrganization: React.Dispatch<React.SetStateAction<NewOrganizationType>>;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (values: { name?: string; isActive?: boolean }) => Promise<void>;
 }
 
 const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
@@ -68,6 +68,14 @@ const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
   
   // Lista de todos os tipos de produtos disponíveis
   const allProductTypes: ProductType[] = ['retention', 'billing', 'recruitment'];
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({
+      name: newOrganization.name,
+      isActive: newOrganization.isActive
+    });
+  };
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -79,7 +87,7 @@ const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={onSubmit}>
+        <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="name">Nome da Organização</Label>
