@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { UserType, NewUserType } from '../types';
@@ -30,8 +29,17 @@ export const useUsers = () => {
   const isLastAdmin = users.filter(user => user.role === 'admin' && user.organizationId === '1').length === 1;
   
   const handleOpenEditDialog = (user: UserType) => {
-    setSelectedUser(user);
-    setShowEditDialog(true);
+    try {
+      setSelectedUser({...user});
+      setShowEditDialog(true);
+    } catch (error) {
+      console.error("Erro ao abrir diálogo de edição:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível abrir o editor de usuário",
+        variant: "destructive"
+      });
+    }
   };
   
   const handleOpenDeleteDialog = (user: UserType) => {
@@ -90,22 +98,39 @@ export const useUsers = () => {
   const handleEditUser = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!selectedUser) return;
-    
-    const updatedUsers = users.map(user => {
-      if (user.id === selectedUser.id) {
-        return selectedUser;
+    try {
+      if (!selectedUser) {
+        toast({
+          title: "Erro",
+          description: "Nenhum usuário selecionado para edição.",
+          variant: "destructive"
+        });
+        return;
       }
-      return user;
-    });
-    
-    setUsers(updatedUsers);
-    setShowEditDialog(false);
-    
-    toast({
-      title: "Usuário atualizado",
-      description: `As informações de ${selectedUser.name} foram atualizadas.`
-    });
+      
+      const updatedUsers = users.map(user => {
+        if (user.id === selectedUser.id) {
+          return {...selectedUser};
+        }
+        return user;
+      });
+      
+      setUsers(updatedUsers);
+      setShowEditDialog(false);
+      setSelectedUser(null); // Limpar seleção após a edição
+      
+      toast({
+        title: "Usuário atualizado",
+        description: `As informações de ${selectedUser.name} foram atualizadas.`
+      });
+    } catch (error) {
+      console.error("Erro ao editar usuário:", error);
+      toast({
+        title: "Erro ao atualizar",
+        description: "Ocorreu um erro ao salvar as alterações.",
+        variant: "destructive"
+      });
+    }
   };
   
   const handleDeleteUser = () => {

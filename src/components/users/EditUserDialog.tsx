@@ -48,6 +48,50 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
   // Verificar se o usuário é o super admin da UNE CX
   const isUneCxAdmin = selectedUser.isSuperAdmin;
   
+  // Manipuladores de eventos seguros
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setSelectedUser({...selectedUser, name: e.target.value});
+    } catch (error) {
+      console.error("Erro ao atualizar nome:", error);
+    }
+  };
+  
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setSelectedUser({...selectedUser, email: e.target.value});
+    } catch (error) {
+      console.error("Erro ao atualizar email:", error);
+    }
+  };
+  
+  const handleRoleChange = (value: string) => {
+    try {
+      setSelectedUser({...selectedUser, role: value});
+    } catch (error) {
+      console.error("Erro ao atualizar função:", error);
+    }
+  };
+  
+  const handleSuperAdminChange = (checked: boolean) => {
+    try {
+      setSelectedUser({...selectedUser, isSuperAdmin: checked});
+    } catch (error) {
+      console.error("Erro ao atualizar status de Super Admin:", error);
+    }
+  };
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (onSubmit) {
+        onSubmit(e);
+      }
+    } catch (error) {
+      console.error("Erro ao submeter formulário:", error);
+    }
+  };
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
@@ -58,7 +102,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={onSubmit}>
+        <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             {isUneCxAdmin && (
               <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mb-2">
@@ -77,7 +121,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
               <Input 
                 id="edit-name" 
                 value={selectedUser.name}
-                onChange={(e) => setSelectedUser({...selectedUser, name: e.target.value})}
+                onChange={handleNameChange}
                 required
               />
             </div>
@@ -88,7 +132,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
                 id="edit-email" 
                 type="email"
                 value={selectedUser.email}
-                onChange={(e) => setSelectedUser({...selectedUser, email: e.target.value})}
+                onChange={handleEmailChange}
                 required
               />
             </div>
@@ -105,7 +149,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
               
               <Select 
                 value={selectedUser.role}
-                onValueChange={(value) => setSelectedUser({...selectedUser, role: value})}
+                onValueChange={handleRoleChange}
                 disabled={isUneCxAdmin && !isSuperAdmin} // Apenas super admin pode mudar a função do admin UNE CX
               >
                 <SelectTrigger>
@@ -128,9 +172,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
                   <Checkbox 
                     id="super-admin-toggle" 
                     checked={selectedUser.isSuperAdmin || false}
-                    onCheckedChange={(checked) => 
-                      setSelectedUser({...selectedUser, isSuperAdmin: checked as boolean})
-                    }
+                    onCheckedChange={handleSuperAdminChange}
                   />
                   <Label 
                     htmlFor="super-admin-toggle"
