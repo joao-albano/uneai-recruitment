@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useToast } from '@/hooks/use-toast';
@@ -69,10 +70,12 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
           }
         } else {
           // Usuários normais só têm acesso aos produtos atribuídos
+          // Aqui precisamos usar o email do usuário ou outro identificador disponível
+          // já que o UserProfile não tem um campo id
           const { data: userProducts } = await supabase
             .from('user_products')
             .select('product_type, is_active')
-            .eq('user_id', currentUser?.id || '')
+            .eq('user_id', currentUser?.email || '')
             .eq('is_active', true);
           
           if (userProducts && userProducts.length > 0) {
