@@ -5,6 +5,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTheme } from '@/context/ThemeContext';
 import { useData } from '@/context/DataContext';
 import { useToast } from '@/hooks/use-toast';
+import { Link } from 'react-router-dom';
+import { Settings } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import UsageStats from './dashboard/UsageStats';
 import RiskDistribution from './dashboard/RiskDistribution';
 import SystemActivity from './dashboard/SystemActivity';
@@ -36,15 +39,23 @@ const AdminDashboardContent: React.FC = () => {
   
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">
-          {language === 'pt-BR' ? 'Painel Administrativo' : 'Admin Dashboard'}
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          {language === 'pt-BR' 
-            ? 'Análise de dados e métricas do sistema' 
-            : 'System data analysis and metrics'}
-        </p>
+      <div className="mb-8 flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {language === 'pt-BR' ? 'Painel Administrativo' : 'Admin Dashboard'}
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            {language === 'pt-BR' 
+              ? 'Análise de dados e métricas do sistema' 
+              : 'System data analysis and metrics'}
+          </p>
+        </div>
+        <Button variant="outline" asChild>
+          <Link to="/admin/settings">
+            <Settings className="mr-2 h-4 w-4" />
+            {language === 'pt-BR' ? 'Configurações Administrativas' : 'Admin Settings'}
+          </Link>
+        </Button>
       </div>
       
       <Tabs 
