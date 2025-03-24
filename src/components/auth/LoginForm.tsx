@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,6 +24,7 @@ interface LoginFormProps {
 const LoginForm = ({ onSwitchTab }: LoginFormProps) => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -33,15 +34,26 @@ const LoginForm = ({ onSwitchTab }: LoginFormProps) => {
     },
   });
 
-  const onSubmit = (values: LoginFormValues) => {
-    console.log('Login attempt:', values);
+  const onSubmit = async (values: LoginFormValues) => {
+    setIsLoading(true);
     
-    // Use our auth context login function
-    if (login(values.email, values.password)) {
-      toast.success('Login realizado com sucesso!');
-      navigate('/hub'); // Redireciona para o hub de produtos
-    } else {
-      toast.error('Email ou senha incorretos');
+    try {
+      console.log('Login attempt:', values);
+      
+      // Use o login do AuthContext que agora usa Supabase
+      const result = await login(values.email, values.password);
+      
+      if (result.success) {
+        toast.success('Login realizado com sucesso!');
+        navigate('/hub'); // Redireciona para o hub de produtos
+      } else {
+        toast.error(result.error || 'Email ou senha incorretos');
+      }
+    } catch (error) {
+      console.error('Erro no login:', error);
+      toast.error('Ocorreu um erro durante o login');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -75,7 +87,9 @@ const LoginForm = ({ onSwitchTab }: LoginFormProps) => {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full">Entrar</Button>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? 'Entrando...' : 'Entrar'}
+          </Button>
         </form>
       </Form>
       <div className="flex justify-center mt-6">

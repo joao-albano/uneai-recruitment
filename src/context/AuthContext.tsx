@@ -1,5 +1,7 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 
 // Define Organization type
 interface Organization {
@@ -9,7 +11,7 @@ interface Organization {
 }
 
 // Define User type
-interface User {
+interface UserProfile {
   email: string;
   role: string;
   organizationId?: string;
@@ -21,24 +23,26 @@ interface User {
 export interface AuthContextType {
   isAuthenticated: boolean;
   isAdmin: boolean;
-  isSuperAdmin: boolean; // Nova propriedade
+  isSuperAdmin: boolean;
   userEmail: string | null;
-  currentUser: User | null;
+  currentUser: UserProfile | null;
   currentOrganization: Organization | null;
-  login: (email: string, password: string) => boolean;
-  logout: () => void;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  logout: () => Promise<void>;
+  session: Session | null;
 }
 
 // Create the context with a default value matching the interface
 const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   isAdmin: false,
-  isSuperAdmin: false, // Nova propriedade
+  isSuperAdmin: false,
   userEmail: null,
   currentUser: null,
   currentOrganization: null,
-  login: () => false,
-  logout: () => {},
+  session: null,
+  login: async () => ({ success: false }),
+  logout: async () => {},
 });
 
 // Custom hook to use the auth context
@@ -54,181 +58,168 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [isSuperAdmin, setIsSuperAdmin] = useState<boolean>(false); // Novo estado
+  const [isSuperAdmin, setIsSuperAdmin] = useState<boolean>(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   
-  // Check localStorage on initial load
   useEffect(() => {
-    const authStatus = localStorage.getItem("isAuthenticated");
-    const adminStatus = localStorage.getItem("isAdmin");
-    const superAdminStatus = localStorage.getItem("isSuperAdmin"); // Novo item
-    const storedEmail = localStorage.getItem("userEmail");
-    const storedOrgId = localStorage.getItem("organizationId");
-    const storedOrgName = localStorage.getItem("organizationName");
-    const isMainOrg = localStorage.getItem("isMainOrg"); // Novo item
-    
-    if (authStatus === "true") {
-      setIsAuthenticated(true);
-      setIsAdmin(adminStatus === "true");
-      setIsSuperAdmin(superAdminStatus === "true"); // Novo estado
-      setUserEmail(storedEmail);
-      
-      // Set organization data if available
-      if (storedOrgId && storedOrgName) {
-        const org = {
-          id: storedOrgId,
-          name: storedOrgName,
-          isMainOrg: isMainOrg === "true" // Novo campo
-        };
-        setCurrentOrganization(org);
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, newSession) => {
+        console.log('Auth state changed:', event);
+        setSession(newSession);
+        setUser(newSession?.user ?? null);
+        
+        if (newSession) {
+          setIsAuthenticated(true);
+          setUserEmail(newSession.user.email);
+          
+          // Buscar o perfil do usuário no Supabase
+          fetchUserProfile(newSession.user.id);
+        } else {
+          // Limpar o estado quando não há sessão
+          setIsAuthenticated(false);
+          setIsAdmin(false);
+          setIsSuperAdmin(false);
+          setUserEmail(null);
+          setCurrentUser(null);
+          setCurrentOrganization(null);
+        }
       }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session: existingSession } }) => {
+      setSession(existingSession);
+      setUser(existingSession?.user ?? null);
       
-      // Set currentUser based on stored data
-      if (storedEmail) {
-        setCurrentUser({
-          email: storedEmail,
-          role: adminStatus === "true" ? "admin" : "user",
-          organizationId: storedOrgId,
-          organization: storedOrgId && storedOrgName ? { 
-            id: storedOrgId, 
-            name: storedOrgName,
-            isMainOrg: isMainOrg === "true" // Novo campo
-          } : undefined,
-          isSuperAdmin: superAdminStatus === "true" // Novo campo
-        });
+      if (existingSession) {
+        setIsAuthenticated(true);
+        setUserEmail(existingSession.user.email);
+        
+        // Buscar o perfil do usuário no Supabase
+        fetchUserProfile(existingSession.user.id);
       }
-    }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
   
-  const login = (email: string, password: string): boolean => {
-    // Simple mock authentication
-    if (email === 'admin@unecx.com' && password === 'admin123') {
-      // Super Admin da UNE CX
-      const org = { id: '0', name: 'UNE CX', isMainOrg: true };
-      setIsAuthenticated(true);
-      setIsAdmin(true);
-      setIsSuperAdmin(true); // É super admin
-      setUserEmail(email);
-      setCurrentOrganization(org);
-      setCurrentUser({ 
-        email, 
-        role: "admin",
-        organizationId: org.id,
-        organization: org,
-        isSuperAdmin: true
-      });
+  // Função para buscar o perfil do usuário e sua organização
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      // Buscar perfil do usuário
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
       
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("isAdmin", "true");
-      localStorage.setItem("isSuperAdmin", "true");
-      localStorage.setItem("userEmail", email);
-      localStorage.setItem("organizationId", org.id);
-      localStorage.setItem("organizationName", org.name);
-      localStorage.setItem("isMainOrg", "true");
-      return true;
-    } else if (email === 'admin@escola.edu' && password === 'admin123') {
-      // Admin da Escola de Letras (apenas admin da escola, não da plataforma)
-      const org = { id: '1', name: 'Escola de Letras', isMainOrg: false };
-      setIsAuthenticated(true);
-      setIsAdmin(true);
-      setIsSuperAdmin(false); // Não é super admin
-      setUserEmail(email);
-      setCurrentOrganization(org);
-      setCurrentUser({ 
-        email, 
-        role: "admin",
-        organizationId: org.id,
-        organization: org,
-        isSuperAdmin: false
-      });
+      if (profileError) {
+        console.error('Erro ao buscar perfil:', profileError);
+        return;
+      }
       
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("isAdmin", "true");
-      localStorage.setItem("isSuperAdmin", "false");
-      localStorage.setItem("userEmail", email);
-      localStorage.setItem("organizationId", org.id);
-      localStorage.setItem("organizationName", org.name);
-      localStorage.setItem("isMainOrg", "false");
-      return true;
-    } else if (email === 'user@escola.edu' && password === 'user123') {
-      // Usuário da Escola de Letras
-      const org = { id: '1', name: 'Escola de Letras', isMainOrg: false };
-      setIsAuthenticated(true);
-      setIsAdmin(false);
-      setIsSuperAdmin(false); // Não é super admin
-      setUserEmail(email);
-      setCurrentOrganization(org);
-      setCurrentUser({ 
-        email, 
-        role: "user",
-        organizationId: org.id,
-        organization: org,
-        isSuperAdmin: false
-      });
-      
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("isAdmin", "false");
-      localStorage.setItem("isSuperAdmin", "false");
-      localStorage.setItem("userEmail", email);
-      localStorage.setItem("organizationId", org.id);
-      localStorage.setItem("organizationName", org.name);
-      localStorage.setItem("isMainOrg", "false");
-      return true;
-    } else if (email === 'admin@outraescola.com' && password === 'admin123') {
-      // Admin de Outra Escola (apenas admin da escola, não da plataforma)
-      const org = { id: '2', name: 'Outra Escola', isMainOrg: false };
-      setIsAuthenticated(true);
-      setIsAdmin(true);
-      setIsSuperAdmin(false); // Não é super admin
-      setUserEmail(email);
-      setCurrentOrganization(org);
-      setCurrentUser({ 
-        email, 
-        role: "admin",
-        organizationId: org.id,
-        organization: org,
-        isSuperAdmin: false
-      });
-      
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("isAdmin", "true");
-      localStorage.setItem("isSuperAdmin", "false");
-      localStorage.setItem("userEmail", email);
-      localStorage.setItem("organizationId", org.id);
-      localStorage.setItem("organizationName", org.name);
-      localStorage.setItem("isMainOrg", "false");
-      return true;
+      if (profile) {
+        setIsAdmin(profile.is_admin);
+        setIsSuperAdmin(profile.is_super_admin);
+        
+        // Se tiver organization_id, buscar dados da organização
+        if (profile.organization_id) {
+          const { data: org, error: orgError } = await supabase
+            .from('organizations')
+            .select('*')
+            .eq('id', profile.organization_id)
+            .single();
+          
+          if (orgError) {
+            console.error('Erro ao buscar organização:', orgError);
+          } else if (org) {
+            const organization: Organization = {
+              id: org.id,
+              name: org.name,
+              isMainOrg: org.is_main_org
+            };
+            
+            setCurrentOrganization(organization);
+            
+            // Atualizar o currentUser com todos os dados
+            setCurrentUser({
+              email: profile.email,
+              role: profile.role,
+              organizationId: org.id,
+              organization: organization,
+              isSuperAdmin: profile.is_super_admin
+            });
+          }
+        } else {
+          // Se não tiver organização, atualizar apenas com os dados do perfil
+          setCurrentUser({
+            email: profile.email,
+            role: profile.role,
+            isSuperAdmin: profile.is_super_admin
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao buscar dados do usuário:', error);
     }
-    return false;
   };
   
-  const logout = () => {
-    setIsAuthenticated(false);
-    setIsAdmin(false);
-    setIsSuperAdmin(false); // Limpar estado de super admin
-    setUserEmail(null);
-    setCurrentUser(null);
-    setCurrentOrganization(null);
-    
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("isAdmin");
-    localStorage.removeItem("isSuperAdmin"); // Remover item de super admin
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("organizationId");
-    localStorage.removeItem("organizationName");
-    localStorage.removeItem("isMainOrg"); // Remover item de org principal
+  const login = async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      
+      if (error) {
+        console.error('Erro de login:', error.message);
+        return { success: false, error: error.message };
+      }
+      
+      // Login bem-sucedido - onAuthStateChange vai atualizar o estado
+      console.log('Login bem-sucedido:', data);
+      return { success: true };
+    } catch (error) {
+      console.error('Erro de login:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Erro ao fazer login' 
+      };
+    }
+  };
+  
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+      
+      // Limpar o estado - onAuthStateChange também vai lidar com isso
+      setIsAuthenticated(false);
+      setIsAdmin(false);
+      setIsSuperAdmin(false);
+      setUserEmail(null);
+      setCurrentUser(null);
+      setCurrentOrganization(null);
+      setSession(null);
+      setUser(null);
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
   };
   
   return (
     <AuthContext.Provider value={{ 
       isAuthenticated, 
       isAdmin, 
-      isSuperAdmin, // Nova propriedade
+      isSuperAdmin,
       userEmail, 
       currentUser, 
       currentOrganization,
+      session,
       login, 
       logout 
     }}>

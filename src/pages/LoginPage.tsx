@@ -7,6 +7,7 @@ import AuthLogo from '@/components/auth/AuthLogo';
 import LoginForm from '@/components/auth/LoginForm';
 import SignupForm from '@/components/auth/SignupForm';
 import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
 
 const LoginPage = () => {
   const [activeTab, setActiveTab] = useState<string>('login');
@@ -30,6 +31,7 @@ const LoginPage = () => {
 
   const handleSignupSuccess = (email: string) => {
     setActiveTab('login');
+    toast.success(`Conta criada! Por favor, faça login com ${email}`);
   };
 
   return (
