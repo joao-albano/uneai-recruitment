@@ -1,5 +1,5 @@
 
-import { UserType } from '../UsersContent';
+import { UserType } from '../types';
 import { ShieldAlert, Users, FileText, Calendar, BarChart2, Settings, AlertTriangle, PenTool, Book, Bell, Lock } from "lucide-react";
 
 // Permission type definition
