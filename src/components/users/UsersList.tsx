@@ -58,23 +58,26 @@ const UsersList: React.FC<UsersListProps> = ({
     </div>
   ), []);
   
+  // Memoize the user card list
+  const userCards = useMemo(() => {
+    return users.map(user => (
+      <UserCard 
+        key={user.id} 
+        user={user} 
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        isLastAdmin={isLastAdmin}
+        subscriptions={subscriptions}
+        isAdmin={isAdmin}
+        isSuperAdmin={isSuperAdmin}
+      />
+    ));
+  }, [users, handleEdit, handleDelete, isLastAdmin, subscriptions, isAdmin, isSuperAdmin]);
+  
   // Render all user cards using the memoized handlers
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4">
-      {users.length > 0 ? (
-        users.map(user => (
-          <UserCard 
-            key={user.id} 
-            user={user} 
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            isLastAdmin={isLastAdmin}
-            subscriptions={subscriptions}
-            isAdmin={isAdmin}
-            isSuperAdmin={isSuperAdmin}
-          />
-        ))
-      ) : emptyState}
+      {users.length > 0 ? userCards : emptyState}
     </div>
   );
 };

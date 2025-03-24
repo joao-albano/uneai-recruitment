@@ -92,41 +92,47 @@ export const useUserCrudOperations = (
     e.preventDefault();
     
     try {
-      if (!e.currentTarget) return;
-      
+      // First, check if the local selectedUser is available
       if (!selectedUser) {
-        toast({
-          title: "Erro",
-          description: "Nenhum usuário selecionado para edição.",
-          variant: "destructive"
-        });
-        return;
+        // Try to use the one from context if available
+        if (!selectedUser) {
+          toast({
+            title: "Erro",
+            description: "Nenhum usuário selecionado para edição.",
+            variant: "destructive"
+          });
+          return;
+        }
       }
 
-      // Make a copy of the user we're updating for the toast message
-      const updatedUserName = selectedUser.name;
+      // Make a deep copy of the user to avoid reference issues
+      const userToUpdate = structuredClone(selectedUser);
       
+      // Store the name for the toast message
+      const updatedUserName = userToUpdate.name;
+      
+      // Update the users array with the modified user
       const updatedUsers = users.map(user => {
-        if (user.id === selectedUser.id) {
-          return {...selectedUser};
+        if (user.id === userToUpdate.id) {
+          return userToUpdate;
         }
         return user;
       });
       
-      // Update state in this specific order to prevent race conditions
+      // Update the users state
       setUsers(updatedUsers);
       
-      // Show success toast
+      // Show success message
       toast({
         title: "Usuário atualizado",
         description: `As informações de ${updatedUserName} foram atualizadas.`
       });
       
-      // Clean up by closing dialog and clearing selected user
+      // Close the dialog
       setShowEditDialog(false);
       
-      // Important: Set selectedUser to null AFTER the dialog is closed
-      // Using setTimeout to ensure this happens after the dialog animation
+      // Use a small timeout before clearing the selected user to ensure dialog closes first
+      // This prevents the dialog from trying to render with a null user while still visible
       setTimeout(() => {
         updateSelectedUser(null);
       }, 100);
@@ -142,7 +148,14 @@ export const useUserCrudOperations = (
   
   const handleDeleteUser = () => {
     try {
-      if (!selectedUser) return;
+      if (!selectedUser) {
+        toast({
+          title: "Erro",
+          description: "Nenhum usuário selecionado para exclusão.",
+          variant: "destructive"
+        });
+        return;
+      }
       
       const userName = selectedUser.name;
       const updatedUsers = users.filter(user => user.id !== selectedUser.id);
@@ -182,8 +195,8 @@ export const useUserCrudOperations = (
     handleCreateUser,
     handleEditUser,
     handleDeleteUser,
-    // Add selectedUser and setLocalSelectedUser to the return values
-    selectedUser,
+    // Include the selectedUser from the local state
+    selectedUser: selectedUser,
     setSelectedUser: updateSelectedUser
   };
 };

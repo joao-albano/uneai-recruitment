@@ -30,8 +30,16 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
   isAdmin = false,
   isSuperAdmin = false
 }) => {
-  // Safety check - if no selected user, don't render the dialog
-  if (!selectedUser) return null;
+  // Safety check - render nothing if no selected user
+  if (!selectedUser) {
+    // Only return null if dialog is not open
+    if (!open) return null;
+    
+    // If dialog is open but there's no user, close the dialog
+    console.warn("EditUserDialog opened without a selected user");
+    setTimeout(() => onOpenChange(false), 0);
+    return null;
+  }
   
   // Check if the user is the super admin of UNE CX
   const isUneCxAdmin = selectedUser.isSuperAdmin;
@@ -42,8 +50,10 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
     e.stopPropagation();
     
     try {
-      if (onSubmit) {
+      if (onSubmit && selectedUser) {
         onSubmit(e);
+      } else {
+        console.error("Cannot submit - no user selected or no submit handler");
       }
     } catch (error) {
       console.error("Erro ao submeter formulário:", error);
@@ -54,6 +64,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
   const handleDialogClose = (isOpen: boolean) => {
     try {
       if (!isOpen) {
+        // Call the parent onOpenChange to close the dialog
         onOpenChange(false);
       }
     } catch (error) {
@@ -113,4 +124,4 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
   );
 };
 
-export default EditUserDialog;
+export default React.memo(EditUserDialog);

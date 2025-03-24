@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { UserType, NewUserType } from '../types';
 import { useUserDialogHandlers } from './userDialogHandlers';
 import { useUserCrudOperations } from './userCrudOperations';
@@ -31,8 +31,9 @@ export const useUsers = () => {
     handleCreateUser,
     handleEditUser,
     handleDeleteUser,
-    // We now get selectedUser and setSelectedUser from the hook
-    // This ensures both hooks use the same selectedUser state
+    // We get the selected user from the hook to ensure consistency
+    selectedUser: crudSelectedUser,
+    setSelectedUser: crudSetSelectedUser,
   } = useUserCrudOperations(
     initialUsers,
     setShowCreateDialog,
@@ -42,11 +43,19 @@ export const useUsers = () => {
     setNewUser
   );
 
+  // Ensure both hooks have the same user selected
+  // This fixes potential race conditions between the two hooks
+  const updateSelectedUser = useCallback((user: UserType | null) => {
+    setSelectedUser(user);
+    crudSetSelectedUser(user);
+  }, [crudSetSelectedUser]);
+
   return {
     // State
     users,
     newUser,
-    selectedUser,
+    // Prioritize the selected user from the CRUD operations
+    selectedUser: crudSelectedUser || selectedUser,
     showCreateDialog,
     showEditDialog,
     showDeleteDialog,
@@ -54,7 +63,7 @@ export const useUsers = () => {
     
     // State setters
     setNewUser,
-    setSelectedUser,
+    setSelectedUser: updateSelectedUser,
     setShowCreateDialog,
     setShowEditDialog,
     setShowDeleteDialog,
