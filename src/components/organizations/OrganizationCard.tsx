@@ -5,13 +5,28 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Building, MoreHorizontal, Edit, Trash, Users, Clock, ShieldAlert } from 'lucide-react';
+import { Building, MoreHorizontal, Edit, Trash, Users, Clock, ShieldAlert, Package } from 'lucide-react';
+import { ProductType } from '@/context/ProductContext';
 
 interface OrganizationCardProps {
   organization: OrganizationType;
   onEdit: (organization: OrganizationType) => void;
   onDelete: (organization: OrganizationType) => void;
 }
+
+// Função utilitária para obter o nome abreviado do produto
+const getProductShortName = (productType: ProductType): string => {
+  switch (productType) {
+    case 'retention':
+      return 'Retenção';
+    case 'billing':
+      return 'Cobrança';
+    case 'recruitment':
+      return 'Captação';
+    default:
+      return productType;
+  }
+};
 
 const OrganizationCard: React.FC<OrganizationCardProps> = ({
   organization,
@@ -27,6 +42,9 @@ const OrganizationCard: React.FC<OrganizationCardProps> = ({
       day: 'numeric'
     }).format(date);
   };
+
+  // Obter produtos ativos
+  const activeProducts = organization.products?.filter(p => p.active) || [];
 
   return (
     <Card className="shadow-sm hover:shadow-md transition-shadow">
@@ -86,6 +104,30 @@ const OrganizationCard: React.FC<OrganizationCardProps> = ({
             >
               {organization.isActive ? 'Ativa' : 'Inativa'}
             </Badge>
+          </div>
+          
+          {/* Seção de produtos */}
+          <div className="pt-2 border-t mt-2">
+            <div className="flex items-center gap-1.5 mb-2">
+              <Package className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Produtos Ativos</span>
+            </div>
+            
+            <div className="flex flex-wrap gap-1">
+              {activeProducts.length > 0 ? (
+                activeProducts.map(product => (
+                  <Badge 
+                    key={product.type} 
+                    variant="outline" 
+                    className="bg-blue-50 text-blue-700 border-blue-200"
+                  >
+                    {getProductShortName(product.type)}
+                  </Badge>
+                ))
+              ) : (
+                <span className="text-xs text-muted-foreground">Nenhum produto ativo</span>
+              )}
+            </div>
           </div>
           
           <div className="pt-2 border-t mt-2">

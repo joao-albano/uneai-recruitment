@@ -7,7 +7,12 @@ export const useOrganizations = () => {
   const [newOrganization, setNewOrganization] = useState<NewOrganizationType>({
     name: '',
     isActive: true,
-    isMainOrg: false
+    isMainOrg: false,
+    products: [
+      { type: 'retention', active: true },
+      { type: 'billing', active: false },
+      { type: 'recruitment', active: false }
+    ]
   });
   const [selectedOrganization, setSelectedOrganization] = useState<OrganizationType | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -24,21 +29,36 @@ export const useOrganizations = () => {
         name: 'UNE CX',
         isActive: true,
         isMainOrg: true,
-        createdAt: '2023-01-01'
+        createdAt: '2023-01-01',
+        products: [
+          { type: 'retention', active: true },
+          { type: 'billing', active: true },
+          { type: 'recruitment', active: true }
+        ]
       },
       {
         id: '1',
         name: 'Escola de Letras',
         isActive: true,
         isMainOrg: false,
-        createdAt: '2023-02-15'
+        createdAt: '2023-02-15',
+        products: [
+          { type: 'retention', active: true },
+          { type: 'billing', active: true },
+          { type: 'recruitment', active: false }
+        ]
       },
       {
         id: '2',
         name: 'Outra Escola',
         isActive: true,
         isMainOrg: false,
-        createdAt: '2023-03-20'
+        createdAt: '2023-03-20',
+        products: [
+          { type: 'retention', active: true },
+          { type: 'billing', active: false },
+          { type: 'recruitment', active: false }
+        ]
       }
     ];
     
@@ -46,12 +66,16 @@ export const useOrganizations = () => {
   }, []);
 
   const handleOpenEditDialog = (organization: OrganizationType) => {
-    setSelectedOrganization(organization);
+    // Usar uma cópia profunda para evitar problemas de referência
+    const orgCopy = structuredClone(organization);
+    setSelectedOrganization(orgCopy);
     setShowEditDialog(true);
   };
 
   const handleOpenDeleteDialog = (organization: OrganizationType) => {
-    setSelectedOrganization(organization);
+    // Usar uma cópia profunda para evitar problemas de referência
+    const orgCopy = structuredClone(organization);
+    setSelectedOrganization(orgCopy);
     setShowDeleteDialog(true);
   };
 
@@ -65,14 +89,24 @@ export const useOrganizations = () => {
       name: newOrganization.name,
       isActive: newOrganization.isActive,
       isMainOrg: newOrganization.isMainOrg,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      products: newOrganization.products || [
+        { type: 'retention', active: true },
+        { type: 'billing', active: false },
+        { type: 'recruitment', active: false }
+      ]
     };
     
     setOrganizations([...organizations, newOrg]);
     setNewOrganization({
       name: '',
       isActive: true,
-      isMainOrg: false
+      isMainOrg: false,
+      products: [
+        { type: 'retention', active: true },
+        { type: 'billing', active: false },
+        { type: 'recruitment', active: false }
+      ]
     });
     setShowCreateDialog(false);
   };

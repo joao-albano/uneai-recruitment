@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { OrganizationType } from './types';
 import { InfoIcon } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import OrganizationProductsForm from './edit/OrganizationProductsForm';
 
 interface EditOrganizationDialogProps {
   open: boolean;
@@ -23,6 +25,8 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
   setSelectedOrganization,
   onSubmit
 }) => {
+  const { isSuperAdmin } = useAuth();
+  
   if (!selectedOrganization) return null;
   
   return (
@@ -72,6 +76,13 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
                 onCheckedChange={(checked) => setSelectedOrganization({...selectedOrganization, isActive: checked})}
               />
             </div>
+            
+            {/* Adicionando o componente de gerenciamento de produtos */}
+            <OrganizationProductsForm 
+              selectedOrganization={selectedOrganization}
+              setSelectedOrganization={setSelectedOrganization}
+              isSuperAdmin={isSuperAdmin}
+            />
           </div>
           
           <DialogFooter>

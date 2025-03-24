@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { NewOrganizationType } from './types';
+import { Checkbox } from "@/components/ui/checkbox";
+import { ProductType } from '@/context/ProductContext';
 
 interface CreateOrganizationDialogProps {
   open: boolean;
@@ -15,6 +17,20 @@ interface CreateOrganizationDialogProps {
   onSubmit: (e: React.FormEvent) => void;
 }
 
+// Função utilitária para obter o nome de exibição do produto
+const getProductDisplayName = (productType: ProductType): string => {
+  switch (productType) {
+    case 'retention':
+      return 'Retenção de Alunos';
+    case 'billing':
+      return 'Cobrança de Mensalidades';
+    case 'recruitment':
+      return 'Captação de Alunos';
+    default:
+      return productType;
+  }
+};
+
 const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
   open,
   onOpenChange,
@@ -22,6 +38,50 @@ const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
   setNewOrganization,
   onSubmit
 }) => {
+  // Função para alternar o estado ativo de um produto
+  const toggleProductActive = (productType: ProductType) => {
+    // Criar uma cópia do array de produtos atual ou inicializar se não existir
+    const currentProducts = newOrganization.products ? [...newOrganization.products] : [
+      { type: 'retention', active: true },
+      { type: 'billing', active: false },
+      { type: 'recruitment', active: false }
+    ];
+    
+    // Atualizar o estado do produto
+    const productIndex = currentProducts.findIndex(p => p.type === productType);
+    
+    if (productIndex >= 0) {
+      // Atualizar produto existente
+      currentProducts[productIndex] = {
+        ...currentProducts[productIndex],
+        active: !currentProducts[productIndex].active
+      };
+    } else {
+      // Adicionar novo produto
+      currentProducts.push({
+        type: productType,
+        active: true
+      });
+    }
+    
+    // Atualizar o estado
+    setNewOrganization({
+      ...newOrganization,
+      products: currentProducts
+    });
+  };
+  
+  // Verificar se um produto está ativo
+  const isProductActive = (productType: ProductType): boolean => {
+    if (!newOrganization.products) return false;
+    
+    const product = newOrganization.products.find(p => p.type === productType);
+    return product ? product.active : false;
+  };
+  
+  // Lista de todos os tipos de produtos disponíveis
+  const allProductTypes: ProductType[] = ['retention', 'billing', 'recruitment'];
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
@@ -40,7 +100,7 @@ const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
                 id="name" 
                 value={newOrganization.name}
                 onChange={(e) => setNewOrganization({...newOrganization, name: e.target.value})}
-                placeholder="Ex: Escola de Artes"
+                placeholder="Digite o nome da organização"
                 required
               />
             </div>
@@ -57,6 +117,28 @@ const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
                 checked={newOrganization.isActive}
                 onCheckedChange={(checked) => setNewOrganization({...newOrganization, isActive: checked})}
               />
+            </div>
+            
+            {/* Adiciona a seleção de produtos */}
+            <div className="grid gap-2 pt-4 border-t">
+              <Label className="mb-2">Produtos Ativos para esta Organização</Label>
+              <div className="grid gap-2">
+                {allProductTypes.map(productType => (
+                  <div key={productType} className="flex items-center space-x-2">
+                    <Checkbox 
+                      id={`new-product-${productType}`} 
+                      checked={isProductActive(productType)}
+                      onCheckedChange={() => toggleProductActive(productType)}
+                    />
+                    <Label 
+                      htmlFor={`new-product-${productType}`}
+                      className="text-sm font-normal"
+                    >
+                      {getProductDisplayName(productType)}
+                    </Label>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
           
