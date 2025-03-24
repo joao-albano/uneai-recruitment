@@ -10,12 +10,14 @@ import PaymentNotificationBanner from '../billing/PaymentNotificationBanner';
 import { useAuth } from '@/context/AuthContext';
 import { Alert } from '@/types/alert';
 import { ScheduleItem } from '@/types/data';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Dashboard: React.FC = () => {
   const { students, alerts, schedules, isLoading, generateDemoData } = useData();
   const { toast } = useToast();
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
+  const isMobile = useIsMobile();
   
   // For demo purposes - we'll assume there's a pending invoice
   const hasPendingInvoice = true;
@@ -109,6 +111,7 @@ const Dashboard: React.FC = () => {
           onViewAlertDetails={handleViewAlertDetails}
           onViewClassDetails={handleViewClassDetails}
           onScheduleClick={handleScheduleClick}
+          isMobile={isMobile}
         />
       )}
     </div>

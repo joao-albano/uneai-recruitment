@@ -9,11 +9,13 @@ import ScheduleDetailsDialog from './ScheduleDetailsDialog';
 import DaySchedulesDialog from './DaySchedulesDialog';
 import { useAuth } from '@/context/AuthContext';
 import { useScheduleData } from '@/hooks/useScheduleData';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const ScheduleView: React.FC = () => {
   const [showDaySchedules, setShowDaySchedules] = useState(false);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const { userEmail } = useAuth();
+  const isMobile = useIsMobile();
   
   const {
     students,
@@ -70,9 +72,9 @@ const ScheduleView: React.FC = () => {
   };
   
   return (
-    <div className="w-full animate-fade-in">
-      <div className="grid gap-8 lg:grid-cols-5 mt-4">
-        <div className="lg:col-span-3 space-y-6">
+    <div className={`w-full animate-fade-in ${isMobile ? 'px-2' : ''}`}>
+      <div className="grid gap-4 sm:gap-8 lg:grid-cols-5 mt-4">
+        <div className="lg:col-span-3 space-y-4 sm:space-y-6">
           <CalendarView
             formattedMonthYear={formattedMonthYear}
             firstDayOfMonth={firstDayOfMonth}
@@ -85,6 +87,7 @@ const ScheduleView: React.FC = () => {
             getScheduleCountForDay={getScheduleCountForDay}
             getScheduleStatusForDay={getScheduleStatusForDay}
             onDayClick={handleDayClick}
+            isMobile={isMobile}
           />
           
           <TodaySchedules
@@ -92,18 +95,20 @@ const ScheduleView: React.FC = () => {
             onMarkCompleted={markCompleted}
             onCancelSchedule={cancelSchedule}
             onNewSchedule={() => setShowAddDialog(true)}
+            isMobile={isMobile}
           />
         </div>
         
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           <UpcomingSchedules
             upcomingSchedules={upcomingSchedules}
             onCancelSchedule={cancelSchedule}
             onNewSchedule={() => setShowAddDialog(true)}
             onEditSchedule={() => {}}
+            isMobile={isMobile}
           />
           
-          <ScheduleStats schedules={visibleSchedules} />
+          <ScheduleStats schedules={visibleSchedules} isMobile={isMobile} />
         </div>
       </div>
       

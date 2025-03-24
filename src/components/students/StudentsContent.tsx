@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useData } from '@/context/DataContext';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,6 +12,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { TableHeader, TableRow, TableHead } from '@/components/ui/table';
 import { ArrowUpDown } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const StudentsContent: React.FC = () => {
   const { students, generateDemoData } = useData();
@@ -19,6 +21,7 @@ const StudentsContent: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAdmin } = useAuth();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -114,7 +117,7 @@ const StudentsContent: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-4 sm:space-y-6 ${isMobile ? 'px-2' : ''}`}>
       <StudentFilters 
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -126,35 +129,40 @@ const StudentsContent: React.FC = () => {
         classFilter={classFilter}
         setClassFilter={setClassFilter}
         clearFilters={clearClassFilter}
+        isMobile={isMobile}
       />
 
       <Card>
-        <CardContent className="pt-6">
+        <CardContent className={`${isMobile ? 'p-2 pt-4' : 'pt-6'} overflow-x-auto`}>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="cursor-pointer" onClick={() => toggleSort('name')}>
+                <TableHead className={`cursor-pointer ${isMobile ? 'text-xs' : ''}`} onClick={() => toggleSort('name')}>
                   <div className="flex items-center gap-1">
-                    Nome <ArrowUpDown size={16} />
+                    Nome <ArrowUpDown size={isMobile ? 12 : 16} />
                   </div>
                 </TableHead>
-                <TableHead>Turma / Segmento</TableHead>
-                <TableHead className="cursor-pointer" onClick={() => toggleSort('riskLevel')}>
+                <TableHead className={isMobile ? 'text-xs' : ''}>Turma / Segmento</TableHead>
+                <TableHead className={`cursor-pointer ${isMobile ? 'text-xs' : ''}`} onClick={() => toggleSort('riskLevel')}>
                   <div className="flex items-center gap-1">
-                    Nível de Risco <ArrowUpDown size={16} />
+                    Nível de Risco <ArrowUpDown size={isMobile ? 12 : 16} />
                   </div>
                 </TableHead>
-                <TableHead className="cursor-pointer" onClick={() => toggleSort('grade')}>
-                  <div className="flex items-center gap-1">
-                    Nota Média <ArrowUpDown size={16} />
-                  </div>
-                </TableHead>
-                <TableHead className="cursor-pointer" onClick={() => toggleSort('attendance')}>
-                  <div className="flex items-center gap-1">
-                    Frequência <ArrowUpDown size={16} />
-                  </div>
-                </TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                {!isMobile && (
+                  <>
+                    <TableHead className="cursor-pointer" onClick={() => toggleSort('grade')}>
+                      <div className="flex items-center gap-1">
+                        Nota Média <ArrowUpDown size={16} />
+                      </div>
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => toggleSort('attendance')}>
+                      <div className="flex items-center gap-1">
+                        Frequência <ArrowUpDown size={16} />
+                      </div>
+                    </TableHead>
+                  </>
+                )}
+                <TableHead className={`text-right ${isMobile ? 'text-xs' : ''}`}>Ações</TableHead>
               </TableRow>
             </TableHeader>
             <StudentTable 
@@ -164,6 +172,7 @@ const StudentsContent: React.FC = () => {
               handleAddAsData={handleAddAsData}
               classFilter={classFilter}
               clearClassFilter={clearClassFilter}
+              isMobile={isMobile}
             />
           </Table>
           
@@ -172,6 +181,7 @@ const StudentsContent: React.FC = () => {
               currentPage={currentPage}
               totalPages={Math.max(1, totalPages)}
               onPageChange={handlePageChange}
+              isMobile={isMobile}
             />
           </div>
         </CardContent>

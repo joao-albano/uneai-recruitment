@@ -26,6 +26,7 @@ interface DashboardContentProps {
   onViewAlertDetails?: (alertId: string) => void;
   onViewClassDetails?: (className: string) => void;
   onScheduleClick?: (schedule: ScheduleItem) => void;
+  isMobile?: boolean;
 }
 
 const DashboardContent: React.FC<DashboardContentProps> = ({
@@ -34,7 +35,8 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   schedules = [],
   onViewAlertDetails = () => {},
   onViewClassDetails = () => {},
-  onScheduleClick = () => {}
+  onScheduleClick = () => {},
+  isMobile = false
 }) => {
   const { language } = useTheme();
   const { showBanner, daysRemaining } = useTrialPeriod();
@@ -87,7 +89,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         <PaymentNotificationBanner />
       )}
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
         <RiskCard
           title="Alunos em Alto Risco"
           value={highRiskCount}
@@ -150,7 +152,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <ClassesOverview students={students} onViewClassDetails={onViewClassDetails} />
+        <ClassesOverview students={students} onViewClassDetails={onViewClassDetails} isMobile={isMobile} />
         <RiskExplanation student={mockStudent} />
       </div>
 
