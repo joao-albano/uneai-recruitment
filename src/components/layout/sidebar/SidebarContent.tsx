@@ -9,7 +9,7 @@ import SidebarSettingsSection from './SidebarSettingsSection';
 import SidebarAdminSection from './SidebarAdminSection';
 import SidebarBillingSection from './SidebarBillingSection';
 import SidebarMonitoringSection from './SidebarMonitoringSection';
-import { useProduct } from '@/context/ProductContext';
+import { useProduct, ProductType } from '@/context/ProductContext';
 import { useAuth } from '@/context/auth';
 import { AlertTriangle } from 'lucide-react';
 
@@ -31,9 +31,9 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
   const { isAdmin, isSuperAdmin } = useAuth();
   
   // Safe access to ProductContext with fallback values
-  let currentProduct = null;
-  let hasAccessToProduct = () => true;
-  let availableProducts = [];
+  let currentProduct: ProductType | null = null;
+  let hasAccessToProduct = (productType: ProductType) => true; // Fixed signature to match the actual function
+  let availableProducts: ProductType[] = [];
   
   try {
     const productContext = useProduct();
