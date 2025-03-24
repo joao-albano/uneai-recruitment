@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import MessageStatusBadge from './MessageStatusBadge';
-import { useData } from '@/context/DataContext';
+import { useStudents } from '@/context/students/StudentsContext';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface MessageDetailDialogProps {
@@ -26,7 +26,7 @@ const MessageDetailDialog: React.FC<MessageDetailDialogProps> = ({
   open, 
   onOpenChange 
 }) => {
-  const { students } = useData();
+  const { students } = useStudents();
   const [isConversationExpanded, setIsConversationExpanded] = useState(false);
   
   if (!message) return null;
