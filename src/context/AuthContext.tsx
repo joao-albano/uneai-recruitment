@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,6 +27,7 @@ export interface AuthContextType {
   currentUser: UserProfile | null;
   currentOrganization: Organization | null;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  loginWithPhone: (phone: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   session: Session | null;
 }
@@ -42,6 +42,7 @@ const AuthContext = createContext<AuthContextType>({
   currentOrganization: null,
   session: null,
   login: async () => ({ success: false }),
+  loginWithPhone: async () => ({ success: false }),
   logout: async () => {},
 });
 
@@ -193,6 +194,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
   
+  const loginWithPhone = async (phone: string, password: string) => {
+    try {
+      // Formatando o telefone para padrão internacional (adicionando +55 para Brasil)
+      const formattedPhone = phone.startsWith('+') ? phone : `+55${phone.replace(/\D/g, '')}`;
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
+        phone: formattedPhone,
+        password
+      });
+      
+      if (error) {
+        console.error('Erro de login com telefone:', error.message);
+        return { success: false, error: error.message };
+      }
+      
+      // Login bem-sucedido - onAuthStateChange vai atualizar o estado
+      console.log('Login com telefone bem-sucedido:', data);
+      return { success: true };
+    } catch (error) {
+      console.error('Erro de login com telefone:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Erro ao fazer login com telefone' 
+      };
+    }
+  };
+  
   const logout = async () => {
     try {
       await supabase.auth.signOut();
@@ -221,6 +249,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       currentOrganization,
       session,
       login, 
+      loginWithPhone,
       logout 
     }}>
       {children}

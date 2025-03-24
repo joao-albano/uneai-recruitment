@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 
 const loginSchema = z.object({
-  email: z.string().email('Email inválido'),
+  phone: z.string().min(10, 'Telefone inválido'),
   password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
 });
 
@@ -23,13 +23,13 @@ interface LoginFormProps {
 
 const LoginForm = ({ onSwitchTab }: LoginFormProps) => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { loginWithPhone } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
+      phone: '',
       password: '',
     },
   });
@@ -40,14 +40,14 @@ const LoginForm = ({ onSwitchTab }: LoginFormProps) => {
     try {
       console.log('Login attempt:', values);
       
-      // Use o login do AuthContext que agora usa Supabase
-      const result = await login(values.email, values.password);
+      // Use o login do AuthContext que agora usa telefone
+      const result = await loginWithPhone(values.phone, values.password);
       
       if (result.success) {
         toast.success('Login realizado com sucesso!');
         navigate('/hub'); // Redireciona para o hub de produtos
       } else {
-        toast.error(result.error || 'Email ou senha incorretos');
+        toast.error(result.error || 'Telefone ou senha incorretos');
       }
     } catch (error) {
       console.error('Erro no login:', error);
@@ -63,12 +63,12 @@ const LoginForm = ({ onSwitchTab }: LoginFormProps) => {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
-            name="email"
+            name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Telefone</FormLabel>
                 <FormControl>
-                  <Input placeholder="email@escola.edu" {...field} />
+                  <Input placeholder="(11) 99999-9999" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
