@@ -3,6 +3,7 @@ import React from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ApiKeyInput } from '@/components/ui/api-key-input';
 import { 
   Form, 
   FormControl, 
@@ -54,7 +55,11 @@ const WhatsAppConfigForm: React.FC<WhatsAppConfigFormProps> = ({ config, onSubmi
                 {language === 'pt-BR' ? 'URL do Webhook do n8n' : 'n8n Webhook URL'}
               </FormLabel>
               <FormControl>
-                <Input {...field} placeholder="https://" />
+                <ApiKeyInput
+                  {...field}
+                  onChange={field.onChange}
+                  placeholder="https://"
+                />
               </FormControl>
               <FormDescription>
                 {language === 'pt-BR' 

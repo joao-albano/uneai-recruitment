@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ApiKeyInput } from '@/components/ui/api-key-input';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -181,7 +181,10 @@ const OpenAiSettings: React.FC = () => {
                         {language === 'pt-BR' ? 'Chave da API da OpenAI' : 'OpenAI API Key'}
                       </FormLabel>
                       <FormControl>
-                        <Input type="password" {...field} />
+                        <ApiKeyInput
+                          {...field}
+                          onChange={field.onChange}
+                        />
                       </FormControl>
                       <FormDescription>
                         {language === 'pt-BR' 
