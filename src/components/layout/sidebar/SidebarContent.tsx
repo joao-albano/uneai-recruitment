@@ -64,7 +64,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
       />
       
       <div className="flex-1 px-3 py-2 overflow-y-auto">
-        {/* Se for super admin (UNE CX), tem acesso a tudo */}
+        {/* Renderiza menus apenas se o usuário tiver acesso ao produto ou for super admin */}
         {isSuperAdmin || (!currentProduct || hasAccessToProduct(currentProduct)) ? (
           <>
             {/* Renderiza menu com base no produto selecionado ou para super admin */}
@@ -75,6 +75,8 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
               </>
             )}
             
+            {/* Renderiza menu de faturamento apenas se o produto for billing ou super admin 
+                - Removemos a repetição aqui */}
             {(!currentProduct || currentProduct === 'billing' || isSuperAdmin) && (
               <SidebarBillingSection collapsed={collapsed} />
             )}
@@ -110,8 +112,8 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
           <SidebarAdminSection collapsed={collapsed} />
         )}
         
-        {/* O billing é mostrado para todos os usuários para que possam gerenciar suas assinaturas */}
-        <SidebarBillingSection collapsed={collapsed} />
+        {/* Removemos a duplicação do SidebarBillingSection daqui, pois já está sendo renderizado acima
+           com base na condição de produto */}
       </div>
       
       <div className="px-3 mt-auto">
