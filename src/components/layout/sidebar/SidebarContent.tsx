@@ -29,7 +29,23 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
   currentUser
 }) => {
   const { isAdmin, isSuperAdmin } = useAuth();
-  const { currentProduct, hasAccessToProduct, availableProducts } = useProduct();
+  
+  // Safe access to ProductContext with fallback values
+  let currentProduct = null;
+  let hasAccessToProduct = () => true;
+  let availableProducts = [];
+  
+  try {
+    const productContext = useProduct();
+    if (productContext) {
+      currentProduct = productContext.currentProduct;
+      hasAccessToProduct = productContext.hasAccessToProduct;
+      availableProducts = productContext.availableProducts;
+    }
+  } catch (error) {
+    console.error('ProductContext not available:', error);
+    // Continue with fallback values
+  }
   
   console.log('SidebarContent - isAdmin:', isAdmin, 'isSuperAdmin:', isSuperAdmin);
   
@@ -49,21 +65,21 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
       
       <div className="flex-1 px-3 py-2 overflow-y-auto">
         {/* Se for super admin (UNE CX), tem acesso a tudo */}
-        {isSuperAdmin || hasAccessToProduct(currentProduct) ? (
+        {isSuperAdmin || (!currentProduct || hasAccessToProduct(currentProduct)) ? (
           <>
             {/* Renderiza menu com base no produto selecionado ou para super admin */}
-            {(currentProduct === 'retention' || isSuperAdmin) && (
+            {(!currentProduct || currentProduct === 'retention' || isSuperAdmin) && (
               <>
                 <SidebarNavigationSection collapsed={collapsed} />
                 <SidebarMonitoringSection collapsed={collapsed} />
               </>
             )}
             
-            {(currentProduct === 'billing' || isSuperAdmin) && (
+            {(!currentProduct || currentProduct === 'billing' || isSuperAdmin) && (
               <SidebarBillingSection collapsed={collapsed} />
             )}
             
-            {(currentProduct === 'recruitment' || isSuperAdmin) && (
+            {(!currentProduct || currentProduct === 'recruitment' || isSuperAdmin) && (
               <SidebarNavigationSection collapsed={collapsed} /> // Um exemplo, seria substituído pelo menu específico
             )}
           </>
