@@ -10,8 +10,22 @@ interface RiskExplanationProps {
 }
 
 const RiskExplanation: React.FC<RiskExplanationProps> = ({ student }) => {
-  // Early return if student or decisionPath doesn't exist
-  if (!student || !student.decisionPath) {
+  // Early return if student is undefined or null
+  if (!student) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg font-medium">Análise de Risco</CardTitle>
+          <CardDescription>
+            Dados do estudante não encontrados
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
+
+  // Early return if decisionPath doesn't exist
+  if (!student.decisionPath || student.decisionPath.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -73,15 +87,16 @@ const RiskExplanation: React.FC<RiskExplanationProps> = ({ student }) => {
           <div>
             <h3 className="font-medium mb-2 text-sm">Ações Recomendadas</h3>
             <ul className="space-y-1 ml-2 text-sm">
-              {student.actionItems && student.actionItems.map((action, index) => (
-                <li key={index} className="flex items-start">
-                  <span className="bg-primary/10 text-primary w-5 h-5 rounded-full flex items-center justify-center text-xs mr-2 mt-0.5">
-                    {index + 1}
-                  </span>
-                  <span>{action}</span>
-                </li>
-              ))}
-              {(!student.actionItems || student.actionItems.length === 0) && (
+              {student.actionItems && student.actionItems.length > 0 ? (
+                student.actionItems.map((action, index) => (
+                  <li key={index} className="flex items-start">
+                    <span className="bg-primary/10 text-primary w-5 h-5 rounded-full flex items-center justify-center text-xs mr-2 mt-0.5">
+                      {index + 1}
+                    </span>
+                    <span>{action}</span>
+                  </li>
+                ))
+              ) : (
                 <li className="text-muted-foreground">Nenhuma ação recomendada no momento.</li>
               )}
             </ul>

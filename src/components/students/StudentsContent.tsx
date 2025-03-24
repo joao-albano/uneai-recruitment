@@ -11,6 +11,7 @@ import useStudentFilters from '@/hooks/useStudentFilters';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { TableHeader, TableRow, TableHead } from '@/components/ui/table';
 import { ArrowUpDown } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 const StudentsContent: React.FC = () => {
   const { students, generateDemoData } = useData();
@@ -18,6 +19,7 @@ const StudentsContent: React.FC = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAdmin } = useAuth();
 
   // Extract class filter from URL if present
   useEffect(() => {
@@ -56,17 +58,41 @@ const StudentsContent: React.FC = () => {
   });
 
   const handleViewAlerts = (studentId: string) => {
-    toast({
-      title: "Alertas",
-      description: `Visualizando alertas para o estudante ID: ${studentId}`,
-    });
+    const student = students.find(s => s.id === studentId);
+    
+    if (student) {
+      toast({
+        title: "Alertas",
+        description: `Visualizando alertas para ${student.name}`,
+      });
+      
+      // In a real app, you would navigate to the alerts page or show a modal
+      // For now we'll just show a toast with appropriate messaging depending on role
+      if (isAdmin) {
+        // For admin, proceed to full alerts view
+        navigate(`/alerts?studentId=${studentId}`);
+      } else {
+        // For regular users, show limited information
+        toast({
+          title: "Informação",
+          description: "Você tem acesso limitado aos alertas. Contate um administrador para mais detalhes.",
+        });
+      }
+    }
   };
 
   const handleSchedule = (studentId: string) => {
-    toast({
-      title: "Agendar Atendimento",
-      description: `Agendando atendimento para o estudante ID: ${studentId}`,
-    });
+    const student = students.find(s => s.id === studentId);
+    
+    if (student) {
+      toast({
+        title: "Agendar Atendimento",
+        description: `Agendando atendimento para ${student.name}`,
+      });
+      
+      // Navigate to the scheduling page with the student ID pre-selected
+      navigate(`/schedule?studentId=${studentId}`);
+    }
   };
 
   const handleAddAsData = (studentId: string) => {
