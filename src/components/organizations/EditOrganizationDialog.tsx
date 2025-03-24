@@ -27,10 +27,33 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
 }) => {
   const { isSuperAdmin } = useAuth();
   
+  // If no organization is selected, don't render the dialog
   if (!selectedOrganization) return null;
   
+  // Handle form field updates safely with deep copies
+  const updateField = (field: string, value: any) => {
+    if (!selectedOrganization) return;
+    
+    // Create a deep copy of the organization to avoid reference issues
+    const updatedOrg = JSON.parse(JSON.stringify(selectedOrganization));
+    updatedOrg[field] = value;
+    setSelectedOrganization(updatedOrg);
+  };
+  
+  // Handle dialog close - make sure to clean up if canceled
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      // Give the component time to animate before removing data
+      setTimeout(() => {
+        onOpenChange(open);
+      }, 100);
+    } else {
+      onOpenChange(open);
+    }
+  };
+  
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Editar Organização</DialogTitle>
@@ -58,7 +81,7 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
               <Input 
                 id="edit-name" 
                 value={selectedOrganization.name}
-                onChange={(e) => setSelectedOrganization({...selectedOrganization, name: e.target.value})}
+                onChange={(e) => updateField('name', e.target.value)}
                 required
               />
             </div>
@@ -73,7 +96,7 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
               <Switch 
                 id="edit-active"
                 checked={selectedOrganization.isActive}
-                onCheckedChange={(checked) => setSelectedOrganization({...selectedOrganization, isActive: checked})}
+                onCheckedChange={(checked) => updateField('isActive', checked)}
               />
             </div>
             
@@ -86,7 +109,7 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
           </div>
           
           <DialogFooter>
-            <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>
+            <Button variant="outline" type="button" onClick={() => handleOpenChange(false)}>
               Cancelar
             </Button>
             <Button type="submit">Salvar Alterações</Button>

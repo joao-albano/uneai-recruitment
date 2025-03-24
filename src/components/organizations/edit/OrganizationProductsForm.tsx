@@ -17,18 +17,18 @@ const OrganizationProductsForm: React.FC<OrganizationProductsFormProps> = ({
   setSelectedOrganization,
   isSuperAdmin
 }) => {
-  // Se não for super admin, não pode editar as assinaturas
+  // If not super admin, don't render the component
   if (!isSuperAdmin) return null;
   
-  // Função para alternar o estado ativo de um produto
+  // Function to toggle product active state
   const toggleProductActive = (productType: ProductType) => {
     if (!selectedOrganization) return;
     
     try {
-      // Criar nova versão do selectedOrganization com produtos atualizados
-      const updatedOrg = structuredClone(selectedOrganization);
+      // Create a new version of selectedOrganization with updated products
+      const updatedOrg = JSON.parse(JSON.stringify(selectedOrganization)) as OrganizationType;
       
-      // Garantir que products seja um array
+      // Ensure products is an array
       if (!updatedOrg.products) {
         updatedOrg.products = [];
       }
@@ -36,10 +36,10 @@ const OrganizationProductsForm: React.FC<OrganizationProductsFormProps> = ({
       const productIndex = updatedOrg.products.findIndex(p => p.type === productType);
       
       if (productIndex >= 0) {
-        // Atualizar produto existente
+        // Update existing product
         updatedOrg.products[productIndex].active = !updatedOrg.products[productIndex].active;
       } else {
-        // Adicionar novo produto
+        // Add new product
         updatedOrg.products.push({
           type: productType,
           active: true
@@ -52,7 +52,7 @@ const OrganizationProductsForm: React.FC<OrganizationProductsFormProps> = ({
     }
   };
   
-  // Verificar se um produto está ativo
+  // Check if a product is active
   const isProductActive = (productType: ProductType): boolean => {
     if (!selectedOrganization || !selectedOrganization.products) return false;
     
@@ -60,7 +60,7 @@ const OrganizationProductsForm: React.FC<OrganizationProductsFormProps> = ({
     return product ? product.active : false;
   };
   
-  // Lista de todos os tipos de produtos disponíveis
+  // List of all available product types
   const allProductTypes: ProductType[] = ['retention', 'billing', 'recruitment'];
   
   return (

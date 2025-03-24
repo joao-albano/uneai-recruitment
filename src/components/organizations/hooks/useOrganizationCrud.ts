@@ -41,14 +41,20 @@ export const useOrganizationCrud = (
         ]
       };
       
-      // Simular um atraso de API
+      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      setOrganizations(prev => [...prev, newOrg]);
+      // First reset UI state before updating data
       resetNewOrganization();
-      
-      toast.success("Organização criada com sucesso");
       setShowCreateDialog(false);
+      
+      // Then update data and show success message
+      setOrganizations(prev => [...prev, newOrg]);
+      
+      // Small delay before showing toast to ensure UI has updated
+      setTimeout(() => {
+        toast.success("Organização criada com sucesso");
+      }, 100);
     } catch (error) {
       console.error("Erro ao criar organização:", error);
       toast.error("Erro ao criar organização");
@@ -73,25 +79,31 @@ export const useOrganizationCrud = (
     try {
       setIsLoading(true);
       
-      // Simular um atraso de API
+      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Here we would call API to update organization
+      // Create a completely new array with the updated organization
       const updatedOrganizations = organizations.map(org => 
-        org.id === selectedOrganization.id ? {...selectedOrganization} : org
+        org.id === selectedOrganization.id ? JSON.parse(JSON.stringify(selectedOrganization)) : org
       );
       
-      setOrganizations(updatedOrganizations);
+      // Important: Close the dialog and reset selected organization BEFORE updating data and showing toast
+      const tempSelectedOrg = selectedOrganization; // Save a reference to log if needed
       
-      // Important: Close the dialog and reset selected organization BEFORE toast
+      // Clear UI state first
       setSelectedOrganization(null);
       setShowEditDialog(false);
+      setIsLoading(false);
       
-      toast.success("Organização atualizada com sucesso");
+      // Then update data and show success message with a small delay
+      setTimeout(() => {
+        setOrganizations(updatedOrganizations);
+        toast.success("Organização atualizada com sucesso");
+      }, 100);
+      
     } catch (error) {
       console.error("Erro ao atualizar organização:", error);
       toast.error("Erro ao atualizar organização");
-    } finally {
       // Make sure loading state is reset even if there's an error
       setIsLoading(false);
     }
@@ -113,24 +125,30 @@ export const useOrganizationCrud = (
     try {
       setIsLoading(true);
       
-      // Simular um atraso de API
+      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Here we would call API to delete organization
+      // Prepare the filtered list but don't update state yet
       const filteredOrganizations = organizations.filter(
         org => org.id !== selectedOrganization.id
       );
       
       // Close dialog and reset selection BEFORE updating the list and showing toast
+      const tempSelectedOrg = selectedOrganization; // Save a reference to log if needed
+      
+      // Clear UI state first
       setSelectedOrganization(null);
       setShowDeleteDialog(false);
+      setIsLoading(false);
       
-      setOrganizations(filteredOrganizations);
-      toast.success("Organização excluída com sucesso");
+      // Then update data and show success with a small delay
+      setTimeout(() => {
+        setOrganizations(filteredOrganizations);
+        toast.success("Organização excluída com sucesso");
+      }, 100);
     } catch (error) {
       console.error("Erro ao excluir organização:", error);
       toast.error("Erro ao excluir organização");
-    } finally {
       // Make sure loading state is reset even if there's an error
       setIsLoading(false);
     }
