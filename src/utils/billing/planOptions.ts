@@ -39,7 +39,7 @@ const getDefaultPlans = (isPtBR: boolean): PlanOption[] => [
 // Create a store to manage plan options
 export const usePlanOptionsStore = create<PlanOptionsStore>((set) => {
   // Initialize with default values
-  const storedPlans = localStorage.getItem('planOptions');
+  const storedPlans = typeof window !== 'undefined' ? localStorage.getItem('planOptions') : null;
   const initialPlans = storedPlans ? JSON.parse(storedPlans) : getDefaultPlans(false);
   
   return {
@@ -51,7 +51,9 @@ export const usePlanOptionsStore = create<PlanOptionsStore>((set) => {
         );
         
         // Save to localStorage
-        localStorage.setItem('planOptions', JSON.stringify(updatedPlans));
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('planOptions', JSON.stringify(updatedPlans));
+        }
         
         return { plans: updatedPlans };
       });
@@ -59,7 +61,9 @@ export const usePlanOptionsStore = create<PlanOptionsStore>((set) => {
     resetToDefaults: () => {
       const isPtBR = document.documentElement.lang === 'pt-BR';
       const defaultPlans = getDefaultPlans(isPtBR);
-      localStorage.setItem('planOptions', JSON.stringify(defaultPlans));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('planOptions', JSON.stringify(defaultPlans));
+      }
       set({ plans: defaultPlans });
     }
   };

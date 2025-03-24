@@ -11,10 +11,10 @@ import {
   FileText, 
   Calendar, 
   GraduationCap,
-  Model,
   DollarSign,
   CreditCard,
-  Tag
+  Tag,
+  Blocks
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
@@ -66,7 +66,7 @@ const SidebarNavigationGroup: React.FC<SidebarNavigationGroupProps> = ({
             />
             <SidebarNavLink 
               to="/model" 
-              icon={<Model className="h-5 w-5" />} 
+              icon={<Blocks className="h-5 w-5" />} 
               label={isPtBR ? 'Modelo de IA' : 'AI Model'} 
               collapsed={collapsed} 
             />
