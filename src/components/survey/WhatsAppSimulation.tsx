@@ -1,13 +1,14 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useData } from '@/context/DataContext';
-import { MessageSquare, Clock, User, ArrowRight } from 'lucide-react';
+import { MessageSquare, Clock, User, ArrowRight, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 const WhatsAppSimulation: React.FC = () => {
   const [messages, setMessages] = useState<{type: 'sent' | 'received', content: string, time: Date, id: string}[]>([]);
   const { alerts, students } = useData();
+  const conversationInitialized = useRef(false);
   
   // Complete survey questions array to simulate a full conversation
   const surveyQuestions = [
@@ -34,17 +35,19 @@ const WhatsAppSimulation: React.FC = () => {
       alert.message.includes('WhatsApp')
     );
     
-    if (whatsAppAlerts.length > 0 && messages.length === 0) {
+    // Only initialize the conversation once when there's at least one alert
+    if (whatsAppAlerts.length > 0 && !conversationInitialized.current) {
+      conversationInitialized.current = true;
       const lastAlert = whatsAppAlerts[whatsAppAlerts.length - 1];
       const student = students.find(s => s.id === lastAlert.studentId);
       
       if (student) {
-        // Reset messages first to ensure we don't get duplicates when this effect runs again
+        // Reset messages
         setMessages([]);
         
-        // Create a unique ID for each message to prevent duplicates
+        // Create a unique ID for each message
         const createMessageId = (prefix: string, index: number) => 
-          `${prefix}-${lastAlert.id}-${index}`;
+          `${prefix}-${lastAlert.id}-${index}-${Date.now()}`;
         
         // Initial message sent by the school
         const initialMessage = {
@@ -56,104 +59,73 @@ const WhatsAppSimulation: React.FC = () => {
         
         setMessages([initialMessage]);
         
-        // Simulate the parent seeing the message
+        // Simulate the parent seeing the message after a delay
         setTimeout(() => {
           const responseMessage = {
             type: 'received' as const,
             content: `Olá, sou o responsável por ${student.name}. Acabei de visualizar as perguntas e responderei agora.`,
-            time: new Date(lastAlert.createdAt.getTime() + 2 * 60 * 1000), // 2 minutes later
+            time: new Date(new Date().getTime() + 2 * 60 * 1000), // 2 minutes later
             id: createMessageId('response', 0)
           };
           
-          setMessages(prev => {
-            // Check if this message already exists to prevent duplicates
-            if (prev.some(msg => msg.id === responseMessage.id)) {
-              return prev;
-            }
-            return [...prev, responseMessage];
-          });
+          setMessages(prevMessages => [...prevMessages, responseMessage]);
           
           // Start questions and answers sequence with delays
-          let questionDelay = 3;
           surveyQuestions.forEach((question, index) => {
-            // Send question
+            // Send question with progressive delay
             setTimeout(() => {
               const questionMessage = {
                 type: 'sent' as const,
                 content: `${index + 1}. ${question}`,
-                time: new Date(lastAlert.createdAt.getTime() + questionDelay * 60 * 1000),
+                time: new Date(new Date().getTime() + (index + 1) * 60 * 1000),
                 id: createMessageId('question', index)
               };
               
-              setMessages(prev => {
-                // Check if this message already exists
-                if (prev.some(msg => msg.id === questionMessage.id)) {
-                  return prev;
-                }
-                return [...prev, questionMessage];
-              });
-              
-              questionDelay += 1;
+              setMessages(prevMessages => [...prevMessages, questionMessage]);
               
               // Simulate parent response with delay
               setTimeout(() => {
                 const answerMessage = {
                   type: 'received' as const,
                   content: parentResponses[index],
-                  time: new Date(lastAlert.createdAt.getTime() + (questionDelay + 1) * 60 * 1000),
+                  time: new Date(new Date().getTime() + (index + 1.5) * 60 * 1000),
                   id: createMessageId('answer', index)
                 };
                 
-                setMessages(prev => {
-                  // Check if this message already exists
-                  if (prev.some(msg => msg.id === answerMessage.id)) {
-                    return prev;
-                  }
-                  return [...prev, answerMessage];
-                });
-              }, 2000);
-            }, 2000 * (index + 1));
-          });
-          
-          // Final thank you message
-          setTimeout(() => {
-            const thankYouMessage = {
-              type: 'sent' as const,
-              content: `Muito obrigado pelas respostas! Suas informações são muito importantes para o acompanhamento pedagógico de ${student.name}. Se precisar de algo, estamos à disposição.`,
-              time: new Date(lastAlert.createdAt.getTime() + 12 * 60 * 1000),
-              id: createMessageId('thanks', 0)
-            };
-            
-            setMessages(prev => {
-              // Check if this message already exists
-              if (prev.some(msg => msg.id === thankYouMessage.id)) {
-                return prev;
-              }
-              return [...prev, thankYouMessage];
-            });
-            
-            // Parent final acknowledgment
-            setTimeout(() => {
-              const finalMessage = {
-                type: 'received' as const,
-                content: `De nada! Agradeço o contato e a preocupação com o desenvolvimento do(a) meu/minha filho(a).`,
-                time: new Date(lastAlert.createdAt.getTime() + 13 * 60 * 1000),
-                id: createMessageId('final', 0)
-              };
-              
-              setMessages(prev => {
-                // Check if this message already exists
-                if (prev.some(msg => msg.id === finalMessage.id)) {
-                  return prev;
+                setMessages(prevMessages => [...prevMessages, answerMessage]);
+                
+                // Add the final thank you message after the last answer
+                if (index === surveyQuestions.length - 1) {
+                  setTimeout(() => {
+                    const thankYouMessage = {
+                      type: 'sent' as const,
+                      content: `Muito obrigado pelas respostas! Suas informações são muito importantes para o acompanhamento pedagógico de ${student.name}. Se precisar de algo, estamos à disposição.`,
+                      time: new Date(new Date().getTime() + 10 * 60 * 1000),
+                      id: createMessageId('thanks', 0)
+                    };
+                    
+                    setMessages(prevMessages => [...prevMessages, thankYouMessage]);
+                    
+                    // Parent final acknowledgment
+                    setTimeout(() => {
+                      const finalMessage = {
+                        type: 'received' as const,
+                        content: `De nada! Agradeço o contato e a preocupação com o desenvolvimento do(a) meu/minha filho(a).`,
+                        time: new Date(new Date().getTime() + 12 * 60 * 1000),
+                        id: createMessageId('final', 0)
+                      };
+                      
+                      setMessages(prevMessages => [...prevMessages, finalMessage]);
+                    }, 2000);
+                  }, 2000);
                 }
-                return [...prev, finalMessage];
-              });
-            }, 2000);
-          }, 12000);
+              }, 2000 + index * 500); // Staggered response times
+            }, 3000 + index * 3000); // Staggered question times
+          });
         }, 3000);
       }
     }
-  }, [alerts, messages.length, students, surveyQuestions, parentResponses]);
+  }, [alerts, students, surveyQuestions, parentResponses]);
   
   if (messages.length === 0) {
     return (
@@ -193,7 +165,7 @@ const WhatsAppSimulation: React.FC = () => {
                 {format(message.time, 'HH:mm', { locale: ptBR })}
               </span>
               {message.type === 'sent' && (
-                <ArrowRight className="h-3 w-3 ml-1 opacity-70" />
+                <Check className="h-3 w-3 ml-1 opacity-70" />
               )}
             </div>
           </div>
