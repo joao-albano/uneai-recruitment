@@ -23,19 +23,20 @@ export const sendWhatsAppSurvey = async (
   let success = false;
   let errorMessage = '';
   
-  // Cria um objeto de mensagem para o histórico
+  // Create a message object for history
   const whatsAppMessage: WhatsAppMessage = {
     id: `whatsapp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
     studentId: student.id,
     studentName: student.name,
     parentName: student.parentName || 'Responsável',
+    to: student.parentContact,
     recipientNumber: student.parentContact,
     message,
     status: 'sent',
     createdAt: new Date(),
   };
   
-  // Se temos uma configuração de WhatsApp, usamos a integração configurada
+  // If we have a WhatsApp configuration, use the configured integration
   if (whatsappConfig && whatsappConfig.provider !== 'disabled') {
     console.log(`Usando integração ${whatsappConfig.provider} para envio`);
     
@@ -49,7 +50,7 @@ export const sendWhatsAppSurvey = async (
       success = result.success;
       errorMessage = result.message || '';
       
-      // Atualiza o status da mensagem no histórico
+      // Update message status in history
       if (addToHistory) {
         whatsAppMessage.status = success ? 'delivered' : 'failed';
         if (!success && errorMessage) {
@@ -61,25 +62,25 @@ export const sendWhatsAppSurvey = async (
       success = false;
       errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       
-      // Atualiza o status da mensagem no histórico com erro
+      // Update message status in history with error
       if (addToHistory) {
         whatsAppMessage.status = 'failed';
         whatsAppMessage.errorMessage = errorMessage;
       }
     }
   } else {
-    // Simulação do envio (comportamento anterior)
+    // Simulation of sending (previous behavior)
     console.log('Usando simulação de envio (sem integração configurada)');
     console.log(message);
     success = true;
   }
   
-  // Adiciona a mensagem ao histórico
+  // Add message to history
   if (addToHistory) {
     addToHistory(whatsAppMessage);
   }
   
-  // Sempre adiciona o alerta, independente do sucesso do envio
+  // Always add alert, regardless of send success
   addAlert({
     id: `whatsapp-${Date.now()}`,
     studentId: student.id,
@@ -98,7 +99,7 @@ export const sendWhatsAppSurvey = async (
     setTimeout(() => {
       console.log(`Simulação: ${student.parentName} visualizou a mensagem.`);
       
-      // Atualiza o status da mensagem no histórico (apenas para simulação)
+      // Update message status in history (for simulation only)
       if (addToHistory) {
         setTimeout(() => {
           const readMessage = { ...whatsAppMessage, status: 'read' as const, updatedAt: new Date() };

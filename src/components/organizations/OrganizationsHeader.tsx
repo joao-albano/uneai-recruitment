@@ -1,22 +1,26 @@
 
 import React from 'react';
-import { Building } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { PlusCircle } from 'lucide-react';
 
 interface OrganizationsHeaderProps {
-  organizationCount: number;
+  count: number;
+  onCreateNew: () => void;
 }
 
-const OrganizationsHeader: React.FC<OrganizationsHeaderProps> = ({ organizationCount }) => {
+const OrganizationsHeader: React.FC<OrganizationsHeaderProps> = ({ count, onCreateNew }) => {
   return (
-    <div className="mb-8">
-      <div className="flex items-center gap-3 mb-2">
-        <Building className="h-8 w-8 text-primary" />
-        <h1 className="text-3xl font-bold">Organizações</h1>
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Organizações</h1>
+        <p className="text-muted-foreground">
+          Gerencie as organizações cadastradas ({count})
+        </p>
       </div>
-      
-      <p className="text-muted-foreground">
-        Gerencie todas as organizações do sistema. {organizationCount} {organizationCount === 1 ? 'organização cadastrada' : 'organizações cadastradas'}.
-      </p>
+      <Button onClick={onCreateNew}>
+        <PlusCircle className="mr-2 h-4 w-4" />
+        Nova Organização
+      </Button>
     </div>
   );
 };

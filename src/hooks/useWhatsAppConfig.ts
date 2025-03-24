@@ -1,27 +1,29 @@
 
 import { useState, useEffect } from 'react';
-import { WhatsAppConfig, WhatsAppProvider } from '@/utils/whatsappIntegration';
+import { WhatsAppConfig } from '@/utils/whatsappIntegration';
+import { WhatsAppProvider } from '@/types/whatsapp';
 
 export const useWhatsAppConfig = () => {
   const [config, setConfig] = useState<WhatsAppConfig>(() => {
-    // Tenta carregar a configuração do localStorage
+    // Try to load config from localStorage
     const savedConfig = localStorage.getItem('whatsapp_config');
     if (savedConfig) {
       try {
         return JSON.parse(savedConfig);
       } catch (e) {
-        console.error('Erro ao carregar configuração do WhatsApp:', e);
+        console.error('Error loading WhatsApp config:', e);
       }
     }
     
-    // Configuração padrão
+    // Default configuration
     return {
       provider: 'disabled' as WhatsAppProvider,
       webhookUrl: '',
+      enabled: false,
     };
   });
 
-  // Salva configuração no localStorage quando muda
+  // Save configuration to localStorage when it changes
   useEffect(() => {
     localStorage.setItem('whatsapp_config', JSON.stringify(config));
   }, [config]);

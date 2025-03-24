@@ -2,7 +2,6 @@
 import React from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ApiKeyInput } from '@/components/ui/api-key-input';
 import { 
   Form, 
@@ -39,7 +38,7 @@ const WhatsAppConfigForm: React.FC<WhatsAppConfigFormProps> = ({ config, onSubmi
     resolver: zodResolver(whatsAppFormSchema),
     defaultValues: {
       webhookUrl: config.webhookUrl || '',
-      enabled: config.provider !== 'disabled',
+      enabled: config.enabled ?? (config.provider !== 'disabled'),
     },
   });
   

@@ -16,6 +16,7 @@ const WhatsAppConfigTab: React.FC = () => {
     updateConfig({
       provider: values.enabled ? 'n8n_webhook' : 'disabled',
       webhookUrl: values.webhookUrl,
+      enabled: values.enabled,
     });
     
     toast({

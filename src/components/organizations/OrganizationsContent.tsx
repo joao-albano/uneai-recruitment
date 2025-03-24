@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useOrganizationData } from './hooks/useOrganizationData';
 import { useOrganizationCrud } from './hooks/useOrganizationCrud';
-import { useOrganizationDialogs } from './hooks/useOrganizationDialogs';
 import CreateOrganizationDialog from './CreateOrganizationDialog';
 import EditOrganizationDialog from './EditOrganizationDialog';
 import DeleteOrganizationDialog from './DeleteOrganizationDialog';
@@ -12,17 +11,15 @@ import { OrganizationType } from './types';
 
 const OrganizationsContent: React.FC = () => {
   const [loading, setLoading] = useState(true);
+  const [organizations, setOrganizations] = useState<OrganizationType[]>([]);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [selectedOrg, setSelectedOrg] = useState<OrganizationType | null>(null);
+  const [newOrganization, setNewOrganization] = useState({ name: '', isActive: true });
 
   // Get organization data and functions from hooks
-  const { organizations, loadOrganizations } = useOrganizationData();
-  
-  // Dialogs state
-  const { 
-    showCreateDialog, setShowCreateDialog,
-    showEditDialog, setShowEditDialog,
-    showDeleteDialog, setShowDeleteDialog,
-    selectedOrg, setSelectedOrg
-  } = useOrganizationDialogs();
+  const { loadOrganizations } = useOrganizationData();
   
   // CRUD operations
   const {
@@ -33,7 +30,8 @@ const OrganizationsContent: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      await loadOrganizations();
+      const orgs = await loadOrganizations();
+      setOrganizations(orgs || []);
       setLoading(false);
     };
     fetchData();
@@ -54,6 +52,38 @@ const OrganizationsContent: React.FC = () => {
     setShowDeleteDialog(true);
   };
 
+  // Submit handlers that match expected formats
+  const handleCreateSubmit = async (values: { name?: string; isActive?: boolean }) => {
+    await handleCreateOrganization(values.name || '', values.isActive || false);
+    setShowCreateDialog(false);
+    
+    // Refresh organizations list
+    const orgs = await loadOrganizations();
+    setOrganizations(orgs || []);
+  };
+  
+  const handleEditSubmit = async (values: { name?: string; isActive?: boolean }) => {
+    if (selectedOrg) {
+      await handleEditOrganization(selectedOrg.id, values.name || '', values.isActive || false);
+      setShowEditDialog(false);
+      
+      // Refresh organizations list
+      const orgs = await loadOrganizations();
+      setOrganizations(orgs || []);
+    }
+  };
+  
+  const handleDelete = async () => {
+    if (selectedOrg) {
+      await handleDeleteOrganization(selectedOrg.id);
+      setShowDeleteDialog(false);
+      
+      // Refresh organizations list
+      const orgs = await loadOrganizations();
+      setOrganizations(orgs || []);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center p-8">
@@ -70,8 +100,8 @@ const OrganizationsContent: React.FC = () => {
   return (
     <div className="space-y-8 p-8">
       <OrganizationsHeader 
-        orgCount={organizations.length} 
-        onCreateOrg={handleOpenCreateDialog} 
+        count={organizations.length} 
+        onCreateNew={handleOpenCreateDialog} 
       />
       
       <OrganizationsList
@@ -83,21 +113,25 @@ const OrganizationsContent: React.FC = () => {
       <CreateOrganizationDialog
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
-        onSubmit={handleCreateOrganization}
+        newOrganization={newOrganization}
+        setNewOrganization={setNewOrganization}
+        onSubmit={handleCreateSubmit}
       />
 
-      <EditOrganizationDialog
-        open={showEditDialog}
-        onOpenChange={setShowEditDialog}
-        organization={selectedOrg}
-        onSubmit={handleEditOrganization}
-      />
+      {selectedOrg && (
+        <EditOrganizationDialog
+          open={showEditDialog}
+          onOpenChange={setShowEditDialog}
+          organization={selectedOrg}
+          onSubmit={handleEditSubmit}
+        />
+      )}
 
       <DeleteOrganizationDialog
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
-        organizationId={selectedOrg?.id}
-        onDelete={handleDeleteOrganization}
+        organization={selectedOrg}
+        onDelete={handleDelete}
       />
     </div>
   );
