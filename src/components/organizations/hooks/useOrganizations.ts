@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { OrganizationType, NewOrganizationType } from '../types';
+import { ProductType } from '@/context/ProductContext';
 
 export const useOrganizations = () => {
   const [organizations, setOrganizations] = useState<OrganizationType[]>([]);
@@ -9,9 +10,9 @@ export const useOrganizations = () => {
     isActive: true,
     isMainOrg: false,
     products: [
-      { type: 'retention', active: true },
-      { type: 'billing', active: false },
-      { type: 'recruitment', active: false }
+      { type: 'retention' as ProductType, active: true },
+      { type: 'billing' as ProductType, active: false },
+      { type: 'recruitment' as ProductType, active: false }
     ]
   });
   const [selectedOrganization, setSelectedOrganization] = useState<OrganizationType | null>(null);
@@ -31,9 +32,9 @@ export const useOrganizations = () => {
         isMainOrg: true,
         createdAt: '2023-01-01',
         products: [
-          { type: 'retention', active: true },
-          { type: 'billing', active: true },
-          { type: 'recruitment', active: true }
+          { type: 'retention' as ProductType, active: true },
+          { type: 'billing' as ProductType, active: true },
+          { type: 'recruitment' as ProductType, active: true }
         ]
       },
       {
@@ -43,9 +44,9 @@ export const useOrganizations = () => {
         isMainOrg: false,
         createdAt: '2023-02-15',
         products: [
-          { type: 'retention', active: true },
-          { type: 'billing', active: true },
-          { type: 'recruitment', active: false }
+          { type: 'retention' as ProductType, active: true },
+          { type: 'billing' as ProductType, active: true },
+          { type: 'recruitment' as ProductType, active: false }
         ]
       },
       {
@@ -55,9 +56,9 @@ export const useOrganizations = () => {
         isMainOrg: false,
         createdAt: '2023-03-20',
         products: [
-          { type: 'retention', active: true },
-          { type: 'billing', active: false },
-          { type: 'recruitment', active: false }
+          { type: 'retention' as ProductType, active: true },
+          { type: 'billing' as ProductType, active: false },
+          { type: 'recruitment' as ProductType, active: false }
         ]
       }
     ];
@@ -91,9 +92,9 @@ export const useOrganizations = () => {
       isMainOrg: newOrganization.isMainOrg,
       createdAt: new Date().toISOString(),
       products: newOrganization.products || [
-        { type: 'retention', active: true },
-        { type: 'billing', active: false },
-        { type: 'recruitment', active: false }
+        { type: 'retention' as ProductType, active: true },
+        { type: 'billing' as ProductType, active: false },
+        { type: 'recruitment' as ProductType, active: false }
       ]
     };
     
@@ -103,9 +104,9 @@ export const useOrganizations = () => {
       isActive: true,
       isMainOrg: false,
       products: [
-        { type: 'retention', active: true },
-        { type: 'billing', active: false },
-        { type: 'recruitment', active: false }
+        { type: 'retention' as ProductType, active: true },
+        { type: 'billing' as ProductType, active: false },
+        { type: 'recruitment' as ProductType, active: false }
       ]
     });
     setShowCreateDialog(false);

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ProductType, useProduct } from '@/context/ProductContext';
+import { ProductType } from '@/context/ProductContext';
 import { OrganizationType } from '../types';
 import { getProductDisplayName } from '@/components/users/utils/userUtils';
 
@@ -17,44 +17,33 @@ const OrganizationProductsForm: React.FC<OrganizationProductsFormProps> = ({
   setSelectedOrganization,
   isSuperAdmin
 }) => {
-  const { userSubscriptions } = useProduct();
-  
-  // Encontrar as assinaturas desta organização
-  const orgSubscriptions = userSubscriptions.filter(
-    sub => sub.organizationId === selectedOrganization.id
-  );
-  
   // Se não for super admin, não pode editar as assinaturas
   if (!isSuperAdmin) return null;
   
   // Função para alternar o estado ativo de um produto
   const toggleProductActive = (productType: ProductType) => {
-    const subscription = orgSubscriptions.find(sub => sub.productType === productType);
+    // Criar nova versão do selectedOrganization com produtos atualizados
+    const updatedOrg = structuredClone(selectedOrganization);
     
-    if (subscription) {
-      // Criar nova versão do selectedOrganization com produtos atualizados
-      const updatedOrg = structuredClone(selectedOrganization);
-      
-      // Atualizar o active status do produto na organização
-      if (!updatedOrg.products) {
-        updatedOrg.products = [];
-      }
-      
-      const productIndex = updatedOrg.products.findIndex(p => p.type === productType);
-      
-      if (productIndex >= 0) {
-        // Atualizar produto existente
-        updatedOrg.products[productIndex].active = !updatedOrg.products[productIndex].active;
-      } else {
-        // Adicionar novo produto
-        updatedOrg.products.push({
-          type: productType,
-          active: true
-        });
-      }
-      
-      setSelectedOrganization(updatedOrg);
+    // Atualizar o active status do produto na organização
+    if (!updatedOrg.products) {
+      updatedOrg.products = [];
     }
+    
+    const productIndex = updatedOrg.products.findIndex(p => p.type === productType);
+    
+    if (productIndex >= 0) {
+      // Atualizar produto existente
+      updatedOrg.products[productIndex].active = !updatedOrg.products[productIndex].active;
+    } else {
+      // Adicionar novo produto
+      updatedOrg.products.push({
+        type: productType,
+        active: true
+      });
+    }
+    
+    setSelectedOrganization(updatedOrg);
   };
   
   // Verificar se um produto está ativo
