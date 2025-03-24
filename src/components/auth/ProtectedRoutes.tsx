@@ -11,7 +11,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 // Admin route component - accessible to all admins (tanto super quanto escola)
 export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isAdmin } = useAuth();
+  const { isAuthenticated, isAdmin, isSuperAdmin } = useAuth();
   
   // First check if authenticated, then check if admin
   if (!isAuthenticated) {
@@ -19,7 +19,7 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   }
   
   // If authenticated but not admin, redirect to dashboard
-  return isAdmin ? <>{children}</> : <Navigate to="/dashboard" />;
+  return (isAdmin || isSuperAdmin) ? <>{children}</> : <Navigate to="/dashboard" />;
 };
 
 // Super admin route component - only accessible to UNE CX admins

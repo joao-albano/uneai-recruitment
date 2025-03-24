@@ -49,19 +49,19 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
         {/* Se for super admin (UNE CX), tem acesso a tudo */}
         {isSuperAdmin || hasAccessToProduct(currentProduct) ? (
           <>
-            {/* Renderiza menu com base no produto selecionado */}
-            {currentProduct === 'retention' && (
+            {/* Renderiza menu com base no produto selecionado ou para super admin */}
+            {(currentProduct === 'retention' || isSuperAdmin) && (
               <>
                 <SidebarNavigationSection collapsed={collapsed} />
                 <SidebarMonitoringSection collapsed={collapsed} />
               </>
             )}
             
-            {currentProduct === 'billing' && (
+            {(currentProduct === 'billing' || isSuperAdmin) && (
               <SidebarBillingSection collapsed={collapsed} />
             )}
             
-            {currentProduct === 'recruitment' && (
+            {(currentProduct === 'recruitment' || isSuperAdmin) && (
               <SidebarNavigationSection collapsed={collapsed} /> // Um exemplo, seria substituído pelo menu específico
             )}
           </>
@@ -88,7 +88,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
         )}
         
         {/* Menus de administração são exibidos com base no nível de acesso */}
-        {isAdmin && (
+        {(isAdmin || isSuperAdmin) && (
           <SidebarAdminSection collapsed={collapsed} />
         )}
         

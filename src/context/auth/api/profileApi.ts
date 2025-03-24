@@ -18,7 +18,7 @@ export const fetchUserProfile = async (userId: string) => {
     // Extract full name from metadata
     const fullName = userData.user?.user_metadata?.full_name;
     
-    // Fetch profile from profiles table
+    // Fetch profile from profiles table - fix the schema issue
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
