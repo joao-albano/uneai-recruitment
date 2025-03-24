@@ -10,7 +10,8 @@ interface RiskExplanationProps {
 }
 
 const RiskExplanation: React.FC<RiskExplanationProps> = ({ student }) => {
-  if (!student.decisionPath) {
+  // Early return if student or decisionPath doesn't exist
+  if (!student || !student.decisionPath) {
     return (
       <Card>
         <CardHeader>
@@ -72,7 +73,7 @@ const RiskExplanation: React.FC<RiskExplanationProps> = ({ student }) => {
           <div>
             <h3 className="font-medium mb-2 text-sm">Ações Recomendadas</h3>
             <ul className="space-y-1 ml-2 text-sm">
-              {student.actionItems.map((action, index) => (
+              {student.actionItems && student.actionItems.map((action, index) => (
                 <li key={index} className="flex items-start">
                   <span className="bg-primary/10 text-primary w-5 h-5 rounded-full flex items-center justify-center text-xs mr-2 mt-0.5">
                     {index + 1}
@@ -80,6 +81,9 @@ const RiskExplanation: React.FC<RiskExplanationProps> = ({ student }) => {
                   <span>{action}</span>
                 </li>
               ))}
+              {(!student.actionItems || student.actionItems.length === 0) && (
+                <li className="text-muted-foreground">Nenhuma ação recomendada no momento.</li>
+              )}
             </ul>
           </div>
         </div>
