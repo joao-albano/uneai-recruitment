@@ -39,6 +39,19 @@ const UserCard: React.FC<UserCardProps> = ({
     : user.role === "admin"
     ? "bg-blue-100 text-blue-800"
     : "bg-gray-100 text-gray-800";
+
+  // Função segura para chamar onEdit com um evento de clique
+  const handleEdit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (user && onEdit) {
+      try {
+        onEdit(user);
+      } catch (error) {
+        console.error("Erro ao editar usuário:", error);
+      }
+    }
+  };
   
   return (
     <Card className="shadow-sm hover:shadow transition-all">
@@ -88,7 +101,7 @@ const UserCard: React.FC<UserCardProps> = ({
               <DropdownMenuLabel>Ações</DropdownMenuLabel>
               <DropdownMenuSeparator />
               
-              <DropdownMenuItem onClick={() => onEdit(user)}>
+              <DropdownMenuItem onClick={handleEdit}>
                 <Edit className="mr-2 h-4 w-4" />
                 Editar
               </DropdownMenuItem>

@@ -24,14 +24,36 @@ const UsersList: React.FC<UsersListProps> = ({
   isAdmin = false,
   isSuperAdmin = false
 }) => {
+  // Função segura para chamar onEdit
+  const handleEdit = (user: UserType) => {
+    try {
+      if (onEdit) {
+        onEdit(user);
+      }
+    } catch (error) {
+      console.error("Erro ao processar edição de usuário:", error);
+    }
+  };
+
+  // Função segura para chamar onDelete
+  const handleDelete = (user: UserType) => {
+    try {
+      if (onDelete) {
+        onDelete(user);
+      }
+    } catch (error) {
+      console.error("Erro ao processar exclusão de usuário:", error);
+    }
+  };
+  
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4">
       {users.map(user => (
         <UserCard 
           key={user.id} 
           user={user} 
-          onEdit={onEdit}
-          onDelete={onDelete}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
           isLastAdmin={isLastAdmin}
           subscriptions={subscriptions}
           isAdmin={isAdmin}
