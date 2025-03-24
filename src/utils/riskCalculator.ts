@@ -1,13 +1,43 @@
 
 import { StudentData } from "../context/DataContext";
 
-// Risk thresholds - these define our decision boundaries
-const GRADE_THRESHOLD_HIGH = 5.0;
-const GRADE_THRESHOLD_MEDIUM = 6.5;
-const ATTENDANCE_THRESHOLD_HIGH = 70;
-const ATTENDANCE_THRESHOLD_MEDIUM = 85;
-const BEHAVIOR_THRESHOLD_HIGH = 2;
-const BEHAVIOR_THRESHOLD_MEDIUM = 3;
+// Default risk thresholds - these define our decision boundaries
+const DEFAULT_GRADE_THRESHOLD_HIGH = 5.0;
+const DEFAULT_GRADE_THRESHOLD_MEDIUM = 6.5;
+const DEFAULT_ATTENDANCE_THRESHOLD_HIGH = 70;
+const DEFAULT_ATTENDANCE_THRESHOLD_MEDIUM = 85;
+const DEFAULT_BEHAVIOR_THRESHOLD_HIGH = 2;
+const DEFAULT_BEHAVIOR_THRESHOLD_MEDIUM = 3;
+
+// Function to get thresholds from localStorage or use defaults
+const getThresholds = () => {
+  try {
+    const savedSettings = localStorage.getItem('riskAlgorithmSettings');
+    if (savedSettings) {
+      const parsedSettings = JSON.parse(savedSettings);
+      return {
+        GRADE_THRESHOLD_HIGH: parsedSettings.gradeThresholdHigh,
+        GRADE_THRESHOLD_MEDIUM: parsedSettings.gradeThresholdMedium,
+        ATTENDANCE_THRESHOLD_HIGH: parsedSettings.attendanceThresholdHigh,
+        ATTENDANCE_THRESHOLD_MEDIUM: parsedSettings.attendanceThresholdMedium,
+        BEHAVIOR_THRESHOLD_HIGH: parsedSettings.behaviorThresholdHigh,
+        BEHAVIOR_THRESHOLD_MEDIUM: parsedSettings.behaviorThresholdMedium,
+      };
+    }
+  } catch (error) {
+    console.error('Error loading risk algorithm settings:', error);
+  }
+  
+  // Return defaults if no saved settings or error
+  return {
+    GRADE_THRESHOLD_HIGH: DEFAULT_GRADE_THRESHOLD_HIGH,
+    GRADE_THRESHOLD_MEDIUM: DEFAULT_GRADE_THRESHOLD_MEDIUM,
+    ATTENDANCE_THRESHOLD_HIGH: DEFAULT_ATTENDANCE_THRESHOLD_HIGH,
+    ATTENDANCE_THRESHOLD_MEDIUM: DEFAULT_ATTENDANCE_THRESHOLD_MEDIUM,
+    BEHAVIOR_THRESHOLD_HIGH: DEFAULT_BEHAVIOR_THRESHOLD_HIGH,
+    BEHAVIOR_THRESHOLD_MEDIUM: DEFAULT_BEHAVIOR_THRESHOLD_MEDIUM,
+  };
+};
 
 // Decision Tree logic implementation for risk prediction
 export const calculateRiskLevel = (student: Omit<StudentData, 'riskLevel' | 'actionItems'>): {
@@ -17,6 +47,16 @@ export const calculateRiskLevel = (student: Omit<StudentData, 'riskLevel' | 'act
 } => {
   const actionItems: string[] = [];
   const decisionPath: string[] = [];
+  
+  // Get current thresholds (user configured or defaults)
+  const {
+    GRADE_THRESHOLD_HIGH,
+    GRADE_THRESHOLD_MEDIUM,
+    ATTENDANCE_THRESHOLD_HIGH,
+    ATTENDANCE_THRESHOLD_MEDIUM,
+    BEHAVIOR_THRESHOLD_HIGH,
+    BEHAVIOR_THRESHOLD_MEDIUM
+  } = getThresholds();
   
   // Step 1: Check academic performance (grades)
   const hasLowGrades = student.grade < GRADE_THRESHOLD_HIGH;
