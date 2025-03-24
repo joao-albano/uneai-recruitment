@@ -67,22 +67,19 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
         {/* Renderiza menus apenas se o usuário tiver acesso ao produto ou for super admin */}
         {isSuperAdmin || (!currentProduct || hasAccessToProduct(currentProduct)) ? (
           <>
-            {/* Renderiza menu com base no produto selecionado ou para super admin */}
+            {/* Renderização única das seções baseada no produto ou permissões */}
+            
+            {/* Navegação - renderizado apenas uma vez para todos os produtos, ou para super admin */}
+            <SidebarNavigationSection collapsed={collapsed} />
+            
+            {/* Monitoramento - apenas para retenção ou super admin */}
             {(!currentProduct || currentProduct === 'retention' || isSuperAdmin) && (
-              <>
-                <SidebarNavigationSection collapsed={collapsed} />
-                <SidebarMonitoringSection collapsed={collapsed} />
-              </>
+              <SidebarMonitoringSection collapsed={collapsed} />
             )}
             
-            {/* Renderiza menu de faturamento apenas se o produto for billing ou super admin 
-                - Removemos a repetição aqui */}
+            {/* Faturamento - apenas para billing ou super admin */}
             {(!currentProduct || currentProduct === 'billing' || isSuperAdmin) && (
               <SidebarBillingSection collapsed={collapsed} />
-            )}
-            
-            {(!currentProduct || currentProduct === 'recruitment' || isSuperAdmin) && (
-              <SidebarNavigationSection collapsed={collapsed} /> // Um exemplo, seria substituído pelo menu específico
             )}
           </>
         ) : (
@@ -111,9 +108,6 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
         {(isAdmin || isSuperAdmin) && (
           <SidebarAdminSection collapsed={collapsed} />
         )}
-        
-        {/* Removemos a duplicação do SidebarBillingSection daqui, pois já está sendo renderizado acima
-           com base na condição de produto */}
       </div>
       
       <div className="px-3 mt-auto">
