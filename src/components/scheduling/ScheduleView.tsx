@@ -1,5 +1,6 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useTheme } from '@/context/ThemeContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 import CalendarView from './CalendarView';
 import TodaySchedules from './TodaySchedules';
 import UpcomingSchedules from './UpcomingSchedules';
@@ -7,9 +8,8 @@ import ScheduleStats from './ScheduleStats';
 import ScheduleDialog from './ScheduleDialog';
 import ScheduleDetailsDialog from './ScheduleDetailsDialog';
 import DaySchedulesDialog from './DaySchedulesDialog';
-import { useAuth } from '@/context/AuthContext';
 import { useScheduleData } from '@/hooks/useScheduleData';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/context/auth';
 
 const ScheduleView: React.FC = () => {
   const [showDaySchedules, setShowDaySchedules] = useState(false);

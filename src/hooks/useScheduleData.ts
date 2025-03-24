@@ -1,11 +1,10 @@
-
 import { useMemo } from 'react';
 import { useSchedules } from '@/context/schedules/SchedulesContext';
 import { useCalendarState } from './useCalendarState';
 import { useScheduleOperations } from './schedule/useScheduleOperations';
 import { useScheduleFilters } from './schedule/useScheduleFilters';
 import { useDialogState } from './schedule/useDialogState';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth';
 
 export type { Schedule } from '@/types/schedule';
 

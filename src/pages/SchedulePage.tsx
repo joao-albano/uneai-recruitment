@@ -5,7 +5,7 @@ import { SchedulesProvider } from '@/context/schedules/SchedulesContext';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
 import ScheduleView from '@/components/scheduling/ScheduleView';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth';
 import { useSchedules } from '@/context/schedules/SchedulesContext';
 import { generateDemoSchedules } from '@/data/demoData';
 import { useToast } from '@/hooks/use-toast';

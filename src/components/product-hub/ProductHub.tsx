@@ -1,15 +1,15 @@
-
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { useAuth } from '@/context/AuthContext';
-import { useProduct, ProductType } from '@/context/ProductContext';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { useProduct } from '@/context/ProductContext';
+import { useAuth } from '@/context/auth';
+import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 // Definição de um produto no ecossistema
 interface Product {
-  id: ProductType;
+  id: string;
   name: string;
   description: string;
   icon: React.ReactNode;

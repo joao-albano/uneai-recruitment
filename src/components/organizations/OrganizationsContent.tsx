@@ -4,7 +4,7 @@ import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import OrganizationsHeader from "./OrganizationsHeader";
 import OrganizationsList from "./OrganizationsList";
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth';
 import { useOrganizations } from './hooks/useOrganizations';
 import CreateOrganizationDialog from './CreateOrganizationDialog';
 import EditOrganizationDialog from './EditOrganizationDialog';

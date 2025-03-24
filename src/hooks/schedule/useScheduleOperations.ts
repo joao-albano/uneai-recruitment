@@ -1,7 +1,7 @@
 
 import { Schedule } from '@/types/schedule';
 import { useSchedules } from '@/context/schedules/SchedulesContext';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth';
 import { useToast } from '@/hooks/use-toast';
 
 export const useScheduleOperations = () => {

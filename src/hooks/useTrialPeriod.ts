@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth';
 
 // Default trial period in days
 const DEFAULT_TRIAL_PERIOD = 14;

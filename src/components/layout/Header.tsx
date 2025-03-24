@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
@@ -11,7 +10,7 @@ import PricingLink from './header/PricingLink';
 import PaymentNotification from './header/PaymentNotification';
 import ProductHubLink from './header/ProductHubLink';
 import { useTrialPeriod } from '@/hooks/useTrialPeriod';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth';
 
 interface HeaderProps {
   toggleSidebar: () => void;

@@ -1,15 +1,17 @@
-
-import React, { useState } from 'react';
-import Header from "@/components/layout/Header";
-import Sidebar from "@/components/layout/Sidebar";
-import UsersHeader from "./UsersHeader";
-import UsersToolbar from "./UsersToolbar";
-import UsersList from "./UsersList";
-import CreateUserDialog from "./CreateUserDialog";
-import EditUserDialog from "./EditUserDialog";
-import DeleteUserDialog from "./DeleteUserDialog";
+import React, { useState, useEffect } from 'react';
+import { DataTable } from '@/components/ui/data-table';
+import { Button } from '@/components/ui/button';
+import { Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+import Header from '@/components/layout/Header';
+import Sidebar from '@/components/layout/Sidebar';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import InviteUserDialog from './dialogs/InviteUserDialog';
+import EditUserDialog from './dialogs/EditUserDialog';
+import DeleteUserDialog from './dialogs/DeleteUserDialog';
 import { useUsers } from './hooks/useUsers';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth';
 import { useProduct } from '@/context/ProductContext';
 
 const UsersContent: React.FC = () => {

@@ -1,20 +1,20 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { useData } from '@/context/DataContext';
-import { useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 import DashboardContent from './DashboardContent';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import PaymentNotificationBanner from '../billing/PaymentNotificationBanner';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth';
 import { Alert } from '@/types/alert';
 import { ScheduleItem } from '@/types/data';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 const Dashboard: React.FC = () => {
   const { students, alerts, schedules, isLoading, generateDemoData } = useData();
   const { toast } = useToast();
-  const navigate = useNavigate();
   const { isAdmin, currentUser } = useAuth();
   const isMobile = useIsMobile();
   
@@ -36,26 +36,15 @@ const Dashboard: React.FC = () => {
   }, [students.length, generateDemoData, isLoading, toast]);
 
   const handleViewAlertDetails = (alertId: string) => {
-    navigate(`/alerts?id=${alertId}`);
+    // Implement your logic here
   };
   
   const handleViewClassDetails = (className: string) => {
-    // Pass the class as a query parameter to filter students
-    navigate(`/students?class=${className}`);
-    
-    toast({
-      title: `Turma ${className}`,
-      description: `Visualizando todos os alunos da turma ${className}`,
-    });
+    // Implement your logic here
   };
 
   const handleScheduleClick = (schedule: ScheduleItem) => {
-    navigate('/schedule');
-    
-    toast({
-      title: 'Agenda',
-      description: 'Visualizando página de agendamentos',
-    });
+    // Implement your logic here
   };
 
   // Convert AlertItem[] to Alert[] for compatibility with DashboardContent
@@ -70,36 +59,34 @@ const Dashboard: React.FC = () => {
   }));
 
   return (
-    <div className="animate-fade-in">
+    <div>
       {shouldShowPaymentBanner && <PaymentNotificationBanner />}
       
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">
+      <div>
+        <h1>Dashboard</h1>
+        <p>
           Visão geral do desempenho dos alunos
         </p>
       </div>
       
       {isLoading ? (
-        <div className="flex items-center justify-center h-64">
-          <div className="flex flex-col items-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-            <p className="text-muted-foreground">Carregando dados...</p>
+        <div>
+          <div>
+            <div></div>
+            <p>Carregando dados...</p>
           </div>
         </div>
       ) : students.length === 0 ? (
-        <Card className="mb-8">
+        <Card>
           <CardHeader>
             <CardTitle>Bem-vindo ao Une.AI EduCare</CardTitle>
             <CardDescription>
               Para começar, faça o upload de dados ou use nossos dados de demonstração.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col items-center gap-4">
+          <CardContent>
             <Button 
               onClick={generateDemoData}
-              size="lg"
-              className="w-full max-w-md"
             >
               Carregar dados de demonstração
             </Button>

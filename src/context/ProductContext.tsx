@@ -1,6 +1,7 @@
-
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { useAuth } from './AuthContext';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/auth';
+import { useToast } from '@/hooks/use-toast';
 import { OrganizationType } from '@/components/organizations/types';
 
 // Tipos de produtos disponíveis
@@ -45,6 +46,8 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
   const [userSubscriptions, setUserSubscriptions] = useState<ProductSubscription[]>([]);
   const [organizations, setOrganizations] = useState<OrganizationType[]>([]);
   const { currentUser, isAdmin, isSuperAdmin } = useAuth();
+  const navigate = useNavigate();
+  const { showToast } = useToast();
   
   // Carrega as organizações (mockado para demonstração)
   useEffect(() => {

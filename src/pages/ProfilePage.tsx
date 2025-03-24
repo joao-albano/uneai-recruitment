@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { DataProvider } from '@/context/DataContext';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth';
 import ProfileHeader from '@/components/profile/ProfileHeader';
 import ProfileTabs from '@/components/profile/ProfileTabs';
 

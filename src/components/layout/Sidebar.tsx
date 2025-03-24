@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import SidebarContent from './sidebar/SidebarContent';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth';
 
 interface SidebarProps {
   isOpen?: boolean;

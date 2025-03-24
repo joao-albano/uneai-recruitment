@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTheme } from '@/context/ThemeContext';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth';
 
 import BillingHeader from './BillingHeader';
 import SubscriptionDetails from './SubscriptionDetails';

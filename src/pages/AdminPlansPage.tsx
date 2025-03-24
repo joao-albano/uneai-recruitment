@@ -4,7 +4,7 @@ import { DataProvider } from '@/context/DataContext';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
 import PlanOptionsManager from '@/components/admin/plans/PlanOptionsManager';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth';
 import { Navigate } from 'react-router-dom';
 
 const AdminPlansPage: React.FC = () => {
