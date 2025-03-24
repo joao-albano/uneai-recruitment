@@ -48,7 +48,9 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
   // Função para lidar com a submissão do formulário com segurança
   const handleSubmitWithSafety = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(e);
+    // Cria uma cópia para evitar problemas de mutabilidade
+    const formData = { ...e };
+    onSubmit(formData);
   };
   
   return (

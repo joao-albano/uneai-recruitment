@@ -44,20 +44,23 @@ export const useOrganizationCrud = (
       // Simula atraso da API
       await new Promise(resolve => setTimeout(resolve, 300));
       
-      // IMPORTANTE: Limpar o estado da UI ANTES de atualizar dados
+      // IMPORTANTE: Primeiro limpa o estado da UI
       resetNewOrganization();
       setShowCreateDialog(false);
+      setIsLoading(false);
       
       // Depois atualiza os dados com um pequeno atraso
       setTimeout(() => {
-        setOrganizations(prev => [...prev, newOrg]);
-        setIsLoading(false);
+        setOrganizations(prev => {
+          const updatedOrgs = [...prev, newOrg];
+          return updatedOrgs;
+        });
         
         // Pequeno atraso antes de mostrar toast para garantir que a UI foi atualizada
         setTimeout(() => {
           toast.success("Organização criada com sucesso");
         }, 100);
-      }, 100);
+      }, 50);
     } catch (error) {
       console.error("Erro ao criar organização:", error);
       toast.error("Erro ao criar organização");
@@ -92,20 +95,20 @@ export const useOrganizationCrud = (
         org.id === updatedOrg.id ? updatedOrg : org
       );
       
-      // IMPORTANTE: Limpar o estado da UI ANTES de atualizar dados
-      setSelectedOrganization(null);
+      // IMPORTANTE: Primeiro limpa o estado da UI
       setShowEditDialog(false);
+      setSelectedOrganization(null);
+      setIsLoading(false);
       
       // Depois atualiza os dados com um pequeno atraso
       setTimeout(() => {
         setOrganizations(updatedOrganizations);
-        setIsLoading(false);
         
         // Pequeno atraso antes de mostrar toast para garantir que a UI foi atualizada
         setTimeout(() => {
           toast.success("Organização atualizada com sucesso");
         }, 100);
-      }, 100);
+      }, 50);
     } catch (error) {
       console.error("Erro ao atualizar organização:", error);
       toast.error("Erro ao atualizar organização");
@@ -137,20 +140,20 @@ export const useOrganizationCrud = (
         org => org.id !== selectedOrganization.id
       );
       
-      // IMPORTANTE: Limpar o estado da UI ANTES de atualizar dados
-      setSelectedOrganization(null);
+      // IMPORTANTE: Primeiro limpa o estado da UI
       setShowDeleteDialog(false);
+      setSelectedOrganization(null);
+      setIsLoading(false);
       
       // Depois atualiza os dados com um pequeno atraso
       setTimeout(() => {
         setOrganizations(filteredOrganizations);
-        setIsLoading(false);
         
         // Pequeno atraso antes de mostrar toast para garantir que a UI foi atualizada
         setTimeout(() => {
           toast.success("Organização excluída com sucesso");
         }, 100);
-      }, 100);
+      }, 50);
     } catch (error) {
       console.error("Erro ao excluir organização:", error);
       toast.error("Erro ao excluir organização");

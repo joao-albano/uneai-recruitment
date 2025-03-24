@@ -25,7 +25,7 @@ const OrganizationProductsForm: React.FC<OrganizationProductsFormProps> = ({
     if (!selectedOrganization) return;
     
     try {
-      // Cria uma cópia profunda para evitar problemas de referência
+      // Cria uma cópia profunda do objeto antes de modificá-lo
       const updatedOrg = JSON.parse(JSON.stringify(selectedOrganization)) as OrganizationType;
       
       // Garante que products seja um array
@@ -37,16 +37,18 @@ const OrganizationProductsForm: React.FC<OrganizationProductsFormProps> = ({
       
       if (productIndex >= 0) {
         // Atualiza produto existente
-        updatedOrg.products[productIndex] = {
-          ...updatedOrg.products[productIndex],
-          active: !updatedOrg.products[productIndex].active
+        const updatedProducts = [...updatedOrg.products];
+        updatedProducts[productIndex] = {
+          ...updatedProducts[productIndex],
+          active: !updatedProducts[productIndex].active
         };
+        updatedOrg.products = updatedProducts;
       } else {
         // Adiciona novo produto
-        updatedOrg.products.push({
-          type: productType,
-          active: true
-        });
+        updatedOrg.products = [
+          ...updatedOrg.products,
+          { type: productType, active: true }
+        ];
       }
       
       // Atualiza o estado com a nova cópia
