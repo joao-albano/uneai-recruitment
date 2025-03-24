@@ -58,7 +58,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, sidebarCollapsed }) => {
         
         <PricingLink />
         
-        <NotificationBell unreadAlerts={unreadAlerts} />
+        <NotificationBell unreadCount={unreadAlerts} />
         
         <div className="h-8 w-px bg-border/50" />
         
