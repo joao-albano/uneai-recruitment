@@ -22,28 +22,32 @@ const OrganizationProductsForm: React.FC<OrganizationProductsFormProps> = ({
   
   // Função para alternar o estado ativo de um produto
   const toggleProductActive = (productType: ProductType) => {
-    // Criar nova versão do selectedOrganization com produtos atualizados
-    const updatedOrg = structuredClone(selectedOrganization);
-    
-    // Atualizar o active status do produto na organização
-    if (!updatedOrg.products) {
-      updatedOrg.products = [];
+    try {
+      // Criar nova versão do selectedOrganization com produtos atualizados
+      const updatedOrg = structuredClone(selectedOrganization);
+      
+      // Atualizar o active status do produto na organização
+      if (!updatedOrg.products) {
+        updatedOrg.products = [];
+      }
+      
+      const productIndex = updatedOrg.products.findIndex(p => p.type === productType);
+      
+      if (productIndex >= 0) {
+        // Atualizar produto existente
+        updatedOrg.products[productIndex].active = !updatedOrg.products[productIndex].active;
+      } else {
+        // Adicionar novo produto
+        updatedOrg.products.push({
+          type: productType,
+          active: true
+        });
+      }
+      
+      setSelectedOrganization(updatedOrg);
+    } catch (error) {
+      console.error("Erro ao alterar produto:", error);
     }
-    
-    const productIndex = updatedOrg.products.findIndex(p => p.type === productType);
-    
-    if (productIndex >= 0) {
-      // Atualizar produto existente
-      updatedOrg.products[productIndex].active = !updatedOrg.products[productIndex].active;
-    } else {
-      // Adicionar novo produto
-      updatedOrg.products.push({
-        type: productType,
-        active: true
-      });
-    }
-    
-    setSelectedOrganization(updatedOrg);
   };
   
   // Verificar se um produto está ativo

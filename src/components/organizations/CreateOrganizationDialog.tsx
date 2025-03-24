@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { NewOrganizationType, OrganizationProduct } from './types';
+import { NewOrganizationType } from './types';
 import { Checkbox } from "@/components/ui/checkbox";
 import { ProductType } from '@/context/ProductContext';
 import { getProductDisplayName } from '@/components/users/utils/userUtils';
@@ -27,35 +27,39 @@ const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
 }) => {
   // Função para alternar o estado ativo de um produto
   const toggleProductActive = (productType: ProductType) => {
-    // Criar uma cópia do array de produtos atual ou inicializar se não existir
-    const currentProducts = newOrganization.products ? [...newOrganization.products] : [
-      { type: 'retention' as ProductType, active: true },
-      { type: 'billing' as ProductType, active: false },
-      { type: 'recruitment' as ProductType, active: false }
-    ];
-    
-    // Atualizar o estado do produto
-    const productIndex = currentProducts.findIndex(p => p.type === productType);
-    
-    if (productIndex >= 0) {
-      // Atualizar produto existente
-      currentProducts[productIndex] = {
-        ...currentProducts[productIndex],
-        active: !currentProducts[productIndex].active
-      };
-    } else {
-      // Adicionar novo produto
-      currentProducts.push({
-        type: productType,
-        active: true
+    try {
+      // Criar uma cópia do array de produtos atual ou inicializar se não existir
+      const currentProducts = newOrganization.products ? [...newOrganization.products] : [
+        { type: 'retention' as ProductType, active: true },
+        { type: 'billing' as ProductType, active: false },
+        { type: 'recruitment' as ProductType, active: false }
+      ];
+      
+      // Atualizar o estado do produto
+      const productIndex = currentProducts.findIndex(p => p.type === productType);
+      
+      if (productIndex >= 0) {
+        // Atualizar produto existente
+        currentProducts[productIndex] = {
+          ...currentProducts[productIndex],
+          active: !currentProducts[productIndex].active
+        };
+      } else {
+        // Adicionar novo produto
+        currentProducts.push({
+          type: productType,
+          active: true
+        });
+      }
+      
+      // Atualizar o estado
+      setNewOrganization({
+        ...newOrganization,
+        products: currentProducts
       });
+    } catch (error) {
+      console.error("Erro ao alterar produto:", error);
     }
-    
-    // Atualizar o estado
-    setNewOrganization({
-      ...newOrganization,
-      products: currentProducts
-    });
   };
   
   // Verificar se um produto está ativo
@@ -66,7 +70,7 @@ const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
     return product ? product.active : false;
   };
   
-  // Lista de todos os tipos de produtos disponíveis - definindo explicitamente como ProductType[]
+  // Lista de todos os tipos de produtos disponíveis
   const allProductTypes: ProductType[] = ['retention', 'billing', 'recruitment'];
   
   return (
