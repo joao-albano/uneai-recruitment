@@ -1,146 +1,102 @@
 
-import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
+import React, { useState, useEffect } from 'react';
 import { useOrganizationData } from './hooks/useOrganizationData';
-import { useOrganizationDialogs } from './hooks/useOrganizationDialogs';
 import { useOrganizationCrud } from './hooks/useOrganizationCrud';
-import { useAuth } from '@/context/auth';
-import OrganizationsHeader from './OrganizationsHeader';
-import OrganizationsList from './OrganizationsList';
+import { useOrganizationDialogs } from './hooks/useOrganizationDialogs';
 import CreateOrganizationDialog from './CreateOrganizationDialog';
 import EditOrganizationDialog from './EditOrganizationDialog';
 import DeleteOrganizationDialog from './DeleteOrganizationDialog';
+import OrganizationsList from './OrganizationsList';
+import OrganizationsHeader from './OrganizationsHeader';
+import { OrganizationType } from './types';
 
 const OrganizationsContent: React.FC = () => {
-  const { organizationState, updateOrganizationState } = useOrganizationData();
-  const { dialogState, updateDialogState } = useOrganizationDialogs();
-  const { createOrganization, updateOrganization, deleteOrganization } = useOrganizationCrud();
-  const { toast } = useToast();
-  const { isAdmin, isSuperAdmin } = useAuth();
+  const [loading, setLoading] = useState(true);
+
+  // Get organization data and functions from hooks
+  const { organizations, loadOrganizations } = useOrganizationData();
   
-  // Handler para fechar todos os diálogos
-  const closeAllDialogs = () => {
-    updateDialogState({
-      showCreateDialog: false,
-      showEditDialog: false,
-      showDeleteDialog: false,
-    });
-  };
+  // Dialogs state
+  const { 
+    showCreateDialog, setShowCreateDialog,
+    showEditDialog, setShowEditDialog,
+    showDeleteDialog, setShowDeleteDialog,
+    selectedOrg, setSelectedOrg
+  } = useOrganizationDialogs();
+  
+  // CRUD operations
+  const {
+    handleCreateOrganization,
+    handleEditOrganization,
+    handleDeleteOrganization
+  } = useOrganizationCrud(loadOrganizations);
 
-  // Handler para abrir o diálogo de criação
+  useEffect(() => {
+    const fetchData = async () => {
+      await loadOrganizations();
+      setLoading(false);
+    };
+    fetchData();
+  }, [loadOrganizations]);
+
+  // Open dialogs
   const handleOpenCreateDialog = () => {
-    updateDialogState({ showCreateDialog: true });
+    setShowCreateDialog(true);
   };
 
-  // Handler para abrir o diálogo de edição
-  const handleOpenEditDialog = (organizationId: string) => {
-    const organization = organizationState.organizations.find(org => org.id === organizationId);
-    if (organization) {
-      updateOrganizationState({ selectedOrganization: organization });
-      updateDialogState({ showEditDialog: true });
-    }
+  const handleOpenEditDialog = (organization: OrganizationType) => {
+    setSelectedOrg(organization);
+    setShowEditDialog(true);
   };
 
-  // Handler para abrir o diálogo de exclusão
-  const handleOpenDeleteDialog = (organizationId: string) => {
-    const organization = organizationState.organizations.find(org => org.id === organizationId);
-    if (organization) {
-      updateOrganizationState({ selectedOrganization: organization });
-      updateDialogState({ showDeleteDialog: true });
-    }
+  const handleOpenDeleteDialog = (organization: OrganizationType) => {
+    setSelectedOrg(organization);
+    setShowDeleteDialog(true);
   };
 
-  // Handler para criação de organização
-  const handleCreateOrganization = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (organizationState.newOrganization) {
-      createOrganization(organizationState.newOrganization);
-      toast({
-        title: "Organização criada",
-        description: "A organização foi criada com sucesso",
-      });
-      closeAllDialogs();
-    }
-  };
-
-  // Handler para atualização de organização
-  const handleUpdateOrganization = (updatedOrg: any) => {
-    if (organizationState.selectedOrganization) {
-      updateOrganization({
-        ...organizationState.selectedOrganization,
-        ...updatedOrg
-      });
-      toast({
-        title: "Organização atualizada",
-        description: "As informações da organização foram atualizadas com sucesso",
-      });
-      closeAllDialogs();
-    }
-  };
-
-  // Handler para exclusão de organização
-  const handleDeleteOrganization = () => {
-    if (organizationState.selectedOrganization) {
-      deleteOrganization(organizationState.selectedOrganization.id);
-      toast({
-        title: "Organização removida",
-        description: "A organização foi removida permanentemente",
-        variant: "destructive",
-      });
-      closeAllDialogs();
-    }
-  };
-
-  // Não permitir acesso se não for admin
-  if (!isAdmin && !isSuperAdmin) {
+  if (loading) {
     return (
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-center py-12">
-            <h3 className="text-lg font-medium">Acesso Restrito</h3>
-            <p className="text-muted-foreground mt-2">
-              Você não tem permissão para acessar esta página.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex h-full items-center justify-center p-8">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
+          <p className="text-sm text-muted-foreground">
+            Carregando organizações...
+          </p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 p-8">
       <OrganizationsHeader 
-        orgCount={organizationState.organizations.length} 
-        onCreateOrg={handleOpenCreateDialog}
+        orgCount={organizations.length} 
+        onCreateOrg={handleOpenCreateDialog} 
       />
       
-      <OrganizationsList 
-        organizations={organizationState.organizations}
+      <OrganizationsList
+        organizations={organizations}
         onEdit={handleOpenEditDialog}
         onDelete={handleOpenDeleteDialog}
-        isSuperAdmin={isSuperAdmin}
       />
-      
-      <CreateOrganizationDialog 
-        open={dialogState.showCreateDialog}
-        onOpenChange={(open) => updateDialogState({ showCreateDialog: open })}
-        newOrganization={organizationState.newOrganization}
-        setNewOrganization={(newOrg) => updateOrganizationState({ newOrganization: newOrg })}
+
+      <CreateOrganizationDialog
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
         onSubmit={handleCreateOrganization}
       />
-      
-      <EditOrganizationDialog 
-        open={dialogState.showEditDialog}
-        onOpenChange={(open) => updateDialogState({ showEditDialog: open })}
-        organization={organizationState.selectedOrganization}
-        onSubmit={handleUpdateOrganization}
+
+      <EditOrganizationDialog
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+        organization={selectedOrg}
+        onSubmit={handleEditOrganization}
       />
-      
-      <DeleteOrganizationDialog 
-        open={dialogState.showDeleteDialog}
-        onOpenChange={(open) => updateDialogState({ showDeleteDialog: open })}
-        organization={organizationState.selectedOrganization}
+
+      <DeleteOrganizationDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        organizationId={selectedOrg?.id}
         onDelete={handleDeleteOrganization}
       />
     </div>

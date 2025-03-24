@@ -23,7 +23,7 @@ const UserSubscriptions: React.FC<UserSubscriptionsProps> = ({
   
   // Filtrar assinaturas do usuário
   const userSubscriptions = subscriptions.filter(
-    sub => sub.id.includes(selectedUser.id)
+    sub => sub.id.includes(selectedUser.id.toString())
   );
   
   return (

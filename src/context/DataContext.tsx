@@ -1,9 +1,8 @@
-
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { demoStudents } from '@/data/demoStudents';
-import { demoAlerts } from '@/data/demoAlerts';
-import { demoSchedules } from '@/data/demoSchedules';
+import { generateDemoStudents } from '@/data/demoStudents';
+import { generateDemoAlerts } from '@/data/demoAlerts';
+import { generateDemoSchedules } from '@/data/demoSchedules';
 import { 
   StudentData, 
   SurveyData, 
@@ -17,7 +16,7 @@ import { WhatsAppConfig } from '@/utils/whatsappIntegration';
 import { WhatsAppMessage } from '@/types/whatsapp';
 
 const defaultWhatsAppConfig: WhatsAppConfig = {
-  phoneNumber: '',
+  provider: 'disabled',
   apiKey: '',
   enabled: false,
   templateMessages: {
@@ -109,7 +108,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   };
   
-  // Métodos CRUD para estudantes
   const addStudent = (student: Student) => {
     setStudents(prev => [...prev, student]);
   };
@@ -126,34 +124,30 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const generateDemoData = useCallback(() => {
     setIsLoading(true);
-    setStudents(demoStudents);
-    setAlerts(demoAlerts);
-    setSchedules(demoSchedules);
+    setStudents(generateDemoStudents());
+    setAlerts(generateDemoAlerts());
+    setSchedules(generateDemoSchedules());
     setIsLoading(false);
   }, []);
 
   const sendWhatsAppSurvey = (studentId: string) => {
-    // Find the student
     const student = students.find(s => s.id === studentId);
     if (!student || !student.parentContact) return;
     
-    // Create a dummy message for the demo
     const message: WhatsAppMessage = {
       id: uuidv4(),
       studentId: student.id,
       studentName: student.name,
       parentName: student.parentName || "Responsável",
-      phoneNumber: student.parentContact,
+      to: student.parentContact,
       messageType: 'survey',
       status: 'sent',
       sentAt: new Date(),
       content: `Olá ${student.parentName || "Responsável"}, gostaríamos de fazer uma pesquisa sobre ${student.name}.`,
     };
     
-    // Add the message to the context
     addWhatsAppMessage(message);
     
-    // Add a new alert
     addAlert({
       id: uuidv4(),
       studentId: student.id,
@@ -191,7 +185,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateSchedule,
         generateDemoData,
         sendWhatsAppSurvey,
-        // Métodos CRUD de estudantes
         addStudent,
         updateStudent,
         deleteStudent
@@ -209,3 +202,5 @@ export const useData = () => {
   }
   return context;
 };
+
+export type { StudentData };
