@@ -30,7 +30,9 @@ export const useUsers = () => {
     isLastAdmin,
     handleCreateUser,
     handleEditUser,
-    handleDeleteUser
+    handleDeleteUser,
+    // We now get selectedUser and setSelectedUser from the hook
+    // This ensures both hooks use the same selectedUser state
   } = useUserCrudOperations(
     initialUsers,
     setShowCreateDialog,

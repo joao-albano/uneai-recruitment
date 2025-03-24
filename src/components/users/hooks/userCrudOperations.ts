@@ -13,6 +13,14 @@ export const useUserCrudOperations = (
 ) => {
   const { toast } = useToast();
   const [users, setUsers] = useState<UserType[]>(initialUsers);
+  // Add a local selectedUser state to maintain the selected user within this hook
+  const [selectedUser, setLocalSelectedUser] = useState<UserType | null>(null);
+
+  // Update both the local and parent selectedUser states
+  const updateSelectedUser = (user: UserType | null) => {
+    setLocalSelectedUser(user);
+    setSelectedUser(user);
+  };
 
   const handleCreateUser = (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,7 +128,7 @@ export const useUserCrudOperations = (
       // Important: Set selectedUser to null AFTER the dialog is closed
       // Using setTimeout to ensure this happens after the dialog animation
       setTimeout(() => {
-        setSelectedUser(null);
+        updateSelectedUser(null);
       }, 100);
     } catch (error) {
       console.error("Erro ao editar usuário:", error);
@@ -147,7 +155,7 @@ export const useUserCrudOperations = (
       
       // Clear selected user with timeout
       setTimeout(() => {
-        setSelectedUser(null);
+        updateSelectedUser(null);
       }, 100);
       
       // Show success message after state updates
@@ -173,6 +181,9 @@ export const useUserCrudOperations = (
     isLastAdmin,
     handleCreateUser,
     handleEditUser,
-    handleDeleteUser
+    handleDeleteUser,
+    // Add selectedUser and setLocalSelectedUser to the return values
+    selectedUser,
+    setSelectedUser: updateSelectedUser
   };
 };
