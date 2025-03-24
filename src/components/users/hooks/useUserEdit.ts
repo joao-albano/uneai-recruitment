@@ -3,9 +3,11 @@ import { useCallback } from 'react';
 import { UserType } from '../types';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/auth';
 
 export const useUserEdit = (fetchUsers: () => Promise<void>) => {
   const { toast } = useToast();
+  const { currentUser } = useAuth();
   
   // Editar usuário
   const handleEditUser = useCallback(async (e: React.FormEvent, selectedUser: UserType | null, onSuccess: () => void) => {
@@ -16,6 +18,16 @@ export const useUserEdit = (fetchUsers: () => Promise<void>) => {
         toast({
           title: "Erro",
           description: "Nenhum usuário selecionado para edição.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Verificar se o usuário está tentando editar a própria conta
+      if (currentUser && selectedUser.id === Number(currentUser.id)) {
+        toast({
+          title: "Operação não permitida",
+          description: "Não é possível editar sua própria conta. Utilize a página de perfil para isso.",
           variant: "destructive"
         });
         return;
@@ -67,7 +79,7 @@ export const useUserEdit = (fetchUsers: () => Promise<void>) => {
         variant: "destructive"
       });
     }
-  }, [fetchUsers, toast]);
+  }, [fetchUsers, toast, currentUser]);
 
   return {
     handleEditUser

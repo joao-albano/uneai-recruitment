@@ -3,9 +3,11 @@ import { useCallback } from 'react';
 import { UserType } from '../types';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/auth';
 
 export const useUserDelete = (fetchUsers: () => Promise<void>) => {
   const { toast } = useToast();
+  const { currentUser } = useAuth();
   
   // Excluir usuário
   const handleDeleteUser = useCallback(async (selectedUser: UserType | null, onSuccess: () => void) => {
@@ -14,6 +16,16 @@ export const useUserDelete = (fetchUsers: () => Promise<void>) => {
         toast({
           title: "Erro",
           description: "Nenhum usuário selecionado para exclusão.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Verificar se o usuário está tentando excluir a própria conta
+      if (currentUser && selectedUser.id === Number(currentUser.id)) {
+        toast({
+          title: "Operação não permitida",
+          description: "Não é possível excluir sua própria conta.",
           variant: "destructive"
         });
         return;
@@ -52,7 +64,7 @@ export const useUserDelete = (fetchUsers: () => Promise<void>) => {
         variant: "destructive"
       });
     }
-  }, [fetchUsers, toast]);
+  }, [fetchUsers, toast, currentUser]);
 
   return {
     handleDeleteUser

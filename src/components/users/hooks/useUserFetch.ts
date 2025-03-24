@@ -3,12 +3,14 @@ import { useState, useCallback } from 'react';
 import { UserType } from '../types';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/auth';
 
 export const useUserFetch = () => {
   const [users, setUsers] = useState<UserType[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLastAdmin, setIsLastAdmin] = useState(false);
   const { toast } = useToast();
+  const { currentUser } = useAuth();
   
   // Carregar usuários do Supabase
   const fetchUsers = useCallback(async () => {
@@ -73,12 +75,19 @@ export const useUserFetch = () => {
         };
       }));
       
-      setUsers(mappedUsers);
+      // Filtrar o usuário atual da lista
+      const filteredUsers = mappedUsers.filter(user => 
+        // Se o currentUser for null ou undefined, não filtra nada
+        // Caso contrário, exclui o usuário atual da lista
+        !currentUser || user.id !== Number(currentUser.id)
+      );
+      
+      setUsers(filteredUsers);
       
       // Verificar se há apenas um admin por organização
       const orgAdminCounts = new Map<string, number>();
       
-      mappedUsers.forEach(user => {
+      filteredUsers.forEach(user => {
         if (user.role === 'admin' && user.organizationId) {
           const currentCount = orgAdminCounts.get(user.organizationId) || 0;
           orgAdminCounts.set(user.organizationId, currentCount + 1);
@@ -98,7 +107,7 @@ export const useUserFetch = () => {
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, [toast, currentUser]);
 
   return {
     users,
