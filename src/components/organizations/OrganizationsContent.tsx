@@ -15,7 +15,7 @@ import OrganizationsEmpty from './OrganizationsEmpty';
 const OrganizationsContent: React.FC = () => {
   const navigate = useNavigate();
   const { isAdmin, isSuperAdmin, currentUser } = useAuth();
-  const [retryCount, setRetryCount] = useState(0);
+  const [hasAttemptedLoad, setHasAttemptedLoad] = useState(false);
   
   const {
     // State
@@ -47,27 +47,22 @@ const OrganizationsContent: React.FC = () => {
       return;
     }
     
-    loadOrganizations();
+    const fetchData = async () => {
+      await loadOrganizations();
+      setHasAttemptedLoad(true);
+    };
     
-    // Tentar novamente após alguns segundos se não conseguir carregar
-    if (organizations.length === 0 && retryCount < 2) {
-      const timer = setTimeout(() => {
-        console.log(`Tentativa ${retryCount + 1} de carregar organizações...`);
-        loadOrganizations();
-        setRetryCount(prev => prev + 1);
-      }, 2000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [isAdmin, isSuperAdmin, navigate, loadOrganizations, currentUser, organizations.length, retryCount]);
+    fetchData();
+  }, [isAdmin, isSuperAdmin, navigate, loadOrganizations, currentUser]);
 
   // Show error message if no permissions
   if (!isAdmin && !isSuperAdmin) {
     return <OrganizationsEmpty message="Você não tem permissão para acessar esta página." />;
   }
 
-  // Show loading state
-  if (isLoading) {
+  // Show loading state only for the initial load
+  // After the first load attempt, we'll show the content even if there are no organizations
+  if (isLoading && !hasAttemptedLoad) {
     return <OrganizationsLoading />;
   }
 
