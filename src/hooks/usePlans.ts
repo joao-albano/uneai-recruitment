@@ -20,7 +20,7 @@ export const usePlans = () => {
     setError(null);
     
     try {
-      // Busca planos diretamente da tabela plans no schema public
+      console.log('Buscando planos da tabela plans no schema public...');
       const { data, error } = await supabase
         .from('plans')
         .select('id, name, description, price');
