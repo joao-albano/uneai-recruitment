@@ -27,6 +27,18 @@ const Chart: React.FC<ChartProps> = ({ students, title }) => {
     return `${Math.round((count / totalStudents) * 100)}%`;
   };
   
+  const customTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-white p-2 border border-gray-200 rounded shadow-sm">
+          <p className="text-sm">{`${data.name}: ${data.value} alunos (${formatPercentage(data.value)})`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+  
   return (
     <Card className="h-full shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="pb-0">
@@ -49,9 +61,7 @@ const Chart: React.FC<ChartProps> = ({ students, title }) => {
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip 
-                formatter={(value: number) => [`${value} alunos (${formatPercentage(value)})`, '']}
-              />
+              <Tooltip content={customTooltip} />
             </PieChart>
           </ResponsiveContainer>
         </div>
