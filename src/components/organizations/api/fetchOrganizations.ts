@@ -29,15 +29,6 @@ export const fetchOrganizations = async (currentUser: UserProfile | null) => {
       return [];
     }
     
-    // Em ambiente de desenvolvimento, retornar dados mock
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Ambiente de desenvolvimento - retornando dados mock');
-      // Simular delay para parecer mais real
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      return getMockOrganizations();
-    }
-    
     // Construir a consulta para buscar organizações
     let query = supabase
       .from('organizations')
@@ -47,7 +38,7 @@ export const fetchOrganizations = async (currentUser: UserProfile | null) => {
         is_main_org,
         created_at, 
         updated_at,
-        organization_products (
+        products:organization_products(
           id,
           type,
           active,
@@ -73,7 +64,7 @@ export const fetchOrganizations = async (currentUser: UserProfile | null) => {
     }
     
     console.log('Organizações encontradas:', data?.length || 0);
-    return formatOrganizationsData(data || []);
+    return data || [];
   } catch (error) {
     console.error('Erro ao buscar organizações:', error);
     
@@ -82,67 +73,6 @@ export const fetchOrganizations = async (currentUser: UserProfile | null) => {
     } else {
       console.error('Detalhes do erro JSON:', JSON.stringify(error));
     }
-    
-    // Em ambiente de desenvolvimento, retornar dados mock se houver erro
-    if (process.env.NODE_ENV === 'development') {
-      return getMockOrganizations();
-    }
-    
     throw error;
   }
 };
-
-// Formatar os dados das organizações para o formato esperado
-const formatOrganizationsData = (orgs: any[]) => {
-  return orgs.map(org => ({
-    id: org.id,
-    name: org.name,
-    isActive: true, // Assumindo que todas as orgs estão ativas
-    isMainOrg: org.is_main_org,
-    createdAt: org.created_at,
-    updatedAt: org.updated_at,
-    products: org.organization_products ? org.organization_products.map((p: any) => ({
-      type: p.type,
-      active: p.active || false
-    })) : []
-  }));
-};
-
-// Dados fictícios para testes e ambiente de desenvolvimento
-const getMockOrganizations = () => [
-  {
-    id: 'mock-org-1',
-    name: 'Escola Alpha',
-    isActive: true,
-    isMainOrg: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    products: [
-      { type: 'retention', active: true },
-      { type: 'billing', active: true },
-    ],
-  },
-  {
-    id: 'mock-org-2',
-    name: 'Escola Beta',
-    isActive: true,
-    isMainOrg: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    products: [
-      { type: 'retention', active: true },
-      { type: 'recruitment', active: true },
-    ],
-  },
-  {
-    id: 'mock-org-3',
-    name: 'Escola Gamma',
-    isActive: true,
-    isMainOrg: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    products: [
-      { type: 'pedagogical', active: true },
-    ],
-  },
-];
