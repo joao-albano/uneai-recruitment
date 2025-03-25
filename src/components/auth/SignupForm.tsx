@@ -61,11 +61,39 @@ const SignupForm = ({ onSwitchTab, onSuccess }: SignupFormProps) => {
     console.log('Signup attempt:', values);
     
     try {
+      // First, check if the CNPJ already exists
+      const { data: existingOrg, error: checkError } = await supabase
+        .from('organizations')
+        .select('id, name')
+        .eq('cnpj', values.cnpj)
+        .maybeSingle();
+      
+      if (checkError) {
+        console.error('Erro ao verificar CNPJ:', checkError);
+        toast.error('Erro ao verificar disponibilidade do CNPJ');
+        setIsLoading(false);
+        return;
+      }
+      
+      // If CNPJ already exists, show error and stop
+      if (existingOrg) {
+        console.log('CNPJ já cadastrado:', existingOrg);
+        toast.error(`CNPJ já cadastrado para a organização "${existingOrg.name}"`);
+        setIsLoading(false);
+        return;
+      }
+      
       // Step 1: Create the organization first
       const { data: newOrg, error: orgError } = await supabase
         .from('organizations')
         .insert([{ 
           name: values.companyName,
+          cnpj: values.cnpj,
+          address: values.address,
+          city: values.city,
+          state: values.state,
+          postal_code: values.postalCode,
+          contact_phone: values.contactPhone,
           is_main_org: false 
         }])
         .select('id')
