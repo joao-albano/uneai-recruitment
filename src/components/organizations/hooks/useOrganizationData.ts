@@ -15,7 +15,7 @@ export const useOrganizationData = (
   const loadOrganizations = useCallback(async () => {
     try {
       setIsLoading(true);
-      console.log('Carregando organizações...');
+      console.log('Carregando organizações...', { isAdmin, isSuperAdmin, currentUser });
       
       // Verificar permissões - apenas admins e super admins podem ver organizações
       if (!isAdmin && !isSuperAdmin) {
@@ -26,22 +26,13 @@ export const useOrganizationData = (
       }
       
       // Buscar organizações do Supabase
-      const orgsData = await fetchOrganizations();
+      const orgsData = await fetchOrganizations(currentUser);
       
       if (Array.isArray(orgsData)) {
         console.log('Organizações carregadas com sucesso:', orgsData);
         
-        // Filtrar organizações conforme o perfil do usuário
-        let filteredOrgs = orgsData;
-        
-        // Se for admin (não super admin), filtrar apenas a organização do usuário
-        if (isAdmin && !isSuperAdmin && currentUser?.organizationId) {
-          filteredOrgs = orgsData.filter(org => org.id === currentUser.organizationId);
-          console.log('Filtrando apenas a organização do usuário:', filteredOrgs);
-        }
-        
         // Transformar os dados do formato Supabase para o formato esperado por OrganizationType
-        const formattedOrgs: OrganizationType[] = filteredOrgs.map(org => {
+        const formattedOrgs: OrganizationType[] = orgsData.map(org => {
           console.log('Processando organização:', org);
           return {
             id: org.id,

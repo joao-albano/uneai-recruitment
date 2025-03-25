@@ -1,9 +1,16 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { UserProfile } from '@/context/auth/types';
 
-export const fetchOrganizations = async () => {
+export const fetchOrganizations = async (currentUser: UserProfile | null) => {
   try {
-    console.log('Buscando organizações...');
+    console.log('Buscando organizações...', currentUser);
+    
+    // Se não há usuário autenticado, retornar array vazio
+    if (!currentUser) {
+      console.log('Nenhum usuário autenticado.');
+      return [];
+    }
     
     // Buscar organizações com seus produtos
     const { data, error } = await supabase
@@ -30,8 +37,15 @@ export const fetchOrganizations = async () => {
       throw error;
     }
     
+    // Para usuários não super admin, filtrar apenas a organização do usuário
+    if (currentUser && !currentUser.isSuperAdmin && currentUser.organizationId) {
+      const filteredData = data?.filter(org => org.id === currentUser.organizationId);
+      console.log('Organizações filtradas para usuário admin:', filteredData);
+      return filteredData || [];
+    }
+    
     console.log('Organizações encontradas:', data);
-    return data;
+    return data || [];
   } catch (error) {
     console.error('Erro ao buscar organizações:', error);
     throw error;
