@@ -2,6 +2,7 @@
 import { useCallback } from 'react';
 import { OrganizationType } from '../types';
 import { toast } from "sonner";
+import { createOrganization, updateOrganization, deleteOrganization } from '../api/organizationsApi';
 
 export const useOrganizationCrud = (
   loadOrganizations: () => void
@@ -13,13 +14,23 @@ export const useOrganizationCrud = (
     }
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 300));
+      // Criar a organização no Supabase
+      await createOrganization({
+        name: name.trim(),
+        isActive,
+        products: [
+          { type: 'retention', active: true },
+          { type: 'billing', active: true },
+          { type: 'recruitment', active: false },
+          { type: 'secretary', active: false },
+          { type: 'pedagogical', active: false }
+        ]
+      });
       
-      // Success notification
+      // Notificação de sucesso
       toast.success("Organização criada com sucesso");
       
-      // Refresh the list
+      // Atualizar a lista
       loadOrganizations();
     } catch (error) {
       console.error("Erro ao criar organização:", error);
@@ -34,13 +45,16 @@ export const useOrganizationCrud = (
     }
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 300));
+      // Atualizar a organização no Supabase
+      await updateOrganization(id, {
+        name: name.trim(),
+        isActive
+      });
       
-      // Success notification
+      // Notificação de sucesso
       toast.success("Organização atualizada com sucesso");
       
-      // Refresh the list
+      // Atualizar a lista
       loadOrganizations();
     } catch (error) {
       console.error("Erro ao atualizar organização:", error);
@@ -50,13 +64,13 @@ export const useOrganizationCrud = (
 
   const handleDeleteOrganization = useCallback(async (id: string) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 300));
+      // Excluir a organização no Supabase
+      await deleteOrganization(id);
       
-      // Success notification
+      // Notificação de sucesso
       toast.success("Organização excluída com sucesso");
       
-      // Refresh the list
+      // Atualizar a lista
       loadOrganizations();
     } catch (error) {
       console.error("Erro ao excluir organização:", error);

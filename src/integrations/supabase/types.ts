@@ -209,6 +209,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      organization_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       update_user_profile: {
         Args: {
           user_id: string
