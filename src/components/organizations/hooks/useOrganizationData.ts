@@ -18,7 +18,18 @@ export const useOrganizationData = (
       
       if (Array.isArray(orgsData)) {
         console.log('Organizações carregadas com sucesso:', orgsData);
-        setOrganizations(orgsData);
+        
+        // Transformar os dados do formato Supabase para o formato esperado por OrganizationType
+        const formattedOrgs: OrganizationType[] = orgsData.map(org => ({
+          id: org.id,
+          name: org.name,
+          isActive: true, // Valor padrão, ajustar conforme necessário
+          isMainOrg: org.is_main_org || false,
+          createdAt: org.created_at,
+          products: org.products || []
+        }));
+        
+        setOrganizations(formattedOrgs);
       } else {
         console.warn('Resposta não esperada ao buscar organizações:', orgsData);
         setOrganizations([]);

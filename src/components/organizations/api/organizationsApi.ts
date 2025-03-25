@@ -68,13 +68,16 @@ export const createOrganization = async (orgData: NewOrganizationType) => {
   try {
     console.log('Criando nova organização:', orgData);
     
+    // Adaptar o formato para o Supabase
+    const organizationData = {
+      name: orgData.name,
+      is_main_org: orgData.isMainOrg || false,
+    };
+    
     // Inserir a organização
     const { data: newOrg, error } = await supabase
       .from('organizations')
-      .insert({
-        name: orgData.name,
-        is_main_org: orgData.isMainOrg || false,
-      })
+      .insert(organizationData)
       .select()
       .single();
     
