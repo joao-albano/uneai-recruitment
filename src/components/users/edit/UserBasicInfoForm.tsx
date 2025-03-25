@@ -58,7 +58,7 @@ const UserBasicInfoForm: React.FC<UserBasicInfoFormProps> = ({
             toast({
               title: "Nenhuma organização encontrada",
               description: "Não foi possível carregar organizações. Verifique se existem organizações cadastradas.",
-              variant: "warning"
+              variant: "destructive" // Alterado de "warning" para "destructive"
             });
           }
         }

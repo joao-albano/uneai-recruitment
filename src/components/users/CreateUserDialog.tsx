@@ -60,7 +60,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
               toast({
                 title: "Nenhuma organização encontrada",
                 description: "Não foram encontradas organizações cadastradas.",
-                variant: "warning"
+                variant: "destructive" // Alterado de "warning" para "destructive"
               });
             }
           }
