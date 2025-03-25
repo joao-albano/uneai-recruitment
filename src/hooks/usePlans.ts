@@ -20,12 +20,11 @@ export const usePlans = () => {
     setError(null);
     
     try {
-      // Using "from('api.plans')" instead of "from('plans').schema('api')"
-      // This is the correct way to specify a schema in Supabase JS client
+      // We need to use a raw SQL query to access tables in a different schema
+      // since the Supabase JS client has limitations with cross-schema queries
       const { data, error } = await supabase
-        .from('api.plans')
-        .select('id, name, description, price')
-        .order('price');
+        .rpc('get_plans')
+        .select();
           
       if (error) {
         console.error('Erro ao carregar planos:', error);
@@ -34,7 +33,7 @@ export const usePlans = () => {
       }
         
       if (data) {
-        setPlans(data);
+        setPlans(data as Plan[]);
       }
     } catch (error) {
       console.error('Erro ao buscar planos:', error);
