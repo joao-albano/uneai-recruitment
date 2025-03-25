@@ -31,7 +31,7 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
     const loadOrganizations = async () => {
       setLoading(true);
       try {
-        console.log('Carregando organizações no OrganizationSelector...');
+        console.log('Carregando organizações no OrganizationSelector...', { currentUser });
         
         const orgsData = await fetchOrganizations(currentUser);
         

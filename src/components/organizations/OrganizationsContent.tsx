@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { toast } from "sonner";
@@ -26,6 +27,7 @@ const OrganizationsContent: React.FC = () => {
   const loadOrganizations = async () => {
     setLoading(true);
     try {
+      console.log('Carregando organizações...', { currentUser });
       const orgsData = await fetchOrganizations(currentUser);
       
       if (Array.isArray(orgsData)) {
@@ -74,8 +76,8 @@ const OrganizationsContent: React.FC = () => {
         name: values.name || '',
         isActive: values.isActive || false,
         products: [
-          { type: 'retention', active: true },
-          { type: 'billing', active: false }
+          { type: 'retention' as ProductType, active: true },
+          { type: 'billing' as ProductType, active: false }
         ]
       });
       
