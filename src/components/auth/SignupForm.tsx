@@ -61,7 +61,26 @@ const SignupForm = ({ onSwitchTab, onSuccess }: SignupFormProps) => {
     console.log('Signup attempt:', values);
     
     try {
-      // Criar o usuário no Supabase
+      // Step 1: Create the organization first
+      const { data: newOrg, error: orgError } = await supabase
+        .from('organizations')
+        .insert([{ 
+          name: values.companyName,
+          is_main_org: false 
+        }])
+        .select('id')
+        .single();
+      
+      if (orgError) {
+        console.error('Erro ao criar organização:', orgError);
+        toast.error('Não foi possível criar a organização');
+        setIsLoading(false);
+        return;
+      }
+      
+      console.log('Organização criada com sucesso:', newOrg);
+      
+      // Step 2: Create the user with the organization ID in metadata
       const { data, error } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
@@ -69,6 +88,7 @@ const SignupForm = ({ onSwitchTab, onSuccess }: SignupFormProps) => {
           data: {
             full_name: values.name,
             company_name: values.companyName,
+            organization_id: newOrg.id
           }
         }
       });
@@ -76,44 +96,31 @@ const SignupForm = ({ onSwitchTab, onSuccess }: SignupFormProps) => {
       if (error) {
         console.error('Erro ao criar conta:', error);
         toast.error(error.message || 'Erro ao criar conta');
-        return;
-      }
-      
-      // Tentativa 1: Criar nova organização usando POST direto na URL
-      const { data: newOrg, error: orgError } = await supabase
-        .from('organizations')
-        .insert([
-          { 
-            name: values.companyName,
-            is_main_org: false 
-          }
-        ])
-        .select('id')
-        .single();
-      
-      if (orgError) {
-        console.error('Erro ao criar organização:', orgError);
         
-        // Mesmo com erro na criação da organização, permitimos que o usuário prossiga
-        // Será possível vincular a organização posteriormente
-        toast.error('Não foi possível criar a organização, mas sua conta foi criada');
-        onSuccess(values.email);
+        // Attempt to cleanup the organization if user creation fails
+        await supabase
+          .from('organizations')
+          .delete()
+          .eq('id', newOrg.id);
+          
+        setIsLoading(false);
         return;
       }
       
-      // Se chegou aqui, a organização foi criada com sucesso
-      if (data.user && newOrg) {
+      // Step 3: Update the user's profile to link to the organization
+      if (data.user) {
         const { error: profileError } = await supabase
           .from('profiles')
           .update({
             organization_id: newOrg.id,
-            is_admin: true // Todos os que se registram são admins da sua organização
+            is_admin: true // New users are admins of their organization
           })
           .eq('id', data.user.id);
         
         if (profileError) {
           console.error('Erro ao atualizar perfil:', profileError);
           toast.error('Erro ao configurar perfil do usuário');
+          setIsLoading(false);
           return;
         }
       }
