@@ -20,8 +20,10 @@ export const usePlans = () => {
     setError(null);
     
     try {
-      // Priorizar o uso da função RPC get_plans que agora está corretamente configurada
-      const { data, error } = await supabase.rpc('get_plans');
+      // Tenta buscar planos diretamente da tabela plans
+      const { data, error } = await supabase
+        .from('plans')
+        .select('id, name, description, price');
           
       if (error) {
         console.error('Erro ao carregar planos:', error);
