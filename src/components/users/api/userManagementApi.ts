@@ -39,7 +39,7 @@ export const fetchUsers = async () => {
  */
 export const fetchOrganizations = async () => {
   try {
-    console.log('Buscando organizações');
+    console.log('Início: Buscando organizações');
     
     // Buscar todas as organizações diretamente
     const { data, error } = await supabase

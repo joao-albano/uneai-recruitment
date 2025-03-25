@@ -40,24 +40,29 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
           const orgsData = await fetchOrganizations();
           console.log('Organizações carregadas no CreateUserDialog:', orgsData);
           
-          if (Array.isArray(orgsData)) {
+          if (Array.isArray(orgsData) && orgsData.length > 0) {
             setOrganizations(orgsData);
             
             // Se o usuário não for super admin e tiver uma organização, pré-selecionar
             if (!isSuperAdmin && currentUser?.organizationId && !newUser.organizationId) {
+              const userOrg = orgsData.find(org => org.id === currentUser.organizationId);
+              
               setNewUser(prev => ({ 
                 ...prev, 
                 organizationId: currentUser.organizationId || '',
-                organizationName: orgsData.find(org => org.id === currentUser.organizationId)?.name || ''
+                organizationName: userOrg?.name || ''
               }));
             }
           } else {
-            toast({
-              title: "Erro ao carregar organizações",
-              description: "Formato de dados inesperado. Tente novamente.",
-              variant: "destructive"
-            });
             setOrganizations([]);
+            
+            if (isSuperAdmin) {
+              toast({
+                title: "Nenhuma organização encontrada",
+                description: "Não foram encontradas organizações cadastradas.",
+                variant: "warning"
+              });
+            }
           }
         } catch (error) {
           console.error('Erro ao carregar organizações:', error);
@@ -94,6 +99,11 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
       }
     }
   };
+  
+  // Verificar se é possível criar um usuário (organização selecionada)
+  const canCreateUser = isSuperAdmin ? 
+    (!!newUser.organizationId && organizations.length > 0) : 
+    (!!currentUser?.organizationId);
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -164,7 +174,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
                 <SelectTrigger className="col-span-3">
                   <SelectValue placeholder="Selecione um perfil" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-popover">
                   <SelectItem value="user">Usuário</SelectItem>
                   <SelectItem value="admin">Administrador</SelectItem>
                 </SelectContent>
@@ -179,11 +189,12 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
                 name="organizationId"
                 value={newUser.organizationId}
                 onValueChange={(value) => handleSelectChange('organizationId', value)}
+                disabled={!isSuperAdmin || loading}
               >
                 <SelectTrigger className="col-span-3">
                   <SelectValue placeholder={loading ? "Carregando..." : "Selecione uma organização"} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-popover">
                   {organizations.length > 0 ? (
                     organizations.map(org => (
                       <SelectItem key={org.id} value={org.id}>
@@ -198,13 +209,21 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
                 </SelectContent>
               </Select>
             </div>
+            
+            {!canCreateUser && isSuperAdmin && organizations.length === 0 && (
+              <div className="text-sm text-amber-500 mt-2">
+                É necessário criar pelo menos uma organização antes de adicionar usuários.
+              </div>
+            )}
           </div>
           
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button type="submit">Adicionar</Button>
+            <Button type="submit" disabled={!canCreateUser && isSuperAdmin}>
+              Adicionar
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

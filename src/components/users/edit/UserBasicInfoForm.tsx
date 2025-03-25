@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { UserType } from '../types';
 import { fetchOrganizations } from '../api/userManagementApi';
+import { useToast } from '@/hooks/use-toast';
 
 interface UserBasicInfoFormProps {
   selectedUser: UserType;
@@ -21,6 +22,7 @@ const UserBasicInfoForm: React.FC<UserBasicInfoFormProps> = ({
 }) => {
   const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const { toast } = useToast();
   
   // Carregar organizações disponíveis
   useEffect(() => {
@@ -28,29 +30,60 @@ const UserBasicInfoForm: React.FC<UserBasicInfoFormProps> = ({
       setLoading(true);
       try {
         console.log('Carregando organizações no UserBasicInfoForm...');
-        const orgsData = await fetchOrganizations();
-        console.log('Organizações carregadas:', orgsData);
+        console.log('Selected user org ID:', selectedUser.organizationId);
         
-        if (Array.isArray(orgsData)) {
+        const orgsData = await fetchOrganizations();
+        
+        if (Array.isArray(orgsData) && orgsData.length > 0) {
+          console.log('Organizações carregadas com sucesso:', orgsData);
           setOrganizations(orgsData);
+          
+          // Se o usuário selecionado não tiver um nome de organização, mas tiver um ID,
+          // buscar o nome correspondente
+          if (selectedUser.organizationId && !selectedUser.organizationName) {
+            const matchingOrg = orgsData.find(org => org.id === selectedUser.organizationId);
+            if (matchingOrg) {
+              console.log('Atualizando nome da organização para:', matchingOrg.name);
+              setSelectedUser({
+                ...selectedUser,
+                organizationName: matchingOrg.name
+              });
+            }
+          }
         } else {
-          console.warn('Nenhuma organização retornada pela API ou formato inesperado');
+          console.warn('Nenhuma organização retornada ou array vazio');
           setOrganizations([]);
+          
+          if (isSuperAdmin) {
+            toast({
+              title: "Nenhuma organização encontrada",
+              description: "Não foi possível carregar organizações. Verifique se existem organizações cadastradas.",
+              variant: "warning"
+            });
+          }
         }
       } catch (error) {
         console.error('Erro ao carregar organizações:', error);
         setOrganizations([]);
+        
+        toast({
+          title: "Erro ao carregar organizações",
+          description: "Ocorreu um erro ao buscar a lista de organizações.",
+          variant: "destructive"
+        });
       } finally {
         setLoading(false);
       }
     };
     
     loadOrganizations();
-  }, []);
+  }, [selectedUser.organizationId, setSelectedUser, isSuperAdmin, toast]);
   
   useEffect(() => {
     // Log para debug quando o selectedUser muda
     console.log('UserBasicInfoForm - selectedUser atualizado:', selectedUser);
+    console.log('UserBasicInfoForm - organizationId:', selectedUser.organizationId);
+    console.log('UserBasicInfoForm - organizationName:', selectedUser.organizationName);
   }, [selectedUser]);
   
   // Handle input changes
@@ -153,7 +186,7 @@ const UserBasicInfoForm: React.FC<UserBasicInfoFormProps> = ({
           <SelectTrigger className="col-span-3">
             <SelectValue placeholder={loading ? "Carregando..." : "Selecione uma organização"} />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-popover">
             {organizations.length > 0 ? (
               organizations.map(org => (
                 <SelectItem key={org.id} value={org.id}>
