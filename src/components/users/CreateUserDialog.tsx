@@ -1,14 +1,11 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { NewUserType } from './types';
-import { fetchOrganizations } from '../organizations/api';
 import { useAuth } from '@/context/auth';
 import { useToast } from '@/hooks/use-toast';
+import CreateUserForm from './create/CreateUserForm';
 
 interface CreateUserDialogProps {
   open: boolean;
@@ -25,94 +22,23 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   setNewUser,
   onSubmit
 }) => {
-  const [organizations, setOrganizations] = useState<Array<{id: string, name: string}>>([]);
-  const [loading, setLoading] = useState<boolean>(false);
   const { currentUser, isSuperAdmin, isAdmin } = useAuth();
   const { toast } = useToast();
   
-  // Carregar organizações disponíveis
+  // Pre-select organization for non-superadmin users
   useEffect(() => {
-    const loadOrganizations = async () => {
-      if (open) {
-        setLoading(true);
-        try {
-          console.log('Tentando carregar organizações para CreateUserDialog...');
-          const orgsData = await fetchOrganizations();
-          console.log('Organizações carregadas no CreateUserDialog:', orgsData);
-          
-          if (Array.isArray(orgsData) && orgsData.length > 0) {
-            // Filtrar organizações conforme o papel do usuário
-            let filteredOrgs = orgsData;
-            
-            // Se for admin (não super admin), filtrar apenas a organização do usuário
-            if (isAdmin && !isSuperAdmin && currentUser?.organizationId) {
-              filteredOrgs = orgsData.filter(org => org.id === currentUser.organizationId);
-              console.log('Filtrando apenas a organização do usuário:', filteredOrgs);
-            }
-            
-            setOrganizations(filteredOrgs);
-            
-            // Se o usuário não for super admin e tiver uma organização, pré-selecionar
-            if (!isSuperAdmin && currentUser?.organizationId && !newUser.organizationId) {
-              const userOrg = filteredOrgs.find(org => org.id === currentUser.organizationId);
-              
-              setNewUser(prev => ({ 
-                ...prev, 
-                organizationId: currentUser.organizationId || '',
-                organizationName: userOrg?.name || ''
-              }));
-            }
-          } else {
-            setOrganizations([]);
-            
-            if (isSuperAdmin) {
-              toast({
-                title: "Nenhuma organização encontrada",
-                description: "Não foram encontradas organizações cadastradas.",
-                variant: "destructive"
-              });
-            }
-          }
-        } catch (error) {
-          console.error('Erro ao carregar organizações:', error);
-          toast({
-            title: "Erro ao carregar organizações",
-            description: "Não foi possível carregar a lista de organizações. Tente novamente.",
-            variant: "destructive"
-          });
-          setOrganizations([]);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-    
-    loadOrganizations();
-  }, [open, currentUser, isSuperAdmin, isAdmin, newUser.organizationId, setNewUser, toast]);
-  
-  // Handle input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewUser({ ...newUser, [name]: value });
-  };
-  
-  // Handle select changes
-  const handleSelectChange = (name: string, value: string) => {
-    setNewUser({ ...newUser, [name]: value });
-    
-    // Se organizationId mudar, atualizar também organizationName
-    if (name === 'organizationId') {
-      const selectedOrg = organizations.find(org => org.id === value);
-      if (selectedOrg) {
-        setNewUser(prev => ({ ...prev, organizationName: selectedOrg.name }));
-      }
+    if (open && !isSuperAdmin && currentUser?.organizationId && !newUser.organizationId) {
+      setNewUser(prev => ({ 
+        ...prev, 
+        organizationId: currentUser.organizationId || ''
+      }));
     }
-  };
+  }, [open, currentUser, isSuperAdmin, newUser.organizationId, setNewUser]);
   
   // Verificar se é possível criar um usuário (organização selecionada)
   const canCreateUser = isSuperAdmin ? 
-    (!!newUser.organizationId && organizations.length > 0) : 
-    (!!currentUser?.organizationId);
+    !!newUser.organizationId : 
+    !!currentUser?.organizationId;
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -125,106 +51,13 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
         </DialogHeader>
         
         <form onSubmit={onSubmit}>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Nome
-              </Label>
-              <Input
-                id="name"
-                name="name"
-                value={newUser.name}
-                onChange={handleChange}
-                className="col-span-3"
-                required
-              />
+          <CreateUserForm newUser={newUser} setNewUser={setNewUser} />
+          
+          {!canCreateUser && isSuperAdmin && (
+            <div className="text-sm text-amber-500 mt-2">
+              É necessário criar pelo menos uma organização antes de adicionar usuários.
             </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="email" className="text-right">
-                Email
-              </Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                value={newUser.email}
-                onChange={handleChange}
-                className="col-span-3"
-                required
-              />
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="password" className="text-right">
-                Senha
-              </Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                value={newUser.password}
-                onChange={handleChange}
-                className="col-span-3"
-                required
-                autoComplete="new-password"
-              />
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="role" className="text-right">
-                Perfil
-              </Label>
-              <Select
-                name="role"
-                value={newUser.role}
-                onValueChange={(value) => handleSelectChange('role', value)}
-              >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Selecione um perfil" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover">
-                  <SelectItem value="user">Usuário</SelectItem>
-                  <SelectItem value="admin">Administrador</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="organizationId" className="text-right">
-                Organização
-              </Label>
-              <Select
-                name="organizationId"
-                value={newUser.organizationId}
-                onValueChange={(value) => handleSelectChange('organizationId', value)}
-                disabled={!isSuperAdmin || loading}
-              >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder={loading ? "Carregando..." : "Selecione uma organização"} />
-                </SelectTrigger>
-                <SelectContent className="bg-popover">
-                  {organizations.length > 0 ? (
-                    organizations.map(org => (
-                      <SelectItem key={org.id} value={org.id}>
-                        {org.name}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <SelectItem value="empty" disabled>
-                      {loading ? "Carregando organizações..." : "Nenhuma organização disponível"}
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {!canCreateUser && isSuperAdmin && organizations.length === 0 && (
-              <div className="text-sm text-amber-500 mt-2">
-                É necessário criar pelo menos uma organização antes de adicionar usuários.
-              </div>
-            )}
-          </div>
+          )}
           
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
