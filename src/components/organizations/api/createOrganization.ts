@@ -1,53 +1,49 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { NewOrganizationType } from '../types';
+import { NewOrganizationType, OrganizationProduct } from '../types';
 
-/**
- * Cria uma nova organização
- */
-export const createOrganization = async (orgData: NewOrganizationType) => {
+export const createOrganization = async (data: NewOrganizationType) => {
   try {
-    console.log('Criando nova organização:', orgData);
+    console.log('Criando organização:', data);
     
-    // Adaptar o formato para o Supabase
-    const organizationData = {
-      name: orgData.name,
-      is_main_org: orgData.isMainOrg || false,
-    };
-    
-    // Inserir a organização
-    const { data: newOrg, error } = await supabase
+    // 1. Criar a organização
+    const { data: orgData, error: orgError } = await supabase
       .from('organizations')
-      .insert(organizationData)
+      .insert([
+        { 
+          name: data.name,
+          is_main_org: data.isMainOrg || false
+        }
+      ])
       .select()
       .single();
     
-    if (error) {
-      console.error('Erro ao criar organização:', error);
-      throw error;
+    if (orgError) {
+      console.error('Erro ao criar organização:', orgError);
+      throw orgError;
     }
     
-    console.log('Organização criada:', newOrg);
+    console.log('Organização criada com sucesso:', orgData);
     
-    // Se houver produtos, adicionar à tabela organization_products
-    if (orgData.products && orgData.products.length > 0) {
-      const productsToInsert = orgData.products.map(product => ({
-        organization_id: newOrg.id,
+    // 2. Adicionar produtos para a organização
+    if (data.products && data.products.length > 0) {
+      const productsToInsert = data.products.map(product => ({
+        organization_id: orgData.id,
         type: product.type,
         active: product.active
       }));
       
-      const { error: productsError } = await supabase
+      const { error: productError } = await supabase
         .from('organization_products')
         .insert(productsToInsert);
       
-      if (productsError) {
-        console.error('Erro ao adicionar produtos à organização:', productsError);
-        // Não falhar completamente, já que a organização foi criada
+      if (productError) {
+        console.error('Erro ao adicionar produtos para a organização:', productError);
+        // Não vamos lançar erro aqui para não impedir a criação da organização
       }
     }
     
-    return newOrg;
+    return orgData;
   } catch (error) {
     console.error('Erro ao criar organização:', error);
     throw error;

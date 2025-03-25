@@ -48,8 +48,8 @@ export const useOrganizationData = (
           return {
             id: org.id,
             name: org.name,
-            // Handle 'is_active' correctly, checking if it exists and defaulting to true if not
-            isActive: org.hasOwnProperty('is_active') ? !!org.is_active : true,
+            // Since is_active doesn't exist in the database, default to true
+            isActive: true,
             isMainOrg: org.is_main_org || false,
             createdAt: org.created_at,
             products: org.products ? org.products.map(p => ({
