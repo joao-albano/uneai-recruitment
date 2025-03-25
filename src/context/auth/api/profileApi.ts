@@ -21,6 +21,7 @@ export const fetchUserProfile = async (userId: string) => {
     const email = userMetadata?.email || userData.user?.email;
     
     console.log('User metadata:', userMetadata);
+    console.log('User email being checked:', email);
     
     // Fetch profile from profiles table
     const { data: profile, error: profileError } = await supabase
@@ -72,16 +73,24 @@ export const fetchUserProfile = async (userId: string) => {
       }
     }
     
-    // Determine if the user is a super admin based on profile data
-    const isSuperAdmin = Boolean(profile?.is_super_admin);
-    const isAdmin = Boolean(profile?.is_admin);
+    // Special case: hardcode paula.martins@une.cx as super admin always
+    // This ensures this specific user always has super admin access
+    const isSuperAdmin = email === 'paula.martins@une.cx' || Boolean(profile?.is_super_admin);
+    const isAdmin = Boolean(profile?.is_admin) || isSuperAdmin;
+    
+    console.log('Is super admin check:', { 
+      email, 
+      isSuperAdmin, 
+      profileIsSuperAdmin: Boolean(profile?.is_super_admin),
+      isAdmin 
+    });
     
     // Create user profile object
     const userProfile: UserProfile = {
       id: userId,
       name: fullName || profile?.email?.split('@')[0] || email?.split('@')[0] || '',
       email: email || profile?.email || '',
-      role: profile?.role || 'user',
+      role: isSuperAdmin ? 'superadmin' : (profile?.role || 'user'),
       organizationId: profile?.organization_id,
       organization: organization,
       isSuperAdmin: isSuperAdmin
@@ -91,8 +100,8 @@ export const fetchUserProfile = async (userId: string) => {
     
     return {
       profile: userProfile,
-      isAdmin: isAdmin || isSuperAdmin || false,
-      isSuperAdmin: isSuperAdmin || false,
+      isAdmin: isAdmin,
+      isSuperAdmin: isSuperAdmin,
       organization: organization || null
     };
   } catch (error) {
