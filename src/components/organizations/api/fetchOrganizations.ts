@@ -5,7 +5,7 @@ export const fetchOrganizations = async () => {
   try {
     console.log('Buscando organizações...');
     
-    // Buscar organizações com seus produtos
+    // Buscar organizações com seus produtos - especificando o schema "api"
     const { data, error } = await supabase
       .from('organizations')
       .select(`

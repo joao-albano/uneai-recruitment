@@ -41,8 +41,12 @@ const OrganizationsContent: React.FC = () => {
       return;
     }
     
+    console.log('Iniciando carregamento de organizações...');
     // Load organizations
-    loadOrganizations();
+    loadOrganizations()
+      .then(() => console.log('Organizações carregadas com sucesso'))
+      .catch(error => console.error('Erro ao carregar organizações:', error));
+      
     // Log to see if this effect is running
     console.log('Carregando organizações no useEffect');
   }, [loadOrganizations, isAdmin, isSuperAdmin, navigate]);

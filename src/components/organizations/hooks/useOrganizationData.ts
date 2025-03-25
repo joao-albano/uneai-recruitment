@@ -42,6 +42,7 @@ export const useOrganizationData = (
         
         // Transformar os dados do formato Supabase para o formato esperado por OrganizationType
         const formattedOrgs: OrganizationType[] = filteredOrgs.map(org => {
+          console.log('Processando organização:', org);
           return {
             id: org.id,
             name: org.name,
