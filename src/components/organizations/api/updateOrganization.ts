@@ -15,14 +15,14 @@ export const updateOrganization = async (
       updateData.name = data.name;
     }
     
-    // We don't store isActive in the database, so we skip it
+    // isActive não é armazenado no banco, então ignoramos
     
     // Atualizar organização no Supabase
     const { data: updatedData, error } = await supabase
       .from('organizations')
       .update(updateData)
       .eq('id', id)
-      .select()
+      .select('id, name, is_main_org, created_at, updated_at')
       .single();
     
     if (error) {

@@ -15,7 +15,7 @@ export const createOrganization = async (data: NewOrganizationType) => {
           is_main_org: data.isMainOrg || false
         }
       ])
-      .select()
+      .select('id, name, is_main_org, created_at, updated_at')
       .single();
     
     if (orgError) {
