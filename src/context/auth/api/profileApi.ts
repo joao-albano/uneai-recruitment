@@ -23,10 +23,10 @@ export const fetchUserProfile = async (userId: string) => {
     console.log('User metadata:', userMetadata);
     console.log('User email being checked:', email);
     
-    // Fetch profile from profiles table
+    // Fetch profile from profiles table (without joining organizations)
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('*, organizations(*)')
+      .select('*')
       .eq('id', userId)
       .single();
     
@@ -39,16 +39,28 @@ export const fetchUserProfile = async (userId: string) => {
     
     let organization: Organization | undefined;
     
-    // Extract organization data from profile response
-    if (profile?.organization_id && profile?.organizations) {
-      // Set up organization data from the profile
-      const orgData = profile.organizations;
+    // If profile has organization_id, fetch the organization separately
+    if (profile?.organization_id) {
+      console.log('Fetching organization with ID:', profile.organization_id);
       
-      organization = {
-        id: orgData.id,
-        name: orgData.name,
-        isMainOrg: orgData.is_main_org
-      };
+      const { data: orgData, error: orgError } = await supabase
+        .from('organizations')
+        .select('*')
+        .eq('id', profile.organization_id)
+        .single();
+      
+      if (orgError) {
+        console.error('Error fetching organization:', orgError);
+      } else if (orgData) {
+        console.log('Organization data fetched:', orgData);
+        
+        // Set up organization data
+        organization = {
+          id: orgData.id,
+          name: orgData.name,
+          isMainOrg: orgData.is_main_org
+        };
+      }
     }
     
     // Special case: hardcode paula.martins@une.cx as super admin always

@@ -35,7 +35,7 @@ export const useOrganizationData = (
       const orgsData = await fetchOrganizations(currentUser);
       
       if (Array.isArray(orgsData)) {
-        console.log('Organizações carregadas com sucesso:', orgsData);
+        console.log('Organizações carregadas com sucesso:', orgsData.length);
         
         // Transformar os dados do formato Supabase para o formato esperado por OrganizationType
         const formattedOrgs: OrganizationType[] = orgsData.map(org => {
@@ -48,7 +48,7 @@ export const useOrganizationData = (
             createdAt: org.created_at,
             products: org.products ? org.products.map(p => ({
               type: p.type as ProductType,
-              active: p.active
+              active: p.active ?? true
             })) : []
           };
         });

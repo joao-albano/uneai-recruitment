@@ -50,7 +50,7 @@ export const fetchOrganizations = async (currentUser: UserProfile | null) => {
       .order('name', { ascending: true });
     
     // Se for admin (não super), filtrar apenas a organização do usuário
-    if (currentUser && !currentUser.isSuperAdmin && currentUser.organizationId) {
+    if (!currentUser.isSuperAdmin && currentUser.organizationId) {
       console.log('Filtrando pela organização do admin:', currentUser.organizationId);
       query = query.eq('id', currentUser.organizationId);
     }
@@ -62,7 +62,8 @@ export const fetchOrganizations = async (currentUser: UserProfile | null) => {
       throw error;
     }
     
-    console.log('Organizações encontradas:', data);
+    console.log('Organizações encontradas:', data?.length || 0);
+    console.log('Dados das organizações:', data);
     return data || [];
   } catch (error) {
     console.error('Erro ao buscar organizações:', error);
