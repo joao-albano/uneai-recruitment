@@ -1,65 +1,89 @@
 
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/context/auth';
-import { toast } from "sonner";
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchOrganizations, createOrganization, updateOrganization, deleteOrganization } from './api';
-import { OrganizationType, OrganizationProduct } from './types';
-import { ProductType } from '@/context/ProductContext';
+import { toast } from "sonner";
+import { useAuth } from '@/context/auth';
+import { useOrganizations } from './hooks/useOrganizations';
 import OrganizationsList from './OrganizationsList';
 import OrganizationsHeader from './OrganizationsHeader';
 import CreateOrganizationDialog from './CreateOrganizationDialog';
 import EditOrganizationDialog from './EditOrganizationDialog';
 import DeleteOrganizationDialog from './DeleteOrganizationDialog';
+import OrganizationsLoading from './OrganizationsLoading';
+import OrganizationsEmpty from './OrganizationsEmpty';
 
 const OrganizationsContent: React.FC = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [organizations, setOrganizations] = useState<OrganizationType[]>([]);
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [showEditDialog, setShowEditDialog] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [selectedOrg, setSelectedOrg] = useState<OrganizationType | null>(null);
-  const [newOrganization, setNewOrganization] = useState({ name: '', isActive: true });
-  const { currentUser, isAdmin, isSuperAdmin } = useAuth();
+  const { isAdmin, isSuperAdmin } = useAuth();
+  
+  const {
+    // State
+    organizations,
+    newOrganization,
+    selectedOrganization,
+    showCreateDialog,
+    showEditDialog,
+    showDeleteDialog,
+    isLoading,
+    // State setters
+    setNewOrganization,
+    setShowCreateDialog,
+    setShowEditDialog,
+    setShowDeleteDialog,
+    // Handlers
+    handleOpenEditDialog,
+    handleOpenDeleteDialog,
+    loadOrganizations
+  } = useOrganizations();
 
-  // Carregar organizações
-  const loadOrganizations = async () => {
-    setLoading(true);
+  // Create, Edit, Delete handlers
+  const handleCreateSubmit = async (values: { name?: string; isActive?: boolean }) => {
     try {
-      console.log('Carregando organizações...', { currentUser });
-      const orgsData = await fetchOrganizations(currentUser);
-      
-      if (Array.isArray(orgsData)) {
-        // Transformar os dados do formato Supabase para o formato esperado por OrganizationType
-        const formattedOrgs: OrganizationType[] = orgsData.map(org => ({
-          id: org.id,
-          name: org.name,
-          isActive: true, // Sem campo is_active no banco, assume true
-          isMainOrg: org.is_main_org || false,
-          createdAt: org.created_at,
-          products: org.products ? org.products.map(p => ({
-            type: p.type as ProductType,
-            active: p.active
-          })) : []
-        }));
-        
-        setOrganizations(formattedOrgs);
-      } else {
-        setOrganizations([]);
-        toast.error("Formato de resposta inesperado ao buscar organizações");
-      }
+      await handleCreateOrganization(values.name || '', values.isActive || false);
+      setShowCreateDialog(false);
+      setNewOrganization({
+        name: '',
+        isActive: true,
+        isMainOrg: false,
+        products: [
+          { type: 'retention', active: true },
+          { type: 'billing', active: false }
+        ]
+      });
     } catch (error) {
-      console.error("Erro ao carregar organizações:", error);
-      toast.error("Erro ao carregar organizações. Tente novamente mais tarde.");
-      setOrganizations([]);
-    } finally {
-      setLoading(false);
+      console.error("Error submitting organization:", error);
+    }
+  };
+  
+  const handleEditSubmit = async (values: { name?: string; isActive?: boolean }) => {
+    if (selectedOrganization) {
+      try {
+        await handleEditOrganization(
+          selectedOrganization.id,
+          values.name || '',
+          values.isActive || false
+        );
+        setShowEditDialog(false);
+      } catch (error) {
+        console.error("Error updating organization:", error);
+      }
+    }
+  };
+  
+  const handleDeleteSubmit = async () => {
+    if (selectedOrganization) {
+      try {
+        await handleDeleteOrganization(selectedOrganization.id);
+        setShowDeleteDialog(false);
+      } catch (error) {
+        console.error("Error deleting organization:", error);
+      }
     }
   };
 
+  // Check permissions and load data on mount
   useEffect(() => {
-    // Verificar permissões - redirecionar se não for admin ou super admin
+    // Verify permissions - redirect if not admin or super admin
     if (!isAdmin && !isSuperAdmin) {
       toast.error("Você não tem permissão para acessar esta página");
       navigate('/');
@@ -67,111 +91,34 @@ const OrganizationsContent: React.FC = () => {
     }
     
     loadOrganizations();
-  }, [isAdmin, isSuperAdmin, currentUser, navigate]);
-
-  // CRUD Operations
-  const handleCreateSubmit = async (values: { name?: string; isActive?: boolean }) => {
-    try {
-      await createOrganization({
-        name: values.name || '',
-        isActive: values.isActive || false,
-        products: [
-          { type: 'retention' as ProductType, active: true },
-          { type: 'billing' as ProductType, active: false }
-        ]
-      });
-      
-      toast.success("Organização criada com sucesso");
-      loadOrganizations();
-      setShowCreateDialog(false);
-      setNewOrganization({ name: '', isActive: true });
-    } catch (error) {
-      console.error("Erro ao criar organização:", error);
-      toast.error("Erro ao criar organização");
-    }
-  };
-  
-  const handleEditSubmit = async (values: { name?: string; isActive?: boolean }) => {
-    if (selectedOrg) {
-      try {
-        await updateOrganization(selectedOrg.id, {
-          name: values.name || '',
-          isActive: values.isActive || false
-        });
-        
-        toast.success("Organização atualizada com sucesso");
-        loadOrganizations();
-        setShowEditDialog(false);
-      } catch (error) {
-        console.error("Erro ao atualizar organização:", error);
-        toast.error("Erro ao atualizar organização");
-      }
-    }
-  };
-  
-  const handleDelete = async () => {
-    if (selectedOrg) {
-      try {
-        await deleteOrganization(selectedOrg.id);
-        toast.success("Organização excluída com sucesso");
-        loadOrganizations();
-        setShowDeleteDialog(false);
-      } catch (error) {
-        console.error("Erro ao excluir organização:", error);
-        toast.error("Erro ao excluir organização");
-      }
-    }
-  };
-
-  // Dialog handlers
-  const handleOpenCreateDialog = () => setShowCreateDialog(true);
-  const handleOpenEditDialog = (organization: OrganizationType) => {
-    setSelectedOrg(organization);
-    setShowEditDialog(true);
-  };
-  const handleOpenDeleteDialog = (organization: OrganizationType) => {
-    setSelectedOrg(organization);
-    setShowDeleteDialog(true);
-  };
+  }, [isAdmin, isSuperAdmin, navigate, loadOrganizations]);
 
   // Show error message if no permissions
   if (!isAdmin && !isSuperAdmin) {
-    return (
-      <div className="flex h-full items-center justify-center p-8">
-        <div className="flex flex-col items-center space-y-4">
-          <p className="text-lg text-red-600">
-            Você não tem permissão para acessar esta página.
-          </p>
-        </div>
-      </div>
-    );
+    return <OrganizationsEmpty message="Você não tem permissão para acessar esta página." />;
   }
 
-  if (loading) {
-    return (
-      <div className="flex h-full items-center justify-center p-8">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
-          <p className="text-sm text-muted-foreground">
-            Carregando organizações...
-          </p>
-        </div>
-      </div>
-    );
+  // Show loading state
+  if (isLoading) {
+    return <OrganizationsLoading />;
   }
 
   return (
     <div className="space-y-8 p-8">
       <OrganizationsHeader 
         count={organizations.length} 
-        onCreateNew={handleOpenCreateDialog} 
+        onCreateNew={() => setShowCreateDialog(true)} 
       />
       
-      <OrganizationsList
-        organizations={organizations}
-        onEdit={handleOpenEditDialog}
-        onDelete={handleOpenDeleteDialog}
-      />
+      {organizations.length > 0 ? (
+        <OrganizationsList
+          organizations={organizations}
+          onEdit={handleOpenEditDialog}
+          onDelete={handleOpenDeleteDialog}
+        />
+      ) : (
+        <OrganizationsEmpty message="Nenhuma organização encontrada. Clique em 'Nova Organização' para adicionar." />
+      )}
 
       <CreateOrganizationDialog
         open={showCreateDialog}
@@ -181,21 +128,23 @@ const OrganizationsContent: React.FC = () => {
         onSubmit={handleCreateSubmit}
       />
 
-      {selectedOrg && (
-        <EditOrganizationDialog
-          open={showEditDialog}
-          onOpenChange={setShowEditDialog}
-          organization={selectedOrg}
-          onSubmit={handleEditSubmit}
-        />
-      )}
+      {selectedOrganization && (
+        <>
+          <EditOrganizationDialog
+            open={showEditDialog}
+            onOpenChange={setShowEditDialog}
+            organization={selectedOrganization}
+            onSubmit={handleEditSubmit}
+          />
 
-      <DeleteOrganizationDialog
-        open={showDeleteDialog}
-        onOpenChange={setShowDeleteDialog}
-        organization={selectedOrg}
-        onDelete={handleDelete}
-      />
+          <DeleteOrganizationDialog
+            open={showDeleteDialog}
+            onOpenChange={setShowDeleteDialog}
+            organization={selectedOrganization}
+            onDelete={handleDeleteSubmit}
+          />
+        </>
+      )}
     </div>
   );
 };

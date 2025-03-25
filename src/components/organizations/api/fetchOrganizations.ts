@@ -46,6 +46,43 @@ export const fetchOrganizations = async (currentUser: UserProfile | null) => {
     const { data, error } = await query;
     
     if (error) {
+      // Verify if it's a schema error and try with public schema explicitly
+      if (error.message.includes('schema') || error.code === 'PGRST106') {
+        console.log('Trying with public schema explicitly...');
+        
+        const publicQuery = supabase
+          .from('public.organizations')
+          .select(`
+            id, 
+            name, 
+            is_main_org,
+            created_at, 
+            updated_at,
+            products:public.organization_products(
+              id,
+              type,
+              active,
+              organization_id,
+              created_at,
+              updated_at
+            )
+          `)
+          .order('name', { ascending: true });
+          
+        if (currentUser && !currentUser.isSuperAdmin && currentUser.organization) {
+          publicQuery.eq('id', currentUser.organization.id);
+        }
+        
+        const publicResult = await publicQuery;
+        
+        if (publicResult.error) {
+          console.error('Erro ao buscar organizações com esquema público:', publicResult.error);
+          throw publicResult.error;
+        }
+        
+        return publicResult.data || [];
+      }
+      
       console.error('Erro ao buscar organizações:', error);
       throw error;
     }

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
@@ -37,7 +36,12 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
         
         if (Array.isArray(orgsData) && orgsData.length > 0) {
           console.log('Organizações carregadas com sucesso:', orgsData);
-          setOrganizations(orgsData);
+          // Only keep id and name for the selector
+          const formattedOrgs = orgsData.map(org => ({
+            id: org.id,
+            name: org.name
+          }));
+          setOrganizations(formattedOrgs);
         } else {
           console.warn('Nenhuma organização retornada ou array vazio');
           setOrganizations([]);

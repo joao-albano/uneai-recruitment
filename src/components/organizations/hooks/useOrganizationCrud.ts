@@ -2,9 +2,10 @@
 import { useCallback } from 'react';
 import { toast } from "sonner";
 import { createOrganization, updateOrganization, deleteOrganization } from '../api';
+import { ProductType } from '@/context/ProductContext';
 
 export const useOrganizationCrud = (
-  loadOrganizations: () => void
+  loadOrganizations: () => Promise<void>
 ) => {
   const handleCreateOrganization = useCallback(async (name: string, isActive: boolean) => {
     if (!name.trim()) {
@@ -18,11 +19,11 @@ export const useOrganizationCrud = (
         name: name.trim(),
         isActive,
         products: [
-          { type: 'retention', active: true },
-          { type: 'billing', active: true },
-          { type: 'recruitment', active: false },
-          { type: 'secretary', active: false },
-          { type: 'pedagogical', active: false }
+          { type: 'retention' as ProductType, active: true },
+          { type: 'billing' as ProductType, active: false },
+          { type: 'recruitment' as ProductType, active: false },
+          { type: 'secretary' as ProductType, active: false },
+          { type: 'pedagogical' as ProductType, active: false }
         ]
       });
       
@@ -30,7 +31,7 @@ export const useOrganizationCrud = (
       toast.success("Organização criada com sucesso");
       
       // Atualizar a lista
-      loadOrganizations();
+      await loadOrganizations();
     } catch (error) {
       console.error("Erro ao criar organização:", error);
       toast.error("Erro ao criar organização");
@@ -54,7 +55,7 @@ export const useOrganizationCrud = (
       toast.success("Organização atualizada com sucesso");
       
       // Atualizar a lista
-      loadOrganizations();
+      await loadOrganizations();
     } catch (error) {
       console.error("Erro ao atualizar organização:", error);
       toast.error("Erro ao atualizar organização");
@@ -70,7 +71,7 @@ export const useOrganizationCrud = (
       toast.success("Organização excluída com sucesso");
       
       // Atualizar a lista
-      loadOrganizations();
+      await loadOrganizations();
     } catch (error) {
       console.error("Erro ao excluir organização:", error);
       toast.error("Erro ao excluir organização");

@@ -1,8 +1,10 @@
 
+import { useCallback } from 'react';
 import { useOrganizationState } from './useOrganizationState';
 import { useOrganizationData } from './useOrganizationData';
 import { useOrganizationDialogs } from './useOrganizationDialogs';
 import { useOrganizationCrud } from './useOrganizationCrud';
+import { OrganizationType } from '../types';
 
 export const useOrganizations = () => {
   // Get state management functionality
@@ -48,6 +50,7 @@ export const useOrganizations = () => {
 
   // Return everything needed by components
   return {
+    // State
     organizations,
     newOrganization,
     selectedOrganization,
@@ -55,15 +58,21 @@ export const useOrganizations = () => {
     showEditDialog,
     showDeleteDialog,
     isLoading,
+    // State setters
     setNewOrganization,
     setSelectedOrganization,
     setShowCreateDialog,
     setShowEditDialog,
     setShowDeleteDialog,
+    // Handlers
     handleOpenEditDialog,
     handleOpenDeleteDialog,
     handleCreateOrganization,
     handleEditOrganization,
-    handleDeleteOrganization
+    handleDeleteOrganization,
+    // Data loading
+    loadOrganizations,
+    // Utilities
+    resetNewOrganization
   };
 };

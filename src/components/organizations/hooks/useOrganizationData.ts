@@ -21,7 +21,6 @@ export const useOrganizationData = (
       if (!isAdmin && !isSuperAdmin) {
         console.log('Usuário sem permissão para ver organizações');
         setOrganizations([]);
-        toast.error("Você não tem permissão para visualizar organizações");
         return;
       }
       
@@ -33,7 +32,6 @@ export const useOrganizationData = (
         
         // Transformar os dados do formato Supabase para o formato esperado por OrganizationType
         const formattedOrgs: OrganizationType[] = orgsData.map(org => {
-          console.log('Processando organização:', org);
           return {
             id: org.id,
             name: org.name,
