@@ -1,90 +1,143 @@
 
 import React from 'react';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { OrganizationType } from './types';
-import { format, isValid, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { Badge } from "@/components/ui/badge";
-import { getProductDisplayName } from '@/components/users/utils/userUtils';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Building, MoreHorizontal, Edit, Trash, Users, Clock, ShieldAlert } from 'lucide-react';
+import OrganizationProductsView from './products/OrganizationProductsView';
 
 interface OrganizationCardProps {
   organization: OrganizationType;
-  onEdit: (org: OrganizationType) => void;
-  onDelete: (org: OrganizationType) => void;
+  onEdit: (organization: OrganizationType) => void;
+  onDelete: (organization: OrganizationType) => void;
 }
-
-const formatDate = (dateString?: string): string => {
-  if (!dateString) return 'Data não disponível';
-  
-  try {
-    const date = parseISO(dateString);
-    if (!isValid(date)) return 'Data inválida';
-    
-    return format(date, "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
-  } catch (error) {
-    console.error('Erro ao formatar data:', error);
-    return 'Data inválida';
-  }
-};
 
 const OrganizationCard: React.FC<OrganizationCardProps> = ({
   organization,
   onEdit,
   onDelete
 }) => {
-  // Extract active products
-  const activeProducts = organization.products
-    ? organization.products.filter(p => p.active)
-    : [];
+  // Format date to more readable format
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return "Data desconhecida";
     
-  const isMainOrg = organization.isMainOrg || false;
-  
+    try {
+      const date = new Date(dateString);
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        return "Data inválida";
+      }
+      
+      return new Intl.DateTimeFormat('pt-BR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }).format(date);
+    } catch (error) {
+      console.error('Erro ao formatar data:', error);
+      return "Erro na data";
+    }
+  };
+
+  // Obter produtos ativos
+  const activeProducts = organization.products || [];
+
   return (
-    <Card className="w-full h-full flex flex-col">
+    <Card className="shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <CardTitle className="text-xl font-bold">
-            {organization.name}
-          </CardTitle>
-          {isMainOrg && (
-            <Badge className="bg-yellow-500 hover:bg-yellow-600">Principal</Badge>
-          )}
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <Building className={`h-8 w-8 ${organization.isMainOrg ? 'text-amber-500' : 'text-primary'}`} />
+            <div>
+              <CardTitle className="text-base font-semibold">{organization.name}</CardTitle>
+              {organization.isMainOrg && (
+                <Badge variant="outline" className="mt-1 bg-amber-50 text-amber-700 border-amber-200">
+                  Organização Principal
+                </Badge>
+              )}
+            </div>
+          </div>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Ações</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => onEdit(organization)}>
+                <Edit className="mr-2 h-4 w-4" />
+                Editar
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                className="text-destructive" 
+                onClick={() => onDelete(organization)}
+                disabled={organization.isMainOrg} // Não permitir excluir a org principal
+              >
+                <Trash className="mr-2 h-4 w-4" />
+                Remover
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardHeader>
-      
-      <CardContent className="flex-grow">
-        {/* Products */}
-        <div className="mb-4">
-          <h3 className="text-sm font-medium text-muted-foreground mb-2">Produtos Ativos:</h3>
-          <div className="flex flex-wrap gap-2">
-            {activeProducts.length > 0 ? (
-              activeProducts.map((product, index) => (
-                <Badge key={index} variant="secondary">
-                  {getProductDisplayName(product.type)}
-                </Badge>
-              ))
-            ) : (
-              <span className="text-sm text-muted-foreground">Nenhum produto ativo</span>
-            )}
+      <CardContent>
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Clock className="h-4 w-4" />
+            <span>Criada em {formatDate(organization.createdAt)}</span>
           </div>
-        </div>
-        
-        {/* Creation Date */}
-        <div>
-          <h3 className="text-sm font-medium text-muted-foreground mb-1">Criada em:</h3>
-          <p className="text-sm">{formatDate(organization.createdAt)}</p>
+          
+          <div className="flex items-center gap-2 text-sm">
+            <Badge 
+              variant={organization.isActive ? "default" : "secondary"}
+              className={organization.isActive 
+                ? "bg-green-100 text-green-800 hover:bg-green-100" 
+                : "bg-gray-100 text-gray-800 hover:bg-gray-100"
+              }
+            >
+              {organization.isActive ? 'Ativa' : 'Inativa'}
+            </Badge>
+          </div>
+          
+          {/* Seção de produtos com o novo componente */}
+          <div className="pt-2 border-t mt-2">
+            <OrganizationProductsView 
+              products={activeProducts} 
+              showHeader={false}
+              compact={true}
+            />
+          </div>
+          
+          <div className="pt-2 border-t mt-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Usuários</span>
+              </div>
+              <a 
+                href={`/users?organization=${organization.id}`} 
+                className="text-xs text-primary hover:underline"
+              >
+                Ver usuários
+              </a>
+            </div>
+          </div>
+
+          {organization.isMainOrg && (
+            <div className="pt-2 border-t mt-2">
+              <div className="flex items-center gap-1.5">
+                <ShieldAlert className="h-4 w-4 text-amber-500" />
+                <span className="text-sm text-amber-700">Acesso administrativo completo</span>
+              </div>
+            </div>
+          )}
         </div>
       </CardContent>
-      
-      <CardFooter className="border-t pt-3 flex justify-between">
-        <Button variant="outline" onClick={() => onEdit(organization)}>
-          Editar
-        </Button>
-        <Button variant="destructive" onClick={() => onDelete(organization)}>
-          Excluir
-        </Button>
-      </CardFooter>
     </Card>
   );
 };

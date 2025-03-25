@@ -17,8 +17,5 @@ export const supabase = createClient<Database>(
       persistSession: true,
       autoRefreshToken: true,
     },
-    db: {
-      schema: 'public',
-    }
   }
 );
