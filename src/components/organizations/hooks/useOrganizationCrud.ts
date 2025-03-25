@@ -1,6 +1,5 @@
 
 import { useCallback } from 'react';
-import { OrganizationType } from '../types';
 import { toast } from "sonner";
 import { createOrganization, updateOrganization, deleteOrganization } from '../api';
 
