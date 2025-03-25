@@ -20,10 +20,11 @@ export const usePlans = () => {
     setError(null);
     
     try {
-      console.log('Buscando planos da tabela plans no schema public...');
+      console.log('Buscando planos da tabela api.plans...');
       const { data, error } = await supabase
         .from('plans')
-        .select('id, name, description, price');
+        .select('id, name, description, price')
+        .returns<Plan[]>();
           
       if (error) {
         console.error('Erro ao carregar planos:', error);
@@ -34,7 +35,7 @@ export const usePlans = () => {
         
       if (data && data.length > 0) {
         console.log('Planos carregados:', data);
-        setPlans(data as Plan[]);
+        setPlans(data);
       } else {
         console.log('Nenhum plano encontrado');
         setPlans([]);
