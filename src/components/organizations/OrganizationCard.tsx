@@ -23,6 +23,10 @@ const getProductShortName = (productType: ProductType): string => {
       return 'Cobrança';
     case 'recruitment':
       return 'Captação';
+    case 'secretary':
+      return 'Secretaria';
+    case 'pedagogical':
+      return 'Pedagógico';
     default:
       return productType;
   }

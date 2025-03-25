@@ -42,9 +42,6 @@ export const useOrganizationData = (
         
         // Transformar os dados do formato Supabase para o formato esperado por OrganizationType
         const formattedOrgs: OrganizationType[] = filteredOrgs.map(org => {
-          // Log to check the actual structure of each organization object
-          console.log('Processing organization:', org);
-          
           return {
             id: org.id,
             name: org.name,
@@ -59,6 +56,7 @@ export const useOrganizationData = (
           };
         });
         
+        console.log('Organizações formatadas:', formattedOrgs);
         setOrganizations(formattedOrgs);
       } else {
         console.warn('Resposta não esperada ao buscar organizações:', orgsData);

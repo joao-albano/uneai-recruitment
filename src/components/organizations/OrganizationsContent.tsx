@@ -43,6 +43,8 @@ const OrganizationsContent: React.FC = () => {
     
     // Load organizations
     loadOrganizations();
+    // Log to see if this effect is running
+    console.log('Carregando organizações no useEffect');
   }, [loadOrganizations, isAdmin, isSuperAdmin, navigate]);
 
   // Dialog handlers
@@ -93,6 +95,8 @@ const OrganizationsContent: React.FC = () => {
       </div>
     );
   }
+
+  console.log('Renderizando organizações:', organizations);
 
   if (loading) {
     return (
