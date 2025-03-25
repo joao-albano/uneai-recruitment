@@ -18,15 +18,19 @@ export const fetchOrganizations = async (currentUser: UserProfile | null) => {
       return [];
     }
     
-    // Super admin vê todas as organizações, admin vê apenas a sua
-    // Usuários normais não veem organizações
-    if (!currentUser.isSuperAdmin && (!currentUser.organization || !currentUser.organizationId)) {
+    console.log('Status do usuário:', { 
+      isSuperAdmin: currentUser.isSuperAdmin, 
+      organizationId: currentUser.organizationId
+    });
+    
+    // Verificar permissões - apenas super admin ou admin com organização vinculada pode ver organizações
+    if (!currentUser.isSuperAdmin && !currentUser.organizationId) {
       console.log('Usuário sem permissão ou sem organização vinculada');
       return [];
     }
     
     // Construir a consulta para buscar organizações
-    const query = supabase
+    let query = supabase
       .from('organizations')
       .select(`
         id, 
@@ -48,7 +52,7 @@ export const fetchOrganizations = async (currentUser: UserProfile | null) => {
     // Se for admin (não super), filtrar apenas a organização do usuário
     if (currentUser && !currentUser.isSuperAdmin && currentUser.organizationId) {
       console.log('Filtrando pela organização do admin:', currentUser.organizationId);
-      query.eq('id', currentUser.organizationId);
+      query = query.eq('id', currentUser.organizationId);
     }
     
     const { data, error } = await query;

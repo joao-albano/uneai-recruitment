@@ -40,37 +40,15 @@ export const fetchUserProfile = async (userId: string) => {
     let organization: Organization | undefined;
     
     // Extract organization data from profile response
-    if (profile?.organizations) {
-      // Check if organizations is an array or object and extract data accordingly
-      if (Array.isArray(profile.organizations)) {
-        const org = profile.organizations[0];
-        if (org) {
-          organization = {
-            id: org.id,
-            name: org.name,
-            isMainOrg: org.is_main_org
-          };
-        }
-      } else if (profile.organizations && typeof profile.organizations === 'object') {
-        // Handle the case where organizations is an object
-        // Use type assertion to help TypeScript understand the shape
-        type OrgData = { id: string; name: string; is_main_org: boolean };
-        
-        // First verify it's an object with the properties we need
-        const orgData = profile.organizations as Record<string, unknown>;
-        
-        if (orgData && 
-            'id' in orgData && 
-            'name' in orgData && 
-            'is_main_org' in orgData) {
-          
-          organization = {
-            id: orgData.id as string,
-            name: orgData.name as string,
-            isMainOrg: orgData.is_main_org as boolean
-          };
-        }
-      }
+    if (profile?.organization_id && profile?.organizations) {
+      // Set up organization data from the profile
+      const orgData = profile.organizations;
+      
+      organization = {
+        id: orgData.id,
+        name: orgData.name,
+        isMainOrg: orgData.is_main_org
+      };
     }
     
     // Special case: hardcode paula.martins@une.cx as super admin always

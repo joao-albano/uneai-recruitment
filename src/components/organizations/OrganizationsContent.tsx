@@ -14,7 +14,7 @@ import OrganizationsEmpty from './OrganizationsEmpty';
 
 const OrganizationsContent: React.FC = () => {
   const navigate = useNavigate();
-  const { isAdmin, isSuperAdmin } = useAuth();
+  const { isAdmin, isSuperAdmin, currentUser } = useAuth();
   
   const {
     // State
@@ -37,6 +37,8 @@ const OrganizationsContent: React.FC = () => {
 
   // Check permissions and load data on mount
   useEffect(() => {
+    console.log('OrganizationsContent iniciado, verificando permissões:', { isAdmin, isSuperAdmin, currentUser });
+    
     // Verify permissions - redirect if not admin or super admin
     if (!isAdmin && !isSuperAdmin) {
       toast.error("Você não tem permissão para acessar esta página");
@@ -45,7 +47,7 @@ const OrganizationsContent: React.FC = () => {
     }
     
     loadOrganizations();
-  }, [isAdmin, isSuperAdmin, navigate, loadOrganizations]);
+  }, [isAdmin, isSuperAdmin, navigate, loadOrganizations, currentUser]);
 
   // Show error message if no permissions
   if (!isAdmin && !isSuperAdmin) {

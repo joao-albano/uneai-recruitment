@@ -15,7 +15,13 @@ export const useOrganizationData = (
   const loadOrganizations = useCallback(async () => {
     try {
       setIsLoading(true);
-      console.log('Carregando organizações...', { isAdmin, isSuperAdmin, currentUser });
+      console.log('Carregando organizações...', { 
+        isAdmin, 
+        isSuperAdmin, 
+        currentUser,
+        currentUserId: currentUser?.id,
+        organizationId: currentUser?.organizationId
+      });
       
       // Verificar permissões - apenas admins e super admins podem ver organizações
       if (!isAdmin && !isSuperAdmin) {
