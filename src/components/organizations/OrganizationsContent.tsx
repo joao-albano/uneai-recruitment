@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
 import { useAuth } from '@/context/auth';
@@ -15,6 +15,7 @@ import OrganizationsEmpty from './OrganizationsEmpty';
 const OrganizationsContent: React.FC = () => {
   const navigate = useNavigate();
   const { isAdmin, isSuperAdmin, currentUser } = useAuth();
+  const [retryCount, setRetryCount] = useState(0);
   
   const {
     // State
@@ -47,7 +48,18 @@ const OrganizationsContent: React.FC = () => {
     }
     
     loadOrganizations();
-  }, [isAdmin, isSuperAdmin, navigate, loadOrganizations, currentUser]);
+    
+    // Tentar novamente após alguns segundos se não conseguir carregar
+    if (organizations.length === 0 && retryCount < 2) {
+      const timer = setTimeout(() => {
+        console.log(`Tentativa ${retryCount + 1} de carregar organizações...`);
+        loadOrganizations();
+        setRetryCount(prev => prev + 1);
+      }, 2000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isAdmin, isSuperAdmin, navigate, loadOrganizations, currentUser, organizations.length, retryCount]);
 
   // Show error message if no permissions
   if (!isAdmin && !isSuperAdmin) {
