@@ -6,9 +6,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Users, MoreHorizontal, Building } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import OrganizationProductsView from './products/OrganizationProductsView';
 
 interface OrganizationCardProps {
   organization: OrganizationType;
@@ -22,21 +19,61 @@ const OrganizationCard: React.FC<OrganizationCardProps> = ({
   onDelete
 }) => {
   // Format date to Brazilian format with safe fallback
-  const formatDate = (dateString: string | undefined) => {
-    if (!dateString) return 'Data não disponível';
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return '';
     
     try {
       const date = new Date(dateString);
       
       // Check if date is valid
       if (isNaN(date.getTime())) {
-        return 'Data não disponível';
+        return '';
       }
       
-      return format(date, "'Criada em' d 'de' MMMM 'de' yyyy", { locale: ptBR });
+      // Format as "Criada em DD de mês de YYYY"
+      const day = date.getDate();
+      const month = date.toLocaleDateString('pt-BR', { month: 'long' });
+      const year = date.getFullYear();
+      return `Criada em ${day} de ${month} de ${year}`;
     } catch (error) {
       console.error('Erro ao formatar data:', error);
-      return 'Data não disponível';
+      return '';
+    }
+  };
+
+  // Helper function to get product badge style
+  const getProductBadgeStyle = (type: string) => {
+    switch (type) {
+      case 'retention':
+        return 'bg-purple-600 text-white';
+      case 'billing':
+        return 'bg-green-600 text-white';
+      case 'recruitment':
+        return 'bg-blue-600 text-white';
+      case 'secretary':
+        return 'bg-amber-600 text-white';
+      case 'pedagogical':
+        return 'bg-indigo-600 text-white';
+      default:
+        return 'bg-gray-600 text-white';
+    }
+  };
+
+  // Helper function to get product display name
+  const getProductDisplayName = (type: string) => {
+    switch (type) {
+      case 'retention':
+        return 'Retenção de Alunos';
+      case 'billing':
+        return 'Cobrança';
+      case 'recruitment':
+        return 'Captação';
+      case 'secretary':
+        return 'Secretaria';
+      case 'pedagogical':
+        return 'Pedagógico';
+      default:
+        return type;
     }
   };
 
@@ -44,18 +81,11 @@ const OrganizationCard: React.FC<OrganizationCardProps> = ({
     <Card className="shadow-sm hover:shadow-md transition-shadow">
       <CardContent className="p-6">
         <div className="space-y-4">
-          {/* Header */}
+          {/* Header with title and menu */}
           <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <Building className={organization.isMainOrg ? 'text-amber-500' : 'text-primary'} />
-              <div>
-                <h3 className="text-lg font-semibold">
-                  {organization.name}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {formatDate(organization.createdAt)}
-                </p>
-              </div>
+              <h3 className="text-lg font-semibold">{organization.name}</h3>
             </div>
             
             <DropdownMenu>
@@ -79,8 +109,22 @@ const OrganizationCard: React.FC<OrganizationCardProps> = ({
             </DropdownMenu>
           </div>
 
-          {/* Status Badges */}
-          <div className="flex flex-wrap gap-2">
+          {/* Main org badge */}
+          {organization.isMainOrg && (
+            <div className="py-1">
+              <Badge className="bg-amber-50 text-amber-700 hover:bg-amber-50 border border-amber-200">
+                Organização Principal
+              </Badge>
+            </div>
+          )}
+
+          {/* Creation date */}
+          <div className="text-sm text-muted-foreground">
+            {formatDate(organization.createdAt)}
+          </div>
+
+          {/* Status badge */}
+          <div className="py-1">
             <Badge 
               variant={organization.isActive ? "default" : "secondary"}
               className={organization.isActive 
@@ -90,25 +134,24 @@ const OrganizationCard: React.FC<OrganizationCardProps> = ({
             >
               {organization.isActive ? 'Ativa' : 'Inativa'}
             </Badge>
-
-            {organization.isMainOrg && (
-              <Badge className="bg-amber-50 text-amber-700 border-amber-200">
-                Organização Principal
-              </Badge>
-            )}
           </div>
 
-          {/* Products */}
-          <div className="pt-2">
-            <OrganizationProductsView 
-              products={organization.products || []}
-              showHeader={false}
-              compact={true}
-            />
+          {/* Product badges */}
+          <div className="flex flex-wrap gap-2 pt-1 pb-2 border-b border-gray-100">
+            {organization.products && organization.products
+              .filter(product => product.active)
+              .map(product => (
+                <Badge 
+                  key={product.type} 
+                  className={getProductBadgeStyle(product.type)}
+                >
+                  {getProductDisplayName(product.type)}
+                </Badge>
+              ))}
           </div>
 
-          {/* Users Link */}
-          <div className="flex items-center justify-between pt-2">
+          {/* Users link */}
+          <div className="flex items-center justify-between pt-1">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Users className="h-4 w-4" />
               <span>Usuários</span>
