@@ -52,11 +52,15 @@ export const fetchUserProfile = async (userId: string) => {
         }
       } else if (profile.organizations && typeof profile.organizations === 'object') {
         // Handle the case where organizations is an object
-        organization = {
-          id: profile.organizations.id,
-          name: profile.organizations.name,
-          isMainOrg: profile.organizations.is_main_org
-        };
+        const orgData = profile.organizations;
+        // Add null checks before accessing properties
+        if (orgData && 'id' in orgData && 'name' in orgData && 'is_main_org' in orgData) {
+          organization = {
+            id: orgData.id,
+            name: orgData.name,
+            isMainOrg: orgData.is_main_org
+          };
+        }
       }
     }
     
