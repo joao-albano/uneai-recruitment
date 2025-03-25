@@ -65,14 +65,12 @@ const OrganizationsContent: React.FC = () => {
     await handleCreateOrganization(values.name || '', values.isActive || false);
     setShowCreateDialog(false);
     setNewOrganization({ name: '', isActive: true });
-    loadOrganizations();
   };
   
   const handleEditSubmit = async (values: { name?: string; isActive?: boolean }) => {
     if (selectedOrg) {
       await handleEditOrganization(selectedOrg.id, values.name || '', values.isActive || false);
       setShowEditDialog(false);
-      loadOrganizations();
     }
   };
   
@@ -80,7 +78,6 @@ const OrganizationsContent: React.FC = () => {
     if (selectedOrg) {
       await handleDeleteOrganization(selectedOrg.id);
       setShowDeleteDialog(false);
-      loadOrganizations();
     }
   };
 
