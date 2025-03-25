@@ -1,11 +1,13 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { NewUserType } from './types';
+import { fetchOrganizations } from './api/userManagementApi';
+import { useAuth } from '@/context/auth';
 
 interface CreateUserDialogProps {
   open: boolean;
@@ -22,6 +24,33 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   setNewUser,
   onSubmit
 }) => {
+  const [organizations, setOrganizations] = useState<Array<{id: string, name: string}>>([]);
+  const { currentUser, isSuperAdmin } = useAuth();
+  
+  // Carregar organizações disponíveis
+  useEffect(() => {
+    const loadOrganizations = async () => {
+      try {
+        if (open) {
+          const orgsData = await fetchOrganizations();
+          setOrganizations(orgsData || []);
+          
+          // Se o usuário não for super admin e tiver uma organização, pré-selecionar
+          if (!isSuperAdmin && currentUser?.organizationId && !newUser.organizationId) {
+            setNewUser(prev => ({ 
+              ...prev, 
+              organizationId: currentUser.organizationId || '' 
+            }));
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao carregar organizações:', error);
+      }
+    };
+    
+    loadOrganizations();
+  }, [open, currentUser, isSuperAdmin, newUser.organizationId, setNewUser]);
+  
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -31,6 +60,14 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   // Handle select changes
   const handleSelectChange = (name: string, value: string) => {
     setNewUser({ ...newUser, [name]: value });
+    
+    // Se organizationId mudar, atualizar também organizationName
+    if (name === 'organizationId') {
+      const selectedOrg = organizations.find(org => org.id === value);
+      if (selectedOrg) {
+        setNewUser(prev => ({ ...prev, organizationName: selectedOrg.name }));
+      }
+    }
   };
   
   return (
@@ -108,6 +145,30 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
                 </SelectContent>
               </Select>
             </div>
+            
+            {isSuperAdmin && (
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="organizationId" className="text-right">
+                  Organização
+                </Label>
+                <Select
+                  name="organizationId"
+                  value={newUser.organizationId}
+                  onValueChange={(value) => handleSelectChange('organizationId', value)}
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Selecione uma organização" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {organizations.map(org => (
+                      <SelectItem key={org.id} value={org.id}>
+                        {org.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
           
           <DialogFooter>

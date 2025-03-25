@@ -58,11 +58,18 @@ export const fetchOrganizations = async () => {
  */
 export const createUser = async (userData: NewUserType) => {
   try {
+    console.log('Tentando criar usuário com dados:', userData);
+    
+    // Verificar se o password está presente
+    if (!userData.password) {
+      throw new Error('Senha é obrigatória para criar um novo usuário');
+    }
+    
     // Criar usuário usando a função RPC
     const { data, error } = await supabase.rpc('create_user_with_profile', {
       email: userData.email,
-      password: userData.password || '',
-      name: userData.name,
+      password: userData.password,
+      name: userData.name || userData.email.split('@')[0], // Use o nome ou extraia do email
       role: userData.role || 'user',
       organization_id: userData.organizationId,
       is_admin: userData.role === 'admin',
@@ -74,6 +81,7 @@ export const createUser = async (userData: NewUserType) => {
       throw error;
     }
     
+    console.log('Usuário criado com sucesso:', data);
     return data;
   } catch (error) {
     console.error('Erro ao criar usuário:', error);

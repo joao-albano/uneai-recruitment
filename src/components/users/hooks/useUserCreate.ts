@@ -30,6 +30,13 @@ export const useUserCreate = (fetchUsers: () => Promise<void>) => {
         return;
       }
       
+      console.log('Enviando dados para criar usuário:', {
+        email,
+        name,
+        role,
+        organizationId: newUser.organizationId
+      });
+      
       // Chamar a função de API para criar o usuário
       await createUser({
         email,
@@ -51,11 +58,11 @@ export const useUserCreate = (fetchUsers: () => Promise<void>) => {
         title: "Usuário criado",
         description: `${name} foi adicionado com sucesso.`
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao criar usuário:", error);
       toast({
         title: "Erro ao criar usuário",
-        description: "Ocorreu um erro ao processar a solicitação.",
+        description: error.message || "Ocorreu um erro ao processar a solicitação.",
         variant: "destructive"
       });
     }

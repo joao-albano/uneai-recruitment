@@ -8,7 +8,7 @@ export const initialNewUser: NewUserType = {
   role: 'user',
   password: '',
   initials: '',
-  organizationId: '1',
+  organizationId: '',
   organizationName: 'Escola de Letras'
 };
 
