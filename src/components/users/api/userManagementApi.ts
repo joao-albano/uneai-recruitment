@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { UserType, NewUserType } from '../types';
 
@@ -34,42 +33,14 @@ export const fetchUsers = async () => {
 };
 
 /**
- * Busca organizações disponíveis - modificada para buscar diretamente sem RLS
- * para garantir que super admins sempre vejam todas as organizações
+ * Busca todas as organizações disponíveis
+ * Simplificada para sempre retornar todas as organizações
  */
 export const fetchOrganizations = async () => {
   try {
-    console.log('Iniciando busca de organizações com método aprimorado');
+    console.log('Buscando organizações de forma simplificada');
     
-    // Verificar se o usuário atual é super admin
-    const { data: userData, error: userError } = await supabase.auth.getUser();
-    if (userError) {
-      console.error('Erro ao verificar usuário atual:', userError);
-    }
-    
-    const userId = userData?.user?.id;
-    console.log('ID do usuário atual:', userId);
-    
-    if (!userId) {
-      console.error('Usuário não autenticado');
-      return [];
-    }
-    
-    // Verificar se o usuário é super admin
-    const { data: profileData, error: profileError } = await supabase
-      .from('profiles')
-      .select('is_super_admin')
-      .eq('id', userId)
-      .single();
-    
-    if (profileError) {
-      console.error('Erro ao verificar perfil do usuário:', profileError);
-    }
-    
-    const isSuperAdmin = profileData?.is_super_admin;
-    console.log('Usuário é super admin?', isSuperAdmin);
-    
-    // Buscar organizações - se for super admin, busca todas
+    // Buscar todas as organizações diretamente
     const { data, error } = await supabase
       .from('organizations')
       .select('id, name')
@@ -80,13 +51,9 @@ export const fetchOrganizations = async () => {
       return [];
     }
     
-    if (!data || data.length === 0) {
-      console.log('Nenhuma organização encontrada');
-      return [];
-    }
+    console.log('Organizações encontradas:', data);
+    return data || [];
     
-    console.log('Organizações carregadas com sucesso:', data);
-    return data;
   } catch (error) {
     console.error('Erro ao buscar organizações:', error);
     return [];

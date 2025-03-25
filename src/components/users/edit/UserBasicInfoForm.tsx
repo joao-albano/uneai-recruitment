@@ -22,7 +22,7 @@ const UserBasicInfoForm: React.FC<UserBasicInfoFormProps> = ({
   const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   
-  // Carregar organizações disponíveis para todos os usuários
+  // Carregar organizações disponíveis
   useEffect(() => {
     const loadOrganizations = async () => {
       setLoading(true);
@@ -31,7 +31,7 @@ const UserBasicInfoForm: React.FC<UserBasicInfoFormProps> = ({
         const orgsData = await fetchOrganizations();
         console.log('Organizações carregadas:', orgsData);
         
-        if (Array.isArray(orgsData) && orgsData.length > 0) {
+        if (Array.isArray(orgsData)) {
           setOrganizations(orgsData);
         } else {
           console.warn('Nenhuma organização retornada pela API ou formato inesperado');
@@ -47,6 +47,11 @@ const UserBasicInfoForm: React.FC<UserBasicInfoFormProps> = ({
     
     loadOrganizations();
   }, []);
+  
+  useEffect(() => {
+    // Log para debug quando o selectedUser muda
+    console.log('UserBasicInfoForm - selectedUser atualizado:', selectedUser);
+  }, [selectedUser]);
   
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,6 +84,8 @@ const UserBasicInfoForm: React.FC<UserBasicInfoFormProps> = ({
   };
   
   if (!selectedUser) return null;
+  
+  console.log('UserBasicInfoForm rendering with organizationId:', selectedUser.organizationId);
   
   return (
     <div className="space-y-4">

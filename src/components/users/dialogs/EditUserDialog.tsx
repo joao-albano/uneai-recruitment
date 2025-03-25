@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ProductSubscription } from '@/context/ProductContext';
@@ -40,6 +40,15 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
     setTimeout(() => onOpenChange(false), 0);
     return null;
   }
+  
+  // Log para debug quando o selectedUser ou o estado muda
+  useEffect(() => {
+    if (selectedUser) {
+      console.log('EditUserDialog - selectedUser no useEffect:', selectedUser);
+      console.log('EditUserDialog - organizationId:', selectedUser.organizationId);
+      console.log('EditUserDialog - organizationName:', selectedUser.organizationName);
+    }
+  }, [selectedUser]);
   
   // Check if the user is the super admin of UNE CX
   const isUneCxAdmin = selectedUser.isSuperAdmin;

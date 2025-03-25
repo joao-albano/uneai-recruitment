@@ -36,17 +36,28 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
       if (open) {
         setLoading(true);
         try {
-          console.log('Tentando carregar organizações...');
+          console.log('Tentando carregar organizações para CreateUserDialog...');
           const orgsData = await fetchOrganizations();
           console.log('Organizações carregadas no CreateUserDialog:', orgsData);
-          setOrganizations(orgsData || []);
           
-          // Se o usuário não for super admin e tiver uma organização, pré-selecionar
-          if (!isSuperAdmin && currentUser?.organizationId && !newUser.organizationId) {
-            setNewUser(prev => ({ 
-              ...prev, 
-              organizationId: currentUser.organizationId || '' 
-            }));
+          if (Array.isArray(orgsData)) {
+            setOrganizations(orgsData);
+            
+            // Se o usuário não for super admin e tiver uma organização, pré-selecionar
+            if (!isSuperAdmin && currentUser?.organizationId && !newUser.organizationId) {
+              setNewUser(prev => ({ 
+                ...prev, 
+                organizationId: currentUser.organizationId || '',
+                organizationName: orgsData.find(org => org.id === currentUser.organizationId)?.name || ''
+              }));
+            }
+          } else {
+            toast({
+              title: "Erro ao carregar organizações",
+              description: "Formato de dados inesperado. Tente novamente.",
+              variant: "destructive"
+            });
+            setOrganizations([]);
           }
         } catch (error) {
           console.error('Erro ao carregar organizações:', error);
@@ -55,7 +66,6 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
             description: "Não foi possível carregar a lista de organizações. Tente novamente.",
             variant: "destructive"
           });
-          // Não quebrar a interface em caso de erro
           setOrganizations([]);
         } finally {
           setLoading(false);
@@ -161,35 +171,33 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
               </Select>
             </div>
             
-            {isSuperAdmin && (
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="organizationId" className="text-right">
-                  Organização
-                </Label>
-                <Select
-                  name="organizationId"
-                  value={newUser.organizationId}
-                  onValueChange={(value) => handleSelectChange('organizationId', value)}
-                >
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder={loading ? "Carregando..." : "Selecione uma organização"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {organizations.length > 0 ? (
-                      organizations.map(org => (
-                        <SelectItem key={org.id} value={org.id}>
-                          {org.name}
-                        </SelectItem>
-                      ))
-                    ) : (
-                      <SelectItem value="empty" disabled>
-                        {loading ? "Carregando organizações..." : "Nenhuma organização disponível"}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="organizationId" className="text-right">
+                Organização
+              </Label>
+              <Select
+                name="organizationId"
+                value={newUser.organizationId}
+                onValueChange={(value) => handleSelectChange('organizationId', value)}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder={loading ? "Carregando..." : "Selecione uma organização"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {organizations.length > 0 ? (
+                    organizations.map(org => (
+                      <SelectItem key={org.id} value={org.id}>
+                        {org.name}
                       </SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+                    ))
+                  ) : (
+                    <SelectItem value="empty" disabled>
+                      {loading ? "Carregando organizações..." : "Nenhuma organização disponível"}
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           
           <DialogFooter>
