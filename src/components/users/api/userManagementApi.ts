@@ -7,6 +7,7 @@ import { UserType, NewUserType } from '../types';
  */
 export const fetchUsers = async () => {
   try {
+    // Modificado para acessar a tabela correta (profiles na public schema)
     const { data, error } = await supabase
       .from('profiles')
       .select(`

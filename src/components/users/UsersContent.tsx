@@ -4,22 +4,24 @@ import { Button } from "@/components/ui/button";
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
-import InviteUserDialog from './dialogs/InviteUserDialog';
 import CreateUserDialog from './CreateUserDialog';
 import EditUserDialog from './dialogs/EditUserDialog';
-import DeleteUserDialog from './dialogs/DeleteUserDialog';
+import DeleteUserDialog from './DeleteUserDialog';
 import { useUsers } from './hooks/useUsers';
 import { useAuth } from '@/context/auth';
 import { useProduct } from '@/context/ProductContext';
 import UsersHeader from './UsersHeader';
 import UsersToolbar from './UsersToolbar';
 import UsersList from './UsersList';
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { RefreshCw } from "lucide-react";
 
 const UsersContent: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { isAdmin, isSuperAdmin, currentUser } = useAuth();
   const { userSubscriptions } = useProduct();
+  const { toast } = useToast();
   
   const {
     users,
@@ -39,11 +41,20 @@ const UsersContent: React.FC = () => {
     handleOpenDeleteDialog,
     handleCreateUser,
     handleEditUser,
-    handleDeleteUser
+    handleDeleteUser,
+    fetchUsers
   } = useUsers();
   
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
+  };
+
+  const handleRetryFetch = () => {
+    toast({
+      title: "Atualizando",
+      description: "Tentando carregar usuários novamente..."
+    });
+    fetchUsers();
   };
   
   // Filtra usuários com base na organização e nível de acesso
@@ -91,6 +102,8 @@ const UsersContent: React.FC = () => {
     );
   }
   
+  const hasError = users.length === 0 && !loading;
+  
   return (
     <div className="min-h-screen flex w-full">
       <Sidebar 
@@ -113,6 +126,24 @@ const UsersContent: React.FC = () => {
             userCount={filteredUsers.length}
             onOpenCreateDialog={() => setShowCreateDialog(true)}
           />
+          
+          {hasError && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertTitle>Erro ao carregar usuários</AlertTitle>
+              <AlertDescription>
+                Não foi possível carregar a lista de usuários.
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleRetryFetch}
+                  className="ml-4"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Tentar novamente
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
           
           <UsersList 
             users={filteredUsers}
