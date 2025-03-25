@@ -25,8 +25,14 @@ export const useOrganizations = () => {
     resetNewOrganization
   } = useOrganizationState();
 
-  // Get data loading functionality
-  const { loadOrganizations } = useOrganizationData(setOrganizations, setIsLoading);
+  // Get data loading functionality - don't pass any arguments
+  const { loadOrganizations, organizations: fetchedOrganizations, isLoading: isDataLoading } = useOrganizationData();
+
+  // Sync the fetched organizations with our local state
+  const syncOrganizations = useCallback(() => {
+    setOrganizations(fetchedOrganizations);
+    setIsLoading(isDataLoading);
+  }, [fetchedOrganizations, isDataLoading, setOrganizations, setIsLoading]);
 
   // Get dialog handling functionality
   const {
@@ -47,7 +53,7 @@ export const useOrganizations = () => {
     showCreateDialog,
     showEditDialog,
     showDeleteDialog,
-    isLoading,
+    isLoading: isLoading || isDataLoading,
     // State setters
     setNewOrganization,
     setSelectedOrganization,
@@ -57,8 +63,11 @@ export const useOrganizations = () => {
     // Handlers
     handleOpenEditDialog,
     handleOpenDeleteDialog,
-    // Data loading
-    loadOrganizations,
+    // Data loading - use this to load and sync organizations
+    loadOrganizations: useCallback(async () => {
+      await loadOrganizations();
+      syncOrganizations();
+    }, [loadOrganizations, syncOrganizations]),
     // Utilities
     resetNewOrganization
   };

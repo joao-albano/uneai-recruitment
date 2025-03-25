@@ -3,8 +3,9 @@ import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/auth';
 import { fetchOrganizations } from '../api';
-import { OrganizationType } from '../types';
+import { OrganizationType, OrganizationProduct } from '../types';
 import { v4 as uuidv4 } from 'uuid';
+import { ProductType } from '@/context/ProductContext';
 
 // Dados fictícios para testes quando a API falha
 const getMockOrganizations = (): OrganizationType[] => [
@@ -15,8 +16,8 @@ const getMockOrganizations = (): OrganizationType[] => [
     isMainOrg: true,
     createdAt: new Date().toISOString(),
     products: [
-      { type: 'retention', active: true },
-      { type: 'billing', active: true },
+      { type: 'retention' as ProductType, active: true },
+      { type: 'billing' as ProductType, active: true },
     ],
   },
   {
@@ -25,8 +26,8 @@ const getMockOrganizations = (): OrganizationType[] => [
     isActive: true,
     createdAt: new Date().toISOString(),
     products: [
-      { type: 'retention', active: true },
-      { type: 'recruitment', active: true },
+      { type: 'retention' as ProductType, active: true },
+      { type: 'recruitment' as ProductType, active: true },
     ],
   },
   {
@@ -35,7 +36,7 @@ const getMockOrganizations = (): OrganizationType[] => [
     isActive: true,
     createdAt: new Date().toISOString(),
     products: [
-      { type: 'pedagogical', active: true },
+      { type: 'pedagogical' as ProductType, active: true },
     ],
   },
 ];
@@ -69,7 +70,8 @@ export const useOrganizationData = () => {
         createdAt: org.created_at,
         updatedAt: org.updated_at,
         products: org.products ? org.products.map(p => ({
-          type: p.type,
+          // Convert string type to ProductType to ensure type safety
+          type: p.type as ProductType,
           active: p.active || false
         })) : []
       }));
