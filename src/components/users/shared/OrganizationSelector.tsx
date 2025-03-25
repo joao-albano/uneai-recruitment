@@ -3,7 +3,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { fetchOrganizations } from '../../organizations/api';
 import { useAuth } from '@/context/auth';
-import { toast } from "sonner";
+import { useToast } from '@/hooks/use-toast';
+import { ProductType } from '@/context/ProductContext';
 
 interface OrganizationSelectorProps {
   selectedOrgId: string;
@@ -22,6 +23,7 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
 }) => {
   const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const { toast } = useToast();
   const { currentUser } = useAuth();
 
   useEffect(() => {
@@ -44,16 +46,20 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
           console.warn('Nenhuma organização retornada ou array vazio');
           setOrganizations([]);
           
-          toast("Nenhuma organização encontrada", {
-            description: "Não foi possível carregar organizações. Verifique se existem organizações cadastradas."
+          toast({
+            title: "Nenhuma organização encontrada",
+            description: "Não foi possível carregar organizações. Verifique se existem organizações cadastradas.",
+            variant: "destructive"
           });
         }
       } catch (error) {
         console.error('Erro ao carregar organizações:', error);
         setOrganizations([]);
         
-        toast("Erro ao carregar organizações", {
-          description: "Ocorreu um erro ao buscar a lista de organizações."
+        toast({
+          title: "Erro ao carregar organizações",
+          description: "Ocorreu um erro ao buscar a lista de organizações.",
+          variant: "destructive"
         });
       } finally {
         setLoading(false);
@@ -61,7 +67,7 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
     };
     
     loadOrganizations();
-  }, [currentUser]);
+  }, [currentUser, toast]);
   
   const handleSelectChange = (value: string) => {
     const selectedOrg = organizations.find(org => org.id === value);

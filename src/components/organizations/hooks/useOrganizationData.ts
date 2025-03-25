@@ -84,7 +84,7 @@ export const useOrganizationData = (
         console.error("Erro ao carregar organizações da API:", error);
         console.log("Carregando dados fictícios para teste devido ao erro");
         setOrganizations(mockOrganizations);
-        toast.error("Erro ao carregar organizações. Exibindo dados fictícios para teste.");
+        toast.info("Exibindo dados fictícios para teste devido a erro na API");
       }
     } catch (error) {
       console.error("Erro geral ao carregar organizações:", error);
