@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -15,14 +15,6 @@ const PlanSelection = () => {
   const selectedPlanId = watch('planId');
   
   const { plans, isLoading, error, fetchPlans } = usePlans();
-
-  useEffect(() => {
-    // Buscar planos ao carregar o componente
-    fetchPlans();
-    
-    // Log para debug
-    console.log('PlanSelection montado, buscando planos...');
-  }, [fetchPlans]);
 
   const handlePlanSelect = (planId: string) => {
     console.log('Plano selecionado:', planId);

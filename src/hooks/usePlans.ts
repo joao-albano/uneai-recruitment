@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -48,6 +48,11 @@ export const usePlans = () => {
       setIsLoading(false);
     }
   }, []);
+
+  // Automatically fetch plans when component mounts
+  useEffect(() => {
+    fetchPlans();
+  }, [fetchPlans]);
   
   return {
     plans,
