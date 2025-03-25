@@ -19,64 +19,21 @@ const OrganizationsContent: React.FC = () => {
   const {
     // State
     organizations,
-    newOrganization,
     selectedOrganization,
     showCreateDialog,
     showEditDialog,
     showDeleteDialog,
     isLoading,
     // State setters
-    setNewOrganization,
     setShowCreateDialog,
     setShowEditDialog,
     setShowDeleteDialog,
     // Handlers
     handleOpenEditDialog,
     handleOpenDeleteDialog,
-    handleCreateOrganization,
-    handleEditOrganization,
-    handleDeleteOrganization,
+    // Data loading
     loadOrganizations,
-    // Utilities
-    resetNewOrganization
   } = useOrganizations();
-
-  // Create, Edit, Delete handlers
-  const handleCreateSubmit = async (values: { name?: string; isActive?: boolean }) => {
-    try {
-      await handleCreateOrganization(values.name || '', values.isActive || false);
-      setShowCreateDialog(false);
-      resetNewOrganization();
-    } catch (error) {
-      console.error("Error submitting organization:", error);
-    }
-  };
-  
-  const handleEditSubmit = async (values: { name?: string; isActive?: boolean }) => {
-    if (selectedOrganization) {
-      try {
-        await handleEditOrganization(
-          selectedOrganization.id,
-          values.name || '',
-          values.isActive || false
-        );
-        setShowEditDialog(false);
-      } catch (error) {
-        console.error("Error updating organization:", error);
-      }
-    }
-  };
-  
-  const handleDeleteSubmit = async () => {
-    if (selectedOrganization) {
-      try {
-        await handleDeleteOrganization(selectedOrganization.id);
-        setShowDeleteDialog(false);
-      } catch (error) {
-        console.error("Error deleting organization:", error);
-      }
-    }
-  };
 
   // Check permissions and load data on mount
   useEffect(() => {
@@ -120,9 +77,6 @@ const OrganizationsContent: React.FC = () => {
       <CreateOrganizationDialog
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
-        newOrganization={newOrganization}
-        setNewOrganization={setNewOrganization}
-        onSubmit={handleCreateSubmit}
       />
 
       {selectedOrganization && (
@@ -131,14 +85,20 @@ const OrganizationsContent: React.FC = () => {
             open={showEditDialog}
             onOpenChange={setShowEditDialog}
             organization={selectedOrganization}
-            onSubmit={handleEditSubmit}
+            onSubmit={() => {
+              setShowEditDialog(false);
+              loadOrganizations();
+            }}
           />
 
           <DeleteOrganizationDialog
             open={showDeleteDialog}
             onOpenChange={setShowDeleteDialog}
             organization={selectedOrganization}
-            onDelete={handleDeleteSubmit}
+            onDelete={async () => {
+              setShowDeleteDialog(false);
+              await loadOrganizations();
+            }}
           />
         </>
       )}

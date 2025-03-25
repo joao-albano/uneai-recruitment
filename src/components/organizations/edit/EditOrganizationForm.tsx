@@ -9,16 +9,19 @@ import { useAuth } from '@/context/auth';
 interface EditOrganizationFormProps {
   organization: OrganizationType;
   setOrganization: React.Dispatch<React.SetStateAction<OrganizationType | null>>;
+  onSubmit?: (values: { name?: string; isActive?: boolean }) => void;
 }
 
 const EditOrganizationForm: React.FC<EditOrganizationFormProps> = ({
   organization,
-  setOrganization
+  setOrganization,
+  onSubmit
 }) => {
   const { isSuperAdmin } = useAuth();
   
   // Handler para alterar o nome
-  const handleNameChange = (name: string) => {
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.value;
     setOrganization(prev => prev ? { ...prev, name } : null);
   };
   
@@ -28,14 +31,14 @@ const EditOrganizationForm: React.FC<EditOrganizationFormProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" id="edit-organization-form">
       <OrganizationNameInput 
         value={organization.name}
         onChange={handleNameChange}
       />
       
       <OrganizationActiveToggle
-        value={organization.isActive}
+        isActive={organization.isActive}
         onChange={handleActiveChange}
       />
       

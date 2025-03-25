@@ -1,35 +1,30 @@
 
-import React from 'react';
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import React from "react";
 
-interface OrganizationActiveToggleProps {
-  checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
-  disabled?: boolean;
-  className?: string;
+export interface OrganizationActiveToggleProps {
+  isActive: boolean;
+  onChange: (isActive: boolean) => void;
 }
 
 const OrganizationActiveToggle: React.FC<OrganizationActiveToggleProps> = ({
-  checked,
-  onCheckedChange,
-  disabled = false,
-  className = "flex items-center justify-between space-y-0.5"
+  isActive,
+  onChange
 }) => {
   return (
-    <div className={className}>
-      <div className="space-y-0.5">
-        <Label htmlFor="active">Organização Ativa</Label>
-        <p className="text-xs text-muted-foreground">
-          Organizações inativas não terão acesso ao sistema
-        </p>
+    <div className="space-y-2">
+      <Label htmlFor="active-toggle">Status da Organização</Label>
+      <div className="flex items-center gap-2">
+        <Switch 
+          id="active-toggle"
+          checked={isActive}
+          onCheckedChange={onChange}
+        />
+        <Label htmlFor="active-toggle" className="cursor-pointer">
+          {isActive ? 'Ativa' : 'Inativa'}
+        </Label>
       </div>
-      <Switch 
-        id="active"
-        checked={checked}
-        onCheckedChange={onCheckedChange}
-        disabled={disabled}
-      />
     </div>
   );
 };

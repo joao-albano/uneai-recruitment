@@ -3,7 +3,6 @@ import { useCallback } from 'react';
 import { useOrganizationState } from './useOrganizationState';
 import { useOrganizationData } from './useOrganizationData';
 import { useOrganizationDialogs } from './useOrganizationDialogs';
-import { useOrganizationCrud } from './useOrganizationCrud';
 import { OrganizationType } from '../types';
 
 export const useOrganizations = () => {
@@ -39,15 +38,6 @@ export const useOrganizations = () => {
     setShowDeleteDialog
   );
 
-  // Get CRUD operations
-  const {
-    handleCreateOrganization,
-    handleEditOrganization,
-    handleDeleteOrganization
-  } = useOrganizationCrud(
-    loadOrganizations
-  );
-
   // Return everything needed by components
   return {
     // State
@@ -67,9 +57,6 @@ export const useOrganizations = () => {
     // Handlers
     handleOpenEditDialog,
     handleOpenDeleteDialog,
-    handleCreateOrganization,
-    handleEditOrganization,
-    handleDeleteOrganization,
     // Data loading
     loadOrganizations,
     // Utilities

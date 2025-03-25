@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { OrganizationType } from './types';
@@ -26,9 +26,15 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
   organization,
   onSubmit
 }) => {
-  const submitHandler = (values: z.infer<typeof formSchema>) => {
-    onSubmit(values);
-    onOpenChange(false);
+  const [editedOrganization, setEditedOrganization] = useState<OrganizationType | null>(organization);
+  
+  const handleSubmit = () => {
+    if (editedOrganization) {
+      onSubmit({
+        name: editedOrganization.name,
+        isActive: editedOrganization.isActive
+      });
+    }
   };
   
   return (
@@ -41,16 +47,18 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
         
-        <EditOrganizationForm 
-          organization={organization} 
-          onSubmit={submitHandler} 
-        />
+        {editedOrganization && (
+          <EditOrganizationForm 
+            organization={editedOrganization} 
+            setOrganization={setEditedOrganization}
+          />
+        )}
         
         <DialogFooter>
           <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button type="submit" form="edit-organization-form">Salvar Alterações</Button>
+          <Button type="button" onClick={handleSubmit}>Salvar Alterações</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
