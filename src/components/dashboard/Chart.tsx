@@ -56,6 +56,23 @@ const Chart: React.FC<ChartProps> = ({ students, title }) => {
                 outerRadius={80}
                 paddingAngle={2}
                 dataKey="value"
+                label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+                  const radius = innerRadius + (outerRadius - innerRadius) * 1.1;
+                  const x = cx + radius * Math.cos(-midAngle * Math.PI / 180);
+                  const y = cy + radius * Math.sin(-midAngle * Math.PI / 180);
+                  return percent > 0 ? (
+                    <text 
+                      x={x} 
+                      y={y} 
+                      fill="#888" 
+                      textAnchor={x > cx ? 'start' : 'end'} 
+                      dominantBaseline="central"
+                      fontSize={12}
+                    >
+                      {`${(percent * 100).toFixed(0)}%`}
+                    </text>
+                  ) : null;
+                }}
               >
                 {data.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
