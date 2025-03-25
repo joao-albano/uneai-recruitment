@@ -3,7 +3,7 @@ import React from 'react';
 import { AlertItem, ScheduleItem } from '@/types/data';
 import { useNavigate } from 'react-router-dom';
 import { AlertTriangle, Bell, Calendar, Brain, Users, ArrowRight } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
 interface RiskStatsProps {
@@ -28,16 +28,19 @@ const RiskStats: React.FC<RiskStatsProps> = ({
   const navigate = useNavigate();
   
   return (
-    <Card className="shadow-sm hover:shadow-md transition-shadow mt-8">
-      <CardContent className="p-6">
-        <div className="space-y-6">
+    <Card className="h-full shadow-sm hover:shadow-md transition-shadow">
+      <CardHeader className="pb-0">
+        <CardTitle className="text-lg font-medium">Visão Geral</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
           {/* Overview Section */}
           <div className="flex items-start space-x-4">
             <div className="rounded-full bg-blue-100 p-2 mt-1">
               <Users className="h-5 w-5 text-blue-600" />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-semibold mb-2 text-blue-900">Visão Geral</h3>
+              <h3 className="text-base font-semibold mb-1 text-blue-900">Visão Geral</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Temos um total de <span className="font-semibold">{totalStudents} alunos</span> monitorados, com{' '}
                 <span className="font-semibold text-red-600">{highRiskCount} ({highRiskPercentage}%)</span> em situação de alto risco,{' '}
@@ -55,7 +58,7 @@ const RiskStats: React.FC<RiskStatsProps> = ({
               <Bell className="h-5 w-5 text-amber-600" />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-semibold mb-2 text-amber-900">Alertas e Intervenções</h3>
+              <h3 className="text-base font-semibold mb-1 text-amber-900">Alertas e Intervenções</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Existem <span className="font-semibold text-amber-600">{alerts.filter(alert => !alert.actionTaken).length} alertas pendentes</span> que precisam de atenção.
                 Já foram realizadas <span className="font-semibold text-purple-600">{schedules.filter(s => s.status === 'completed').length} intervenções</span>,
@@ -72,7 +75,7 @@ const RiskStats: React.FC<RiskStatsProps> = ({
               <Calendar className="h-5 w-5 text-green-600" />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-semibold mb-2 text-green-900">Próximos Passos</h3>
+              <h3 className="text-base font-semibold mb-1 text-green-900">Próximos Passos</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Recomendamos focar nos alunos de alto risco, agendando intervenções e monitorando seu progresso nas próximas semanas.
               </p>

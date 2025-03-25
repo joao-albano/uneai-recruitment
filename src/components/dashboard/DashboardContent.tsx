@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import Chart from './Chart';
@@ -137,19 +138,23 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <Chart 
-          students={students} 
-          title={language === 'pt-BR' ? 'Distribuição de Risco' : 'Risk Distribution'} 
-        />
-        <RiskStats 
-          highRiskCount={highRiskCount}
-          mediumRiskCount={mediumRiskCount}
-          lowRiskCount={lowRiskCount}
-          totalStudents={totalStudents}
-          highRiskPercentage={getPercentage(highRiskCount).toFixed(1)}
-          alerts={alerts as unknown as AlertItem[]}
-          schedules={schedules as ScheduleItem[]}
-        />
+        <div className="flex flex-col h-full">
+          <Chart 
+            students={students} 
+            title={language === 'pt-BR' ? 'Distribuição de Risco' : 'Risk Distribution'} 
+          />
+        </div>
+        <div className="flex flex-col h-full">
+          <RiskStats 
+            highRiskCount={highRiskCount}
+            mediumRiskCount={mediumRiskCount}
+            lowRiskCount={lowRiskCount}
+            totalStudents={totalStudents}
+            highRiskPercentage={getPercentage(highRiskCount).toFixed(1)}
+            alerts={alerts as unknown as AlertItem[]}
+            schedules={schedules as ScheduleItem[]}
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
