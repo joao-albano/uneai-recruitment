@@ -9,7 +9,7 @@ export async function verifyCNPJ(cnpj: string): Promise<{ valid: boolean; normal
   console.log('Verificando CNPJ normalizado:', normalizedCNPJ);
   
   try {
-    // Verificar se o CNPJ já existe
+    // Verificar se o CNPJ já existe usando o schema public
     const { data: existingOrg, error: checkError } = await supabase
       .from('organizations')
       .select('id, name, cnpj')
@@ -18,9 +18,7 @@ export async function verifyCNPJ(cnpj: string): Promise<{ valid: boolean; normal
     
     if (checkError) {
       console.error('Erro ao verificar CNPJ:', checkError);
-      
-      // Mensagem mais genérica para o usuário
-      toast.error('Não foi possível verificar o CNPJ no momento. Tente novamente mais tarde.');
+      toast.error('Erro ao verificar disponibilidade do CNPJ. Tente novamente.');
       return { valid: false, normalizedCNPJ };
     }
     
@@ -36,7 +34,7 @@ export async function verifyCNPJ(cnpj: string): Promise<{ valid: boolean; normal
     return { valid: true, normalizedCNPJ };
   } catch (error) {
     console.error('Erro ao verificar CNPJ:', error);
-    toast.error('Ocorreu um erro ao verificar seus dados. Tente novamente.');
+    toast.error('Erro ao verificar disponibilidade do CNPJ. Tente novamente.');
     return { valid: false, normalizedCNPJ };
   }
 }
