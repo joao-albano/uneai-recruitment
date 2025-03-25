@@ -16,13 +16,7 @@ export const fetchOrganizations = async () => {
     // admins verão apenas a sua própria
     const { data: organizations, error } = await supabase
       .from('organizations')
-      .select(`
-        id,
-        name,
-        is_main_org,
-        created_at,
-        updated_at
-      `)
+      .select('*')
       .order('name');
     
     if (error) {
@@ -37,10 +31,7 @@ export const fetchOrganizations = async () => {
       try {
         const { data: products, error: productsError } = await supabase
           .from('organization_products')
-          .select(`
-            type,
-            active
-          `)
+          .select('*')
           .eq('organization_id', org.id);
         
         if (productsError) {
