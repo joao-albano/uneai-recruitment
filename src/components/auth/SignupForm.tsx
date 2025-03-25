@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import InstitutionDataForm from './InstitutionDataForm';
 import AdminDataForm from './AdminDataForm';
+import PlanSelection from './PlanSelection';
 import { supabase } from '@/integrations/supabase/client';
 
 const signupSchema = z.object({
@@ -24,6 +25,8 @@ const signupSchema = z.object({
   state: z.string().length(2, 'Use a sigla do estado (2 letras)'),
   postalCode: z.string().min(8, 'CEP inválido').max(9, 'CEP inválido'),
   contactPhone: z.string().min(10, 'Telefone inválido').max(15, 'Telefone inválido'),
+  // Adicionando campo para o plano
+  planId: z.string().min(1, 'Selecione um plano')
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"],
@@ -36,8 +39,42 @@ interface SignupFormProps {
   onSuccess: (email: string) => void;
 }
 
+interface Plan {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+}
+
 const SignupForm = ({ onSwitchTab, onSuccess }: SignupFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [plans, setPlans] = useState<Plan[]>([]);
+  
+  // Carregar planos do banco de dados
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('plans')
+          .select('id, name, description, price')
+          .order('price');
+          
+        if (error) {
+          console.error('Erro ao carregar planos:', error);
+          toast.error('Não foi possível carregar os planos disponíveis');
+          return;
+        }
+        
+        if (data) {
+          setPlans(data);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar planos:', error);
+      }
+    };
+    
+    fetchPlans();
+  }, []);
   
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
@@ -53,6 +90,7 @@ const SignupForm = ({ onSwitchTab, onSuccess }: SignupFormProps) => {
       state: '',
       postalCode: '',
       contactPhone: '',
+      planId: ''
     },
   });
 
@@ -151,6 +189,28 @@ const SignupForm = ({ onSwitchTab, onSuccess }: SignupFormProps) => {
           setIsLoading(false);
           return;
         }
+        
+        // Step 4: Create subscription with trial period
+        const now = new Date();
+        const trialEndDate = new Date(now);
+        trialEndDate.setDate(now.getDate() + 14); // 14 days trial
+        
+        const { error: subscriptionError } = await supabase
+          .from('subscriptions')
+          .insert([{
+            user_id: data.user.id,
+            organization_id: newOrg.id,
+            plan_id: values.planId,
+            status: 'trial',
+            trial_start_date: now.toISOString(),
+            trial_end_date: trialEndDate.toISOString()
+          }]);
+          
+        if (subscriptionError) {
+          console.error('Erro ao criar assinatura:', subscriptionError);
+          toast.error('Erro ao configurar período de teste');
+          // Continue anyway since the user account is created
+        }
       }
       
       // Conta criada com sucesso
@@ -176,7 +236,21 @@ const SignupForm = ({ onSwitchTab, onSuccess }: SignupFormProps) => {
             
             <InstitutionDataForm />
             
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Separator />
+            
+            {plans.length > 0 ? (
+              <PlanSelection plans={plans} />
+            ) : (
+              <div className="py-4 text-center text-muted-foreground">
+                <p>Carregando planos disponíveis...</p>
+              </div>
+            )}
+            
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={isLoading || plans.length === 0}
+            >
               {isLoading ? 'Criando conta...' : 'Criar Conta'}
             </Button>
           </form>

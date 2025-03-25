@@ -1,62 +1,71 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
-
-// Default trial period in days
-const DEFAULT_TRIAL_PERIOD = 14;
+import { supabase } from '@/integrations/supabase/client';
 
 export const useTrialPeriod = () => {
   const { currentUser } = useAuth();
-  const [daysRemaining, setDaysRemaining] = useState<number>(DEFAULT_TRIAL_PERIOD);
+  const [daysRemaining, setDaysRemaining] = useState<number>(0);
   const [showBanner, setShowBanner] = useState<boolean>(false);
+  const [isExpired, setIsExpired] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [trialPeriodDays] = useState<number>(14);
   
   useEffect(() => {
-    // This is a mock implementation - in a real app, you would:
-    // 1. Store the user creation date in your database
-    // 2. Fetch subscription status from your payment provider
+    const fetchSubscriptionStatus = async () => {
+      if (!currentUser) {
+        setShowBanner(false);
+        setIsLoading(false);
+        return;
+      }
+      
+      try {
+        const { data, error } = await supabase
+          .from('subscriptions')
+          .select('status, trial_start_date, trial_end_date')
+          .eq('user_id', currentUser.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+          
+        if (error) {
+          console.error('Erro ao verificar assinatura:', error);
+          setIsLoading(false);
+          return;
+        }
+        
+        // Se não tem assinatura ou não está em período de teste, não mostrar banner
+        if (!data || data.status !== 'trial') {
+          setShowBanner(false);
+          setIsLoading(false);
+          return;
+        }
+        
+        // Calcular dias restantes do período de teste
+        const now = new Date();
+        const endDate = new Date(data.trial_end_date);
+        const msRemaining = endDate.getTime() - now.getTime();
+        const daysLeft = Math.ceil(msRemaining / (1000 * 60 * 60 * 24));
+        
+        setDaysRemaining(daysLeft);
+        setIsExpired(daysLeft <= 0);
+        setShowBanner(true);
+        setIsLoading(false);
+        
+      } catch (error) {
+        console.error('Erro ao buscar dados da assinatura:', error);
+        setIsLoading(false);
+      }
+    };
     
-    if (!currentUser) {
-      setShowBanner(false);
-      return;
-    }
-    
-    // For demo purposes, we're using localStorage to simulate a start date
-    // In a real implementation, this would come from your backend
-    const trialStartKey = `trial_start_${currentUser.email}`;
-    let trialStartDate = localStorage.getItem(trialStartKey);
-    
-    // If no start date is recorded, set it now
-    if (!trialStartDate) {
-      trialStartDate = new Date().toISOString();
-      localStorage.setItem(trialStartKey, trialStartDate);
-    }
-    
-    // Check if the user has an active subscription
-    // This is a mock - in a real app, check your payment provider
-    const hasPaidPlan = localStorage.getItem(`user_plan_${currentUser.email}`);
-    
-    if (hasPaidPlan) {
-      // User has a paid plan, don't show the banner
-      setShowBanner(false);
-      return;
-    }
-    
-    // Calculate days remaining in trial
-    const startDate = new Date(trialStartDate);
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + DEFAULT_TRIAL_PERIOD);
-    
-    const now = new Date();
-    const msRemaining = endDate.getTime() - now.getTime();
-    const daysLeft = Math.ceil(msRemaining / (1000 * 60 * 60 * 24));
-    
-    setDaysRemaining(daysLeft);
-    setShowBanner(true);
+    fetchSubscriptionStatus();
   }, [currentUser]);
   
   return {
     daysRemaining,
     showBanner,
-    isExpired: daysRemaining <= 0,
-    trialPeriodDays: DEFAULT_TRIAL_PERIOD
+    isExpired,
+    trialPeriodDays,
+    isLoading
   };
 };

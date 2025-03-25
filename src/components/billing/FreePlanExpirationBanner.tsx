@@ -8,13 +8,19 @@ import { useTheme } from '@/context/ThemeContext';
 
 interface FreePlanExpirationBannerProps {
   daysRemaining: number;
+  isLoading?: boolean;
 }
 
 const FreePlanExpirationBanner: React.FC<FreePlanExpirationBannerProps> = ({ 
-  daysRemaining
+  daysRemaining,
+  isLoading = false
 }) => {
   const { language } = useTheme();
   const isPtBR = language === 'pt-BR';
+  
+  if (isLoading) {
+    return null;
+  }
   
   // Define alert variant based on days remaining
   const getVariant = () => {

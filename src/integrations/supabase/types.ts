@@ -46,25 +46,67 @@ export type Database = {
       }
       organizations: {
         Row: {
+          address: string | null
+          city: string | null
+          cnpj: string | null
+          contact_phone: string | null
           created_at: string | null
           id: string
           is_main_org: boolean | null
           name: string
+          postal_code: string | null
+          state: string | null
           updated_at: string | null
         }
         Insert: {
+          address?: string | null
+          city?: string | null
+          cnpj?: string | null
+          contact_phone?: string | null
           created_at?: string | null
           id?: string
           is_main_org?: boolean | null
           name: string
+          postal_code?: string | null
+          state?: string | null
           updated_at?: string | null
         }
         Update: {
+          address?: string | null
+          city?: string | null
+          cnpj?: string | null
+          contact_phone?: string | null
           created_at?: string | null
           id?: string
           is_main_org?: boolean | null
           name?: string
+          postal_code?: string | null
+          state?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      plans: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          price: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          price?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          price?: number | null
         }
         Relationships: []
       }
@@ -130,6 +172,57 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          created_at: string | null
+          id: string
+          organization_id: string
+          plan_id: string | null
+          status: string
+          trial_end_date: string | null
+          trial_start_date: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          organization_id: string
+          plan_id?: string | null
+          status?: string
+          trial_end_date?: string | null
+          trial_start_date?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          organization_id?: string
+          plan_id?: string | null
+          status?: string
+          trial_end_date?: string | null
+          trial_start_date?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_products: {
         Row: {
