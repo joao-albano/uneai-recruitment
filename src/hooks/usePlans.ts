@@ -20,11 +20,12 @@ export const usePlans = () => {
     setError(null);
     
     try {
+      // Using "from('api.plans')" instead of "from('plans').schema('api')"
+      // This is the correct way to specify a schema in Supabase JS client
       const { data, error } = await supabase
-        .from('plans')
+        .from('api.plans')
         .select('id, name, description, price')
-        .order('price')
-        .schema('api');
+        .order('price');
           
       if (error) {
         console.error('Erro ao carregar planos:', error);
