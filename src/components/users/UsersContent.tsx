@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/layout/Header';
@@ -19,6 +19,8 @@ import { RefreshCw } from "lucide-react";
 const UsersContent: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedOrganization, setSelectedOrganization] = useState<string | null>(null);
   const { isAdmin, isSuperAdmin, currentUser } = useAuth();
   const { userSubscriptions } = useProduct();
   const { toast } = useToast();
@@ -57,25 +59,47 @@ const UsersContent: React.FC = () => {
     fetchUsers();
   };
   
-  // Filtra usuários com base na organização e nível de acesso
-  const filteredUsers = React.useMemo(() => {
+  // Extract unique organizations from users
+  const organizations = useMemo(() => {
+    const orgMap = new Map();
+    users.forEach(user => {
+      if (user.organizationId && user.organizationName) {
+        orgMap.set(user.organizationId, {
+          id: user.organizationId,
+          name: user.organizationName,
+        });
+      }
+    });
+    return Array.from(orgMap.values());
+  }, [users]);
+  
+  // Filter users based on search query and selected organization
+  const filteredUsers = useMemo(() => {
     if (loading) {
       return [];
     }
     
-    if (isSuperAdmin) {
-      // Super admin vê todos os usuários
-      return users;
-    } else if (isAdmin && currentUser?.organizationId) {
-      // Admin da escola vê apenas usuários da mesma organização
-      return users.filter(user => user.organizationId === currentUser.organizationId);
-    } else {
-      // Usuário regular vê apenas usuários da mesma organização
-      return users.filter(user => 
-        user.organizationId === currentUser?.organizationId
+    // Start with base filtering based on user role
+    let result = isSuperAdmin 
+      ? users 
+      : users.filter(user => user.organizationId === currentUser?.organizationId);
+    
+    // Apply organization filter (for super admins only)
+    if (isSuperAdmin && selectedOrganization) {
+      result = result.filter(user => user.organizationId === selectedOrganization);
+    }
+    
+    // Apply search query filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      result = result.filter(user => 
+        user.name.toLowerCase().includes(query) || 
+        user.email.toLowerCase().includes(query)
       );
     }
-  }, [users, isAdmin, isSuperAdmin, currentUser, loading]);
+    
+    return result;
+  }, [users, searchQuery, selectedOrganization, isSuperAdmin, currentUser, loading]);
   
   if (loading) {
     return (
@@ -125,6 +149,11 @@ const UsersContent: React.FC = () => {
           <UsersToolbar 
             userCount={filteredUsers.length}
             onOpenCreateDialog={() => setShowCreateDialog(true)}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            selectedOrganization={selectedOrganization}
+            setSelectedOrganization={setSelectedOrganization}
+            organizations={organizations}
           />
           
           {hasError && (
