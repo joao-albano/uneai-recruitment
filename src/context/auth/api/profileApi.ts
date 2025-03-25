@@ -21,12 +21,11 @@ export const fetchUserProfile = async (userId: string) => {
     const email = userMetadata?.email || userData.user?.email;
     
     console.log('User metadata:', userMetadata);
-    console.log('User email to check:', email);
     
     // Fetch profile from profiles table
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('*')
+      .select('*, organizations(*)')
       .eq('id', userId)
       .single();
     
@@ -39,38 +38,36 @@ export const fetchUserProfile = async (userId: string) => {
     
     let organization: Organization | undefined;
     
-    // If profile has organization_id, fetch organization details
-    if (profile?.organization_id) {
-      const { data: org, error: orgError } = await supabase
-        .from('organizations')
-        .select('*')
-        .eq('id', profile.organization_id)
-        .single();
-      
-      if (orgError) {
-        console.error('Error fetching organization:', orgError);
-      } else if (org) {
+    // Extract organization data from profile response
+    if (profile?.organizations) {
+      if (Array.isArray(profile.organizations)) {
+        const org = profile.organizations[0];
+        if (org) {
+          organization = {
+            id: org.id,
+            name: org.name,
+            isMainOrg: org.is_main_org
+          };
+        }
+      } else {
         organization = {
-          id: org.id,
-          name: org.name,
-          isMainOrg: org.is_main_org
+          id: profile.organizations.id,
+          name: profile.organizations.name,
+          isMainOrg: profile.organizations.is_main_org
         };
       }
     }
     
-    // Determine if the user is a super admin based on email domain
-    // This is a temporary solution while we fix the profile fetching
-    const email_domain = email?.split('@')[1];
-    const isSuperAdmin = email_domain === 'une.cx' || Boolean(profile?.is_super_admin);
-    console.log('Is super admin:', isSuperAdmin);
-    console.log('Role from database:', profile?.role);
+    // Determine if the user is a super admin based on profile data
+    const isSuperAdmin = Boolean(profile?.is_super_admin);
+    const isAdmin = Boolean(profile?.is_admin);
     
-    // Create user profile object with priority on DB role and super admin status
+    // Create user profile object
     const userProfile: UserProfile = {
-      id: userId, // Add ID to user profile
-      name: fullName || profile?.email?.split('@')[0] || email?.split('@')[0],
-      email: email || profile?.email,
-      role: isSuperAdmin ? 'superadmin' : (profile?.role || 'user'),
+      id: userId,
+      name: fullName || profile?.email?.split('@')[0] || email?.split('@')[0] || '',
+      email: email || profile?.email || '',
+      role: profile?.role || 'user',
       organizationId: profile?.organization_id,
       organization: organization,
       isSuperAdmin: isSuperAdmin
@@ -80,7 +77,7 @@ export const fetchUserProfile = async (userId: string) => {
     
     return {
       profile: userProfile,
-      isAdmin: profile?.is_admin || isSuperAdmin || false,
+      isAdmin: isAdmin || isSuperAdmin || false,
       isSuperAdmin: isSuperAdmin || false,
       organization: organization || null
     };

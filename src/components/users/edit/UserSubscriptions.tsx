@@ -1,66 +1,57 @@
 
 import React from 'react';
-import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ProductSubscription } from '@/context/ProductContext';
 import { UserType } from '../types';
+import { Check, X } from 'lucide-react';
 
 interface UserSubscriptionsProps {
   selectedUser: UserType;
-  subscriptions: ProductSubscription[];
-  isAdmin: boolean;
-  isSuperAdmin: boolean;
+  subscriptions?: ProductSubscription[];
+  isAdmin?: boolean;
+  isSuperAdmin?: boolean;
 }
 
 const UserSubscriptions: React.FC<UserSubscriptionsProps> = ({
   selectedUser,
-  subscriptions,
-  isAdmin,
-  isSuperAdmin
+  subscriptions = [],
+  isAdmin = false,
+  isSuperAdmin = false
 }) => {
-  // Só mostrar assinaturas para admins ou superadmins
-  if (!isAdmin && !isSuperAdmin) return null;
-  
-  // Filtrar assinaturas do usuário
-  const userSubscriptions = subscriptions.filter(
-    sub => sub.id.includes(selectedUser.id.toString())
-  );
+  // Mostrar detalhes de assinatura apenas para admins e super admins
+  if (!isAdmin && !isSuperAdmin || subscriptions.length === 0) {
+    return null;
+  }
   
   return (
-    <div className="space-y-2">
-      <Label>Assinaturas de Produtos</Label>
-      
-      <div className="border rounded-md p-3">
-        {userSubscriptions.length > 0 ? (
-          <ul className="space-y-2">
-            {userSubscriptions.map((sub) => (
-              <li key={sub.id} className="flex justify-between items-center">
-                <div>
-                  <span className="capitalize">
-                    {sub.productType === 'retention' ? 'Retenção' : 
-                     sub.productType === 'billing' ? 'Financeiro' : 
-                     sub.productType === 'recruitment' ? 'Recrutamento' : 
-                     sub.productType}
-                  </span>
-                  <span className="text-xs text-muted-foreground ml-2">
-                    desde {new Date(sub.startDate).toLocaleDateString()}
-                  </span>
-                </div>
-                
-                <Badge variant={sub.status === 'active' ? 'default' : 'outline'}>
-                  {sub.status === 'active' ? 'Ativo' : 
-                   sub.status === 'pending' ? 'Pendente' : 'Inativo'}
-                </Badge>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-sm text-muted-foreground py-1">
-            Este usuário não possui assinaturas de produtos.
-          </p>
-        )}
-      </div>
-    </div>
+    <Card className="mt-4">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base font-medium">Assinaturas do Usuário</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {subscriptions.map((subscription, index) => (
+            <div key={index} className="flex justify-between items-center py-1 border-b last:border-0">
+              <div className="flex items-center">
+                <span className="font-medium text-sm">{subscription.name}</span>
+              </div>
+              <Badge 
+                variant={subscription.active ? "default" : "outline"} 
+                className={subscription.active ? "bg-green-100 text-green-800 hover:bg-green-100" : ""}
+              >
+                {subscription.active ? (
+                  <Check className="mr-1 h-3 w-3" />
+                ) : (
+                  <X className="mr-1 h-3 w-3" />
+                )}
+                {subscription.active ? 'Ativo' : 'Inativo'}
+              </Badge>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -7,7 +7,8 @@ import { UserType, NewUserType } from '../types';
  */
 export const fetchUsers = async () => {
   try {
-    // Modificado para acessar a tabela correta (profiles na public schema)
+    // Consulta que respeita as políticas RLS - Super admins verão todos os usuários,
+    // admins verão apenas os da sua organização
     const { data, error } = await supabase
       .from('profiles')
       .select(`
@@ -17,7 +18,7 @@ export const fetchUsers = async () => {
         is_admin,
         is_super_admin,
         organization_id,
-        organizations(name)
+        organizations(id, name)
       `);
     
     if (error) {
@@ -33,7 +34,7 @@ export const fetchUsers = async () => {
 };
 
 /**
- * Busca organizações disponíveis
+ * Busca organizações disponíveis - respeitará as políticas RLS
  */
 export const fetchOrganizations = async () => {
   try {

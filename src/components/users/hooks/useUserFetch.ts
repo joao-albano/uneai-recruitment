@@ -32,39 +32,41 @@ export const useUserFetch = () => {
         
         // Mapear dados do supabase para o formato esperado pelo componente
         const mappedUsers: UserType[] = profiles.map((profile: any) => {
-          // Gerar iniciais do nome
-          const fullName = profile.email?.split('@')[0] || '';
-          const initials = fullName
-            .slice(0, 2)
-            .toUpperCase();
+          // Gerar iniciais do nome ou usar dados existentes
+          const name = profile.email?.split('@')[0] || '';
+          const initials = name.slice(0, 2).toUpperCase();
           
           let organizationName: string | undefined;
+          let organizationId: string | undefined = profile.organization_id;
           
-          // Verificar se organizations existe e tem dados antes de acessar a propriedade name
-          if (profile.organizations && Array.isArray(profile.organizations) && profile.organizations.length > 0) {
-            organizationName = profile.organizations[0]?.name;
-          } else if (profile.organizations && typeof profile.organizations === 'object') {
-            organizationName = (profile.organizations as any).name;
+          // Verificar se organizations existe e extrair os dados
+          if (profile.organizations) {
+            // Lidar com diferentes formatos de resposta
+            if (Array.isArray(profile.organizations) && profile.organizations.length > 0) {
+              organizationName = profile.organizations[0]?.name;
+              organizationId = profile.organizations[0]?.id;
+            } else if (typeof profile.organizations === 'object') {
+              organizationName = profile.organizations.name;
+              organizationId = profile.organizations.id;
+            }
           }
           
           return {
             id: profile.id,
-            name: fullName,
+            name: name,
             email: profile.email,
             role: profile.role,
             initials: initials,
-            organizationId: profile.organization_id,
+            organizationId: organizationId,
             organizationName: organizationName,
             isSuperAdmin: profile.is_super_admin
           };
         });
         
-        // Filtrar o usuário atual da lista
-        const filteredUsers = mappedUsers.filter(user => 
-          // Se o currentUser for null ou undefined, não filtra nada
-          // Caso contrário, exclui o usuário atual da lista
-          !currentUser || user.id !== currentUser.id
-        );
+        // Filtrar o usuário atual da lista se necessário
+        const filteredUsers = currentUser?.id ? 
+          mappedUsers.filter(user => user.id !== currentUser.id) : 
+          mappedUsers;
         
         setUsers(filteredUsers);
         

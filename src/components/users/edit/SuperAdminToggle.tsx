@@ -1,48 +1,59 @@
 
 import React from 'react';
-import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { UserType } from '../types';
-import { updateUserSuperAdminStatus } from '../utils/userUtils';
+import { ShieldAlert } from 'lucide-react';
 
 interface SuperAdminToggleProps {
   selectedUser: UserType;
   setSelectedUser: React.Dispatch<React.SetStateAction<UserType | null>>;
-  isSuperAdmin: boolean;
-  isUneCxAdmin: boolean;
+  isSuperAdmin?: boolean;
+  isUneCxAdmin?: boolean;
 }
 
 const SuperAdminToggle: React.FC<SuperAdminToggleProps> = ({
   selectedUser,
   setSelectedUser,
-  isSuperAdmin,
-  isUneCxAdmin
+  isSuperAdmin = false,
+  isUneCxAdmin = false
 }) => {
-  if (!isSuperAdmin || isUneCxAdmin) return null;
+  // Mostrar apenas para super admins e quando não está editando outro super admin
+  if (!isSuperAdmin || isUneCxAdmin) {
+    return null;
+  }
   
-  const handleSuperAdminChange = (checked: boolean) => {
-    const updatedUser = updateUserSuperAdminStatus(selectedUser, checked);
-    if (updatedUser) setSelectedUser(updatedUser);
+  const handleToggle = (checked: boolean) => {
+    if (!selectedUser) return;
+    
+    setSelectedUser({ 
+      ...selectedUser, 
+      isSuperAdmin: checked,
+      // Se estiver habilitando super admin, definir também como admin
+      role: checked ? 'admin' : selectedUser.role
+    });
   };
   
   return (
-    <div className="grid gap-2 pt-3 border-t">
-      <div className="flex items-center space-x-2">
-        <Checkbox 
-          id="super-admin-toggle" 
-          checked={selectedUser.isSuperAdmin || false}
-          onCheckedChange={handleSuperAdminChange}
-        />
-        <Label 
-          htmlFor="super-admin-toggle"
-          className="text-sm font-medium"
-        >
-          Administrador da UNE CX
+    <div className="space-y-4">
+      <Alert className="bg-amber-50 border-amber-200">
+        <ShieldAlert className="h-4 w-4 text-amber-600" />
+        <AlertDescription className="text-amber-800 text-sm">
+          Super Admins têm acesso completo ao sistema, incluindo todas as organizações e configurações.
+        </AlertDescription>
+      </Alert>
+      
+      <div className="flex items-center justify-between">
+        <Label htmlFor="super-admin" className="text-base font-medium">
+          Super Admin
         </Label>
+        <Switch
+          id="super-admin"
+          checked={Boolean(selectedUser.isSuperAdmin)}
+          onCheckedChange={handleToggle}
+        />
       </div>
-      <p className="text-xs text-muted-foreground ml-6">
-        Administradores da UNE CX têm acesso completo a todas as organizações e recursos do sistema.
-      </p>
     </div>
   );
 };
