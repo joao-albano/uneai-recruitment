@@ -21,3 +21,13 @@ export type NewOrganizationType = {
   isMainOrg?: boolean;
   products?: OrganizationProduct[];
 };
+
+// Add new type for plans in the context of organizations
+export type OrganizationPlan = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  relatedProduct?: ProductType;
+  features?: string[];
+};

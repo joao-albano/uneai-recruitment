@@ -8,6 +8,8 @@ export interface Plan {
   name: string;
   description: string;
   price: number;
+  features?: string[];
+  relatedProduct?: string;
 }
 
 export const usePlans = () => {
@@ -23,7 +25,7 @@ export const usePlans = () => {
       console.log('Buscando planos da tabela plans...');
       const { data, error } = await supabase
         .from('plans')
-        .select('*');
+        .select('*, related_product');
           
       if (error) {
         console.error('Erro ao carregar planos:', error);
@@ -34,7 +36,15 @@ export const usePlans = () => {
         
       if (data && data.length > 0) {
         console.log('Planos carregados com sucesso:', data);
-        setPlans(data as Plan[]);
+        const formattedPlans = data.map(plan => ({
+          id: plan.id,
+          name: plan.name,
+          description: plan.description,
+          price: plan.price,
+          features: plan.features ? JSON.parse(plan.features) : [],
+          relatedProduct: plan.related_product
+        }));
+        setPlans(formattedPlans as Plan[]);
       } else {
         console.log('Nenhum plano encontrado');
         setPlans([]);

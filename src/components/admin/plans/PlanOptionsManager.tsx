@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -13,11 +12,14 @@ import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Pencil, RefreshCw } from 'lucide-react';
+import { Package, CheckCircle2, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from 'lucide-react';
 
 const planSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   price: z.string().min(2, "Preço inválido"),
   description: z.string().min(2, "Descrição deve ter pelo menos 2 caracteres"),
+  relatedProduct: z.string().optional(),
+  features: z.array(z.string()).optional(),
 });
 
 const PlanOptionsManager: React.FC = () => {
@@ -34,6 +36,8 @@ const PlanOptionsManager: React.FC = () => {
       name: '',
       price: '',
       description: '',
+      relatedProduct: '',
+      features: [],
     },
   });
   
@@ -43,6 +47,8 @@ const PlanOptionsManager: React.FC = () => {
       name: plan.name,
       price: plan.price,
       description: plan.description,
+      relatedProduct: plan.relatedProduct || '',
+      features: plan.features || [],
     });
   };
   
@@ -53,6 +59,8 @@ const PlanOptionsManager: React.FC = () => {
       name: values.name,
       price: values.price,
       description: values.description,
+      relatedProduct: values.relatedProduct,
+      features: values.features,
     });
     
     toast({
@@ -133,6 +141,24 @@ const PlanOptionsManager: React.FC = () => {
             </CardHeader>
             <CardContent className="pb-2">
               <div className="text-2xl font-bold">{plan.price}</div>
+              
+              {plan.relatedProduct && (
+                <div className="mt-2 text-sm text-muted-foreground flex items-center">
+                  <Package className="h-4 w-4 mr-1" />
+                  <span>{plan.relatedProduct}</span>
+                </div>
+              )}
+              
+              {plan.features && plan.features.length > 0 && (
+                <div className="mt-3 space-y-1">
+                  {plan.features.map((feature, idx) => (
+                    <div key={idx} className="flex items-center text-sm">
+                      <CheckCircle2 className="text-green-500 h-4 w-4 mr-1" />
+                      <span>{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
             <CardFooter>
               <Button 
@@ -213,6 +239,36 @@ const PlanOptionsManager: React.FC = () => {
                       </FormLabel>
                       <FormControl>
                         <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="relatedProduct"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {isPtBR ? "Produto Relacionado" : "Related Product"}
+                      </FormLabel>
+                      <FormControl>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder={isPtBR ? "Selecione um produto" : "Select a product"} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="retention">Retenção de Alunos</SelectItem>
+                            <SelectItem value="billing">Gestão Financeira</SelectItem>
+                            <SelectItem value="recruitment">Recrutamento</SelectItem>
+                            <SelectItem value="secretary">Secretaria Digital</SelectItem>
+                            <SelectItem value="pedagogical">Gestão Pedagógica</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

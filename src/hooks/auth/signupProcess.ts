@@ -37,7 +37,19 @@ export async function processSignup(
     
     console.log('Organização criada com sucesso:', newOrg);
     
-    // Step 2: Create the user with the organization ID in metadata
+    // Step 2: Get the plan information to determine associated products
+    const { data: planInfo, error: planError } = await supabase
+      .from('plans')
+      .select('*, related_product')
+      .eq('id', planData.planId)
+      .single();
+      
+    if (planError) {
+      console.error('Erro ao obter informações do plano:', planError);
+      // Continue anyway as this is not critical
+    }
+    
+    // Step 3: Create the user with the organization ID in metadata
     const { data, error } = await supabase.auth.signUp({
       email: userData.email,
       password: userData.password,
@@ -63,7 +75,7 @@ export async function processSignup(
       return false;
     }
     
-    // Step 3: Update the user's profile to link to the organization
+    // Step 4: Update the user's profile to link to the organization
     if (data.user) {
       const { error: profileError } = await supabase
         .from('profiles')
@@ -79,7 +91,25 @@ export async function processSignup(
         return false;
       }
       
-      // Step 4: Create subscription with trial period
+      // Step 5: Associate organization with products based on plan
+      if (planInfo && planInfo.related_product) {
+        const { error: productError } = await supabase
+          .from('organization_products')
+          .insert([{
+            organization_id: newOrg.id,
+            type: planInfo.related_product,
+            active: true
+          }]);
+          
+        if (productError) {
+          console.error('Erro ao associar produto:', productError);
+          // Non-critical, so continue
+        } else {
+          console.log('Produto associado com sucesso à organização!');
+        }
+      }
+      
+      // Step 6: Create subscription with trial period
       const now = new Date();
       const trialEndDate = new Date(now);
       trialEndDate.setDate(now.getDate() + 14); // 14 days trial

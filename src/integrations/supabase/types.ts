@@ -90,25 +90,39 @@ export type Database = {
         Row: {
           created_at: string | null
           description: string | null
+          features: Json | null
           id: string
           name: string
           price: number | null
+          related_product: string | null
         }
         Insert: {
           created_at?: string | null
           description?: string | null
+          features?: Json | null
           id?: string
           name: string
           price?: number | null
+          related_product?: string | null
         }
         Update: {
           created_at?: string | null
           description?: string | null
+          features?: Json | null
           id?: string
           name?: string
           price?: number | null
+          related_product?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "plans_related_product_fkey"
+            columns: ["related_product"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["type"]
+          },
+        ]
       }
       products: {
         Row: {

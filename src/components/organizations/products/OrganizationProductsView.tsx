@@ -82,20 +82,29 @@ const OrganizationProductsView: React.FC<OrganizationProductsViewProps> = ({
     );
   }
 
+  // Fetch product details from our helper function
+  const productsWithDetails = products.map(product => {
+    const details = getProductDetails(product.type);
+    return {
+      ...product,
+      details
+    };
+  });
+
   // Use compact view for use in cards or other smaller UI elements
   if (compact) {
     return (
       <div className="flex flex-wrap gap-1.5">
-        {products.map(product => {
-          const { name, icon: Icon, color } = getProductDetails(product.type);
+        {productsWithDetails.map(product => {
+          const { details } = product;
           return (
             <Badge 
               key={product.type} 
               variant={product.active ? "default" : "outline"}
-              className={`flex items-center gap-1 px-2 ${product.active ? color : 'text-gray-500 border-gray-200'}`}
+              className={`flex items-center gap-1 px-2 ${product.active ? details.color : 'text-gray-500 border-gray-200'}`}
             >
-              <Icon className="h-3 w-3" />
-              <span>{name}</span>
+              <details.icon className="h-3 w-3" />
+              <span>{details.name}</span>
             </Badge>
           );
         })}
@@ -114,18 +123,18 @@ const OrganizationProductsView: React.FC<OrganizationProductsViewProps> = ({
       )}
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {products.map(product => {
-          const { name, description, icon: Icon, color } = getProductDetails(product.type);
+        {productsWithDetails.map(product => {
+          const { details } = product;
           
           return (
             <Card key={product.type} className={`border ${product.active ? 'border-gray-200' : 'border-gray-100 bg-gray-50'}`}>
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-full ${product.active ? color : 'bg-gray-200 text-gray-500'}`}>
-                      <Icon className="h-5 w-5" />
+                    <div className={`p-2 rounded-full ${product.active ? details.color : 'bg-gray-200 text-gray-500'}`}>
+                      <details.icon className="h-5 w-5" />
                     </div>
-                    <CardTitle className="text-base">{name}</CardTitle>
+                    <CardTitle className="text-base">{details.name}</CardTitle>
                   </div>
                   <div>
                     {product.active ? (
@@ -143,7 +152,7 @@ const OrganizationProductsView: React.FC<OrganizationProductsViewProps> = ({
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">{description}</p>
+                <p className="text-sm text-muted-foreground">{details.description}</p>
               </CardContent>
             </Card>
           );
