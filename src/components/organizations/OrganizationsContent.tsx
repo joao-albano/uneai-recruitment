@@ -16,7 +16,6 @@ const OrganizationsContent: React.FC = () => {
   const navigate = useNavigate();
   const { isAdmin, isSuperAdmin, currentUser } = useAuth();
   const [retryCount, setRetryCount] = useState(0);
-  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   
   const {
     // State
@@ -48,18 +47,10 @@ const OrganizationsContent: React.FC = () => {
       return;
     }
     
-    const loadData = async () => {
-      await loadOrganizations();
-      setInitialLoadComplete(true);
-    };
+    loadOrganizations();
     
-    loadData();
-    
-  }, [isAdmin, isSuperAdmin, navigate, loadOrganizations, currentUser]);
-
-  // Retry loading if needed
-  useEffect(() => {
-    if (initialLoadComplete && organizations.length === 0 && retryCount < 3) {
+    // Tentar novamente após alguns segundos se não conseguir carregar
+    if (organizations.length === 0 && retryCount < 2) {
       const timer = setTimeout(() => {
         console.log(`Tentativa ${retryCount + 1} de carregar organizações...`);
         loadOrganizations();
@@ -68,7 +59,7 @@ const OrganizationsContent: React.FC = () => {
       
       return () => clearTimeout(timer);
     }
-  }, [initialLoadComplete, organizations.length, retryCount, loadOrganizations]);
+  }, [isAdmin, isSuperAdmin, navigate, loadOrganizations, currentUser, organizations.length, retryCount]);
 
   // Show error message if no permissions
   if (!isAdmin && !isSuperAdmin) {
@@ -76,7 +67,7 @@ const OrganizationsContent: React.FC = () => {
   }
 
   // Show loading state
-  if (isLoading && !initialLoadComplete) {
+  if (isLoading) {
     return <OrganizationsLoading />;
   }
 
