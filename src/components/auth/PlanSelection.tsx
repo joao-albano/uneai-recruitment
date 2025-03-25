@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -10,24 +10,18 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
+import { usePlans } from '@/hooks/usePlans';
 
-interface Plan {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-}
-
-interface PlanSelectionProps {
-  plans: Plan[];
-  isLoading?: boolean;
-  error?: string | null;
-  onRetry?: () => void;
-}
-
-const PlanSelection = ({ plans, isLoading = false, error, onRetry }: PlanSelectionProps) => {
+const PlanSelection = () => {
   const { control, watch } = useFormContext();
   const selectedPlanId = watch('planId');
+  
+  const { plans, isLoading, error, fetchPlans } = usePlans();
+
+  useEffect(() => {
+    // Buscar planos ao carregar o componente
+    fetchPlans();
+  }, [fetchPlans]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -38,10 +32,8 @@ const PlanSelection = ({ plans, isLoading = false, error, onRetry }: PlanSelecti
   };
 
   const handleRetry = () => {
-    if (onRetry) {
-      console.log('Tentando carregar planos novamente...');
-      onRetry();
-    }
+    console.log('Tentando carregar planos novamente...');
+    fetchPlans();
   };
 
   if (isLoading) {
@@ -72,11 +64,9 @@ const PlanSelection = ({ plans, isLoading = false, error, onRetry }: PlanSelecti
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <span>{error}</span>
-            {onRetry && (
-              <Button variant="outline" size="sm" onClick={handleRetry} className="mt-2 sm:mt-0">
-                Tentar novamente
-              </Button>
-            )}
+            <Button variant="outline" size="sm" onClick={handleRetry} className="mt-2 sm:mt-0">
+              Tentar novamente
+            </Button>
           </AlertDescription>
         </Alert>
       </div>
@@ -90,11 +80,9 @@ const PlanSelection = ({ plans, isLoading = false, error, onRetry }: PlanSelecti
         <div className="py-8 flex flex-col items-center justify-center text-muted-foreground">
           <AlertTriangle className="h-8 w-8 mb-2" />
           <p>Nenhum plano disponível no momento.</p>
-          {onRetry && (
-            <Button variant="outline" size="sm" onClick={handleRetry} className="mt-4">
-              Tentar novamente
-            </Button>
-          )}
+          <Button variant="outline" size="sm" onClick={handleRetry} className="mt-4">
+            Tentar novamente
+          </Button>
         </div>
       </div>
     );

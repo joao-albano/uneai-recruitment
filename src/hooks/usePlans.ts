@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -15,7 +15,7 @@ export const usePlans = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  const fetchPlans = async () => {
+  const fetchPlans = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     
@@ -47,10 +47,6 @@ export const usePlans = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-  
-  useEffect(() => {
-    fetchPlans();
   }, []);
   
   return {
