@@ -34,7 +34,19 @@ export const useOrganizationCrud = (
       await loadOrganizations();
     } catch (error) {
       console.error("Erro ao criar organização:", error);
-      toast.error("Erro ao criar organização");
+      
+      // Mensagens de erro mais específicas baseadas no tipo de erro
+      if (error instanceof Error) {
+        if (error.message.includes("duplicate key")) {
+          toast.error("Já existe uma organização com este nome");
+        } else if (error.message.includes("permission denied")) {
+          toast.error("Você não tem permissão para criar organizações");
+        } else {
+          toast.error(`Erro ao criar organização: ${error.message}`);
+        }
+      } else {
+        toast.error("Erro desconhecido ao criar organização");
+      }
     }
   }, [loadOrganizations]);
 
@@ -58,7 +70,21 @@ export const useOrganizationCrud = (
       await loadOrganizations();
     } catch (error) {
       console.error("Erro ao atualizar organização:", error);
-      toast.error("Erro ao atualizar organização");
+      
+      // Mensagens de erro mais específicas baseadas no tipo de erro
+      if (error instanceof Error) {
+        if (error.message.includes("duplicate key")) {
+          toast.error("Já existe uma organização com este nome");
+        } else if (error.message.includes("permission denied")) {
+          toast.error("Você não tem permissão para editar esta organização");
+        } else if (error.message.includes("not found")) {
+          toast.error("Organização não encontrada");
+        } else {
+          toast.error(`Erro ao atualizar organização: ${error.message}`);
+        }
+      } else {
+        toast.error("Erro desconhecido ao atualizar organização");
+      }
     }
   }, [loadOrganizations]);
 
@@ -74,7 +100,21 @@ export const useOrganizationCrud = (
       await loadOrganizations();
     } catch (error) {
       console.error("Erro ao excluir organização:", error);
-      toast.error("Erro ao excluir organização");
+      
+      // Mensagens de erro mais específicas baseadas no tipo de erro
+      if (error instanceof Error) {
+        if (error.message.includes("foreign key constraint")) {
+          toast.error("Não é possível excluir esta organização porque existem registros vinculados a ela");
+        } else if (error.message.includes("permission denied")) {
+          toast.error("Você não tem permissão para excluir esta organização");
+        } else if (error.message.includes("not found")) {
+          toast.error("Organização não encontrada");
+        } else {
+          toast.error(`Erro ao excluir organização: ${error.message}`);
+        }
+      } else {
+        toast.error("Erro desconhecido ao excluir organização");
+      }
     }
   }, [loadOrganizations]);
 
