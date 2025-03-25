@@ -21,10 +21,23 @@ const OrganizationCard: React.FC<OrganizationCardProps> = ({
   onEdit,
   onDelete
 }) => {
-  // Format date to Brazilian format
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return format(date, "'Criada em' d 'de' MMMM 'de' yyyy", { locale: ptBR });
+  // Format date to Brazilian format with safe fallback
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return 'Data não disponível';
+    
+    try {
+      const date = new Date(dateString);
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        return 'Data não disponível';
+      }
+      
+      return format(date, "'Criada em' d 'de' MMMM 'de' yyyy", { locale: ptBR });
+    } catch (error) {
+      console.error('Erro ao formatar data:', error);
+      return 'Data não disponível';
+    }
   };
 
   return (

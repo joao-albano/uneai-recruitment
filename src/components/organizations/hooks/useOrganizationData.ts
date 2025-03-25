@@ -45,7 +45,7 @@ export const useOrganizationData = (
               name: org.name,
               isActive: true, // Since is_active doesn't exist in the database, default to true
               isMainOrg: org.is_main_org || false,
-              createdAt: org.created_at,
+              createdAt: typeof org.created_at === 'string' ? org.created_at : undefined,
               products: Array.isArray(org.products) ? org.products.map(p => ({
                 type: p.type as ProductType,
                 active: p.active ?? true
