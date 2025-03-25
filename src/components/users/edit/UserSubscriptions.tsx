@@ -34,18 +34,18 @@ const UserSubscriptions: React.FC<UserSubscriptionsProps> = ({
           {subscriptions.map((subscription, index) => (
             <div key={index} className="flex justify-between items-center py-1 border-b last:border-0">
               <div className="flex items-center">
-                <span className="font-medium text-sm">{subscription.name}</span>
+                <span className="font-medium text-sm">{subscription.productType}</span>
               </div>
               <Badge 
-                variant={subscription.active ? "default" : "outline"} 
-                className={subscription.active ? "bg-green-100 text-green-800 hover:bg-green-100" : ""}
+                variant={subscription.status === 'active' ? "default" : "outline"} 
+                className={subscription.status === 'active' ? "bg-green-100 text-green-800 hover:bg-green-100" : ""}
               >
-                {subscription.active ? (
+                {subscription.status === 'active' ? (
                   <Check className="mr-1 h-3 w-3" />
                 ) : (
                   <X className="mr-1 h-3 w-3" />
                 )}
-                {subscription.active ? 'Ativo' : 'Inativo'}
+                {subscription.status === 'active' ? 'Ativo' : 'Inativo'}
               </Badge>
             </div>
           ))}

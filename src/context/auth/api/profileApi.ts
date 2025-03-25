@@ -40,6 +40,7 @@ export const fetchUserProfile = async (userId: string) => {
     
     // Extract organization data from profile response
     if (profile?.organizations) {
+      // Check if organizations is an array or object and extract data accordingly
       if (Array.isArray(profile.organizations)) {
         const org = profile.organizations[0];
         if (org) {
@@ -49,7 +50,8 @@ export const fetchUserProfile = async (userId: string) => {
             isMainOrg: org.is_main_org
           };
         }
-      } else {
+      } else if (profile.organizations && typeof profile.organizations === 'object') {
+        // Handle the case where organizations is an object
         organization = {
           id: profile.organizations.id,
           name: profile.organizations.name,

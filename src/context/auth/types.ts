@@ -32,6 +32,6 @@ export type AuthContextType = {
   currentOrganization: Organization | null;
   session: Session | null;
   login: (email: string, password: string) => Promise<LoginResult>;
-  loginWithPhone: (phone: string) => Promise<LoginResult>;
+  loginWithPhone: (phone: string, password: string) => Promise<LoginResult>;
   logout: () => Promise<boolean>;
 };
