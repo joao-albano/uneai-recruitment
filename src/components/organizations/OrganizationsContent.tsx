@@ -4,15 +4,16 @@ import { useOrganizationData } from './hooks/useOrganizationData';
 import { useOrganizationCrud } from './hooks/useOrganizationCrud';
 import { useAuth } from '@/context/auth';
 import { toast } from "sonner";
+import { useNavigate } from 'react-router-dom';
 import CreateOrganizationDialog from './CreateOrganizationDialog';
 import EditOrganizationDialog from './EditOrganizationDialog';
 import DeleteOrganizationDialog from './DeleteOrganizationDialog';
 import OrganizationsList from './OrganizationsList';
 import OrganizationsHeader from './OrganizationsHeader';
 import { OrganizationType } from './types';
-import { redirect } from 'react-router-dom';
 
 const OrganizationsContent: React.FC = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [organizations, setOrganizations] = useState<OrganizationType[]>([]);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -36,12 +37,13 @@ const OrganizationsContent: React.FC = () => {
     // Check permissions - redirect if not admin or super admin
     if (!isAdmin && !isSuperAdmin) {
       toast.error("Você não tem permissão para acessar esta página");
-      redirect('/');
+      navigate('/');
       return;
     }
     
+    // Load organizations
     loadOrganizations();
-  }, [loadOrganizations, isAdmin, isSuperAdmin]);
+  }, [loadOrganizations, isAdmin, isSuperAdmin, navigate]);
 
   // Dialog handlers
   const handleOpenCreateDialog = () => {
@@ -62,6 +64,7 @@ const OrganizationsContent: React.FC = () => {
   const handleCreateSubmit = async (values: { name?: string; isActive?: boolean }) => {
     await handleCreateOrganization(values.name || '', values.isActive || false);
     setShowCreateDialog(false);
+    setNewOrganization({ name: '', isActive: true });
     loadOrganizations();
   };
   

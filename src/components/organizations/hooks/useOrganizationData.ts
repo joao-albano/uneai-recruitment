@@ -1,6 +1,6 @@
 
-import { useCallback, useEffect } from 'react';
-import { OrganizationType, OrganizationProduct } from '../types';
+import { useCallback } from 'react';
+import { OrganizationType } from '../types';
 import { toast } from "sonner";
 import { fetchOrganizations } from '../api';
 import { ProductType } from '@/context/ProductContext';
@@ -31,17 +31,8 @@ export const useOrganizationData = (
       if (Array.isArray(orgsData)) {
         console.log('Organizações carregadas com sucesso:', orgsData);
         
-        // Filtrar organizações conforme o perfil do usuário
-        let filteredOrgs = orgsData;
-        
-        // Se for admin (não super admin), filtrar apenas a organização do usuário
-        if (isAdmin && !isSuperAdmin && currentUser?.organizationId) {
-          filteredOrgs = orgsData.filter(org => org.id === currentUser.organizationId);
-          console.log('Filtrando apenas a organização do usuário:', filteredOrgs);
-        }
-        
         // Transformar os dados do formato Supabase para o formato esperado por OrganizationType
-        const formattedOrgs: OrganizationType[] = filteredOrgs.map(org => ({
+        const formattedOrgs: OrganizationType[] = orgsData.map(org => ({
           id: org.id,
           name: org.name,
           isActive: true, // Valor padrão, ajustar conforme necessário
