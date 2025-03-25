@@ -2,18 +2,24 @@
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile } from '@/context/auth/types';
 
+/**
+ * Busca organizações com base no perfil do usuário
+ * - Super Admin: vê todas as organizações
+ * - Admin: vê apenas a organização vinculada a ele
+ * - Usuário normal: não vê organizações
+ */
 export const fetchOrganizations = async (currentUser: UserProfile | null) => {
   try {
-    console.log('Buscando organizações...', currentUser);
+    console.log('Buscando organizações para o usuário:', currentUser);
     
-    // Se não há usuário autenticado, retornar array vazio
-    if (!currentUser) {
-      console.log('Nenhum usuário autenticado.');
+    // Se não há usuário autenticado ou não é admin, retornar array vazio
+    if (!currentUser || (!currentUser.isSuperAdmin && !currentUser.organization)) {
+      console.log('Usuário sem permissão para ver organizações.');
       return [];
     }
     
     // Buscar organizações com seus produtos
-    const { data, error } = await supabase
+    const query = supabase
       .from('organizations')
       .select(`
         id, 
@@ -32,16 +38,16 @@ export const fetchOrganizations = async (currentUser: UserProfile | null) => {
       `)
       .order('name', { ascending: true });
     
+    // Se for admin (não super), filtrar apenas a organização do usuário
+    if (currentUser && !currentUser.isSuperAdmin && currentUser.organization) {
+      query.eq('id', currentUser.organization.id);
+    }
+    
+    const { data, error } = await query;
+    
     if (error) {
       console.error('Erro ao buscar organizações:', error);
       throw error;
-    }
-    
-    // Para usuários não super admin, filtrar apenas a organização do usuário
-    if (currentUser && !currentUser.isSuperAdmin && currentUser.organizationId) {
-      const filteredData = data?.filter(org => org.id === currentUser.organizationId);
-      console.log('Organizações filtradas para usuário admin:', filteredData);
-      return filteredData || [];
     }
     
     console.log('Organizações encontradas:', data);

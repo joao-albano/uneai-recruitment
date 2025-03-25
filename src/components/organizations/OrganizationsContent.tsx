@@ -1,16 +1,15 @@
 
 import React, { useState, useEffect } from 'react';
-import { useOrganizationData } from './hooks/useOrganizationData';
-import { useOrganizationCrud } from './hooks/useOrganizationCrud';
 import { useAuth } from '@/context/auth';
 import { toast } from "sonner";
 import { useNavigate } from 'react-router-dom';
+import { fetchOrganizations, createOrganization, updateOrganization, deleteOrganization } from './api';
+import { OrganizationType } from './types';
+import OrganizationsList from './OrganizationsList';
+import OrganizationsHeader from './OrganizationsHeader';
 import CreateOrganizationDialog from './CreateOrganizationDialog';
 import EditOrganizationDialog from './EditOrganizationDialog';
 import DeleteOrganizationDialog from './DeleteOrganizationDialog';
-import OrganizationsList from './OrganizationsList';
-import OrganizationsHeader from './OrganizationsHeader';
-import { OrganizationType } from './types';
 
 const OrganizationsContent: React.FC = () => {
   const navigate = useNavigate();
@@ -21,70 +20,116 @@ const OrganizationsContent: React.FC = () => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<OrganizationType | null>(null);
   const [newOrganization, setNewOrganization] = useState({ name: '', isActive: true });
-  const { isAdmin, isSuperAdmin } = useAuth();
+  const { currentUser, isAdmin, isSuperAdmin } = useAuth();
 
-  // Get organization data and functions from hooks
-  const { loadOrganizations } = useOrganizationData(setOrganizations, setLoading);
-  
-  // CRUD operations
-  const {
-    handleCreateOrganization,
-    handleEditOrganization,
-    handleDeleteOrganization
-  } = useOrganizationCrud(loadOrganizations);
+  // Carregar organizações
+  const loadOrganizations = async () => {
+    setLoading(true);
+    try {
+      const orgsData = await fetchOrganizations(currentUser);
+      
+      if (Array.isArray(orgsData)) {
+        // Transformar os dados do formato Supabase para o formato esperado por OrganizationType
+        const formattedOrgs: OrganizationType[] = orgsData.map(org => ({
+          id: org.id,
+          name: org.name,
+          isActive: true, // Sem campo is_active no banco, assume true
+          isMainOrg: org.is_main_org || false,
+          createdAt: org.created_at,
+          products: org.products ? org.products.map(p => ({
+            type: p.type,
+            active: p.active
+          })) : []
+        }));
+        
+        setOrganizations(formattedOrgs);
+      } else {
+        setOrganizations([]);
+        toast.error("Formato de resposta inesperado ao buscar organizações");
+      }
+    } catch (error) {
+      console.error("Erro ao carregar organizações:", error);
+      toast.error("Erro ao carregar organizações. Tente novamente mais tarde.");
+      setOrganizations([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Check permissions - redirect if not admin or super admin
+    // Verificar permissões - redirecionar se não for admin ou super admin
     if (!isAdmin && !isSuperAdmin) {
       toast.error("Você não tem permissão para acessar esta página");
       navigate('/');
       return;
     }
     
-    console.log('Iniciando carregamento de organizações...');
-    // Load organizations
-    loadOrganizations()
-      .then(() => console.log('Organizações carregadas com sucesso'))
-      .catch(error => console.error('Erro ao carregar organizações:', error));
-      
-    // Log to see if this effect is running
-    console.log('Carregando organizações no useEffect');
-  }, [loadOrganizations, isAdmin, isSuperAdmin, navigate]);
+    loadOrganizations();
+  }, [isAdmin, isSuperAdmin, currentUser, navigate]);
 
-  // Dialog handlers
-  const handleOpenCreateDialog = () => {
-    setShowCreateDialog(true);
-  };
-
-  const handleOpenEditDialog = (organization: OrganizationType) => {
-    setSelectedOrg(organization);
-    setShowEditDialog(true);
-  };
-
-  const handleOpenDeleteDialog = (organization: OrganizationType) => {
-    setSelectedOrg(organization);
-    setShowDeleteDialog(true);
-  };
-
-  // Submit handlers
+  // CRUD Operations
   const handleCreateSubmit = async (values: { name?: string; isActive?: boolean }) => {
-    await handleCreateOrganization(values.name || '', values.isActive || false);
-    setShowCreateDialog(false);
-    setNewOrganization({ name: '', isActive: true });
+    try {
+      await createOrganization({
+        name: values.name || '',
+        isActive: values.isActive || false,
+        products: [
+          { type: 'retention', active: true },
+          { type: 'billing', active: false }
+        ]
+      });
+      
+      toast.success("Organização criada com sucesso");
+      loadOrganizations();
+      setShowCreateDialog(false);
+      setNewOrganization({ name: '', isActive: true });
+    } catch (error) {
+      console.error("Erro ao criar organização:", error);
+      toast.error("Erro ao criar organização");
+    }
   };
   
   const handleEditSubmit = async (values: { name?: string; isActive?: boolean }) => {
     if (selectedOrg) {
-      await handleEditOrganization(selectedOrg.id, values.name || '', values.isActive || false);
-      setShowEditDialog(false);
+      try {
+        await updateOrganization(selectedOrg.id, {
+          name: values.name || '',
+          isActive: values.isActive || false
+        });
+        
+        toast.success("Organização atualizada com sucesso");
+        loadOrganizations();
+        setShowEditDialog(false);
+      } catch (error) {
+        console.error("Erro ao atualizar organização:", error);
+        toast.error("Erro ao atualizar organização");
+      }
     }
   };
   
   const handleDelete = async () => {
     if (selectedOrg) {
-      await handleDeleteOrganization(selectedOrg.id);
-      setShowDeleteDialog(false);
+      try {
+        await deleteOrganization(selectedOrg.id);
+        toast.success("Organização excluída com sucesso");
+        loadOrganizations();
+        setShowDeleteDialog(false);
+      } catch (error) {
+        console.error("Erro ao excluir organização:", error);
+        toast.error("Erro ao excluir organização");
+      }
     }
+  };
+
+  // Dialog handlers
+  const handleOpenCreateDialog = () => setShowCreateDialog(true);
+  const handleOpenEditDialog = (organization: OrganizationType) => {
+    setSelectedOrg(organization);
+    setShowEditDialog(true);
+  };
+  const handleOpenDeleteDialog = (organization: OrganizationType) => {
+    setSelectedOrg(organization);
+    setShowDeleteDialog(true);
   };
 
   // Show error message if no permissions
@@ -99,8 +144,6 @@ const OrganizationsContent: React.FC = () => {
       </div>
     );
   }
-
-  console.log('Renderizando organizações:', organizations);
 
   if (loading) {
     return (

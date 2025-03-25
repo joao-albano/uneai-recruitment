@@ -33,6 +33,8 @@ export const createOrganization = async (data: NewOrganizationType) => {
         active: product.active
       }));
       
+      console.log('Adicionando produtos para a organização:', productsToInsert);
+      
       const { error: productError } = await supabase
         .from('organization_products')
         .insert(productsToInsert);

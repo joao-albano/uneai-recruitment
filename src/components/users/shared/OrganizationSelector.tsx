@@ -24,7 +24,7 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
   const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { toast } = useToast();
-  const { currentUser, isAdmin, isSuperAdmin } = useAuth();
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     const loadOrganizations = async () => {
@@ -36,19 +36,16 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
         
         if (Array.isArray(orgsData) && orgsData.length > 0) {
           console.log('Organizações carregadas com sucesso:', orgsData);
-          
           setOrganizations(orgsData);
         } else {
           console.warn('Nenhuma organização retornada ou array vazio');
           setOrganizations([]);
           
-          if (isSuperAdmin) {
-            toast({
-              title: "Nenhuma organização encontrada",
-              description: "Não foi possível carregar organizações. Verifique se existem organizações cadastradas.",
-              variant: "destructive"
-            });
-          }
+          toast({
+            title: "Nenhuma organização encontrada",
+            description: "Não foi possível carregar organizações. Verifique se existem organizações cadastradas.",
+            variant: "destructive"
+          });
         }
       } catch (error) {
         console.error('Erro ao carregar organizações:', error);
@@ -65,7 +62,7 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
     };
     
     loadOrganizations();
-  }, [isAdmin, isSuperAdmin, currentUser, toast]);
+  }, [currentUser, toast]);
   
   const handleSelectChange = (value: string) => {
     const selectedOrg = organizations.find(org => org.id === value);
