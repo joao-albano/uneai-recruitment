@@ -20,29 +20,27 @@ const UserBasicInfoForm: React.FC<UserBasicInfoFormProps> = ({
   isUneCxAdmin = false
 }) => {
   const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   
-  // Carregar organizações disponíveis para super admin
+  // Carregar organizações disponíveis para todos os usuários, não apenas super admin
   useEffect(() => {
     const loadOrganizations = async () => {
-      if (isSuperAdmin) {
-        setLoading(true);
-        try {
-          const orgsData = await fetchOrganizations();
-          console.log('Organizações carregadas no UserBasicInfoForm:', orgsData);
-          setOrganizations(orgsData || []);
-        } catch (error) {
-          console.error('Erro ao carregar organizações:', error);
-          // Não quebrar a interface em caso de erro
-          setOrganizations([]);
-        } finally {
-          setLoading(false);
-        }
+      setLoading(true);
+      try {
+        const orgsData = await fetchOrganizations();
+        console.log('Organizações carregadas no UserBasicInfoForm:', orgsData);
+        setOrganizations(orgsData || []);
+      } catch (error) {
+        console.error('Erro ao carregar organizações:', error);
+        // Não quebrar a interface em caso de erro
+        setOrganizations([]);
+      } finally {
+        setLoading(false);
       }
     };
     
     loadOrganizations();
-  }, [isSuperAdmin]);
+  }, []);
   
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,35 +124,35 @@ const UserBasicInfoForm: React.FC<UserBasicInfoFormProps> = ({
         </Select>
       </div>
       
-      {isSuperAdmin && (
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="organizationId" className="text-right">
-            Organização
-          </Label>
-          <Select
-            name="organizationId"
-            value={selectedUser.organizationId || ''}
-            onValueChange={(value) => handleSelectChange('organizationId', value)}
-          >
-            <SelectTrigger className="col-span-3">
-              <SelectValue placeholder={loading ? "Carregando..." : "Selecione uma organização"} />
-            </SelectTrigger>
-            <SelectContent>
-              {organizations.length > 0 ? (
-                organizations.map(org => (
-                  <SelectItem key={org.id} value={org.id}>
-                    {org.name}
-                  </SelectItem>
-                ))
-              ) : (
-                <SelectItem value="empty" disabled>
-                  {loading ? "Carregando organizações..." : "Nenhuma organização disponível"}
+      {/* Mostrar dropdown de organizações para todos, mas apenas editável para super admin */}
+      <div className="grid grid-cols-4 items-center gap-4">
+        <Label htmlFor="organizationId" className="text-right">
+          Organização
+        </Label>
+        <Select
+          name="organizationId"
+          value={selectedUser.organizationId || ''}
+          onValueChange={(value) => handleSelectChange('organizationId', value)}
+          disabled={!isSuperAdmin}
+        >
+          <SelectTrigger className="col-span-3">
+            <SelectValue placeholder={loading ? "Carregando..." : "Selecione uma organização"} />
+          </SelectTrigger>
+          <SelectContent>
+            {organizations.length > 0 ? (
+              organizations.map(org => (
+                <SelectItem key={org.id} value={org.id}>
+                  {org.name}
                 </SelectItem>
-              )}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
+              ))
+            ) : (
+              <SelectItem value="empty" disabled>
+                {loading ? "Carregando organizações..." : "Nenhuma organização disponível"}
+              </SelectItem>
+            )}
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   );
 };

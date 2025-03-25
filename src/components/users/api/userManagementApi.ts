@@ -35,10 +35,11 @@ export const fetchUsers = async () => {
 
 /**
  * Busca organizações disponíveis - respeitará as políticas RLS
- * Atualizada para resolver o problema de acesso às organizações
+ * Atualizada para garantir que as organizações sejam carregadas corretamente
  */
 export const fetchOrganizations = async () => {
   try {
+    console.log('Iniciando busca de organizações');
     // Usando o método correto para acessar a tabela organizations
     const { data, error } = await supabase
       .from('organizations')
