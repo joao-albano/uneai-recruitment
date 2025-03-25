@@ -86,6 +86,7 @@ const UserBasicInfoForm: React.FC<UserBasicInfoFormProps> = ({
   if (!selectedUser) return null;
   
   console.log('UserBasicInfoForm rendering with organizationId:', selectedUser.organizationId);
+  console.log('Available organizations:', organizations);
   
   return (
     <div className="space-y-4">

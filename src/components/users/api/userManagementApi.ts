@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { UserType, NewUserType } from '../types';
 
@@ -17,7 +18,7 @@ export const fetchUsers = async () => {
         is_admin,
         is_super_admin,
         organization_id,
-        organizations(id, name)
+        organizations:organization_id(id, name)
       `);
     
     if (error) {
@@ -25,6 +26,7 @@ export const fetchUsers = async () => {
       throw error;
     }
     
+    console.log('Dados de usuários recebidos:', data);
     return data;
   } catch (error) {
     console.error('Erro ao buscar usuários:', error);
@@ -34,11 +36,10 @@ export const fetchUsers = async () => {
 
 /**
  * Busca todas as organizações disponíveis
- * Simplificada para sempre retornar todas as organizações
  */
 export const fetchOrganizations = async () => {
   try {
-    console.log('Buscando organizações de forma simplificada');
+    console.log('Buscando organizações');
     
     // Buscar todas as organizações diretamente
     const { data, error } = await supabase
@@ -101,6 +102,8 @@ export const createUser = async (userData: NewUserType) => {
  */
 export const updateUser = async (userId: string, userData: Partial<UserType>) => {
   try {
+    console.log('Atualizando usuário:', userId, 'com dados:', userData);
+    
     // Atualizar usuário usando a função RPC
     const { error } = await supabase.rpc('update_user_profile', {
       user_id: userId,

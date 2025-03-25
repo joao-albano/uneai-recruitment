@@ -41,15 +41,12 @@ export const useUserFetch = () => {
           
           // Verificar se organizations existe e extrair os dados
           if (profile.organizations) {
-            // Lidar com diferentes formatos de resposta
-            if (Array.isArray(profile.organizations) && profile.organizations.length > 0) {
-              organizationName = profile.organizations[0]?.name;
-              organizationId = profile.organizations[0]?.id;
-            } else if (typeof profile.organizations === 'object') {
-              organizationName = profile.organizations.name;
-              organizationId = profile.organizations.id;
-            }
+            // Como estamos usando foreign keys, a organização vem como objeto e não como array
+            organizationName = profile.organizations?.name;
+            organizationId = profile.organizations?.id || profile.organization_id;
           }
+          
+          console.log('Mapeando usuário:', profile.email, 'organizationId:', organizationId, 'organizationName:', organizationName);
           
           return {
             id: profile.id,
@@ -62,6 +59,8 @@ export const useUserFetch = () => {
             isSuperAdmin: profile.is_super_admin
           };
         });
+        
+        console.log('Usuários mapeados:', mappedUsers);
         
         // Filtrar o usuário atual da lista se necessário
         const filteredUsers = currentUser?.id ? 
