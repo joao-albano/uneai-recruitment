@@ -21,8 +21,6 @@ const UserBasicInfoForm: React.FC<UserBasicInfoFormProps> = ({
   
   useEffect(() => {
     console.log('UserBasicInfoForm - selectedUser atualizado:', selectedUser);
-    console.log('UserBasicInfoForm - organizationId:', selectedUser.organizationId);
-    console.log('UserBasicInfoForm - organizationName:', selectedUser.organizationName);
   }, [selectedUser]);
   
   if (!selectedUser) return null;

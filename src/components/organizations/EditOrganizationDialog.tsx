@@ -1,16 +1,10 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuth } from '@/context/auth';
 import { OrganizationType } from './types';
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
+import { z } from "zod";
+import EditOrganizationForm from './edit/EditOrganizationForm';
 
 interface EditOrganizationDialogProps {
   open: boolean;
@@ -32,24 +26,6 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
   organization,
   onSubmit
 }) => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: organization.name,
-      isActive: organization.isActive,
-    },
-  });
-
-  // Update form values when organization changes
-  useEffect(() => {
-    if (organization) {
-      form.reset({
-        name: organization.name,
-        isActive: organization.isActive
-      });
-    }
-  }, [organization, form]);
-
   const submitHandler = (values: z.infer<typeof formSchema>) => {
     onSubmit(values);
     onOpenChange(false);
@@ -65,51 +41,17 @@ const EditOrganizationDialog: React.FC<EditOrganizationDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
         
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(submitHandler)} className="grid gap-4 py-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nome da Organização</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Digite o nome da organização" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="isActive"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base">Organização Ativa</FormLabel>
-                    <FormDescription>
-                      Organizações inativas não terão acesso ao sistema
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            
-            <DialogFooter>
-              <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>
-                Cancelar
-              </Button>
-              <Button type="submit">Salvar Alterações</Button>
-            </DialogFooter>
-          </form>
-        </Form>
+        <EditOrganizationForm 
+          organization={organization} 
+          onSubmit={submitHandler} 
+        />
+        
+        <DialogFooter>
+          <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>
+            Cancelar
+          </Button>
+          <Button type="submit" form="edit-organization-form">Salvar Alterações</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

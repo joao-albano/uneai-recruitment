@@ -33,7 +33,7 @@ const OrganizationsContent: React.FC = () => {
   } = useOrganizationCrud(loadOrganizations);
 
   useEffect(() => {
-    // Verificar permissões - redirecionar se não for admin ou super admin
+    // Check permissions - redirect if not admin or super admin
     if (!isAdmin && !isSuperAdmin) {
       toast.error("Você não tem permissão para acessar esta página");
       redirect('/');
@@ -43,7 +43,7 @@ const OrganizationsContent: React.FC = () => {
     loadOrganizations();
   }, [loadOrganizations, isAdmin, isSuperAdmin]);
 
-  // Open dialogs
+  // Dialog handlers
   const handleOpenCreateDialog = () => {
     setShowCreateDialog(true);
   };
@@ -58,12 +58,10 @@ const OrganizationsContent: React.FC = () => {
     setShowDeleteDialog(true);
   };
 
-  // Submit handlers that match expected formats
+  // Submit handlers
   const handleCreateSubmit = async (values: { name?: string; isActive?: boolean }) => {
     await handleCreateOrganization(values.name || '', values.isActive || false);
     setShowCreateDialog(false);
-    
-    // Refresh organizations list
     loadOrganizations();
   };
   
@@ -71,8 +69,6 @@ const OrganizationsContent: React.FC = () => {
     if (selectedOrg) {
       await handleEditOrganization(selectedOrg.id, values.name || '', values.isActive || false);
       setShowEditDialog(false);
-      
-      // Refresh organizations list
       loadOrganizations();
     }
   };
@@ -81,13 +77,11 @@ const OrganizationsContent: React.FC = () => {
     if (selectedOrg) {
       await handleDeleteOrganization(selectedOrg.id);
       setShowDeleteDialog(false);
-      
-      // Refresh organizations list
       loadOrganizations();
     }
   };
 
-  // Mostrar mensagem de erro se não tiver permissões
+  // Show error message if no permissions
   if (!isAdmin && !isSuperAdmin) {
     return (
       <div className="flex h-full items-center justify-center p-8">
