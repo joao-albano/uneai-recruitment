@@ -4,7 +4,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { fetchOrganizations } from '../../organizations/api';
 import { useAuth } from '@/context/auth';
 import { useToast } from '@/hooks/use-toast';
-import { ProductType } from '@/context/ProductContext';
+import { toast } from "sonner";
 
 interface OrganizationSelectorProps {
   selectedOrgId: string;
@@ -23,7 +23,6 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
 }) => {
   const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const { toast } = useToast();
   const { currentUser } = useAuth();
 
   useEffect(() => {
@@ -48,8 +47,7 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
           
           toast({
             title: "Nenhuma organização encontrada",
-            description: "Não foi possível carregar organizações. Verifique se existem organizações cadastradas.",
-            variant: "destructive"
+            description: "Não foi possível carregar organizações. Verifique se existem organizações cadastradas."
           });
         }
       } catch (error) {
@@ -58,8 +56,7 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
         
         toast({
           title: "Erro ao carregar organizações",
-          description: "Ocorreu um erro ao buscar a lista de organizações.",
-          variant: "destructive"
+          description: "Ocorreu um erro ao buscar a lista de organizações."
         });
       } finally {
         setLoading(false);
@@ -67,7 +64,7 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
     };
     
     loadOrganizations();
-  }, [currentUser, toast]);
+  }, [currentUser]);
   
   const handleSelectChange = (value: string) => {
     const selectedOrg = organizations.find(org => org.id === value);

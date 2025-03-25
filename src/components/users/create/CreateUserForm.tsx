@@ -17,7 +17,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
   newUser,
   setNewUser
 }) => {
-  const { isSuperAdmin } = useAuth();
+  const { isSuperAdmin, currentUser } = useAuth();
   
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,6 +37,8 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
       organizationId: orgId,
       organizationName: orgName
     });
+    
+    console.log('Organização selecionada:', { orgId, orgName });
   };
   
   return (
@@ -57,6 +59,12 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
         onOrgChange={handleOrgChange}
         disabled={!isSuperAdmin}
       />
+      
+      {!isSuperAdmin && currentUser?.organizationId && (
+        <div className="text-sm text-blue-600 mt-2">
+          O usuário será vinculado à sua organização automaticamente.
+        </div>
+      )}
     </div>
   );
 };

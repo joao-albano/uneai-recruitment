@@ -28,9 +28,11 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   // Pre-select organization for non-superadmin users
   useEffect(() => {
     if (open && !isSuperAdmin && currentUser?.organizationId && !newUser.organizationId) {
+      console.log('Pre-selecting organization for non-superadmin user:', currentUser.organizationId);
       setNewUser(prev => ({ 
         ...prev, 
-        organizationId: currentUser.organizationId || ''
+        organizationId: currentUser.organizationId || '',
+        organizationName: currentUser.organization?.name || ''
       }));
     }
   }, [open, currentUser, isSuperAdmin, newUser.organizationId, setNewUser]);
@@ -39,6 +41,22 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   const canCreateUser = isSuperAdmin ? 
     !!newUser.organizationId : 
     !!currentUser?.organizationId;
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Verificação final da organização
+    if (!canCreateUser) {
+      toast({
+        title: "Organização necessária",
+        description: "É necessário selecionar uma organização antes de criar um usuário.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    onSubmit(e);
+  };
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -50,7 +68,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={onSubmit}>
+        <form onSubmit={handleSubmit}>
           <CreateUserForm newUser={newUser} setNewUser={setNewUser} />
           
           {!canCreateUser && isSuperAdmin && (

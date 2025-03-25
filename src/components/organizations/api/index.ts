@@ -1,6 +1,5 @@
 
-// Re-export all API functions from their respective files
-export * from './fetchOrganizations';
-export * from './createOrganization';
-export * from './updateOrganization';
-export * from './deleteOrganization';
+export { fetchOrganizations } from './fetchOrganizations';
+export { createOrganization } from './createOrganization';
+export { updateOrganization } from './updateOrganization';
+export { deleteOrganization } from './deleteOrganization';

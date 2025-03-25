@@ -25,12 +25,6 @@ export const fetchOrganizations = async (currentUser: UserProfile | null): Promi
       organizationId: currentUser.organizationId
     });
     
-    // Verificar permissões - apenas super admin ou admin com organização vinculada pode ver organizações
-    if (!currentUser.isSuperAdmin && !currentUser.organizationId) {
-      console.log('Usuário sem permissão ou sem organização vinculada');
-      return [];
-    }
-    
     // Construir a consulta para buscar organizações
     let query = supabase
       .from('organizations')
@@ -51,7 +45,7 @@ export const fetchOrganizations = async (currentUser: UserProfile | null): Promi
       `)
       .order('name', { ascending: true });
     
-    // Se for admin (não super), filtrar apenas a organização do usuário
+    // Se for admin (não super) e tem organizationId, filtrar apenas a organização do usuário
     if (!currentUser.isSuperAdmin && currentUser.organizationId) {
       console.log('Filtrando pela organização do admin:', currentUser.organizationId);
       query = query.eq('id', currentUser.organizationId);
