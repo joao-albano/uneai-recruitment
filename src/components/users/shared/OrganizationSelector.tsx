@@ -1,10 +1,11 @@
+
 import React, { useEffect, useState } from 'react';
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { fetchOrganizations } from '../../organizations/api';
 import { useAuth } from '@/context/auth';
 import { useToast } from '@/hooks/use-toast';
-import { toast } from "sonner";
+import { toast as sonnerToast } from "sonner";
 
 interface OrganizationSelectorProps {
   selectedOrgId: string;
@@ -24,6 +25,7 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
   const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { currentUser } = useAuth();
+  const { toast } = useToast();
 
   useEffect(() => {
     const loadOrganizations = async () => {
@@ -45,8 +47,8 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
           console.warn('Nenhuma organização retornada ou array vazio');
           setOrganizations([]);
           
-          toast({
-            title: "Nenhuma organização encontrada",
+          // Using sonner toast instead of useToast
+          sonnerToast("Nenhuma organização encontrada", {
             description: "Não foi possível carregar organizações. Verifique se existem organizações cadastradas."
           });
         }
@@ -54,8 +56,8 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
         console.error('Erro ao carregar organizações:', error);
         setOrganizations([]);
         
-        toast({
-          title: "Erro ao carregar organizações",
+        // Using sonner toast instead of useToast
+        sonnerToast("Erro ao carregar organizações", {
           description: "Ocorreu um erro ao buscar a lista de organizações."
         });
       } finally {
