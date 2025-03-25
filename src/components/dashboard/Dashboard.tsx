@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
@@ -62,19 +63,17 @@ const Dashboard: React.FC = () => {
     <div>
       {shouldShowPaymentBanner && <PaymentNotificationBanner />}
       
-      <div>
-        <h1>Dashboard</h1>
-        <p>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-muted-foreground mt-1">
           Visão geral do desempenho dos alunos
         </p>
       </div>
       
       {isLoading ? (
-        <div>
-          <div>
-            <div></div>
-            <p>Carregando dados...</p>
-          </div>
+        <div className="flex items-center justify-center w-full h-64">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          <p className="ml-3 text-muted-foreground">Carregando dados...</p>
         </div>
       ) : students.length === 0 ? (
         <Card>

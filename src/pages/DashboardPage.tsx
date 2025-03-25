@@ -11,7 +11,7 @@ const DashboardPage: React.FC = () => {
   return (
     <DataProvider>
       <Layout>
-        <div className={`container mx-auto ${isMobile ? 'px-2' : 'px-4'}`}>
+        <div className={`container mx-auto ${isMobile ? 'px-2' : 'px-4'} py-6`}>
           <Dashboard />
         </div>
       </Layout>
