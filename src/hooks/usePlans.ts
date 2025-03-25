@@ -23,7 +23,8 @@ export const usePlans = () => {
       const { data, error } = await supabase
         .from('plans')
         .select('id, name, description, price')
-        .order('price');
+        .order('price')
+        .schema('api');
           
       if (error) {
         console.error('Erro ao carregar planos:', error);
