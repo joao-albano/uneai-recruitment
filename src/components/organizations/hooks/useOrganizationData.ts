@@ -41,19 +41,23 @@ export const useOrganizationData = (
         }
         
         // Transformar os dados do formato Supabase para o formato esperado por OrganizationType
-        const formattedOrgs: OrganizationType[] = filteredOrgs.map(org => ({
-          id: org.id,
-          name: org.name,
-          // Fix: Check if is_active exists on the organization object
-          // If not, provide a default value of true
-          isActive: org.is_active === false ? false : true,
-          isMainOrg: org.is_main_org || false,
-          createdAt: org.created_at,
-          products: org.products ? org.products.map(p => ({
-            type: p.type as ProductType,
-            active: p.active
-          })) : []
-        }));
+        const formattedOrgs: OrganizationType[] = filteredOrgs.map(org => {
+          // Log to check the actual structure of each organization object
+          console.log('Processing organization:', org);
+          
+          return {
+            id: org.id,
+            name: org.name,
+            // Handle 'is_active' correctly, checking if it exists and defaulting to true if not
+            isActive: org.hasOwnProperty('is_active') ? !!org.is_active : true,
+            isMainOrg: org.is_main_org || false,
+            createdAt: org.created_at,
+            products: org.products ? org.products.map(p => ({
+              type: p.type as ProductType,
+              active: p.active
+            })) : []
+          };
+        });
         
         setOrganizations(formattedOrgs);
       } else {
