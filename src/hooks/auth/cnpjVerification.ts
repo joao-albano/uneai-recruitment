@@ -19,8 +19,8 @@ export async function verifyCNPJ(cnpj: string): Promise<{ valid: boolean; normal
     if (checkError) {
       console.error('Erro ao verificar CNPJ:', checkError);
       
-      // Evitar mensagem de erro específica do Supabase para o usuário
-      toast.error('Erro ao verificar disponibilidade do CNPJ. Tente novamente.');
+      // Mensagem mais genérica para o usuário
+      toast.error('Não foi possível verificar o CNPJ no momento. Tente novamente mais tarde.');
       return { valid: false, normalizedCNPJ };
     }
     
@@ -32,10 +32,11 @@ export async function verifyCNPJ(cnpj: string): Promise<{ valid: boolean; normal
     }
     
     // CNPJ é válido e não existe no banco
+    console.log('CNPJ válido e disponível');
     return { valid: true, normalizedCNPJ };
   } catch (error) {
-    console.error('Erro ao verificar dados:', error);
-    toast.error('Ocorreu um erro ao verificar seus dados');
+    console.error('Erro ao verificar CNPJ:', error);
+    toast.error('Ocorreu um erro ao verificar seus dados. Tente novamente.');
     return { valid: false, normalizedCNPJ };
   }
 }
