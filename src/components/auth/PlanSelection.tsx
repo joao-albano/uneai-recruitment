@@ -83,6 +83,11 @@ const PlanSelection = ({ plans, isLoading = false, error, onRetry }: PlanSelecti
         <div className="py-8 flex flex-col items-center justify-center text-muted-foreground">
           <AlertTriangle className="h-8 w-8 mb-2" />
           <p>Nenhum plano disponível no momento.</p>
+          {onRetry && (
+            <Button variant="outline" size="sm" onClick={onRetry} className="mt-4">
+              Tentar novamente
+            </Button>
+          )}
         </div>
       </div>
     );
