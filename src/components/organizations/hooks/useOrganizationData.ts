@@ -21,6 +21,7 @@ export const useOrganizationData = (
       if (!isAdmin && !isSuperAdmin) {
         console.log('Usuário sem permissão para ver organizações');
         setOrganizations([]);
+        setIsLoading(false);
         return;
       }
       
