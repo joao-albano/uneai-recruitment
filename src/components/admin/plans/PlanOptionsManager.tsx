@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,8 +12,8 @@ import { useTheme } from '@/context/ThemeContext';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Pencil, RefreshCw } from 'lucide-react';
-import { Package, CheckCircle2, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from 'lucide-react';
+import { Pencil, RefreshCw, Package, CheckCircle2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const planSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),

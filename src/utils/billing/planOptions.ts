@@ -1,12 +1,15 @@
 
 import { create } from 'zustand';
 import { useTheme } from '@/context/ThemeContext';
+import { ProductType } from '@/context/ProductContext';
 
 export interface PlanOption {
   id: string;
   name: string;
   price: string;
   description: string;
+  relatedProduct?: string;
+  features?: string[];
 }
 
 interface PlanOptionsStore {
@@ -21,18 +24,39 @@ const getDefaultPlans = (isPtBR: boolean): PlanOption[] => [
     name: isPtBR ? 'Básico' : 'Basic',
     price: isPtBR ? 'R$ 2.990,00/ano' : '$2,990.00/year',
     description: isPtBR ? 'Até 500 alunos' : 'Up to 500 students',
+    relatedProduct: 'retention',
+    features: [
+      isPtBR ? 'Monitoramento básico' : 'Basic monitoring',
+      isPtBR ? 'Alertas de risco' : 'Risk alerts',
+      isPtBR ? 'Suporte por email' : 'Email support'
+    ]
   },
   {
     id: 'premium',
     name: 'Premium',
     price: isPtBR ? 'R$ 5.990,00/ano' : '$5,990.00/year',
     description: isPtBR ? 'Até 1500 alunos' : 'Up to 1500 students',
+    relatedProduct: 'retention',
+    features: [
+      isPtBR ? 'Monitoramento avançado' : 'Advanced monitoring',
+      isPtBR ? 'Alertas em tempo real' : 'Real-time alerts',
+      isPtBR ? 'Suporte prioritário' : 'Priority support',
+      isPtBR ? 'Relatórios detalhados' : 'Detailed reports'
+    ]
   },
   {
     id: 'enterprise',
     name: 'Enterprise',
     price: isPtBR ? 'R$ 9.990,00/ano' : '$9,990.00/year',
     description: isPtBR ? 'Alunos ilimitados' : 'Unlimited students',
+    relatedProduct: 'retention',
+    features: [
+      isPtBR ? 'Todos os recursos premium' : 'All premium features',
+      isPtBR ? 'Alunos ilimitados' : 'Unlimited students',
+      isPtBR ? 'API personalizada' : 'Custom API access',
+      isPtBR ? 'Suporte dedicado' : 'Dedicated support',
+      isPtBR ? 'Consultoria estratégica' : 'Strategic consulting'
+    ]
   }
 ];
 

@@ -41,7 +41,7 @@ export const usePlans = () => {
           name: plan.name,
           description: plan.description,
           price: plan.price,
-          features: plan.features ? JSON.parse(plan.features) : [],
+          features: plan.features ? JSON.parse(String(plan.features)) : [],
           relatedProduct: plan.related_product
         }));
         setPlans(formattedPlans as Plan[]);
