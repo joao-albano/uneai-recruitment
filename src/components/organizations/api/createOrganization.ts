@@ -1,6 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { NewOrganizationType, OrganizationProduct } from '../types';
+import { ProductType } from '@/context/ProductContext';
 
 export const createOrganization = async (data: NewOrganizationType) => {
   try {
@@ -29,7 +30,7 @@ export const createOrganization = async (data: NewOrganizationType) => {
     if (data.products && data.products.length > 0) {
       const productsToInsert = data.products.map(product => ({
         organization_id: orgData.id,
-        type: product.type,
+        type: product.type as ProductType,
         active: product.active
       }));
       

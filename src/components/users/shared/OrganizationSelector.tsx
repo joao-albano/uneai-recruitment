@@ -5,6 +5,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { fetchOrganizations } from '../../organizations/api';
 import { useAuth } from '@/context/auth';
 import { useToast } from '@/hooks/use-toast';
+import { ProductType } from '@/context/ProductContext';
 
 interface OrganizationSelectorProps {
   selectedOrgId: string;

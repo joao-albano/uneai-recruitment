@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { toast } from "sonner";
 import { useNavigate } from 'react-router-dom';
 import { fetchOrganizations, createOrganization, updateOrganization, deleteOrganization } from './api';
-import { OrganizationType } from './types';
+import { OrganizationType, OrganizationProduct } from './types';
+import { ProductType } from '@/context/ProductContext';
 import OrganizationsList from './OrganizationsList';
 import OrganizationsHeader from './OrganizationsHeader';
 import CreateOrganizationDialog from './CreateOrganizationDialog';
@@ -37,7 +37,7 @@ const OrganizationsContent: React.FC = () => {
           isMainOrg: org.is_main_org || false,
           createdAt: org.created_at,
           products: org.products ? org.products.map(p => ({
-            type: p.type,
+            type: p.type as ProductType,
             active: p.active
           })) : []
         }));
