@@ -77,13 +77,15 @@ export const useOrganizationData = (
           
           // Transformar os dados do formato Supabase para o formato esperado por OrganizationType
           const formattedOrgs: OrganizationType[] = orgsData.map(org => {
+            const validatedCreatedAt = org.created_at ? new Date(org.created_at).toISOString() : new Date().toISOString();
+            
             return {
               id: org.id,
               name: org.name,
               // Since is_active doesn't exist in the database, default to true
               isActive: true,
               isMainOrg: org.is_main_org || false,
-              createdAt: org.created_at,
+              createdAt: validatedCreatedAt,
               products: Array.isArray(org.products) ? org.products.map(p => ({
                 type: p.type as ProductType,
                 active: p.active ?? true

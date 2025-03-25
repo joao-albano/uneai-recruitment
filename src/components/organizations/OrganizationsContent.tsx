@@ -91,6 +91,7 @@ const OrganizationsContent: React.FC = () => {
       <CreateOrganizationDialog
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
+        onCreated={loadOrganizations}
       />
 
       {selectedOrganization && (

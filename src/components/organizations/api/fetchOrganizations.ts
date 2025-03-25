@@ -29,11 +29,6 @@ export const fetchOrganizations = async (currentUser: UserProfile | null) => {
       return [];
     }
     
-    console.log('Configuração Supabase:', {
-      url: 'Using configured Supabase URL',
-      schema: 'public', // Agora estamos explicitamente configurando o schema como 'public'
-    });
-    
     // Construir a consulta para buscar organizações
     let query = supabase
       .from('organizations')
@@ -69,11 +64,10 @@ export const fetchOrganizations = async (currentUser: UserProfile | null) => {
     }
     
     console.log('Organizações encontradas:', data?.length || 0);
-    console.log('Dados das organizações:', data);
     return data || [];
   } catch (error) {
     console.error('Erro ao buscar organizações:', error);
-    console.error('Tipo de erro:', typeof error);
+    
     if (error instanceof Error) {
       console.error('Detalhes do erro:', error.message);
     } else {

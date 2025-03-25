@@ -20,13 +20,25 @@ const OrganizationCard: React.FC<OrganizationCardProps> = ({
   onDelete
 }) => {
   // Format date to more readable format
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('pt-BR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    }).format(date);
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return "Data desconhecida";
+    
+    try {
+      const date = new Date(dateString);
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        return "Data inválida";
+      }
+      
+      return new Intl.DateTimeFormat('pt-BR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }).format(date);
+    } catch (error) {
+      console.error('Erro ao formatar data:', error);
+      return "Erro na data";
+    }
   };
 
   // Obter produtos ativos

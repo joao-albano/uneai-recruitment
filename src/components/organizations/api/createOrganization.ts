@@ -7,12 +7,16 @@ export const createOrganization = async (data: NewOrganizationType) => {
   try {
     console.log('Criando organização:', data);
     
+    if (!data.name || data.name.trim() === '') {
+      throw new Error('O nome da organização é obrigatório');
+    }
+    
     // 1. Criar a organização
     const { data: orgData, error: orgError } = await supabase
       .from('organizations')
       .insert([
         { 
-          name: data.name,
+          name: data.name.trim(),
           is_main_org: data.isMainOrg || false
         }
       ])
@@ -22,6 +26,10 @@ export const createOrganization = async (data: NewOrganizationType) => {
     if (orgError) {
       console.error('Erro ao criar organização:', orgError);
       throw orgError;
+    }
+    
+    if (!orgData) {
+      throw new Error('Erro ao criar organização: Dados não retornados');
     }
     
     console.log('Organização criada com sucesso:', orgData);

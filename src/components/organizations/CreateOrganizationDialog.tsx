@@ -1,29 +1,77 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import CreateOrganizationForm from './create/CreateOrganizationForm';
 import { NewOrganizationType } from './types';
+import { createOrganization } from './api';
+import { toast } from "sonner";
 
 interface CreateOrganizationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onCreated: () => Promise<void>;
 }
 
 const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
   open,
   onOpenChange,
+  onCreated,
 }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [newOrganization, setNewOrganization] = useState<NewOrganizationType>({
     name: '',
     isActive: true,
     products: []
   });
   
-  const handleSubmit = (e: React.FormEvent) => {
+  // Reset form when dialog opens
+  useEffect(() => {
+    if (open) {
+      setNewOrganization({
+        name: '',
+        isActive: true,
+        products: []
+      });
+    }
+  }, [open]);
+  
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle submission via form
-    onOpenChange(false);
+    
+    if (!newOrganization.name.trim()) {
+      toast.error("O nome da organização é obrigatório");
+      return;
+    }
+    
+    try {
+      setIsSubmitting(true);
+      
+      console.log('Criando nova organização:', newOrganization);
+      
+      // Create the organization in Supabase
+      await createOrganization(newOrganization);
+      
+      // Show success message
+      toast.success("Organização criada com sucesso");
+      
+      // Close the dialog
+      onOpenChange(false);
+      
+      // Refresh the organizations list
+      await onCreated();
+    } catch (error) {
+      console.error("Erro ao criar organização:", error);
+      
+      // Show error message
+      if (error instanceof Error) {
+        toast.error(`Erro ao criar organização: ${error.message}`);
+      } else {
+        toast.error("Erro desconhecido ao criar organização");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   return (
@@ -46,7 +94,9 @@ const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
             <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button type="submit">Criar Organização</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Criando..." : "Criar Organização"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
