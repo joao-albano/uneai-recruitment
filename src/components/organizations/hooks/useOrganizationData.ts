@@ -1,8 +1,9 @@
 
 import { useCallback, useEffect } from 'react';
-import { OrganizationType } from '../types';
+import { OrganizationType, OrganizationProduct } from '../types';
 import { toast } from "sonner";
-import { fetchOrganizations } from '../api/organizationsApi';
+import { fetchOrganizations } from '../api';
+import { ProductType } from '@/context/ProductContext';
 
 export const useOrganizationData = (
   setOrganizations: React.Dispatch<React.SetStateAction<OrganizationType[]>>,
@@ -26,7 +27,10 @@ export const useOrganizationData = (
           isActive: true, // Valor padrão, ajustar conforme necessário
           isMainOrg: org.is_main_org || false,
           createdAt: org.created_at,
-          products: org.products || []
+          products: org.products ? org.products.map(p => ({
+            type: p.type as ProductType,
+            active: p.active
+          })) : []
         }));
         
         setOrganizations(formattedOrgs);
