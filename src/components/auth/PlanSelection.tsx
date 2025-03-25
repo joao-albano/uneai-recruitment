@@ -9,6 +9,7 @@ import { CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Plan {
   id: string;
@@ -20,7 +21,7 @@ interface Plan {
 interface PlanSelectionProps {
   plans: Plan[];
   isLoading?: boolean;
-  error?: string;
+  error?: string | null;
   onRetry?: () => void;
 }
 
@@ -40,9 +41,17 @@ const PlanSelection = ({ plans, isLoading = false, error, onRetry }: PlanSelecti
     return (
       <div className="space-y-4">
         <h3 className="text-lg font-medium">Escolha seu plano</h3>
-        <div className="py-8 flex flex-col items-center justify-center text-muted-foreground">
-          <Loader2 className="h-8 w-8 animate-spin mb-2" />
-          <p>Carregando planos disponíveis...</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="border">
+              <CardContent className="p-4">
+                <Skeleton className="h-6 w-32 mb-2" />
+                <Skeleton className="h-4 w-full mb-1" />
+                <Skeleton className="h-4 w-24 mb-3" />
+                <Skeleton className="h-8 w-28" />
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     );
@@ -63,15 +72,6 @@ const PlanSelection = ({ plans, isLoading = false, error, onRetry }: PlanSelecti
             )}
           </AlertDescription>
         </Alert>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 opacity-60">
-          {[1, 2, 3].map((i) => (
-            <Card key={i} className="border-dashed">
-              <CardContent className="p-4 min-h-[120px] flex items-center justify-center">
-                <p className="text-muted-foreground text-sm">Plano indisponível</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
       </div>
     );
   }
