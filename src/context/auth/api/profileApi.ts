@@ -52,13 +52,21 @@ export const fetchUserProfile = async (userId: string) => {
         }
       } else if (profile.organizations && typeof profile.organizations === 'object') {
         // Handle the case where organizations is an object
-        const orgData = profile.organizations;
-        // Add null checks before accessing properties
-        if (orgData && 'id' in orgData && 'name' in orgData && 'is_main_org' in orgData) {
+        // Use type assertion to help TypeScript understand the shape
+        type OrgData = { id: string; name: string; is_main_org: boolean };
+        
+        // First verify it's an object with the properties we need
+        const orgData = profile.organizations as Record<string, unknown>;
+        
+        if (orgData && 
+            'id' in orgData && 
+            'name' in orgData && 
+            'is_main_org' in orgData) {
+          
           organization = {
-            id: orgData.id,
-            name: orgData.name,
-            isMainOrg: orgData.is_main_org
+            id: orgData.id as string,
+            name: orgData.name as string,
+            isMainOrg: orgData.is_main_org as boolean
           };
         }
       }
