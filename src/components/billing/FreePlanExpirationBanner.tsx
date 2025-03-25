@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Clock } from 'lucide-react';
+import { Clock, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
@@ -9,17 +9,49 @@ import { useTheme } from '@/context/ThemeContext';
 interface FreePlanExpirationBannerProps {
   daysRemaining: number;
   isLoading?: boolean;
+  errorMessage?: string | null;
 }
 
 const FreePlanExpirationBanner: React.FC<FreePlanExpirationBannerProps> = ({ 
   daysRemaining,
-  isLoading = false
+  isLoading = false,
+  errorMessage = null
 }) => {
   const { language } = useTheme();
   const isPtBR = language === 'pt-BR';
   
   if (isLoading) {
     return null;
+  }
+
+  if (errorMessage) {
+    return (
+      <Alert className="mb-6 border-amber-300 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-800">
+        <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-500" />
+        <AlertTitle className="font-medium text-amber-800 dark:text-amber-400">
+          {isPtBR 
+            ? 'Não foi possível verificar seu período de avaliação' 
+            : 'Could not verify your trial period'}
+        </AlertTitle>
+        <AlertDescription className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+          <span className="text-amber-700 dark:text-amber-300">
+            {isPtBR 
+              ? 'Ocorreu um erro ao verificar o status da sua assinatura.' 
+              : 'An error occurred while checking your subscription status.'}
+          </span>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="border-amber-300 hover:bg-amber-100 text-amber-800 hover:text-amber-900 dark:border-amber-700 dark:text-amber-400 dark:hover:bg-amber-900/30"
+            asChild
+          >
+            <Link to="/pricing">
+              {isPtBR ? 'Ver Planos' : 'View Plans'}
+            </Link>
+          </Button>
+        </AlertDescription>
+      </Alert>
+    );
   }
   
   // Define alert variant based on days remaining

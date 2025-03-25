@@ -49,30 +49,38 @@ interface Plan {
 const SignupForm = ({ onSwitchTab, onSuccess }: SignupFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [plans, setPlans] = useState<Plan[]>([]);
+  const [plansLoading, setPlansLoading] = useState(true);
+  const [plansError, setPlansError] = useState<string | null>(null);
   
   // Carregar planos do banco de dados
-  useEffect(() => {
-    const fetchPlans = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('plans')
-          .select('id, name, description, price')
-          .order('price');
-          
-        if (error) {
-          console.error('Erro ao carregar planos:', error);
-          toast.error('Não foi possível carregar os planos disponíveis');
-          return;
-        }
-        
-        if (data) {
-          setPlans(data);
-        }
-      } catch (error) {
-        console.error('Erro ao buscar planos:', error);
-      }
-    };
+  const fetchPlans = async () => {
+    setPlansLoading(true);
+    setPlansError(null);
     
+    try {
+      const { data, error } = await supabase
+        .from('plans')
+        .select('id, name, description, price')
+        .order('price');
+          
+      if (error) {
+        console.error('Erro ao carregar planos:', error);
+        setPlansError('Não foi possível carregar os planos disponíveis');
+        return;
+      }
+        
+      if (data) {
+        setPlans(data);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar planos:', error);
+      setPlansError('Ocorreu um erro ao carregar os planos');
+    } finally {
+      setPlansLoading(false);
+    }
+  };
+  
+  useEffect(() => {
     fetchPlans();
   }, []);
   
@@ -238,18 +246,17 @@ const SignupForm = ({ onSwitchTab, onSuccess }: SignupFormProps) => {
             
             <Separator />
             
-            {plans.length > 0 ? (
-              <PlanSelection plans={plans} />
-            ) : (
-              <div className="py-4 text-center text-muted-foreground">
-                <p>Carregando planos disponíveis...</p>
-              </div>
-            )}
+            <PlanSelection 
+              plans={plans} 
+              isLoading={plansLoading} 
+              error={plansError || undefined}
+              onRetry={fetchPlans}
+            />
             
             <Button 
               type="submit" 
               className="w-full" 
-              disabled={isLoading || plans.length === 0}
+              disabled={isLoading || plansLoading || (plans.length === 0 && !plansError)}
             >
               {isLoading ? 'Criando conta...' : 'Criar Conta'}
             </Button>

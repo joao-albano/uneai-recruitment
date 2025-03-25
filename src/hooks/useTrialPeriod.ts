@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export const useTrialPeriod = () => {
   const { currentUser } = useAuth();
@@ -10,6 +11,7 @@ export const useTrialPeriod = () => {
   const [isExpired, setIsExpired] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [trialPeriodDays] = useState<number>(14);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   
   useEffect(() => {
     const fetchSubscriptionStatus = async () => {
@@ -20,6 +22,7 @@ export const useTrialPeriod = () => {
       }
       
       try {
+        setErrorMessage(null);
         const { data, error } = await supabase
           .from('subscriptions')
           .select('status, trial_start_date, trial_end_date')
@@ -30,6 +33,7 @@ export const useTrialPeriod = () => {
           
         if (error) {
           console.error('Erro ao verificar assinatura:', error);
+          setErrorMessage(error.message);
           setIsLoading(false);
           return;
         }
@@ -54,6 +58,11 @@ export const useTrialPeriod = () => {
         
       } catch (error) {
         console.error('Erro ao buscar dados da assinatura:', error);
+        if (error instanceof Error) {
+          setErrorMessage(error.message);
+        } else {
+          setErrorMessage('Erro desconhecido ao verificar assinatura');
+        }
         setIsLoading(false);
       }
     };
@@ -66,6 +75,7 @@ export const useTrialPeriod = () => {
     showBanner,
     isExpired,
     trialPeriodDays,
-    isLoading
+    isLoading,
+    errorMessage
   };
 };

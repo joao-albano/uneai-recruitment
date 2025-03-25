@@ -5,8 +5,10 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/comp
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { CardContent, Card } from '@/components/ui/card';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface Plan {
   id: string;
@@ -17,9 +19,12 @@ interface Plan {
 
 interface PlanSelectionProps {
   plans: Plan[];
+  isLoading?: boolean;
+  error?: string;
+  onRetry?: () => void;
 }
 
-const PlanSelection = ({ plans }: PlanSelectionProps) => {
+const PlanSelection = ({ plans, isLoading = false, error, onRetry }: PlanSelectionProps) => {
   const { control, watch } = useFormContext();
   const selectedPlanId = watch('planId');
 
@@ -30,6 +35,58 @@ const PlanSelection = ({ plans }: PlanSelectionProps) => {
       minimumFractionDigits: 2
     }).format(value);
   };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium">Escolha seu plano</h3>
+        <div className="py-8 flex flex-col items-center justify-center text-muted-foreground">
+          <Loader2 className="h-8 w-8 animate-spin mb-2" />
+          <p>Carregando planos disponíveis...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium">Escolha seu plano</h3>
+        <Alert variant="destructive" className="border-red-200 bg-red-50 dark:bg-red-900/20">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <span>{error}</span>
+            {onRetry && (
+              <Button variant="outline" size="sm" onClick={onRetry} className="mt-2 sm:mt-0">
+                Tentar novamente
+              </Button>
+            )}
+          </AlertDescription>
+        </Alert>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 opacity-60">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="border-dashed">
+              <CardContent className="p-4 min-h-[120px] flex items-center justify-center">
+                <p className="text-muted-foreground text-sm">Plano indisponível</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (plans.length === 0) {
+    return (
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium">Escolha seu plano</h3>
+        <div className="py-8 flex flex-col items-center justify-center text-muted-foreground">
+          <AlertTriangle className="h-8 w-8 mb-2" />
+          <p>Nenhum plano disponível no momento.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
