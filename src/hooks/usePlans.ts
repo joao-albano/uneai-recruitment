@@ -24,7 +24,6 @@ export const usePlans = () => {
       // since the Supabase JS client has limitations with cross-schema queries
       const { data, error } = await supabase
         .rpc('get_plans')
-        .select();
           
       if (error) {
         console.error('Erro ao carregar planos:', error);

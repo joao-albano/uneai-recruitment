@@ -286,6 +286,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      get_plans: {
+        Args: Record<PropertyKey, never>
+        Returns: unknown[]
+      }
       get_user_organization_id: {
         Args: Record<PropertyKey, never>
         Returns: string
