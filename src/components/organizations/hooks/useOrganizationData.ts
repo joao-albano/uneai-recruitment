@@ -84,7 +84,7 @@ export const useOrganizationData = (
               isActive: true,
               isMainOrg: org.is_main_org || false,
               createdAt: org.created_at,
-              products: org.products ? org.products.map(p => ({
+              products: Array.isArray(org.products) ? org.products.map(p => ({
                 type: p.type as ProductType,
                 active: p.active ?? true
               })) : []
