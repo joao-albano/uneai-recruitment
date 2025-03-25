@@ -2,12 +2,15 @@
 import React from 'react';
 import { DataProvider } from "@/context/DataContext";
 import OrganizationsContent from '@/components/organizations/OrganizationsContent';
+import { Layout } from '@/components/layout/Layout';
 
 const OrganizationsPage: React.FC = () => {
   return (
-    <DataProvider>
-      <OrganizationsContent />
-    </DataProvider>
+    <Layout>
+      <DataProvider>
+        <OrganizationsContent />
+      </DataProvider>
+    </Layout>
   );
 };
 
