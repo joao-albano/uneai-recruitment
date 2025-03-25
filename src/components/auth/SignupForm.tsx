@@ -42,6 +42,11 @@ const SignupForm = ({ onSwitchTab, onSuccess }: SignupFormProps) => {
     handleSignup(values);
   };
 
+  const handleRetryFetchPlans = () => {
+    console.log('Tentando buscar planos novamente...');
+    fetchPlans();
+  };
+
   return (
     <>
       <FormProvider {...form}>
@@ -59,7 +64,7 @@ const SignupForm = ({ onSwitchTab, onSuccess }: SignupFormProps) => {
               plans={plans} 
               isLoading={plansLoading} 
               error={plansError || undefined}
-              onRetry={fetchPlans}
+              onRetry={handleRetryFetchPlans}
             />
             
             <Button 

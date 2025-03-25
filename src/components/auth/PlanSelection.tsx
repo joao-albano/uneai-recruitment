@@ -37,6 +37,13 @@ const PlanSelection = ({ plans, isLoading = false, error, onRetry }: PlanSelecti
     }).format(value);
   };
 
+  const handleRetry = () => {
+    if (onRetry) {
+      console.log('Tentando carregar planos novamente...');
+      onRetry();
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -66,7 +73,7 @@ const PlanSelection = ({ plans, isLoading = false, error, onRetry }: PlanSelecti
           <AlertDescription className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <span>{error}</span>
             {onRetry && (
-              <Button variant="outline" size="sm" onClick={onRetry} className="mt-2 sm:mt-0">
+              <Button variant="outline" size="sm" onClick={handleRetry} className="mt-2 sm:mt-0">
                 Tentar novamente
               </Button>
             )}
@@ -84,7 +91,7 @@ const PlanSelection = ({ plans, isLoading = false, error, onRetry }: PlanSelecti
           <AlertTriangle className="h-8 w-8 mb-2" />
           <p>Nenhum plano disponível no momento.</p>
           {onRetry && (
-            <Button variant="outline" size="sm" onClick={onRetry} className="mt-4">
+            <Button variant="outline" size="sm" onClick={handleRetry} className="mt-4">
               Tentar novamente
             </Button>
           )}
