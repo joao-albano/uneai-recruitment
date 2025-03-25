@@ -9,6 +9,60 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      alerts: {
+        Row: {
+          action_taken: boolean | null
+          created_at: string | null
+          id: string
+          message: string
+          organization_id: string
+          read: boolean | null
+          student_class: string
+          student_id: string
+          student_name: string
+          type: string | null
+        }
+        Insert: {
+          action_taken?: boolean | null
+          created_at?: string | null
+          id?: string
+          message: string
+          organization_id: string
+          read?: boolean | null
+          student_class: string
+          student_id: string
+          student_name: string
+          type?: string | null
+        }
+        Update: {
+          action_taken?: boolean | null
+          created_at?: string | null
+          id?: string
+          message?: string
+          organization_id?: string
+          read?: boolean | null
+          student_class?: string
+          student_id?: string
+          student_name?: string
+          type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alerts_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alerts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organization_products: {
         Row: {
           active: boolean | null
@@ -187,6 +241,119 @@ export type Database = {
         }
         Relationships: []
       }
+      schedules: {
+        Row: {
+          agent_name: string
+          created_at: string | null
+          date: string
+          id: string
+          notes: string | null
+          organization_id: string
+          status: string | null
+          student_id: string
+          student_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          agent_name: string
+          created_at?: string | null
+          date: string
+          id?: string
+          notes?: string | null
+          organization_id: string
+          status?: string | null
+          student_id: string
+          student_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          agent_name?: string
+          created_at?: string | null
+          date?: string
+          id?: string
+          notes?: string | null
+          organization_id?: string
+          status?: string | null
+          student_id?: string
+          student_name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "schedules_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "schedules_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      students: {
+        Row: {
+          attendance: number | null
+          behavior: number | null
+          class: string | null
+          created_at: string | null
+          grade: number | null
+          id: string
+          name: string
+          organization_id: string
+          parent_contact: string | null
+          parent_name: string | null
+          registration_number: string | null
+          risk_level: string | null
+          segment: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          attendance?: number | null
+          behavior?: number | null
+          class?: string | null
+          created_at?: string | null
+          grade?: number | null
+          id?: string
+          name: string
+          organization_id: string
+          parent_contact?: string | null
+          parent_name?: string | null
+          registration_number?: string | null
+          risk_level?: string | null
+          segment?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          attendance?: number | null
+          behavior?: number | null
+          class?: string | null
+          created_at?: string | null
+          grade?: number | null
+          id?: string
+          name?: string
+          organization_id?: string
+          parent_contact?: string | null
+          parent_name?: string | null
+          registration_number?: string | null
+          risk_level?: string | null
+          segment?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "students_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           created_at: string | null
@@ -238,6 +405,98 @@ export type Database = {
           },
         ]
       }
+      surveys: {
+        Row: {
+          additional_notes: string | null
+          bullying_concerns: boolean | null
+          created_at: string | null
+          id: string
+          moved_recently: boolean | null
+          organization_id: string
+          social_integration: number | null
+          student_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          additional_notes?: string | null
+          bullying_concerns?: boolean | null
+          created_at?: string | null
+          id?: string
+          moved_recently?: boolean | null
+          organization_id: string
+          social_integration?: number | null
+          student_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          additional_notes?: string | null
+          bullying_concerns?: boolean | null
+          created_at?: string | null
+          id?: string
+          moved_recently?: boolean | null
+          organization_id?: string
+          social_integration?: number | null
+          student_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "surveys_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "surveys_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      upload_history: {
+        Row: {
+          error_count: number | null
+          filename: string
+          id: string
+          organization_id: string
+          record_count: number
+          status: string | null
+          upload_date: string | null
+          user_id: string
+        }
+        Insert: {
+          error_count?: number | null
+          filename: string
+          id?: string
+          organization_id: string
+          record_count: number
+          status?: string | null
+          upload_date?: string | null
+          user_id: string
+        }
+        Update: {
+          error_count?: number | null
+          filename?: string
+          id?: string
+          organization_id?: string
+          record_count?: number
+          status?: string | null
+          upload_date?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "upload_history_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_products: {
         Row: {
           created_at: string | null
@@ -273,6 +532,92 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_config: {
+        Row: {
+          api_key: string | null
+          api_url: string | null
+          created_at: string | null
+          enabled: boolean | null
+          id: string
+          organization_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          api_key?: string | null
+          api_url?: string | null
+          created_at?: string | null
+          enabled?: boolean | null
+          id?: string
+          organization_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          api_key?: string | null
+          api_url?: string | null
+          created_at?: string | null
+          enabled?: boolean | null
+          id?: string
+          organization_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_config_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_messages: {
+        Row: {
+          id: string
+          message: string
+          organization_id: string
+          phone_number: string
+          sent_at: string | null
+          status: string | null
+          student_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          message: string
+          organization_id: string
+          phone_number: string
+          sent_at?: string | null
+          status?: string | null
+          student_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          message?: string
+          organization_id?: string
+          phone_number?: string
+          sent_at?: string | null
+          status?: string | null
+          student_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_messages_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_messages_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
             referencedColumns: ["id"]
           },
         ]

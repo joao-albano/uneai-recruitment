@@ -16,6 +16,7 @@ const OrganizationsContent: React.FC = () => {
   const navigate = useNavigate();
   const { isAdmin, isSuperAdmin, currentUser } = useAuth();
   const [retryCount, setRetryCount] = useState(0);
+  const [loadAttempted, setLoadAttempted] = useState(false);
   
   const {
     // State
@@ -47,9 +48,14 @@ const OrganizationsContent: React.FC = () => {
       return;
     }
     
-    loadOrganizations();
+    const loadData = async () => {
+      await loadOrganizations();
+      setLoadAttempted(true);
+    };
     
-    // Tentar novamente após alguns segundos se não conseguir carregar
+    loadData();
+    
+    // Tentar novamente após alguns segundos se não conseguir carregar na primeira tentativa
     if (organizations.length === 0 && retryCount < 2) {
       const timer = setTimeout(() => {
         console.log(`Tentativa ${retryCount + 1} de carregar organizações...`);
@@ -66,8 +72,8 @@ const OrganizationsContent: React.FC = () => {
     return <OrganizationsEmpty message="Você não tem permissão para acessar esta página." />;
   }
 
-  // Show loading state
-  if (isLoading) {
+  // Show loading state only while initial loading is in progress
+  if (isLoading && !loadAttempted) {
     return <OrganizationsLoading />;
   }
 

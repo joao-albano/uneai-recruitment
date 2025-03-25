@@ -1,6 +1,8 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile } from '@/context/auth/types';
+import { OrganizationType, OrganizationProduct } from '../types';
+import { ProductType } from '@/context/ProductContext';
 
 /**
  * Busca organizações com base no perfil do usuário
@@ -8,7 +10,7 @@ import { UserProfile } from '@/context/auth/types';
  * - Admin: vê apenas a organização vinculada a ele
  * - Usuário normal: não vê organizações
  */
-export const fetchOrganizations = async (currentUser: UserProfile | null) => {
+export const fetchOrganizations = async (currentUser: UserProfile | null): Promise<OrganizationType[]> => {
   try {
     console.log('Buscando organizações para o usuário:', currentUser);
     
@@ -59,20 +61,30 @@ export const fetchOrganizations = async (currentUser: UserProfile | null) => {
     
     if (error) {
       console.error('Erro ao buscar organizações:', error);
-      console.error('Detalhes do erro:', JSON.stringify(error));
       throw error;
     }
     
     console.log('Organizações encontradas:', data?.length || 0);
-    return data || [];
+    
+    // Transformar os dados para o formato esperado pelo frontend
+    const organizations: OrganizationType[] = (data || []).map(org => {
+      return {
+        id: org.id,
+        name: org.name,
+        isActive: true, // Não temos este campo no banco, definimos como true por padrão
+        isMainOrg: org.is_main_org || false,
+        createdAt: org.created_at || new Date().toISOString(),
+        // Mapear produtos com a tipagem correta
+        products: Array.isArray(org.products) ? org.products.map(p => ({
+          type: p.type as ProductType,
+          active: p.active || true
+        })) : []
+      };
+    });
+    
+    return organizations;
   } catch (error) {
     console.error('Erro ao buscar organizações:', error);
-    
-    if (error instanceof Error) {
-      console.error('Detalhes do erro:', error.message);
-    } else {
-      console.error('Detalhes do erro JSON:', JSON.stringify(error));
-    }
     throw error;
   }
 };

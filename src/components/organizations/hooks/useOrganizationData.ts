@@ -6,7 +6,7 @@ import { fetchOrganizations } from '../api';
 import { ProductType } from '@/context/ProductContext';
 import { useAuth } from '@/context/auth';
 
-// Dados fictícios para teste
+// Dados fictícios para teste - só serão usados em caso de erro ou para testes
 const mockOrganizations: OrganizationType[] = [
   {
     id: "1",
@@ -74,29 +74,9 @@ export const useOrganizationData = (
         
         if (Array.isArray(orgsData) && orgsData.length > 0) {
           console.log('Organizações carregadas com sucesso:', orgsData.length);
-          
-          // Transformar os dados do formato Supabase para o formato esperado por OrganizationType
-          const formattedOrgs: OrganizationType[] = orgsData.map(org => {
-            const validatedCreatedAt = org.created_at ? new Date(org.created_at).toISOString() : new Date().toISOString();
-            
-            return {
-              id: org.id,
-              name: org.name,
-              // Since is_active doesn't exist in the database, default to true
-              isActive: true,
-              isMainOrg: org.is_main_org || false,
-              createdAt: validatedCreatedAt,
-              products: Array.isArray(org.products) ? org.products.map(p => ({
-                type: p.type as ProductType,
-                active: p.active ?? true
-              })) : []
-            };
-          });
-          
-          console.log('Organizações formatadas:', formattedOrgs);
-          setOrganizations(formattedOrgs);
+          setOrganizations(orgsData);
         } else {
-          console.warn('Nenhuma organização retornada da API ou erro na resposta. Usando dados fictícios.');
+          console.warn('Nenhuma organização retornada da API. Usando dados fictícios.');
           setOrganizations(mockOrganizations);
           toast.info("Exibindo dados fictícios para teste");
         }

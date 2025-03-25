@@ -54,7 +54,14 @@ export const createOrganization = async (data: NewOrganizationType) => {
       }
     }
     
-    return orgData;
+    return {
+      id: orgData.id,
+      name: orgData.name,
+      isActive: true,
+      isMainOrg: orgData.is_main_org || false,
+      createdAt: orgData.created_at,
+      products: data.products || []
+    };
   } catch (error) {
     console.error('Erro ao criar organização:', error);
     throw error;
