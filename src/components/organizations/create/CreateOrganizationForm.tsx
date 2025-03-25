@@ -69,8 +69,8 @@ const CreateOrganizationForm: React.FC<CreateOrganizationFormProps> = ({
       />
       
       <OrganizationActiveToggle
-        checked={newOrganization.isActive || false}
-        onCheckedChange={(checked) => setNewOrganization({...newOrganization, isActive: checked})}
+        isActive={newOrganization.isActive || false}
+        onChange={(isActive) => setNewOrganization({...newOrganization, isActive})}
       />
       
       {/* Products selection */}

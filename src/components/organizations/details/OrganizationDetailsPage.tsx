@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,10 +5,11 @@ import { ArrowLeft, Building, Calendar, Users, Edit } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from "sonner";
-import { OrganizationType } from '../types';
+import { OrganizationType, OrganizationProduct } from '../types';
 import OrganizationProductsView from '../products/OrganizationProductsView';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
+import { ProductType } from '@/context/ProductContext';
 
 const OrganizationDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -60,7 +60,7 @@ const OrganizationDetailsPage: React.FC = () => {
             isMainOrg: data.is_main_org || false,
             createdAt: data.created_at,
             products: data.products?.map(p => ({
-              type: p.type,
+              type: p.type as ProductType, // Cast to ProductType
               active: p.active || false
             })) || []
           });
@@ -82,16 +82,6 @@ const OrganizationDetailsPage: React.FC = () => {
     
     loadOrganization();
   }, [id, navigate, isAdmin, isSuperAdmin]);
-  
-  // Format date to more readable format
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('pt-BR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    }).format(date);
-  };
   
   if (isLoading) {
     return (
@@ -127,6 +117,15 @@ const OrganizationDetailsPage: React.FC = () => {
       </div>
     );
   }
+  
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('pt-BR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }).format(date);
+  };
   
   return (
     <div className="p-8 space-y-6">

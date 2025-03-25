@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import CreateOrganizationForm from './create/CreateOrganizationForm';
+import { NewOrganizationType } from './types';
 
 interface CreateOrganizationDialogProps {
   open: boolean;
@@ -13,6 +14,12 @@ const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
   open,
   onOpenChange,
 }) => {
+  const [newOrganization, setNewOrganization] = useState<NewOrganizationType>({
+    name: '',
+    isActive: true,
+    products: []
+  });
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle submission via form
@@ -30,7 +37,10 @@ const CreateOrganizationDialog: React.FC<CreateOrganizationDialogProps> = ({
         </DialogHeader>
         
         <form onSubmit={handleSubmit}>
-          <CreateOrganizationForm />
+          <CreateOrganizationForm 
+            newOrganization={newOrganization}
+            setNewOrganization={setNewOrganization}
+          />
           
           <DialogFooter>
             <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>
