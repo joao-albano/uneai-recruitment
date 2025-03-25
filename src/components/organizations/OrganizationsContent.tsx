@@ -2,13 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import { useOrganizationData } from './hooks/useOrganizationData';
 import { useOrganizationCrud } from './hooks/useOrganizationCrud';
+import { useAuth } from '@/context/auth';
+import { toast } from "sonner";
 import CreateOrganizationDialog from './CreateOrganizationDialog';
 import EditOrganizationDialog from './EditOrganizationDialog';
 import DeleteOrganizationDialog from './DeleteOrganizationDialog';
 import OrganizationsList from './OrganizationsList';
 import OrganizationsHeader from './OrganizationsHeader';
 import { OrganizationType } from './types';
-import { z } from 'zod';
+import { redirect } from 'react-router-dom';
 
 const OrganizationsContent: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -18,6 +20,7 @@ const OrganizationsContent: React.FC = () => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<OrganizationType | null>(null);
   const [newOrganization, setNewOrganization] = useState({ name: '', isActive: true });
+  const { isAdmin, isSuperAdmin } = useAuth();
 
   // Get organization data and functions from hooks
   const { loadOrganizations } = useOrganizationData(setOrganizations, setLoading);
@@ -30,8 +33,15 @@ const OrganizationsContent: React.FC = () => {
   } = useOrganizationCrud(loadOrganizations);
 
   useEffect(() => {
+    // Verificar permissões - redirecionar se não for admin ou super admin
+    if (!isAdmin && !isSuperAdmin) {
+      toast.error("Você não tem permissão para acessar esta página");
+      redirect('/');
+      return;
+    }
+    
     loadOrganizations();
-  }, [loadOrganizations]);
+  }, [loadOrganizations, isAdmin, isSuperAdmin]);
 
   // Open dialogs
   const handleOpenCreateDialog = () => {
@@ -76,6 +86,19 @@ const OrganizationsContent: React.FC = () => {
       loadOrganizations();
     }
   };
+
+  // Mostrar mensagem de erro se não tiver permissões
+  if (!isAdmin && !isSuperAdmin) {
+    return (
+      <div className="flex h-full items-center justify-center p-8">
+        <div className="flex flex-col items-center space-y-4">
+          <p className="text-lg text-red-600">
+            Você não tem permissão para acessar esta página.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

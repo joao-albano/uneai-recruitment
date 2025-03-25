@@ -4,15 +4,26 @@ import { OrganizationType, OrganizationProduct } from '../types';
 import { toast } from "sonner";
 import { fetchOrganizations } from '../api';
 import { ProductType } from '@/context/ProductContext';
+import { useAuth } from '@/context/auth';
 
 export const useOrganizationData = (
   setOrganizations: React.Dispatch<React.SetStateAction<OrganizationType[]>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
+  const { isAdmin, isSuperAdmin, currentUser } = useAuth();
+
   const loadOrganizations = useCallback(async () => {
     try {
       setIsLoading(true);
       console.log('Carregando organizações...');
+      
+      // Verificar permissões - apenas admins e super admins podem ver organizações
+      if (!isAdmin && !isSuperAdmin) {
+        console.log('Usuário sem permissão para ver organizações');
+        setOrganizations([]);
+        toast.error("Você não tem permissão para visualizar organizações");
+        return;
+      }
       
       // Buscar organizações do Supabase
       const orgsData = await fetchOrganizations();
@@ -20,8 +31,17 @@ export const useOrganizationData = (
       if (Array.isArray(orgsData)) {
         console.log('Organizações carregadas com sucesso:', orgsData);
         
+        // Filtrar organizações conforme o perfil do usuário
+        let filteredOrgs = orgsData;
+        
+        // Se for admin (não super admin), filtrar apenas a organização do usuário
+        if (isAdmin && !isSuperAdmin && currentUser?.organizationId) {
+          filteredOrgs = orgsData.filter(org => org.id === currentUser.organizationId);
+          console.log('Filtrando apenas a organização do usuário:', filteredOrgs);
+        }
+        
         // Transformar os dados do formato Supabase para o formato esperado por OrganizationType
-        const formattedOrgs: OrganizationType[] = orgsData.map(org => ({
+        const formattedOrgs: OrganizationType[] = filteredOrgs.map(org => ({
           id: org.id,
           name: org.name,
           isActive: true, // Valor padrão, ajustar conforme necessário
@@ -41,12 +61,12 @@ export const useOrganizationData = (
       }
     } catch (error) {
       console.error("Erro ao carregar organizações:", error);
-      toast.error("Erro ao carregar organizações");
+      toast.error("Erro ao carregar organizações. Tente novamente mais tarde.");
       setOrganizations([]);
     } finally {
       setIsLoading(false);
     }
-  }, [setOrganizations, setIsLoading]);
+  }, [setOrganizations, setIsLoading, isAdmin, isSuperAdmin, currentUser]);
 
   return { loadOrganizations };
 };

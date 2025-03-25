@@ -3,6 +3,10 @@ import { supabase } from '@/integrations/supabase/client';
 
 /**
  * Busca todas as organizações
+ * 
+ * Super Admins podem ver todas as organizações
+ * Admins podem ver apenas sua própria organização
+ * Usuários comuns não devem acessar organizações
  */
 export const fetchOrganizations = async () => {
   try {
@@ -30,26 +34,34 @@ export const fetchOrganizations = async () => {
     
     // Adicionar os produtos para cada organização
     const orgsWithProducts = await Promise.all(organizations.map(async (org) => {
-      const { data: products, error: productsError } = await supabase
-        .from('organization_products')
-        .select(`
-          type,
-          active
-        `)
-        .eq('organization_id', org.id);
-      
-      if (productsError) {
-        console.error(`Erro ao buscar produtos para organização ${org.id}:`, productsError);
+      try {
+        const { data: products, error: productsError } = await supabase
+          .from('organization_products')
+          .select(`
+            type,
+            active
+          `)
+          .eq('organization_id', org.id);
+        
+        if (productsError) {
+          console.error(`Erro ao buscar produtos para organização ${org.id}:`, productsError);
+          return {
+            ...org,
+            products: []
+          };
+        }
+        
+        return {
+          ...org,
+          products: products || []
+        };
+      } catch (err) {
+        console.error(`Erro ao processar produtos para organização ${org.id}:`, err);
         return {
           ...org,
           products: []
         };
       }
-      
-      return {
-        ...org,
-        products: products || []
-      };
     }));
     
     return orgsWithProducts;

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { NewUserType } from './types';
-import { fetchOrganizations } from './api/userManagementApi';
+import { fetchOrganizations } from '../organizations/api';
 import { useAuth } from '@/context/auth';
 import { useToast } from '@/hooks/use-toast';
 
@@ -27,7 +27,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
 }) => {
   const [organizations, setOrganizations] = useState<Array<{id: string, name: string}>>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const { currentUser, isSuperAdmin } = useAuth();
+  const { currentUser, isSuperAdmin, isAdmin } = useAuth();
   const { toast } = useToast();
   
   // Carregar organizações disponíveis
@@ -41,11 +41,20 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
           console.log('Organizações carregadas no CreateUserDialog:', orgsData);
           
           if (Array.isArray(orgsData) && orgsData.length > 0) {
-            setOrganizations(orgsData);
+            // Filtrar organizações conforme o papel do usuário
+            let filteredOrgs = orgsData;
+            
+            // Se for admin (não super admin), filtrar apenas a organização do usuário
+            if (isAdmin && !isSuperAdmin && currentUser?.organizationId) {
+              filteredOrgs = orgsData.filter(org => org.id === currentUser.organizationId);
+              console.log('Filtrando apenas a organização do usuário:', filteredOrgs);
+            }
+            
+            setOrganizations(filteredOrgs);
             
             // Se o usuário não for super admin e tiver uma organização, pré-selecionar
             if (!isSuperAdmin && currentUser?.organizationId && !newUser.organizationId) {
-              const userOrg = orgsData.find(org => org.id === currentUser.organizationId);
+              const userOrg = filteredOrgs.find(org => org.id === currentUser.organizationId);
               
               setNewUser(prev => ({ 
                 ...prev, 
@@ -60,7 +69,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
               toast({
                 title: "Nenhuma organização encontrada",
                 description: "Não foram encontradas organizações cadastradas.",
-                variant: "destructive" // Alterado de "warning" para "destructive"
+                variant: "destructive"
               });
             }
           }
@@ -79,7 +88,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
     };
     
     loadOrganizations();
-  }, [open, currentUser, isSuperAdmin, newUser.organizationId, setNewUser, toast]);
+  }, [open, currentUser, isSuperAdmin, isAdmin, newUser.organizationId, setNewUser, toast]);
   
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
