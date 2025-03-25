@@ -21,14 +21,6 @@ const PlanSelection = () => {
     fetchPlans();
   }, [fetchPlans]);
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-      minimumFractionDigits: 2
-    }).format(value);
-  };
-
   const handlePlanSelect = (planId: string) => {
     setValue('planId', planId);
   };
@@ -85,7 +77,6 @@ const PlanSelection = () => {
                       plan={plan}
                       isSelected={selectedPlanId === plan.id}
                       onClick={handlePlanSelect}
-                      formatCurrency={formatCurrency}
                     />
                   </div>
                 ))}

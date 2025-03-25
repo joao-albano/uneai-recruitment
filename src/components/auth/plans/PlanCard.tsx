@@ -4,19 +4,18 @@ import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Plan } from '@/hooks/usePlans';
+import { formatCurrency } from '@/utils/billing/formatCurrency';
 
 interface PlanCardProps {
   plan: Plan;
   isSelected: boolean;
   onClick: (planId: string) => void;
-  formatCurrency: (value: number) => string;
 }
 
 const PlanCard: React.FC<PlanCardProps> = ({ 
   plan, 
   isSelected, 
   onClick,
-  formatCurrency
 }) => {
   return (
     <div className="relative">
