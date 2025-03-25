@@ -2,10 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { toast } from "sonner";
 import CreateOrganizationForm from './create/CreateOrganizationForm';
 import { NewOrganizationType } from './types';
 import { createOrganization } from './api';
-import { toast } from "sonner";
 
 interface CreateOrganizationDialogProps {
   open: boolean;

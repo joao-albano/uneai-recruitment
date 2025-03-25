@@ -7,6 +7,7 @@ export type OrganizationType = {
   isActive: boolean;
   isMainOrg?: boolean;
   createdAt?: string;
+  updatedAt?: string;
   products?: OrganizationProduct[];
 };
 
