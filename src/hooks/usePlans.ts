@@ -20,9 +20,20 @@ export const usePlans = () => {
     setError(null);
     
     try {
-      // Usando a função RPC get_plans
-      const { data, error } = await supabase
-        .rpc('get_plans') as { data: Plan[] | null, error: any };
+      // Tentando primeiro usar a função RPC
+      let { data, error } = await supabase.rpc('get_plans') as { data: Plan[] | null, error: any };
+      
+      // Se falhar com a função RPC, tenta buscar diretamente da tabela
+      if (error) {
+        console.log('Erro ao buscar planos via RPC, tentando tabela direta:', error);
+        
+        const result = await supabase
+          .from('plans')
+          .select('id, name, description, price');
+          
+        data = result.data;
+        error = result.error;
+      }
           
       if (error) {
         console.error('Erro ao carregar planos:', error);
@@ -31,13 +42,11 @@ export const usePlans = () => {
         return;
       }
         
-      if (data) {
+      if (data && data.length > 0) {
         console.log('Planos carregados:', data);
         setPlans(data as Plan[]);
-        if (data.length === 0) {
-          toast.warning('Nenhum plano disponível no momento');
-        }
       } else {
+        console.log('Nenhum plano encontrado');
         setPlans([]);
         toast.warning('Nenhum plano disponível no momento');
       }
