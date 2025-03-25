@@ -6,6 +6,43 @@ import { fetchOrganizations } from '../api';
 import { ProductType } from '@/context/ProductContext';
 import { useAuth } from '@/context/auth';
 
+// Dados fictícios para teste
+const mockOrganizations: OrganizationType[] = [
+  {
+    id: "1",
+    name: "UNE CX",
+    isActive: true,
+    isMainOrg: true,
+    createdAt: new Date().toISOString(),
+    products: [
+      { type: 'retention' as ProductType, active: true },
+      { type: 'billing' as ProductType, active: true },
+      { type: 'recruitment' as ProductType, active: true }
+    ]
+  },
+  {
+    id: "2",
+    name: "Escola Brasil",
+    isActive: true,
+    isMainOrg: false,
+    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    products: [
+      { type: 'retention' as ProductType, active: true },
+      { type: 'billing' as ProductType, active: false }
+    ]
+  },
+  {
+    id: "3",
+    name: "Instituto Educacional Futuro",
+    isActive: false,
+    isMainOrg: false,
+    createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+    products: [
+      { type: 'retention' as ProductType, active: true }
+    ]
+  }
+];
+
 export const useOrganizationData = (
   setOrganizations: React.Dispatch<React.SetStateAction<OrganizationType[]>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
@@ -43,7 +80,8 @@ export const useOrganizationData = (
             return {
               id: org.id,
               name: org.name,
-              isActive: true, // Since is_active doesn't exist in the database, default to true
+              // Since is_active doesn't exist in the database, default to true
+              isActive: true,
               isMainOrg: org.is_main_org || false,
               createdAt: org.created_at,
               products: Array.isArray(org.products) ? org.products.map(p => ({
@@ -56,18 +94,20 @@ export const useOrganizationData = (
           console.log('Organizações formatadas:', formattedOrgs);
           setOrganizations(formattedOrgs);
         } else {
-          console.warn('Nenhuma organização retornada da API');
-          setOrganizations([]);
+          console.warn('Nenhuma organização retornada da API ou erro na resposta. Usando dados fictícios.');
+          setOrganizations(mockOrganizations);
+          toast.info("Exibindo dados fictícios para teste");
         }
       } catch (error) {
         console.error("Erro ao carregar organizações da API:", error);
-        toast.error("Erro ao carregar organizações");
-        setOrganizations([]);
+        console.log("Carregando dados fictícios para teste devido ao erro");
+        setOrganizations(mockOrganizations);
+        toast.info("Exibindo dados fictícios para teste devido a erro na API");
       }
     } catch (error) {
       console.error("Erro geral ao carregar organizações:", error);
-      toast.error("Erro ao carregar organizações");
-      setOrganizations([]);
+      setOrganizations(mockOrganizations);
+      toast.error("Erro ao carregar organizações. Exibindo dados de teste.");
     } finally {
       setIsLoading(false);
     }

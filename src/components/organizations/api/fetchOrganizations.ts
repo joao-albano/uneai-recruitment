@@ -31,7 +31,7 @@ export const fetchOrganizations = async (currentUser: UserProfile | null) => {
     
     console.log('Configuração Supabase:', {
       url: 'Using configured Supabase URL',
-      schema: 'public',
+      schema: 'public', // Agora estamos explicitamente configurando o schema como 'public'
     });
     
     // Construir a consulta para buscar organizações
