@@ -44,7 +44,9 @@ export const useOrganizationData = (
         const formattedOrgs: OrganizationType[] = filteredOrgs.map(org => ({
           id: org.id,
           name: org.name,
-          isActive: org.is_active !== undefined ? org.is_active : true,
+          // Fix: Check if is_active exists on the organization object
+          // If not, provide a default value of true
+          isActive: org.is_active === false ? false : true,
           isMainOrg: org.is_main_org || false,
           createdAt: org.created_at,
           products: org.products ? org.products.map(p => ({
