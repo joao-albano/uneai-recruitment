@@ -32,20 +32,12 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
       try {
         console.log('Carregando organizações no OrganizationSelector...');
         
-        const orgsData = await fetchOrganizations();
+        const orgsData = await fetchOrganizations(currentUser);
         
         if (Array.isArray(orgsData) && orgsData.length > 0) {
           console.log('Organizações carregadas com sucesso:', orgsData);
           
-          let filteredOrgs = orgsData;
-          
-          // Se for admin (não super admin), filtrar apenas a organização do usuário
-          if (isAdmin && !isSuperAdmin && currentUser?.organizationId) {
-            filteredOrgs = orgsData.filter(org => org.id === currentUser.organizationId);
-            console.log('Filtrando apenas a organização do usuário:', filteredOrgs);
-          }
-          
-          setOrganizations(filteredOrgs);
+          setOrganizations(orgsData);
         } else {
           console.warn('Nenhuma organização retornada ou array vazio');
           setOrganizations([]);
