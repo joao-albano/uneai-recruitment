@@ -20,16 +20,23 @@ const UserBasicInfoForm: React.FC<UserBasicInfoFormProps> = ({
   isUneCxAdmin = false
 }) => {
   const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   
   // Carregar organizações disponíveis para super admin
   useEffect(() => {
     const loadOrganizations = async () => {
       if (isSuperAdmin) {
+        setLoading(true);
         try {
           const orgsData = await fetchOrganizations();
+          console.log('Organizações carregadas no UserBasicInfoForm:', orgsData);
           setOrganizations(orgsData || []);
         } catch (error) {
           console.error('Erro ao carregar organizações:', error);
+          // Não quebrar a interface em caso de erro
+          setOrganizations([]);
+        } finally {
+          setLoading(false);
         }
       }
     };
@@ -130,14 +137,20 @@ const UserBasicInfoForm: React.FC<UserBasicInfoFormProps> = ({
             onValueChange={(value) => handleSelectChange('organizationId', value)}
           >
             <SelectTrigger className="col-span-3">
-              <SelectValue placeholder="Selecione uma organização" />
+              <SelectValue placeholder={loading ? "Carregando..." : "Selecione uma organização"} />
             </SelectTrigger>
             <SelectContent>
-              {organizations.map(org => (
-                <SelectItem key={org.id} value={org.id}>
-                  {org.name}
+              {organizations.length > 0 ? (
+                organizations.map(org => (
+                  <SelectItem key={org.id} value={org.id}>
+                    {org.name}
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem value="empty" disabled>
+                  {loading ? "Carregando organizações..." : "Nenhuma organização disponível"}
                 </SelectItem>
-              ))}
+              )}
             </SelectContent>
           </Select>
         </div>

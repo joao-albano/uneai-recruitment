@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { NewUserType } from './types';
 import { fetchOrganizations } from './api/userManagementApi';
 import { useAuth } from '@/context/auth';
+import { useToast } from '@/hooks/use-toast';
 
 interface CreateUserDialogProps {
   open: boolean;
@@ -25,14 +26,19 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   onSubmit
 }) => {
   const [organizations, setOrganizations] = useState<Array<{id: string, name: string}>>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const { currentUser, isSuperAdmin } = useAuth();
+  const { toast } = useToast();
   
   // Carregar organizações disponíveis
   useEffect(() => {
     const loadOrganizations = async () => {
-      try {
-        if (open) {
+      if (open) {
+        setLoading(true);
+        try {
+          console.log('Tentando carregar organizações...');
           const orgsData = await fetchOrganizations();
+          console.log('Organizações carregadas no CreateUserDialog:', orgsData);
           setOrganizations(orgsData || []);
           
           // Se o usuário não for super admin e tiver uma organização, pré-selecionar
@@ -42,14 +48,23 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
               organizationId: currentUser.organizationId || '' 
             }));
           }
+        } catch (error) {
+          console.error('Erro ao carregar organizações:', error);
+          toast({
+            title: "Erro ao carregar organizações",
+            description: "Não foi possível carregar a lista de organizações. Tente novamente.",
+            variant: "destructive"
+          });
+          // Não quebrar a interface em caso de erro
+          setOrganizations([]);
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.error('Erro ao carregar organizações:', error);
       }
     };
     
     loadOrganizations();
-  }, [open, currentUser, isSuperAdmin, newUser.organizationId, setNewUser]);
+  }, [open, currentUser, isSuperAdmin, newUser.organizationId, setNewUser, toast]);
   
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,14 +172,20 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
                   onValueChange={(value) => handleSelectChange('organizationId', value)}
                 >
                   <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Selecione uma organização" />
+                    <SelectValue placeholder={loading ? "Carregando..." : "Selecione uma organização"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {organizations.map(org => (
-                      <SelectItem key={org.id} value={org.id}>
-                        {org.name}
+                    {organizations.length > 0 ? (
+                      organizations.map(org => (
+                        <SelectItem key={org.id} value={org.id}>
+                          {org.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="empty" disabled>
+                        {loading ? "Carregando organizações..." : "Nenhuma organização disponível"}
                       </SelectItem>
-                    ))}
+                    )}
                   </SelectContent>
                 </Select>
               </div>

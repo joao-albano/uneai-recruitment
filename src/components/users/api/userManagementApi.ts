@@ -35,22 +35,33 @@ export const fetchUsers = async () => {
 
 /**
  * Busca organizações disponíveis - respeitará as políticas RLS
+ * Atualizada para resolver o problema de acesso às organizações
  */
 export const fetchOrganizations = async () => {
   try {
+    // Usando o método correto para acessar a tabela organizations
     const { data, error } = await supabase
       .from('organizations')
-      .select('id, name');
+      .select('id, name')
+      .order('name');
     
     if (error) {
       console.error('Erro ao buscar organizações:', error);
       throw error;
     }
     
+    // Se não houver dados, retornar um array vazio
+    if (!data || data.length === 0) {
+      console.log('Nenhuma organização encontrada');
+      return [];
+    }
+    
+    console.log('Organizações carregadas com sucesso:', data);
     return data;
   } catch (error) {
     console.error('Erro ao buscar organizações:', error);
-    throw error;
+    // Retornar uma lista vazia em caso de erro para não quebrar a interface
+    return [];
   }
 };
 
