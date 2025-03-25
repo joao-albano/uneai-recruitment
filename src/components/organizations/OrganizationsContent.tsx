@@ -33,7 +33,12 @@ const OrganizationsContent: React.FC = () => {
     // Handlers
     handleOpenEditDialog,
     handleOpenDeleteDialog,
-    loadOrganizations
+    handleCreateOrganization,
+    handleEditOrganization,
+    handleDeleteOrganization,
+    loadOrganizations,
+    // Utilities
+    resetNewOrganization
   } = useOrganizations();
 
   // Create, Edit, Delete handlers
@@ -41,15 +46,7 @@ const OrganizationsContent: React.FC = () => {
     try {
       await handleCreateOrganization(values.name || '', values.isActive || false);
       setShowCreateDialog(false);
-      setNewOrganization({
-        name: '',
-        isActive: true,
-        isMainOrg: false,
-        products: [
-          { type: 'retention', active: true },
-          { type: 'billing', active: false }
-        ]
-      });
+      resetNewOrganization();
     } catch (error) {
       console.error("Error submitting organization:", error);
     }

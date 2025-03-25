@@ -46,19 +46,20 @@ export const fetchOrganizations = async (currentUser: UserProfile | null) => {
     const { data, error } = await query;
     
     if (error) {
-      // Verify if it's a schema error and try with public schema explicitly
+      // Verify if it's a schema error and try with the correct schema
       if (error.message.includes('schema') || error.code === 'PGRST106') {
-        console.log('Trying with public schema explicitly...');
+        console.log('Schema error detected, trying alternative approach...');
         
-        const publicQuery = supabase
-          .from('public.organizations')
+        // Use the from method without specifying the schema
+        const fallbackQuery = supabase
+          .from('organizations')  // Without 'public.' prefix
           .select(`
             id, 
             name, 
             is_main_org,
             created_at, 
             updated_at,
-            products:public.organization_products(
+            products:organization_products(
               id,
               type,
               active,
@@ -70,17 +71,17 @@ export const fetchOrganizations = async (currentUser: UserProfile | null) => {
           .order('name', { ascending: true });
           
         if (currentUser && !currentUser.isSuperAdmin && currentUser.organization) {
-          publicQuery.eq('id', currentUser.organization.id);
+          fallbackQuery.eq('id', currentUser.organization.id);
         }
         
-        const publicResult = await publicQuery;
+        const fallbackResult = await fallbackQuery;
         
-        if (publicResult.error) {
-          console.error('Erro ao buscar organizações com esquema público:', publicResult.error);
-          throw publicResult.error;
+        if (fallbackResult.error) {
+          console.error('Erro alternativo ao buscar organizações:', fallbackResult.error);
+          throw fallbackResult.error;
         }
         
-        return publicResult.data || [];
+        return fallbackResult.data || [];
       }
       
       console.error('Erro ao buscar organizações:', error);
