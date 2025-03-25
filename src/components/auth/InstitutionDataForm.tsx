@@ -1,9 +1,9 @@
-
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { formatCNPJ } from '@/utils/formatters';
 
 const InstitutionDataForm = () => {
   const { control } = useFormContext();
@@ -36,7 +36,15 @@ const InstitutionDataForm = () => {
             <FormItem>
               <FormLabel>CNPJ</FormLabel>
               <FormControl>
-                <Input placeholder="00.000.000/0000-00" {...field} />
+                <Input 
+                  placeholder="00.000.000/0000-00" 
+                  {...field} 
+                  onChange={(e) => {
+                    const formatted = formatCNPJ(e.target.value);
+                    field.onChange(formatted);
+                  }}
+                  maxLength={18}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

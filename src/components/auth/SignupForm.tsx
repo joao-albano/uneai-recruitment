@@ -11,6 +11,7 @@ import PlanSelection from './PlanSelection';
 import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { normalizeCNPJ, isValidCNPJ } from '@/utils/formatters';
 
 // Etapa 1: Schema para dados do usuário e instituição
 const userDataSchema = z.object({
@@ -19,7 +20,10 @@ const userDataSchema = z.object({
   password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
   confirmPassword: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
   companyName: z.string().min(3, 'O nome da empresa deve ter pelo menos 3 caracteres'),
-  cnpj: z.string().min(14, 'CNPJ inválido').max(18, 'CNPJ inválido'),
+  cnpj: z.string()
+    .min(14, 'CNPJ inválido')
+    .max(18, 'CNPJ inválido')
+    .refine(val => isValidCNPJ(val), 'CNPJ em formato inválido'),
   address: z.string().min(5, 'Endereço muito curto'),
   city: z.string().min(2, 'Cidade inválida'),
   state: z.string().length(2, 'Use a sigla do estado (2 letras)'),
@@ -79,15 +83,19 @@ const SignupForm = ({ onSwitchTab, onSuccess }: SignupFormProps) => {
   const handleNextStep = async (data: UserDataFormValues) => {
     console.log('Dados do usuário:', data);
     
-    // Verificar CNPJ
     try {
       setIsCreatingAccount(true);
+      
+      // Normalize CNPJ for database comparison
+      const normalizedCNPJ = normalizeCNPJ(data.cnpj);
+      
+      console.log('Verificando CNPJ normalizado:', normalizedCNPJ);
       
       // Verificar se o CNPJ já existe
       const { data: existingOrg, error: checkError } = await supabase
         .from('organizations')
-        .select('id, name')
-        .eq('cnpj', data.cnpj)
+        .select('id, name, cnpj')
+        .eq('cnpj', normalizedCNPJ)
         .maybeSingle();
       
       if (checkError) {
@@ -106,7 +114,11 @@ const SignupForm = ({ onSwitchTab, onSuccess }: SignupFormProps) => {
       }
       
       // Armazenar dados do usuário e avançar para próxima etapa
-      setUserData(data);
+      // Use a normalized CNPJ in userData to ensure consistent format
+      setUserData({
+        ...data,
+        cnpj: normalizedCNPJ
+      });
       setCurrentStep('plan-selection');
       setIsCreatingAccount(false);
     } catch (error) {
@@ -127,12 +139,12 @@ const SignupForm = ({ onSwitchTab, onSuccess }: SignupFormProps) => {
     setIsCreatingAccount(true);
     
     try {
-      // Step 1: Create the organization first
+      // Step 1: Create the organization first with normalized CNPJ
       const { data: newOrg, error: orgError } = await supabase
         .from('organizations')
         .insert([{ 
           name: userData.companyName,
-          cnpj: userData.cnpj,
+          cnpj: userData.cnpj,  // Already normalized in handleNextStep
           address: userData.address,
           city: userData.city,
           state: userData.state,
