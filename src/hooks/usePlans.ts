@@ -23,7 +23,7 @@ export const usePlans = () => {
       // We need to use a raw SQL query to access tables in a different schema
       // since the Supabase JS client has limitations with cross-schema queries
       const { data, error } = await supabase
-        .rpc('get_plans')
+        .rpc('get_plans') as { data: Plan[] | null, error: any }
           
       if (error) {
         console.error('Erro ao carregar planos:', error);
