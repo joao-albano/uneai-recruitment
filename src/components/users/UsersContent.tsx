@@ -1,20 +1,13 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { Button } from "@/components/ui/button";
+import React, { useState, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import Header from '@/components/layout/Header';
-import Sidebar from '@/components/layout/Sidebar';
-import CreateUserDialog from './CreateUserDialog';
-import EditUserDialog from './dialogs/EditUserDialog';
-import DeleteUserDialog from './DeleteUserDialog';
-import { useUsers } from './hooks/useUsers';
 import { useAuth } from '@/context/auth';
 import { useProduct } from '@/context/ProductContext';
-import UsersHeader from './UsersHeader';
-import UsersToolbar from './UsersToolbar';
-import UsersList from './UsersList';
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { RefreshCw } from "lucide-react";
+import { useUsers } from './hooks/useUsers';
+import UserLayout from './layout/UserLayout';
+import UserLoadingState from './loading/UserLoadingState';
+import UserMainContent from './content/UserMainContent';
+import UserDialogsContainer from './dialogs/UserDialogsContainer';
 
 const UsersContent: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -103,115 +96,61 @@ const UsersContent: React.FC = () => {
   
   if (loading) {
     return (
-      <div className="min-h-screen flex w-full">
-        <Sidebar 
-          isOpen={sidebarOpen} 
-          onClose={toggleSidebar} 
-          collapsed={sidebarCollapsed}
-          setCollapsed={setSidebarCollapsed}
-        />
-        
-        <div className="flex-1 flex flex-col">
-          <Header 
-            toggleSidebar={toggleSidebar} 
-            sidebarCollapsed={sidebarCollapsed} 
-          />
-          
-          <main className="flex-1 p-6 flex items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
-            <span className="ml-2">Carregando usuários...</span>
-          </main>
-        </div>
-      </div>
+      <UserLoadingState
+        sidebarOpen={sidebarOpen}
+        toggleSidebar={toggleSidebar}
+        sidebarCollapsed={sidebarCollapsed}
+        setSidebarCollapsed={setSidebarCollapsed}
+      />
     );
   }
   
   const hasError = users.length === 0 && !loading;
   
   return (
-    <div className="min-h-screen flex w-full">
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        onClose={toggleSidebar} 
-        collapsed={sidebarCollapsed}
-        setCollapsed={setSidebarCollapsed}
+    <UserLayout
+      sidebarOpen={sidebarOpen}
+      toggleSidebar={toggleSidebar}
+      sidebarCollapsed={sidebarCollapsed}
+      setSidebarCollapsed={setSidebarCollapsed}
+    >
+      <UserMainContent
+        filteredUsers={filteredUsers}
+        hasError={hasError}
+        handleRetryFetch={handleRetryFetch}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        selectedOrganization={selectedOrganization}
+        setSelectedOrganization={setSelectedOrganization}
+        organizations={organizations}
+        setShowCreateDialog={setShowCreateDialog}
+        handleOpenEditDialog={handleOpenEditDialog}
+        handleOpenDeleteDialog={handleOpenDeleteDialog}
+        isLastAdmin={isLastAdmin}
+        userSubscriptions={userSubscriptions}
+        isAdmin={isAdmin}
+        isSuperAdmin={isSuperAdmin}
       />
       
-      <div className="flex-1 flex flex-col">
-        <Header 
-          toggleSidebar={toggleSidebar} 
-          sidebarCollapsed={sidebarCollapsed} 
-        />
-        
-        <main className="flex-1 p-6">
-          <UsersHeader userCount={filteredUsers.length} />
-          
-          <UsersToolbar 
-            userCount={filteredUsers.length}
-            onOpenCreateDialog={() => setShowCreateDialog(true)}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            selectedOrganization={selectedOrganization}
-            setSelectedOrganization={setSelectedOrganization}
-            organizations={organizations}
-          />
-          
-          {hasError && (
-            <Alert variant="destructive" className="mb-6">
-              <AlertTitle>Erro ao carregar usuários</AlertTitle>
-              <AlertDescription>
-                Não foi possível carregar a lista de usuários.
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleRetryFetch}
-                  className="ml-4"
-                >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Tentar novamente
-                </Button>
-              </AlertDescription>
-            </Alert>
-          )}
-          
-          <UsersList 
-            users={filteredUsers}
-            onEdit={handleOpenEditDialog}
-            onDelete={handleOpenDeleteDialog}
-            isLastAdmin={isLastAdmin}
-            subscriptions={userSubscriptions}
-            isAdmin={isAdmin}
-            isSuperAdmin={isSuperAdmin}
-          />
-          
-          <CreateUserDialog 
-            open={showCreateDialog}
-            onOpenChange={setShowCreateDialog}
-            newUser={newUser}
-            setNewUser={setNewUser}
-            onSubmit={handleCreateUser}
-          />
-          
-          <EditUserDialog 
-            open={showEditDialog}
-            onOpenChange={setShowEditDialog}
-            selectedUser={selectedUser}
-            setSelectedUser={setSelectedUser}
-            onSubmit={handleEditUser}
-            subscriptions={userSubscriptions}
-            isAdmin={isAdmin}
-            isSuperAdmin={isSuperAdmin}
-          />
-          
-          <DeleteUserDialog 
-            open={showDeleteDialog}
-            onOpenChange={setShowDeleteDialog}
-            selectedUser={selectedUser}
-            onDelete={handleDeleteUser}
-          />
-        </main>
-      </div>
-    </div>
+      <UserDialogsContainer
+        showCreateDialog={showCreateDialog}
+        showEditDialog={showEditDialog}
+        showDeleteDialog={showDeleteDialog}
+        setShowCreateDialog={setShowCreateDialog}
+        setShowEditDialog={setShowEditDialog}
+        setShowDeleteDialog={setShowDeleteDialog}
+        newUser={newUser}
+        selectedUser={selectedUser}
+        setNewUser={setNewUser}
+        setSelectedUser={setSelectedUser}
+        handleCreateUser={handleCreateUser}
+        handleEditUser={handleEditUser}
+        handleDeleteUser={handleDeleteUser}
+        userSubscriptions={userSubscriptions}
+        isAdmin={isAdmin}
+        isSuperAdmin={isSuperAdmin}
+      />
+    </UserLayout>
   );
 };
 
