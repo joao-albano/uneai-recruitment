@@ -7,7 +7,10 @@ export async function processSignup(
   userData: UserDataFormValues,
   planData: PlanSelectionFormValues
 ): Promise<boolean> {
-  console.log('Dados completos:', { ...userData, planId: planData.planId });
+  console.log('Dados completos para cadastro:', { 
+    userData, 
+    planId: planData.planId 
+  });
   
   try {
     // Step 1: Create the organization first with normalized CNPJ
@@ -81,6 +84,8 @@ export async function processSignup(
       const trialEndDate = new Date(now);
       trialEndDate.setDate(now.getDate() + 14); // 14 days trial
       
+      console.log('Criando assinatura com plano:', planData.planId);
+      
       const { error: subscriptionError } = await supabase
         .from('subscriptions')
         .insert([{
@@ -96,6 +101,8 @@ export async function processSignup(
         console.error('Erro ao criar assinatura:', subscriptionError);
         toast.error('Erro ao configurar período de teste');
         // Continue anyway since the user account is created
+      } else {
+        console.log('Assinatura criada com sucesso!');
       }
     }
     

@@ -17,6 +17,9 @@ const PlanCard: React.FC<PlanCardProps> = ({
   isSelected, 
   onClick,
 }) => {
+  // Debugar os dados do plano
+  console.log('Renderizando plano:', plan);
+  
   return (
     <div className="relative">
       <Card 
@@ -26,7 +29,10 @@ const PlanCard: React.FC<PlanCardProps> = ({
             ? "border-primary ring-2 ring-primary/20" 
             : "hover:border-muted-foreground/20"
         )}
-        onClick={() => onClick(plan.id)}
+        onClick={() => {
+          console.log('Clique no plano:', plan.id);
+          onClick(plan.id);
+        }}
       >
         <CardContent className="p-4">
           <div className="flex justify-between items-start">

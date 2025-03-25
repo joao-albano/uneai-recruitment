@@ -19,9 +19,13 @@ const PlanSelection = () => {
   useEffect(() => {
     // Buscar planos ao carregar o componente
     fetchPlans();
+    
+    // Log para debug
+    console.log('PlanSelection montado, buscando planos...');
   }, [fetchPlans]);
 
   const handlePlanSelect = (planId: string) => {
+    console.log('Plano selecionado:', planId);
     setValue('planId', planId);
   };
 
@@ -29,6 +33,9 @@ const PlanSelection = () => {
     console.log('Tentando carregar planos novamente...');
     fetchPlans();
   };
+
+  // Debugar estados
+  console.log('Estado atual dos planos:', { planos: plans, carregando: isLoading, erro: error });
 
   if (isLoading) {
     return <PlanSelectionLoading />;
@@ -38,7 +45,7 @@ const PlanSelection = () => {
     return <PlanSelectionError error={error} onRetry={handleRetry} />;
   }
 
-  if (plans.length === 0) {
+  if (!plans || plans.length === 0) {
     return <PlanSelectionEmpty onRetry={handleRetry} />;
   }
 
