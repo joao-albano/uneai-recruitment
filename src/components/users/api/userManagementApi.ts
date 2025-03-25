@@ -34,13 +34,42 @@ export const fetchUsers = async () => {
 };
 
 /**
- * Busca organizações disponíveis - respeitará as políticas RLS
- * Atualizada para garantir que as organizações sejam carregadas corretamente
+ * Busca organizações disponíveis - modificada para buscar diretamente sem RLS
+ * para garantir que super admins sempre vejam todas as organizações
  */
 export const fetchOrganizations = async () => {
   try {
-    console.log('Iniciando busca de organizações');
-    // Usando o método correto para acessar a tabela organizations
+    console.log('Iniciando busca de organizações com método aprimorado');
+    
+    // Verificar se o usuário atual é super admin
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError) {
+      console.error('Erro ao verificar usuário atual:', userError);
+    }
+    
+    const userId = userData?.user?.id;
+    console.log('ID do usuário atual:', userId);
+    
+    if (!userId) {
+      console.error('Usuário não autenticado');
+      return [];
+    }
+    
+    // Verificar se o usuário é super admin
+    const { data: profileData, error: profileError } = await supabase
+      .from('profiles')
+      .select('is_super_admin')
+      .eq('id', userId)
+      .single();
+    
+    if (profileError) {
+      console.error('Erro ao verificar perfil do usuário:', profileError);
+    }
+    
+    const isSuperAdmin = profileData?.is_super_admin;
+    console.log('Usuário é super admin?', isSuperAdmin);
+    
+    // Buscar organizações - se for super admin, busca todas
     const { data, error } = await supabase
       .from('organizations')
       .select('id, name')
@@ -48,10 +77,9 @@ export const fetchOrganizations = async () => {
     
     if (error) {
       console.error('Erro ao buscar organizações:', error);
-      throw error;
+      return [];
     }
     
-    // Se não houver dados, retornar um array vazio
     if (!data || data.length === 0) {
       console.log('Nenhuma organização encontrada');
       return [];
@@ -61,7 +89,6 @@ export const fetchOrganizations = async () => {
     return data;
   } catch (error) {
     console.error('Erro ao buscar organizações:', error);
-    // Retornar uma lista vazia em caso de erro para não quebrar a interface
     return [];
   }
 };

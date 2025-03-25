@@ -44,6 +44,9 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
   // Check if the user is the super admin of UNE CX
   const isUneCxAdmin = selectedUser.isSuperAdmin;
   
+  console.log('EditUserDialog - selectedUser:', selectedUser);
+  console.log('EditUserDialog - isSuperAdmin:', isSuperAdmin);
+  
   // Handle form submission with error prevention
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

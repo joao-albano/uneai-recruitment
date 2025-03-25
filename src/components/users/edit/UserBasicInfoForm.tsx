@@ -22,17 +22,23 @@ const UserBasicInfoForm: React.FC<UserBasicInfoFormProps> = ({
   const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   
-  // Carregar organizações disponíveis para todos os usuários, não apenas super admin
+  // Carregar organizações disponíveis para todos os usuários
   useEffect(() => {
     const loadOrganizations = async () => {
       setLoading(true);
       try {
+        console.log('Carregando organizações no UserBasicInfoForm...');
         const orgsData = await fetchOrganizations();
-        console.log('Organizações carregadas no UserBasicInfoForm:', orgsData);
-        setOrganizations(orgsData || []);
+        console.log('Organizações carregadas:', orgsData);
+        
+        if (Array.isArray(orgsData) && orgsData.length > 0) {
+          setOrganizations(orgsData);
+        } else {
+          console.warn('Nenhuma organização retornada pela API ou formato inesperado');
+          setOrganizations([]);
+        }
       } catch (error) {
         console.error('Erro ao carregar organizações:', error);
-        // Não quebrar a interface em caso de erro
         setOrganizations([]);
       } finally {
         setLoading(false);
@@ -60,6 +66,7 @@ const UserBasicInfoForm: React.FC<UserBasicInfoFormProps> = ({
       // Se estiver alterando a organização, atualizar também o nome da organização
       if (field === 'organizationId') {
         const selectedOrg = organizations.find(org => org.id === value);
+        console.log('Organização selecionada:', selectedOrg);
         return {
           ...prev,
           [field]: value,
@@ -124,7 +131,7 @@ const UserBasicInfoForm: React.FC<UserBasicInfoFormProps> = ({
         </Select>
       </div>
       
-      {/* Mostrar dropdown de organizações para todos, mas apenas editável para super admin */}
+      {/* Dropdown de organizações */}
       <div className="grid grid-cols-4 items-center gap-4">
         <Label htmlFor="organizationId" className="text-right">
           Organização
