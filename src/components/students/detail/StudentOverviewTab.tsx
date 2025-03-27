@@ -3,8 +3,11 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StudentData } from '@/types/data';
-import { Calendar, User, Phone } from 'lucide-react';
+import { Calendar, User, Phone, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useData } from '@/context/DataContext';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface StudentOverviewTabProps {
   student: StudentData;
@@ -16,9 +19,20 @@ const StudentOverviewTab: React.FC<StudentOverviewTabProps> = ({
   onScheduleMeeting
 }) => {
   const navigate = useNavigate();
+  const { schedules } = useData();
+  
+  // Filtra os agendamentos para o aluno atual que estão com status 'scheduled'
+  const studentSchedules = schedules
+    .filter(s => s.studentId === student.id && s.status === 'scheduled')
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .slice(0, 3); // Limita a mostrar apenas os 3 próximos
   
   const handleScheduleMeeting = () => {
     onScheduleMeeting(student.id, student.name);
+  };
+
+  const formatScheduleDate = (date: Date) => {
+    return format(new Date(date), "dd 'de' MMMM', às' HH:mm", { locale: ptBR });
   };
 
   return (
@@ -96,14 +110,31 @@ const StudentOverviewTab: React.FC<StudentOverviewTabProps> = ({
           </div>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-4">
-            <p className="text-muted-foreground">
-              Nenhum atendimento agendado.
-            </p>
-            <Button variant="link" size="sm" onClick={handleScheduleMeeting}>
-              Agendar atendimento
-            </Button>
-          </div>
+          {studentSchedules.length > 0 ? (
+            <div className="space-y-3">
+              {studentSchedules.map((schedule) => (
+                <div key={schedule.id} className="flex items-start border-l-2 border-primary pl-3 py-1">
+                  <Clock className="h-4 w-4 mr-2 text-muted-foreground mt-0.5" />
+                  <div>
+                    <p className="font-medium">{formatScheduleDate(schedule.date)}</p>
+                    <p className="text-sm text-muted-foreground">Responsável: {schedule.agentName}</p>
+                    {schedule.notes && (
+                      <p className="text-sm mt-1">{schedule.notes}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-4">
+              <p className="text-muted-foreground">
+                Nenhum atendimento agendado.
+              </p>
+              <Button variant="link" size="sm" onClick={handleScheduleMeeting}>
+                Agendar atendimento
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

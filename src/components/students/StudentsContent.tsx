@@ -14,6 +14,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Student } from '@/types/data';
 import { useAuth } from '@/context/auth';
 import StudentDetail from './StudentDetail';
+import { v4 as uuidv4 } from 'uuid';
 
 const StudentsContent: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -22,7 +23,7 @@ const StudentsContent: React.FC = () => {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [createStudentOpen, setCreateStudentOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('list');
-  const { students, addStudent, updateStudent, deleteStudent, generateDemoData } = useData();
+  const { students, addStudent, updateStudent, deleteStudent, generateDemoData, addSchedule } = useData();
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const { isAdmin } = useAuth();
@@ -76,9 +77,27 @@ const StudentsContent: React.FC = () => {
   };
 
   const handleScheduleMeeting = (studentId: string, studentName: string) => {
+    // Cria uma data para o dia seguinte às 14h
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(14, 0, 0, 0);
+    
+    // Adiciona o agendamento
+    const newSchedule = {
+      id: uuidv4(),
+      studentId,
+      studentName,
+      date: tomorrow,
+      agentName: 'Coord. Pedagógica',
+      status: 'scheduled' as const,
+      notes: 'Reunião para acompanhamento do desenvolvimento acadêmico e social'
+    };
+    
+    addSchedule(newSchedule);
+    
     toast({
       title: 'Atendimento agendado',
-      description: `Um novo atendimento para ${studentName} foi adicionado.`,
+      description: `Um novo atendimento para ${studentName} foi agendado para amanhã às 14h.`,
     });
   };
 
