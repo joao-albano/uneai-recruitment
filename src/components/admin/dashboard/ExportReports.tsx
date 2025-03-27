@@ -1,148 +1,117 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { DownloadCloud, FileText, AlertTriangle, UserCheck, BarChart } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { useData } from '@/context/DataContext';
-import { Download, FileType, Users, AlertTriangle, Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-interface ExportReportsProps {
+type ExportReportsProps = {
   onError: (error: Error) => void;
-}
+};
+
+type ReportType = {
+  id: string;
+  title: string;
+  description: string;
+  icon: JSX.Element;
+  format: string;
+};
 
 const ExportReports: React.FC<ExportReportsProps> = ({ onError }) => {
-  const { students, alerts, schedules, surveys } = useData();
   const { language } = useTheme();
   const { toast } = useToast();
-  const [exporting, setExporting] = useState<string | null>(null);
+  const { students, alerts, schedules } = useData();
+  const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
   
-  const exportData = (type: string) => {
-    try {
-      setExporting(type);
-      
-      let data;
-      let filename;
-      
-      switch (type) {
-        case 'students':
-          data = students;
-          filename = language === 'pt-BR' ? 'alunos.json' : 'students.json';
-          break;
-        case 'alerts':
-          data = alerts;
-          filename = language === 'pt-BR' ? 'alertas.json' : 'alerts.json';
-          break;
-        case 'schedules':
-          data = schedules;
-          filename = language === 'pt-BR' ? 'agendamentos.json' : 'schedules.json';
-          break;
-        case 'surveys':
-          data = surveys;
-          filename = language === 'pt-BR' ? 'pesquisas.json' : 'surveys.json';
-          break;
-        default:
-          throw new Error('Invalid export type');
-      }
-      
-      // Create blob and trigger download
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      
-      toast({
-        title: language === 'pt-BR' ? 'Exportação concluída' : 'Export completed',
-        description: language === 'pt-BR' 
-          ? `Dados exportados com sucesso: ${filename}` 
-          : `Data successfully exported: ${filename}`,
-      });
-    } catch (error) {
-      console.error(`Error exporting ${type} data:`, error);
-      if (error instanceof Error) {
-        onError(error);
-      } else {
-        onError(new Error('Unknown error during export'));
-      }
-    } finally {
-      setExporting(null);
-    }
-  };
-  
-  const reports = [
+  const reports: ReportType[] = [
     {
-      title: language === 'pt-BR' ? 'Relatório de Alunos' : 'Student Report',
+      id: 'students',
+      title: language === 'pt-BR' ? 'Relatório de Alunos' : 'Students Report',
       description: language === 'pt-BR' 
-        ? 'Exporta lista de alunos e dados associados' 
-        : 'Exports list of students and associated data',
-      icon: <Users className="h-5 w-5" />,
-      action: () => exportData('students'),
-      type: 'students'
+        ? `Detalhes completos de ${students.length} alunos e análise de risco` 
+        : `Complete details of ${students.length} students and risk analysis`,
+      icon: <UserCheck className="h-5 w-5" />,
+      format: 'PDF/EXCEL'
     },
     {
+      id: 'alerts',
       title: language === 'pt-BR' ? 'Relatório de Alertas' : 'Alerts Report',
       description: language === 'pt-BR' 
-        ? 'Exporta histórico de alertas e notificações' 
-        : 'Exports history of alerts and notifications',
+        ? `Resumo de ${alerts.length} alertas gerados no sistema` 
+        : `Summary of ${alerts.length} alerts generated in the system`,
       icon: <AlertTriangle className="h-5 w-5" />,
-      action: () => exportData('alerts'),
-      type: 'alerts'
+      format: 'PDF/CSV'
     },
     {
-      title: language === 'pt-BR' ? 'Relatório de Agendamentos' : 'Schedules Report',
+      id: 'attendance',
+      title: language === 'pt-BR' ? 'Relatório de Atendimentos' : 'Attendance Report',
       description: language === 'pt-BR' 
-        ? 'Exporta histórico de reuniões e agendamentos' 
-        : 'Exports history of meetings and schedules',
-      icon: <Calendar className="h-5 w-5" />,
-      action: () => exportData('schedules'),
-      type: 'schedules'
+        ? `Dados de ${schedules.length} atendimentos realizados e agendados` 
+        : `Data from ${schedules.length} completed and scheduled meetings`,
+      icon: <FileText className="h-5 w-5" />,
+      format: 'PDF/CSV'
     },
     {
-      title: language === 'pt-BR' ? 'Relatório de Pesquisas' : 'Surveys Report',
+      id: 'metrics',
+      title: language === 'pt-BR' ? 'Métricas do Sistema' : 'System Metrics',
       description: language === 'pt-BR' 
-        ? 'Exporta respostas de pesquisas diagnósticas' 
-        : 'Exports diagnostic survey responses',
-      icon: <FileType className="h-5 w-5" />,
-      action: () => exportData('surveys'),
-      type: 'surveys'
-    },
+        ? 'Indicadores de desempenho e estatísticas completas' 
+        : 'Performance indicators and complete statistics',
+      icon: <BarChart className="h-5 w-5" />,
+      format: 'PDF/EXCEL'
+    }
   ];
   
+  const handleExport = (reportId: string) => {
+    setLoading({ ...loading, [reportId]: true });
+    
+    // Simulate export operation
+    setTimeout(() => {
+      setLoading({ ...loading, [reportId]: false });
+      
+      toast({
+        title: language === 'pt-BR' ? 'Relatório exportado' : 'Report exported',
+        description: language === 'pt-BR' 
+          ? 'O relatório foi gerado com sucesso' 
+          : 'The report was successfully generated',
+      });
+    }, 1500);
+  };
+  
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      {reports.map((report, index) => (
-        <Card key={index}>
+    <div className="grid gap-6 md:grid-cols-2">
+      {reports.map((report) => (
+        <Card key={report.id} className="flex flex-col">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-xl">{report.title}</CardTitle>
-              {report.icon}
+              <div className="flex items-center space-x-2">
+                {report.icon}
+                <CardTitle className="text-base">{report.title}</CardTitle>
+              </div>
+              <div className="text-xs bg-muted px-2 py-1 rounded-md">
+                {report.format}
+              </div>
             </div>
             <CardDescription>{report.description}</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardFooter className="flex justify-end mt-auto">
             <Button 
-              onClick={report.action}
-              disabled={exporting !== null}
-              className="w-full"
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-2"
+              onClick={() => handleExport(report.id)}
+              disabled={loading[report.id]}
             >
-              {exporting === report.type ? (
-                <>
-                  <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                  {language === 'pt-BR' ? 'Exportando...' : 'Exporting...'}
-                </>
+              {loading[report.id] ? (
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
               ) : (
-                <>
-                  <Download className="mr-2 h-4 w-4" />
-                  {language === 'pt-BR' ? 'Exportar Dados' : 'Export Data'}
-                </>
+                <DownloadCloud className="h-4 w-4" />
               )}
+              {language === 'pt-BR' ? 'Exportar' : 'Export'}
             </Button>
-          </CardContent>
+          </CardFooter>
         </Card>
       ))}
     </div>

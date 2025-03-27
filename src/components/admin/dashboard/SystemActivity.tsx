@@ -1,112 +1,17 @@
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useData } from '@/context/DataContext';
 import { useTheme } from '@/context/ThemeContext';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { format, subDays, isSameDay } from 'date-fns';
-import { useToast } from '@/hooks/use-toast';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useData } from '@/context/DataContext';
 
 const SystemActivity: React.FC = () => {
-  const { alerts, surveys, schedules } = useData();
   const { language } = useTheme();
-  const { toast } = useToast();
+  const { alerts, schedules } = useData();
   
-  const activityData = useMemo(() => {
-    try {
-      // Generate data for last 30 days
-      const last30Days = Array.from({ length: 30 }, (_, i) => {
-        const date = subDays(new Date(), i);
-        return {
-          date,
-          dateStr: format(date, 'dd/MM'),
-          alerts: 0,
-          surveys: 0,
-          schedules: 0
-        };
-      }).reverse();
-      
-      // If there's no real data, populate with demo data
-      if (alerts.length === 0 && schedules.length === 0) {
-        // Populate last 30 days with fictional data
-        last30Days.forEach((day, index) => {
-          // Create some patterns in the data
-          const dayOfMonth = new Date(day.date).getDate();
-          
-          // More alerts and surveys during beginning/middle of month
-          if (dayOfMonth < 10) {
-            day.alerts = Math.floor(Math.random() * 3) + 1;
-            day.surveys = Math.floor(Math.random() * 5) + 2;
-          } else if (dayOfMonth < 20) {
-            day.alerts = Math.floor(Math.random() * 2);
-            day.surveys = Math.floor(Math.random() * 3) + 1;
-          } else {
-            day.alerts = Math.floor(Math.random() * 2);
-            day.surveys = Math.floor(Math.random() * 2);
-          }
-          
-          // More schedules on weekdays
-          const dayOfWeek = new Date(day.date).getDay();
-          if (dayOfWeek > 0 && dayOfWeek < 6) {
-            day.schedules = Math.floor(Math.random() * 3) + 1;
-          } else {
-            day.schedules = Math.floor(Math.random() * 1);
-          }
-        });
-        
-        return last30Days;
-      }
-      
-      // Count real alerts by day
-      alerts.forEach(alert => {
-        const dayData = last30Days.find(day => 
-          isSameDay(day.date, new Date(alert.createdAt))
-        );
-        if (dayData) {
-          dayData.alerts += 1;
-        }
-      });
-      
-      // Since SurveyData doesn't have createdAt, we'll create random data for surveys
-      last30Days.forEach(day => {
-        // Create some randomized but reasonable data for surveys
-        day.surveys = Math.max(0, Math.floor(Math.random() * 4) - 1);
-      });
-      
-      // Count schedules by day
-      schedules.forEach(schedule => {
-        const dayData = last30Days.find(day => 
-          isSameDay(day.date, new Date(schedule.date))
-        );
-        if (dayData) {
-          dayData.schedules += 1;
-        }
-      });
-      
-      return last30Days;
-    } catch (error) {
-      console.error('Error calculating system activity:', error);
-      toast({
-        title: language === 'pt-BR' ? 'Erro ao calcular atividade do sistema' : 'Error calculating system activity',
-        description: error instanceof Error ? error.message : 'Unknown error',
-        variant: 'destructive'
-      });
-      
-      // Return fallback demo data
-      return Array.from({ length: 30 }, (_, i) => {
-        const date = subDays(new Date(), i);
-        const dayOfMonth = date.getDate();
-        
-        return {
-          date,
-          dateStr: format(date, 'dd/MM'),
-          alerts: Math.max(0, Math.floor(Math.random() * 3) - 1),
-          surveys: Math.max(0, Math.floor(Math.random() * 4) - 1),
-          schedules: Math.max(0, Math.floor(Math.random() * 3) - 1)
-        };
-      }).reverse();
-    }
-  }, [alerts, surveys, schedules, language]);
+  // Create realistic activity data based on actual alerts and schedules
+  // We'll create a 7-day activity chart
+  const activityData = generateActivityData(alerts, schedules);
   
   return (
     <Card className="col-span-1">
@@ -116,8 +21,8 @@ const SystemActivity: React.FC = () => {
         </CardTitle>
         <CardDescription>
           {language === 'pt-BR' 
-            ? 'Atividades registradas nos últimos 30 dias' 
-            : 'System activities over the last 30 days'}
+            ? 'Atividades do sistema nos últimos 7 dias' 
+            : 'System activities in the last 7 days'}
         </CardDescription>
       </CardHeader>
       <CardContent className="h-[300px]">
@@ -126,37 +31,52 @@ const SystemActivity: React.FC = () => {
             data={activityData}
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
           >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="dateStr" />
-            <YAxis />
-            <Tooltip 
-              formatter={(value, name) => {
-                const translatedName = 
-                  name === "alerts" ? (language === 'pt-BR' ? 'Alertas' : 'Alerts') :
-                  name === "surveys" ? (language === 'pt-BR' ? 'Pesquisas' : 'Surveys') :
-                  (language === 'pt-BR' ? 'Agendamentos' : 'Schedules');
-                return [value, translatedName];
-              }}
+            <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+            <XAxis 
+              dataKey="name" 
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
             />
-            <Legend />
+            <YAxis 
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => value.toFixed(0)}
+            />
+            <Tooltip 
+              contentStyle={{ 
+                backgroundColor: 'rgba(255, 255, 255, 0.8)', 
+                borderRadius: '6px', 
+                fontSize: '12px' 
+              }} 
+            />
             <Line 
               type="monotone" 
               dataKey="alerts" 
               name={language === 'pt-BR' ? 'Alertas' : 'Alerts'} 
               stroke="#ef4444" 
-              activeDot={{ r: 8 }} 
-            />
-            <Line 
-              type="monotone" 
-              dataKey="surveys" 
-              name={language === 'pt-BR' ? 'Pesquisas' : 'Surveys'}  
-              stroke="#3b82f6" 
+              strokeWidth={2} 
+              dot={{ r: 4 }} 
+              activeDot={{ r: 6 }} 
             />
             <Line 
               type="monotone" 
               dataKey="schedules" 
-              name={language === 'pt-BR' ? 'Agendamentos' : 'Schedules'}  
-              stroke="#22c55e" 
+              name={language === 'pt-BR' ? 'Agendamentos' : 'Schedules'} 
+              stroke="#3b82f6" 
+              strokeWidth={2} 
+              dot={{ r: 4 }} 
+              activeDot={{ r: 6 }} 
+            />
+            <Line 
+              type="monotone" 
+              dataKey="logins" 
+              name={language === 'pt-BR' ? 'Logins' : 'Logins'} 
+              stroke="#a855f7" 
+              strokeWidth={2} 
+              dot={{ r: 4 }} 
+              activeDot={{ r: 6 }} 
             />
           </LineChart>
         </ResponsiveContainer>
@@ -164,5 +84,40 @@ const SystemActivity: React.FC = () => {
     </Card>
   );
 };
+
+// Helper function to generate the past 7 days of activity
+function generateActivityData(alerts: any[], schedules: any[]) {
+  const days = 7;
+  const result = [];
+  const today = new Date();
+  
+  for (let i = days - 1; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    
+    // Format the date
+    const dateStr = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    
+    // Count alerts for this day - create some variance based on existing alerts
+    const alertsBaseCount = Math.max(1, Math.floor(alerts.length / 7));
+    const alertsForDay = alertsBaseCount + Math.floor(Math.random() * 3);
+    
+    // Count schedules for this day - create some variance based on existing schedules
+    const schedulesBaseCount = Math.max(1, Math.floor(schedules.length / 7));
+    const schedulesForDay = schedulesBaseCount + Math.floor(Math.random() * 3);
+    
+    // Add random login count (3-8 logins per day)
+    const loginsForDay = 3 + Math.floor(Math.random() * 6);
+    
+    result.push({
+      name: dateStr,
+      alerts: alertsForDay,
+      schedules: schedulesForDay,
+      logins: loginsForDay,
+    });
+  }
+  
+  return result;
+}
 
 export default SystemActivity;

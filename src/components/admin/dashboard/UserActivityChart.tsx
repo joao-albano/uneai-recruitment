@@ -9,22 +9,42 @@ const UserActivityChart: React.FC = () => {
   const { language } = useTheme();
   const { toast } = useToast();
   
-  // Mock data - in a real app this would come from the backend
+  // More comprehensive mock data - in a real app this would come from the backend
   const userData = [
     {
       name: 'Admin',
       logins: 35,
       actions: 120,
+      students: 8,
+      alerts: 14,
     },
     {
       name: 'Maria Silva',
       logins: 28,
       actions: 98,
+      students: 12,
+      alerts: 6,
     },
     {
       name: 'João Santos',
       logins: 18,
       actions: 45,
+      students: 5,
+      alerts: 3,
+    },
+    {
+      name: 'Carla Oliveira',
+      logins: 22,
+      actions: 67,
+      students: 9,
+      alerts: 8,
+    },
+    {
+      name: 'Rafael Souza',
+      logins: 15,
+      actions: 39,
+      students: 4,
+      alerts: 2,
     },
   ];
   
@@ -56,20 +76,38 @@ const UserActivityChart: React.FC = () => {
               data={userData}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
+              <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+              <XAxis 
+                dataKey="name" 
+                fontSize={12}
+                tickLine={false}
+              />
+              <YAxis 
+                fontSize={12}
+                tickLine={false}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: 'rgba(255, 255, 255, 0.8)', 
+                  borderRadius: '6px', 
+                  fontSize: '12px' 
+                }} 
+              />
+              <Legend wrapperStyle={{ fontSize: '12px' }} />
               <Bar 
                 dataKey="logins" 
                 name={language === 'pt-BR' ? 'Logins' : 'Logins'} 
                 fill="#3b82f6" 
               />
               <Bar 
-                dataKey="actions" 
-                name={language === 'pt-BR' ? 'Ações' : 'Actions'} 
-                fill="#8b5cf6" 
+                dataKey="students" 
+                name={language === 'pt-BR' ? 'Alunos' : 'Students'} 
+                fill="#10b981" 
+              />
+              <Bar 
+                dataKey="alerts" 
+                name={language === 'pt-BR' ? 'Alertas' : 'Alerts'} 
+                fill="#f59e0b" 
               />
             </BarChart>
           </ResponsiveContainer>
