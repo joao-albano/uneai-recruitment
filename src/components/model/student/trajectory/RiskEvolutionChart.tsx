@@ -8,6 +8,7 @@ import {
   CartesianGrid,
   Tooltip,
   ReferenceLine,
+  Legend,
 } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
@@ -39,19 +40,19 @@ const RiskEvolutionChart: React.FC<RiskEvolutionChartProps> = ({ trajectoryData 
       <CardHeader className="pb-2">
         <CardTitle className="text-xl text-center">Evolução do Nível de Risco</CardTitle>
       </CardHeader>
-      <CardContent className="p-2 sm:p-4">
-        <div className="h-[420px] w-full overflow-hidden">
+      <CardContent className="p-2">
+        <div className="h-[480px] w-full">
           <ChartContainer config={chartConfig}>
             <LineChart 
               data={trajectoryData} 
-              margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+              margin={{ top: 20, right: 60, left: 20, bottom: 80 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="month" 
                 tick={{ fontSize: 12 }}
-                tickMargin={10}
-                height={50}
+                tickMargin={20}
+                height={70}
                 angle={-45}
                 textAnchor="end"
               />
@@ -62,17 +63,21 @@ const RiskEvolutionChart: React.FC<RiskEvolutionChartProps> = ({ trajectoryData 
                 tickCount={6}
               />
               <Tooltip content={renderTooltip} />
+              <Legend 
+                verticalAlign="bottom" 
+                height={36} 
+                wrapperStyle={{ paddingTop: '10px' }}
+              />
               <ReferenceLine 
                 y={40} 
                 stroke="#4ade80" 
                 strokeDasharray="3 3" 
                 label={{ 
                   value: "Baixo", 
-                  position: "right",
+                  position: "insideRight",
                   fill: "#4ade80",
                   fontSize: 12,
-                  fontWeight: "bold",
-                  offset: 10
+                  fontWeight: "bold"
                 }} 
               />
               <ReferenceLine 
@@ -81,11 +86,10 @@ const RiskEvolutionChart: React.FC<RiskEvolutionChartProps> = ({ trajectoryData 
                 strokeDasharray="3 3" 
                 label={{ 
                   value: "Médio", 
-                  position: "right",
+                  position: "insideRight",
                   fill: "#fbbf24",
                   fontSize: 12,
-                  fontWeight: "bold",
-                  offset: 10
+                  fontWeight: "bold"
                 }} 
               />
               <Line 
