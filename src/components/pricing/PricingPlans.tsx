@@ -25,67 +25,32 @@ const PricingPlans: React.FC = () => {
     return Math.round(yearlyPrice / 12);
   };
   
-  const getDefaultPlans = (): Plan[] => {
-    return [
-      {
-        id: 'basic',
-        name: planOptions.find(p => p.id === 'basic')?.name || (isPtBR ? 'Básico' : 'Basic'),
-        description: isPtBR 
-          ? 'Para pequenas escolas com necessidades básicas de monitoramento'
-          : 'For small schools with basic monitoring needs',
-        priceMonthly: calculateMonthlyPrice(getPriceValue(planOptions.find(p => p.id === 'basic')?.price || '')),
-        priceYearly: getPriceValue(planOptions.find(p => p.id === 'basic')?.price || ''),
+  const getPlansFromOptions = (): Plan[] => {
+    return planOptions.map(option => {
+      return {
+        id: option.id,
+        name: option.name,
+        description: option.description,
+        priceMonthly: calculateMonthlyPrice(getPriceValue(option.price)),
+        priceYearly: getPriceValue(option.price),
         features: [
-          { included: true, text: planOptions.find(p => p.id === 'basic')?.description || (isPtBR ? 'Até 200 alunos' : 'Up to 200 students') },
-          { included: true, text: isPtBR ? 'Alertas básicos' : 'Basic alerts' },
-          { included: true, text: isPtBR ? 'Acesso ao modelo preditivo' : 'Predictive model access' },
-          { included: true, text: isPtBR ? 'Suporte por email' : 'Email support' },
-          { included: false, text: isPtBR ? 'Análise avançada de dados' : 'Advanced data analysis' },
-          { included: false, text: isPtBR ? 'Integrações personalizadas' : 'Custom integrations' },
+          ...(option.features || []).map(feature => ({ included: true, text: feature })),
+          // Add some features as not included for basic and premium plans
+          ...(option.id === 'basic' ? [
+            { included: false, text: isPtBR ? 'Análise avançada de dados' : 'Advanced data analysis' },
+            { included: false, text: isPtBR ? 'Integrações personalizadas' : 'Custom integrations' },
+          ] : []),
+          ...(option.id === 'premium' ? [
+            { included: false, text: isPtBR ? 'Integrações personalizadas' : 'Custom integrations' },
+          ] : []),
         ],
-        associatedProducts: ['retention']
-      },
-      {
-        id: 'premium',
-        name: planOptions.find(p => p.id === 'premium')?.name || 'Premium',
-        description: isPtBR 
-          ? 'Para escolas médias com necessidades avançadas de monitoramento'
-          : 'For medium-sized schools with advanced monitoring needs',
-        priceMonthly: calculateMonthlyPrice(getPriceValue(planOptions.find(p => p.id === 'premium')?.price || '')),
-        priceYearly: getPriceValue(planOptions.find(p => p.id === 'premium')?.price || ''),
-        features: [
-          { included: true, text: planOptions.find(p => p.id === 'premium')?.description || (isPtBR ? 'Até 500 alunos' : 'Up to 500 students') },
-          { included: true, text: isPtBR ? 'Alertas avançados' : 'Advanced alerts' },
-          { included: true, text: isPtBR ? 'Dashboard administrativo' : 'Administrative dashboard' },
-          { included: true, text: isPtBR ? 'Suporte prioritário' : 'Priority support' },
-          { included: true, text: isPtBR ? 'Análise avançada de dados' : 'Advanced data analysis' },
-          { included: false, text: isPtBR ? 'Integrações personalizadas' : 'Custom integrations' },
-        ],
-        highlightPlan: true,
-        associatedProducts: ['retention', 'scheduling']
-      },
-      {
-        id: 'enterprise',
-        name: planOptions.find(p => p.id === 'enterprise')?.name || 'Enterprise',
-        description: isPtBR 
-          ? 'Para redes de ensino completas com necessidades específicas'
-          : 'For complete school networks with specific needs',
-        priceMonthly: calculateMonthlyPrice(getPriceValue(planOptions.find(p => p.id === 'enterprise')?.price || '')),
-        priceYearly: getPriceValue(planOptions.find(p => p.id === 'enterprise')?.price || ''),
-        features: [
-          { included: true, text: planOptions.find(p => p.id === 'enterprise')?.description || (isPtBR ? 'Alunos ilimitados' : 'Unlimited students') },
-          { included: true, text: isPtBR ? 'Sistema completo' : 'Complete system' },
-          { included: true, text: isPtBR ? 'Customização do modelo' : 'Model customization' },
-          { included: true, text: isPtBR ? 'Suporte 24/7' : 'Support 24/7' },
-          { included: true, text: isPtBR ? 'Análise avançada de dados' : 'Advanced data analysis' },
-          { included: true, text: isPtBR ? 'Integrações personalizadas' : 'Custom integrations' },
-        ],
-        associatedProducts: ['retention', 'scheduling', 'sales', 'recruitment', 'secretary']
-      },
-    ];
+        highlightPlan: option.id === 'premium',
+        associatedProducts: option.products || []
+      };
+    });
   };
 
-  const plans = getDefaultPlans();
+  const plans = getPlansFromOptions();
 
   const handlePlanSelect = (plan: Plan) => {
     setSelectedPlan(plan);

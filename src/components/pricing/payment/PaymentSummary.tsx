@@ -81,7 +81,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({ plan, yearlyBilling }) 
           {isPtBR ? 'Subtotal' : 'Subtotal'}
         </div>
         <div className="font-medium">
-          {formatCurrency(yearlyBilling ? plan.priceYearly : plan.priceMonthly * 12)}
+          {formatCurrency(yearlyBilling ? plan.priceYearly : plan.priceMonthly * 12, isPtBR)}
         </div>
       </div>
       
@@ -90,7 +90,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({ plan, yearlyBilling }) 
           {isPtBR ? 'Total' : 'Total'}
         </div>
         <div>
-          {formatCurrency(yearlyBilling ? plan.priceYearly : plan.priceMonthly * 12)}
+          {formatCurrency(yearlyBilling ? plan.priceYearly : plan.priceMonthly * 12, isPtBR)}
         </div>
       </div>
     </div>
