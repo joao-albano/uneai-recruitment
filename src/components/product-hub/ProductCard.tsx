@@ -11,6 +11,7 @@ interface ProductCardProps {
   iconColor: string;
   isActive: boolean;
   onNavigate: (productType: string) => void;  // Updated to match id type
+  onSubscribe: (productType: string) => void;  // Added missing prop
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -20,7 +21,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   icon,
   iconColor,
   isActive,
-  onNavigate
+  onNavigate,
+  onSubscribe  // Added parameter to destructuring
 }) => {
   const isComingSoon = !isActive;
   
@@ -55,9 +57,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <Button 
           variant="outline" 
           className="w-full" 
-          disabled
+          onClick={() => onSubscribe(id)}
+          disabled={isComingSoon}
         >
-          Em breve
+          {isComingSoon ? "Em breve" : "Assinar"}
         </Button>
       )}
     </div>
