@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import DashboardContent from './DashboardContent';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Alert } from '@/types/alert';
 
 const Dashboard: React.FC = () => {
   const { students, alerts, schedules, isLoading } = useData();
@@ -36,10 +37,16 @@ const Dashboard: React.FC = () => {
     );
   }
 
+  // Convert AlertItem[] to Alert[] by formatting createdAt to string
+  const convertedAlerts: Alert[] = alerts.map(alert => ({
+    ...alert,
+    createdAt: alert.createdAt instanceof Date ? alert.createdAt.toISOString() : alert.createdAt
+  }));
+
   return (
     <DashboardContent
       students={students}
-      alerts={alerts}
+      alerts={convertedAlerts}
       schedules={schedules}
       onViewAlertDetails={handleViewAlertDetails}
       onViewClassDetails={handleViewClassDetails}
