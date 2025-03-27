@@ -18,6 +18,7 @@ import { useData } from '@/context/DataContext';
 import { AlertItem, ScheduleItem, StudentData } from '@/types/data';
 import { Alert } from '@/types/alert';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
 interface DashboardContentProps {
   students?: StudentData[];
@@ -35,7 +36,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   alerts = [],
   schedules = [],
   onViewAlertDetails = () => {},
-  onViewClassDetails = () => {},
+  onViewClassDetails,
   onScheduleClick = () => {},
   isMobile = false,
   showTrialBanner = false
@@ -44,6 +45,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   const { daysRemaining } = useTrialPeriod();
   const hasPendingInvoice = false;
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   const highRiskCount = students.filter(s => s.riskLevel === 'high').length;
   const mediumRiskCount = students.filter(s => s.riskLevel === 'medium').length;
@@ -79,6 +81,19 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   
   const handleModelCardClick = () => {
     navigate('/model');
+  };
+  
+  const handleClassDetailsClick = (className: string) => {
+    if (onViewClassDetails) {
+      onViewClassDetails(className);
+    } else {
+      // Default implementation if onViewClassDetails is not provided
+      navigate(`/students?class=${className}`);
+      toast({
+        title: 'Turma selecionada',
+        description: `Detalhes da turma ${className} carregados`,
+      });
+    }
   };
   
   return (
@@ -158,7 +173,11 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <ClassesOverview students={students} onViewClassDetails={onViewClassDetails} isMobile={isMobile} />
+        <ClassesOverview 
+          students={students} 
+          onViewClassDetails={handleClassDetailsClick} 
+          isMobile={isMobile} 
+        />
         <RiskExplanation student={mockStudent} />
       </div>
 
