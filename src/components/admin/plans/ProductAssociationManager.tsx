@@ -21,14 +21,16 @@ interface ProductsAssociationManagerProps {
   planName: string;
   planId: string;
   associatedProducts: ProductType[];
-  onProductsChange: (products: ProductType[]) => void;
+  onProductsChange?: (products: ProductType[]) => void;
+  onUpdateProducts?: (planId: string, products: ProductType[]) => void;
 }
 
 const ProductAssociationManager: React.FC<ProductsAssociationManagerProps> = ({
   planName,
   planId,
   associatedProducts,
-  onProductsChange
+  onProductsChange,
+  onUpdateProducts
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -44,7 +46,11 @@ const ProductAssociationManager: React.FC<ProductsAssociationManagerProps> = ({
   // Handle confirmation from the dialog
   const handleConfirm = (selectedProducts?: ProductType[]) => {
     if (selectedProducts) {
-      onProductsChange(selectedProducts);
+      if (onUpdateProducts) {
+        onUpdateProducts(planId, selectedProducts);
+      } else if (onProductsChange) {
+        onProductsChange(selectedProducts);
+      }
     }
     setIsDialogOpen(false);
   };

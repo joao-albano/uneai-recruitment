@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Package } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { ProductType } from '@/context/product/types';
-import { formatCurrency } from '@/utils/billing/formatCurrency';
+import { formatCurrency } from '@/utils/billing/priceUtils';
 
 interface Plan {
   id: string;

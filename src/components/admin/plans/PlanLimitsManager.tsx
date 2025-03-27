@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,10 +18,11 @@ import { PlanOption } from '@/utils/billing/planOptions';
 import PlanLimitsDialog from './PlanLimitsDialog';
 
 interface PlanLimitsManagerProps {
-  planId: string;
+  planId?: string;
   planName: string;
   limits?: PlanOption['limits'];
-  onUpdateLimits: (planId: string, limits: PlanOption['limits']) => void;
+  onUpdateLimits?: (planId: string, limits: PlanOption['limits']) => void;
+  onLimitsChange?: (limits: PlanOption['limits']) => void;
 }
 
 const PlanLimitsManager: React.FC<PlanLimitsManagerProps> = ({
@@ -30,6 +30,7 @@ const PlanLimitsManager: React.FC<PlanLimitsManagerProps> = ({
   planName,
   limits,
   onUpdateLimits,
+  onLimitsChange,
 }) => {
   const { language } = useTheme();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -87,7 +88,11 @@ const PlanLimitsManager: React.FC<PlanLimitsManagerProps> = ({
   ];
 
   const handleSaveLimits = (newLimits: PlanOption['limits']) => {
-    onUpdateLimits(planId, newLimits);
+    if (onUpdateLimits && planId) {
+      onUpdateLimits(planId, newLimits);
+    } else if (onLimitsChange) {
+      onLimitsChange(newLimits);
+    }
     setDialogOpen(false);
   };
 

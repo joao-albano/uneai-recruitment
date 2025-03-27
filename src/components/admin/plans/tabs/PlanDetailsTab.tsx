@@ -10,23 +10,39 @@ import PlanEditForm from '../PlanEditForm';
 
 interface PlanDetailsTabProps {
   selectedPlan: PlanOption;
+  editingPlan?: PlanOption | null;
+  onEditClick?: (plan: PlanOption) => void;
+  onSubmit?: (values: any) => void;
+  onCancelEdit?: () => void;
 }
 
-const PlanDetailsTab = ({ selectedPlan }: PlanDetailsTabProps) => {
+const PlanDetailsTab = ({ selectedPlan, editingPlan, onEditClick, onSubmit, onCancelEdit }: PlanDetailsTabProps) => {
   const { setPlan } = usePlanOptionsStore();
   const [isEditMode, setIsEditMode] = useState(false);
   
   const handleEditClick = () => {
-    setIsEditMode(true);
+    if (onEditClick) {
+      onEditClick(selectedPlan);
+    } else {
+      setIsEditMode(true);
+    }
   };
   
   const handleCancelEdit = () => {
-    setIsEditMode(false);
+    if (onCancelEdit) {
+      onCancelEdit();
+    } else {
+      setIsEditMode(false);
+    }
   };
   
   const handleSaveEdit = (updatedPlan: Partial<PlanOption>) => {
-    setPlan(selectedPlan.id, updatedPlan);
-    setIsEditMode(false);
+    if (onSubmit) {
+      onSubmit(updatedPlan);
+    } else {
+      setPlan(selectedPlan.id, updatedPlan);
+      setIsEditMode(false);
+    }
   };
   
   const handleProductsChange = (products: ProductType[]) => {
@@ -37,11 +53,11 @@ const PlanDetailsTab = ({ selectedPlan }: PlanDetailsTabProps) => {
     setPlan(selectedPlan.id, { limits });
   };
   
-  if (isEditMode) {
+  if (editingPlan || isEditMode) {
     return (
       <PlanEditForm 
-        plan={selectedPlan}
-        onSave={handleSaveEdit}
+        editingPlan={editingPlan || selectedPlan}
+        onSubmit={handleSaveEdit}
         onCancel={handleCancelEdit}
       />
     );
@@ -71,7 +87,7 @@ const PlanDetailsTab = ({ selectedPlan }: PlanDetailsTabProps) => {
         
         <PlanLimitsManager 
           planName={selectedPlan.name}
-          planLimits={selectedPlan.limits}
+          limits={selectedPlan.limits}
           onLimitsChange={handleLimitsChange}
         />
       </div>

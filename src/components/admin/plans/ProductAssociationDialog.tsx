@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -48,6 +47,8 @@ const ProductAssociationDialog: React.FC<ProductAssociationDialogProps> = ({
     setSelection(prev => {
       if (prev.includes(productId)) {
         return prev.filter(id => id !== productId);
+      } else {
+        return [...prev, productId];
       } else {
         return [...prev, productId];
       }

@@ -142,6 +142,7 @@ export type Database = {
       }
       plans: {
         Row: {
+          associated_products: string[] | null
           created_at: string | null
           description: string | null
           features: Json | null
@@ -151,6 +152,7 @@ export type Database = {
           related_product: string | null
         }
         Insert: {
+          associated_products?: string[] | null
           created_at?: string | null
           description?: string | null
           features?: Json | null
@@ -160,6 +162,7 @@ export type Database = {
           related_product?: string | null
         }
         Update: {
+          associated_products?: string[] | null
           created_at?: string | null
           description?: string | null
           features?: Json | null

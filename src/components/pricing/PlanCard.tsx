@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
 import { ProductType } from '@/context/product/types';
 import PlanFeatureItem from './PlanFeatureItem';
-import { formatCurrency } from '@/utils/billing/formatCurrency';
+import { formatCurrency } from '@/utils/billing/priceUtils';
 import { Package } from 'lucide-react';
 
 export type PlanFeature = {
