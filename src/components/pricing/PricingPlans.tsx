@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 import { usePlanOptions } from '@/utils/billing/planOptions';
 import { getPriceValue } from '@/utils/billing/priceUtils';
 import { ProductType } from '@/context/product/types';
@@ -17,70 +17,12 @@ const PricingPlans: React.FC = () => {
   const [yearlyBilling, setYearlyBilling] = useState(true);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
-  const [dbPlans, setDbPlans] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   
   const planOptions = usePlanOptions();
   const isPtBR = language === 'pt-BR';
   
-  useEffect(() => {
-    const fetchPlans = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('plans')
-          .select('*');
-          
-        if (error) {
-          console.error('Error fetching plans:', error);
-          toast({
-            title: isPtBR ? 'Erro ao carregar planos' : 'Error loading plans',
-            description: isPtBR ? 'Tente novamente mais tarde' : 'Please try again later',
-            variant: 'destructive',
-          });
-          return;
-        }
-        
-        if (data) {
-          setDbPlans(data);
-        }
-      } catch (err) {
-        console.error('Error in plan fetch:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchPlans();
-  }, [isPtBR, toast]);
-  
   const calculateMonthlyPrice = (yearlyPrice: number): number => {
     return Math.round(yearlyPrice / 12);
-  };
-  
-  const getPlansFromDb = (): Plan[] => {
-    if (dbPlans.length === 0) {
-      return getDefaultPlans();
-    }
-    
-    return dbPlans.map(plan => {
-      const price = plan.price || 0;
-      const features = plan.features ? 
-        (typeof plan.features === 'string' ? JSON.parse(plan.features) : plan.features) : 
-        [];
-      
-      return {
-        id: plan.id,
-        name: plan.name,
-        description: plan.description || '',
-        priceMonthly: calculateMonthlyPrice(price),
-        priceYearly: price,
-        features: [
-          ...features.map((feature: string) => ({ included: true, text: feature })),
-        ],
-        highlightPlan: plan.name.toLowerCase().includes('premium'),
-        associatedProducts: plan.associated_products as ProductType[] || []
-      };
-    });
   };
   
   const getDefaultPlans = (): Plan[] => {
@@ -120,6 +62,7 @@ const PricingPlans: React.FC = () => {
           { included: false, text: isPtBR ? 'Integrações personalizadas' : 'Custom integrations' },
         ],
         highlightPlan: true,
+        associatedProducts: ['retention', 'scheduling']
       },
       {
         id: 'enterprise',
@@ -137,11 +80,12 @@ const PricingPlans: React.FC = () => {
           { included: true, text: isPtBR ? 'Análise avançada de dados' : 'Advanced data analysis' },
           { included: true, text: isPtBR ? 'Integrações personalizadas' : 'Custom integrations' },
         ],
+        associatedProducts: ['retention', 'scheduling', 'sales', 'recruitment', 'secretary']
       },
     ];
   };
 
-  const plans = getPlansFromDb();
+  const plans = getDefaultPlans();
 
   const handlePlanSelect = (plan: Plan) => {
     setSelectedPlan(plan);
@@ -160,21 +104,6 @@ const PricingPlans: React.FC = () => {
         : (yearlyBilling ? 'Prices updated to monthly billing' : 'Save 2 months with yearly billing!'),
     });
   };
-
-  if (isLoading) {
-    return (
-      <div className="py-10 text-center">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3 mx-auto"></div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="h-80 bg-gray-200 rounded"></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>

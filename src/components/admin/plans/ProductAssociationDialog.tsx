@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/context/ThemeContext';
-import { ProductType } from '@/context/ProductContext';
+import { ProductType } from '@/context/product/types';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import ProductCheckboxItem from './ProductCheckboxItem';
