@@ -34,13 +34,9 @@ export const useScheduleData = () => {
     setShowDetailsDialog(true);
   };
   
-  // Handle schedule submission 
-  const handleScheduleSubmit = (formData: FormData) => {
-    const success = scheduleOperations.handleScheduleSubmit(formData);
-    if (success) {
-      setShowAddDialog(false);
-    }
-    return success;
+  // Handle schedule submission - ensure this returns a boolean
+  const handleScheduleSubmit = (formData: FormData): boolean => {
+    return scheduleOperations.handleScheduleSubmit(formData);
   };
 
   // Computes schedules for the selected day

@@ -21,7 +21,7 @@ interface ScheduleDialogsProps {
   schedulesForSelectedDay: Schedule[];
   studentsWithoutSchedules: any[];
   whatsAppMessages: WhatsAppMessage[];
-  handleScheduleSubmit: (formData: FormData) => void;
+  handleScheduleSubmit: (formData: FormData) => boolean;
   handleOpenDetails: (schedule: Schedule) => void;
   updateScheduleStatus: (id: string, status: 'scheduled' | 'completed' | 'canceled') => void;
 }

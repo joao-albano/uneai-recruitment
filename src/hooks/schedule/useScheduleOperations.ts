@@ -9,7 +9,7 @@ export const useScheduleOperations = () => {
   const { userEmail } = useAuth();
   const { toast } = useToast();
 
-  const handleScheduleSubmit = (formData: FormData) => {
+  const handleScheduleSubmit = (formData: FormData): boolean => {
     const studentId = formData.get('studentId') as string;
     const date = formData.get('date') as string;
     const time = formData.get('time') as string;
