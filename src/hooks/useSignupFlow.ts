@@ -34,30 +34,10 @@ export const useSignupFlow = ({ onSuccess }: UseSignupFlowParams) => {
     try {
       setIsProcessing(true);
       
-      // Verify CNPJ
+      // Verify CNPJ - always returns valid in testing mode
       const { valid, normalizedCNPJ } = await verifyCNPJ(data.cnpj);
       
-      if (!valid) {
-        setIsProcessing(false);
-        return;
-      }
-      
-      // Check if CNPJ already exists (just a simulation for now)
-      const simulateCnpjCheck = async (cnpj: string) => {
-        // This is just a simulation - in a real app, this would be a backend check
-        const deniedCnpjs = ['00.000.000/0000-00', '11.111.111/1111-11'];
-        return !deniedCnpjs.includes(cnpj);
-      };
-      
-      const cnpjIsAvailable = await simulateCnpjCheck(normalizedCNPJ);
-      if (!cnpjIsAvailable) {
-        toast.error('CNPJ já cadastrado em nossa base de dados');
-        setIsProcessing(false);
-        return;
-      }
-      
       // Armazenar dados do usuário e avançar para próxima etapa
-      // Use a normalized CNPJ in userData to ensure consistent format
       setUserData({
         ...data,
         cnpj: normalizedCNPJ

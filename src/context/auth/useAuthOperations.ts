@@ -1,9 +1,22 @@
 
 import { useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuthState } from './hooks/useAuthState';
-import { fetchUserProfile } from './api/profileApi';
 import { loginWithEmail, loginWithPhone, logout } from './api/authApi';
+
+// Mock user data for testing
+const MOCK_USER = {
+  id: 'mock-user-id',
+  name: 'Usuário Teste',
+  email: 'usuario@teste.com',
+  role: 'admin',
+  organizationId: 'mock-org-id',
+  organization: {
+    id: 'mock-org-id',
+    name: 'Organização Teste',
+    isMainOrg: false
+  },
+  isSuperAdmin: true
+};
 
 export const useAuthOperations = () => {
   const {
@@ -26,93 +39,41 @@ export const useAuthOperations = () => {
     setUser
   } = useAuthState();
   
-  // Handle user profile fetching
-  const handleProfileFetch = async (userId: string) => {
-    try {
-      const userData = await fetchUserProfile(userId);
-      if (userData) {
-        console.log('Setting auth states with user data:', userData);
-        setIsAdmin(userData.isAdmin || false);
-        setIsSuperAdmin(userData.isSuperAdmin || false);
-        setCurrentUser(userData.profile);
-        setCurrentOrganization(userData.organization);
-      }
-    } catch (error) {
-      console.error("Erro ao buscar perfil do usuário:", error);
-    }
-  };
-  
-  // Reset all auth state
-  const resetAuthState = () => {
-    setIsAuthenticated(false);
-    setIsAdmin(false);
-    setIsSuperAdmin(false);
-    setUserEmail(null);
-    setCurrentUser(null);
-    setCurrentOrganization(null);
-    setSession(null);
-    setUser(null);
-  };
-
-  useEffect(() => {
-    let isSubscribed = true;
-    
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, newSession) => {
-        console.log('Auth state changed:', event);
-        if (!isSubscribed) return;
-        
-        setSession(newSession);
-        setUser(newSession?.user ?? null);
-        
-        if (newSession) {
-          setIsAuthenticated(true);
-          setUserEmail(newSession.user.email);
-          
-          // Fetch user profile
-          handleProfileFetch(newSession.user.id);
-        } else if (event === 'SIGNED_OUT') {
-          // Clear state when no session exists
-          resetAuthState();
-        }
-      }
-    );
-
-    // THEN check for existing session
-    const initializeAuth = async () => {
-      try {
-        const { data: { session: existingSession } } = await supabase.auth.getSession();
-        console.log('Existing session:', existingSession);
-        
-        if (!isSubscribed) return;
-        
-        setSession(existingSession);
-        setUser(existingSession?.user ?? null);
-        
-        if (existingSession) {
-          setIsAuthenticated(true);
-          setUserEmail(existingSession.user.email);
-          
-          // Fetch user profile
-          handleProfileFetch(existingSession.user.id);
-        }
-      } catch (error) {
-        console.error("Erro ao inicializar autenticação:", error);
-      }
-    };
-    
-    initializeAuth();
-
-    return () => {
-      isSubscribed = false;
-      subscription.unsubscribe();
-    };
-  }, []);
-  
-  // Login with email wrapper function
+  // Login wrapper function
   const login = async (email: string, password: string) => {
-    return await loginWithEmail(email, password);
+    const result = await loginWithEmail(email, password);
+    
+    if (result.success) {
+      // Set mock auth state for testing
+      setIsAuthenticated(true);
+      setIsAdmin(true);
+      setIsSuperAdmin(true);
+      setUserEmail(email);
+      setCurrentUser(MOCK_USER);
+      setCurrentOrganization(MOCK_USER.organization);
+      
+      // Create a mock session object
+      const mockSession = {
+        access_token: 'mock-access-token',
+        refresh_token: 'mock-refresh-token',
+        expires_at: Date.now() + 3600000, // One hour from now
+        user: {
+          id: MOCK_USER.id,
+          email: email,
+          app_metadata: {},
+          user_metadata: {
+            full_name: MOCK_USER.name
+          },
+          aud: 'authenticated',
+          created_at: new Date().toISOString()
+        }
+      };
+      
+      setSession(mockSession);
+      setUser(mockSession.user);
+    }
+    
+    return result;
   };
   
   // Logout wrapper function
@@ -120,7 +81,15 @@ export const useAuthOperations = () => {
     try {
       const { success } = await logout();
       if (success) {
-        resetAuthState();
+        // Reset auth state
+        setIsAuthenticated(false);
+        setIsAdmin(false);
+        setIsSuperAdmin(false);
+        setUserEmail(null);
+        setCurrentUser(null);
+        setCurrentOrganization(null);
+        setSession(null);
+        setUser(null);
       }
       return success;
     } catch (error) {

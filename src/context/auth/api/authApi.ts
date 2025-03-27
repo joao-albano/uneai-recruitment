@@ -1,31 +1,16 @@
 
-import { supabase } from '@/integrations/supabase/client';
-
 /**
  * Login with email and password
  */
 export const loginWithEmail = async (email: string, password: string) => {
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+    console.log('Mock login with:', { email, password });
     
-    if (error) {
-      console.error('Login error:', error.message);
-      
-      // Provide more specific error for unconfirmed email
-      if (error.message.includes('Email not confirmed')) {
-        return { 
-          success: false, 
-          error: 'Email not confirmed. Please check your inbox for the confirmation email.' 
-        };
-      }
-      
-      return { success: false, error: error.message };
-    }
+    // Mock successful login (bypass Supabase for testing)
+    // Simulate a small delay for better user experience
+    await new Promise(resolve => setTimeout(resolve, 800));
     
-    console.log('Login successful:', data);
+    // Return success response
     return { success: true };
   } catch (error) {
     console.error('Login error:', error);
@@ -44,17 +29,13 @@ export const loginWithPhone = async (phone: string, password: string) => {
     // Format phone number to international format (add +55 for Brazil if not already present)
     const formattedPhone = phone.startsWith('+') ? phone : `+55${phone.replace(/\D/g, '')}`;
     
-    const { data, error } = await supabase.auth.signInWithPassword({
-      phone: formattedPhone,
-      password
-    });
+    console.log('Mock phone login with:', { phone: formattedPhone, password });
     
-    if (error) {
-      console.error('Phone login error:', error.message);
-      return { success: false, error: error.message };
-    }
+    // Mock successful login (bypass Supabase for testing)
+    // Simulate a small delay for better user experience
+    await new Promise(resolve => setTimeout(resolve, 800));
     
-    console.log('Phone login successful:', data);
+    // Return success response
     return { success: true };
   } catch (error) {
     console.error('Phone login error:', error);
@@ -70,7 +51,9 @@ export const loginWithPhone = async (phone: string, password: string) => {
  */
 export const logout = async () => {
   try {
-    await supabase.auth.signOut();
+    console.log('Mock logout');
+    
+    // Mock successful logout (bypass Supabase for testing)
     return { success: true };
   } catch (error) {
     console.error('Logout error:', error);
