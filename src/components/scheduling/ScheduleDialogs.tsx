@@ -23,7 +23,7 @@ interface ScheduleDialogsProps {
   whatsAppMessages: WhatsAppMessage[];
   handleScheduleSubmit: (formData: FormData) => boolean;
   handleOpenDetails: (schedule: Schedule) => void;
-  updateScheduleStatus: (id: string, status: 'scheduled' | 'completed' | 'canceled') => void;
+  updateScheduleStatus: (id: string, status: 'scheduled' | 'completed' | 'canceled', updatedSchedule?: Schedule) => void;
 }
 
 const ScheduleDialogs: React.FC<ScheduleDialogsProps> = ({

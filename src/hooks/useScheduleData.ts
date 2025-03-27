@@ -57,9 +57,13 @@ export const useScheduleData = () => {
     setShowDayDialog(true);
   };
 
-  // Update schedule - used for editing date, time, and notes
-  const handleUpdateSchedule = (updatedSchedule: Schedule) => {
-    updateSchedule(updatedSchedule);
+  // Handle schedule status change - with support for updates
+  const handleUpdateScheduleStatus = (id: string, status: 'scheduled' | 'completed' | 'canceled', updatedSchedule?: Schedule) => {
+    if (updatedSchedule) {
+      updateSchedule(updatedSchedule);
+    } else {
+      updateScheduleStatus(id, status);
+    }
   };
 
   // Estatísticas adicionais
@@ -112,8 +116,8 @@ export const useScheduleData = () => {
     handleScheduleSubmit,
     markCompleted: scheduleOperations.markCompleted,
     cancelSchedule: scheduleOperations.cancelSchedule,
-    updateScheduleStatus,
-    updateSchedule: handleUpdateSchedule,
+    updateScheduleStatus: handleUpdateScheduleStatus,
+    updateSchedule,
     handleOpenDetails
   };
 };

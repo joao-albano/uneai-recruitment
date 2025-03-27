@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -28,7 +28,7 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
   // Prepare edit form when dialog opens or schedule changes
   React.useEffect(() => {
     if (schedule) {
-      const date = schedule.date;
+      const date = new Date(schedule.date);
       const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
       const formattedTime = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
       
@@ -55,7 +55,7 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
     };
     
     // Call an update function from props
-    onStatusChange(schedule.id, 'scheduled');
+    onStatusChange(updatedSchedule.id, 'scheduled', updatedSchedule);
     setIsEditing(false);
     
     // Close the dialog
@@ -69,6 +69,7 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Detalhes do Agendamento</DialogTitle>
+          <DialogDescription>Visualize e edite informações do agendamento</DialogDescription>
         </DialogHeader>
         
         {isEditing ? (
