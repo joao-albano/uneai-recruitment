@@ -39,18 +39,18 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({ plan, yearlyBilling }) 
   
   // Get the correct yearly price based on plan ID
   const getYearlyPrice = () => {
-    if (plan.id === 'basic') return 2.99;
-    if (plan.id === 'premium') return 5.99;
-    if (plan.id === 'enterprise') return 9.99;
+    if (plan.id === 'basic') return 2990;
+    if (plan.id === 'premium') return 5990;
+    if (plan.id === 'enterprise') return 9990;
     return plan.priceYearly;
   };
   
   // Format currency for display
   const formatPrice = (value: number): string => {
     if (isPtBR) {
-      return `R$ ${value.toFixed(2).replace('.', ',')}`;
+      return `R$ ${value.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
     }
-    return `$${value.toFixed(2)}`;
+    return `$${value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
   };
   
   return (

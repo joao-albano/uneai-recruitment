@@ -31,7 +31,7 @@ const getDefaultPlans = (isPtBR: boolean): PlanOption[] => [
   {
     id: 'basic',
     name: isPtBR ? 'Básico' : 'Basic',
-    price: isPtBR ? 'R$ 2,99/ano' : '$2.99/year',
+    price: isPtBR ? 'R$ 2.990,00/ano' : '$2,990.00/year',
     description: isPtBR ? 'Para instituições pequenas' : 'For small institutions',
     relatedProduct: 'retention',
     features: [
@@ -42,17 +42,17 @@ const getDefaultPlans = (isPtBR: boolean): PlanOption[] => [
     products: ['retention'],
     limits: {
       students: 500,
-      users: 3,
+      users: 4,
       whatsappMessages: 1000,
       callMinutes: 100,
       aiAnalyses: 50,
-      imports: 5
+      imports: 5000
     }
   },
   {
     id: 'premium',
     name: 'Premium',
-    price: isPtBR ? 'R$ 5,99/ano' : '$5.99/year',
+    price: isPtBR ? 'R$ 5.990,00/ano' : '$5,990.00/year',
     description: isPtBR ? 'Para instituições médias' : 'For medium institutions',
     relatedProduct: 'retention',
     features: [
@@ -64,17 +64,17 @@ const getDefaultPlans = (isPtBR: boolean): PlanOption[] => [
     products: ['retention', 'scheduling'],
     limits: {
       students: 1500,
-      users: 10,
+      users: 50,
       whatsappMessages: 5000,
       callMinutes: 500,
       aiAnalyses: 200,
-      imports: 20
+      imports: 12000
     }
   },
   {
     id: 'enterprise',
     name: 'Enterprise',
-    price: isPtBR ? 'R$ 9,99/ano' : '$9.99/year',
+    price: isPtBR ? 'R$ 9.990,00/ano' : '$9,990.00/year',
     description: isPtBR ? 'Para grandes instituições' : 'For large institutions',
     relatedProduct: 'retention',
     features: [
@@ -87,11 +87,11 @@ const getDefaultPlans = (isPtBR: boolean): PlanOption[] => [
     products: ['retention', 'scheduling', 'sales', 'recruitment', 'secretary', 'pedagogical'],
     limits: {
       students: -1, // Unlimited
-      users: 30,
+      users: 100,
       whatsappMessages: 20000,
       callMinutes: 2000,
       aiAnalyses: 1000,
-      imports: 100
+      imports: 25000
     }
   }
 ];
@@ -140,10 +140,10 @@ export const usePlanOptions = (): PlanOption[] => {
     ...plan,
     name: plan.id === 'basic' ? (isPtBR ? 'Básico' : 'Basic') : plan.name,
     price: plan.id === 'basic'
-      ? (isPtBR ? 'R$ 2,99/ano' : '$2.99/year')
+      ? (isPtBR ? 'R$ 2.990,00/ano' : '$2,990.00/year')
       : (plan.id === 'premium'
-          ? (isPtBR ? 'R$ 5,99/ano' : '$5.99/year')
-          : (isPtBR ? 'R$ 9,99/ano' : '$9.99/year')),
+          ? (isPtBR ? 'R$ 5.990,00/ano' : '$5,990.00/year')
+          : (isPtBR ? 'R$ 9.990,00/ano' : '$9,990.00/year')),
     description: plan.id === 'basic' 
       ? (isPtBR ? 'Para instituições pequenas' : 'For small institutions')
       : (plan.id === 'premium' 

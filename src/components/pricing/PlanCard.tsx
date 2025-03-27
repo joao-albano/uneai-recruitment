@@ -7,7 +7,6 @@ import { cn } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
 import { ProductType } from '@/context/product/types';
 import PlanFeatureItem from './PlanFeatureItem';
-import { formatCurrency } from '@/utils/billing/formatCurrency';
 import { Package } from 'lucide-react';
 
 export type PlanFeature = {
@@ -70,18 +69,26 @@ const PlanCard: React.FC<PlanCardProps> = ({
     });
   };
 
+  // Format the price with correct thousand separators
+  const formatPrice = (value: number): string => {
+    if (isPtBR) {
+      return `R$ ${value.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+    }
+    return `$${value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+  };
+
   // Format the yearly price text to match what's shown in the image
   const getYearlyPriceText = () => {
     if (isPtBR) {
-      if (id === 'basic') return 'R$ 2,99 cobrados anualmente';
-      if (id === 'premium') return 'R$ 5,99 cobrados anualmente';
-      if (id === 'enterprise') return 'R$ 9,99 cobrados anualmente';
+      if (id === 'basic') return 'R$ 2.990,00 cobrados anualmente';
+      if (id === 'premium') return 'R$ 5.990,00 cobrados anualmente';
+      if (id === 'enterprise') return 'R$ 9.990,00 cobrados anualmente';
     } else {
-      if (id === 'basic') return '$2.99 billed yearly';
-      if (id === 'premium') return '$5.99 billed yearly';
-      if (id === 'enterprise') return '$9.99 billed yearly';
+      if (id === 'basic') return '$2,990.00 billed yearly';
+      if (id === 'premium') return '$5,990.00 billed yearly';
+      if (id === 'enterprise') return '$9,990.00 billed yearly';
     }
-    return formatCurrency(priceYearly, isPtBR) + (isPtBR ? ' cobrados anualmente' : ' billed yearly');
+    return formatPrice(priceYearly) + (isPtBR ? ' cobrados anualmente' : ' billed yearly');
   };
 
   return (
@@ -97,7 +104,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
       </CardHeader>
       <CardContent className="flex-1">
         <div className="text-3xl font-bold mb-2">
-          {isPtBR ? `R$ ${priceMonthly.toFixed(2).replace('.', ',')}` : `$${priceMonthly.toFixed(2)}`}{' '}
+          {formatPrice(priceMonthly)}{' '}
           <span className="text-sm font-normal text-muted-foreground">
             {isPtBR ? '/mês' : '/month'}
           </span>

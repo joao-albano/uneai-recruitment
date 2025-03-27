@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { useToast } from '@/hooks/use-toast';
 import { usePlanOptions } from '@/utils/billing/planOptions';
-import { getPriceValue } from '@/utils/billing/priceUtils';
 import { ProductType } from '@/context/product/types';
 import PaymentDialog from './PaymentDialog';
 import BillingToggle from './BillingToggle';
@@ -23,22 +22,26 @@ const PricingPlans: React.FC = () => {
   
   const getPlansFromOptions = (): Plan[] => {
     return planOptions.map(option => {
-      // Extract only the numeric value from price strings
-      const yearlyPrice = getPriceValue(option.price);
-      
       // For the image, monthly prices are shown as R$ 0,00 for basic and premium, 
       // and R$ 1,00 for enterprise
-      let monthlyPrice = 0;
-      if (option.id === 'enterprise') {
-        monthlyPrice = 1;
+      let priceMonthly = 0;
+      let priceYearly = 0;
+      
+      if (option.id === 'basic') {
+        priceYearly = 2990;
+      } else if (option.id === 'premium') {
+        priceYearly = 5990;
+      } else if (option.id === 'enterprise') {
+        priceYearly = 9990;
+        priceMonthly = 1;
       }
       
       return {
         id: option.id,
         name: option.name,
         description: option.description,
-        priceMonthly: monthlyPrice,
-        priceYearly: yearlyPrice,
+        priceMonthly: priceMonthly,
+        priceYearly: priceYearly,
         features: [
           ...(option.features || []).map(feature => ({ included: true, text: feature })),
           // Add some features as not included for basic and premium plans
