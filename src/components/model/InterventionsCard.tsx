@@ -44,6 +44,11 @@ const InterventionsCard: React.FC = () => {
     }
   ];
 
+  // Handler to navigate to the student's intervention tab
+  const handleViewInterventions = () => {
+    navigate('/model/student/1?tab=interventions');
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -105,7 +110,7 @@ const InterventionsCard: React.FC = () => {
             variant="outline" 
             size="sm" 
             className="w-full mt-2"
-            onClick={() => navigate('/schedule')}
+            onClick={handleViewInterventions}
           >
             Ver todos os atendimentos
           </Button>
