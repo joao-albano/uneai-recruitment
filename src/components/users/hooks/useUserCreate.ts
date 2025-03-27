@@ -1,11 +1,12 @@
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { NewUserType } from '../types';
 import { createUser } from '../api/userManagementApi';
 import { useToast } from '@/hooks/use-toast';
 
 export const useUserCreate = (fetchUsers: () => Promise<void>) => {
   const { toast } = useToast();
+  const [toastShown, setToastShown] = useState(false);
   
   // Criar usuário
   const handleCreateUser = useCallback(async (e: React.FormEvent, newUser: NewUserType, onSuccess: () => void) => {
@@ -57,6 +58,9 @@ export const useUserCreate = (fetchUsers: () => Promise<void>) => {
       // Executar callback de sucesso (limpar form, fechar modal, etc)
       onSuccess();
       
+      // Reset toast state
+      setToastShown(false);
+      
       toast({
         title: "Usuário criado",
         description: `${name} foi adicionado com sucesso.`
@@ -69,9 +73,10 @@ export const useUserCreate = (fetchUsers: () => Promise<void>) => {
         variant: "destructive"
       });
     }
-  }, [fetchUsers, toast]);
+  }, [fetchUsers, toast, toastShown]);
 
   return {
-    handleCreateUser
+    handleCreateUser,
+    setToastShown
   };
 };

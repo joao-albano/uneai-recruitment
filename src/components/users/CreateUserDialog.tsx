@@ -25,6 +25,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   const { currentUser, isSuperAdmin } = useAuth();
   const { toast } = useToast();
   const [organizationChecked, setOrganizationChecked] = useState(false);
+  const [warningDisplayed, setWarningDisplayed] = useState(false);
   
   // Pre-select organization for non-superadmin users
   useEffect(() => {
@@ -41,12 +42,20 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
     }
   }, [open, currentUser, isSuperAdmin, setNewUser, organizationChecked]);
   
-  // Reset organization checked state when dialog closes
+  // Reset states when dialog closes
   useEffect(() => {
     if (!open) {
       setOrganizationChecked(false);
+      setWarningDisplayed(false);
     }
   }, [open]);
+  
+  // Show warning only once per dialog session
+  useEffect(() => {
+    if (open && !warningDisplayed && isSuperAdmin && !newUser.organizationId) {
+      setWarningDisplayed(true);
+    }
+  }, [open, warningDisplayed, isSuperAdmin, newUser.organizationId]);
   
   // Habilitar criação de usuário fictício (para testes)
   const enableFictitiousUserCreation = true;
@@ -68,7 +77,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
         <form onSubmit={onSubmit}>
           <CreateUserForm newUser={newUser} setNewUser={setNewUser} />
           
-          {!canCreateUser && isSuperAdmin && !enableFictitiousUserCreation && (
+          {!canCreateUser && isSuperAdmin && !enableFictitiousUserCreation && warningDisplayed && (
             <div className="text-sm text-amber-500 mt-2">
               É necessário criar pelo menos uma organização antes de adicionar usuários.
             </div>
