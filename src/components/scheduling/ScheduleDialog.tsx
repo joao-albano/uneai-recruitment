@@ -43,6 +43,8 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
     if (success) {
       // Reset form
       e.currentTarget.reset();
+      // Close dialog
+      onOpenChange(false);
     }
   };
   
@@ -75,7 +77,9 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
               <User className="h-5 w-5 text-primary" />
             </div>
             <div className="w-full">
-              <FormLabel>Aluno</FormLabel>
+              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Aluno
+              </label>
               <Select name="studentId" required>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione um aluno" />
@@ -106,7 +110,9 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
               <Calendar className="h-5 w-5 text-primary" />
             </div>
             <div className="w-full">
-              <FormLabel>Data</FormLabel>
+              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Data
+              </label>
               <Input 
                 type="date" 
                 name="date" 
@@ -121,7 +127,9 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
               <Clock className="h-5 w-5 text-primary" />
             </div>
             <div className="w-full">
-              <FormLabel>Hora</FormLabel>
+              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Hora
+              </label>
               <Input 
                 type="time" 
                 name="time" 
@@ -132,7 +140,9 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
           </div>
           
           <div>
-            <FormLabel>Observações</FormLabel>
+            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Observações
+            </label>
             <Textarea 
               name="notes" 
               placeholder="Informe os detalhes do atendimento"
