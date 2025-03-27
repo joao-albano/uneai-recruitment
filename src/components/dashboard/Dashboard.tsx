@@ -18,6 +18,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     // Carregar dados de demonstração se não houver dados
     if (!isLoading && students.length === 0 && alerts.length === 0 && schedules.length === 0) {
+      console.log('Carregando dados de demonstração...');
       generateDemoData();
       toast({
         title: 'Dados de demonstração',
@@ -46,6 +47,16 @@ const Dashboard: React.FC = () => {
     return (
       <div className="flex items-center justify-center w-full h-64">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  // Verificação adicional para carregamento de dados de demonstração se não houver dados
+  if (students.length === 0 && alerts.length === 0 && schedules.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-64">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mb-4"></div>
+        <p className="text-muted-foreground">Carregando dados de demonstração...</p>
       </div>
     );
   }
