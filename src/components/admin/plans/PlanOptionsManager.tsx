@@ -6,6 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import PlanCard from './PlanCard';
 import PlanEditForm from './PlanEditForm';
 import ResetPlansDialog from './ResetPlansDialog';
