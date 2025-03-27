@@ -2,6 +2,14 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useSchedules } from '@/context/schedules/SchedulesContext';
+import { StudentData, AlertItem } from '@/types/data';
+import { useWhatsAppHistory } from '@/hooks/useWhatsAppHistory';
+import { useWhatsAppConfig } from '@/hooks/useWhatsAppConfig';
+import { WhatsAppMessage } from '@/types/whatsapp';
+import { processStudentsForAutomatedSurveys } from '@/utils/automatedSurveys';
+import { sendWhatsAppSurvey as sendSurveyToWhatsApp } from '@/utils/notifications';
+import { useStudents } from '@/context/students/StudentsContext';
+import { useAlerts } from '@/context/alerts/AlertsContext';
 
 interface WhatsAppConfig {
   enabled: boolean;
@@ -13,6 +21,9 @@ interface WhatsAppContextType {
   whatsAppConfig: WhatsAppConfig;
   setWhatsAppConfig: (config: WhatsAppConfig) => void;
   runAppointmentReminders: () => void;
+  runAutomatedSurveys: () => void;
+  sendWhatsAppSurvey: (student: StudentData, addAlert: (alert: AlertItem) => void) => void;
+  whatsAppMessages: WhatsAppMessage[];
 }
 
 const WhatsAppContext = createContext<WhatsAppContextType | undefined>(undefined);
@@ -26,6 +37,10 @@ export const WhatsAppProvider: React.FC<{ children: ReactNode }> = ({ children }
   
   const { schedules } = useSchedules();
   const { toast } = useToast();
+  const { messages: whatsAppMessages, addMessage } = useWhatsAppHistory();
+  const { config } = useWhatsAppConfig();
+  const { students } = useStudents();
+  const { addAlert } = useAlerts();
   
   // Simular envio de lembretes de agendamentos
   const runAppointmentReminders = () => {
@@ -57,12 +72,26 @@ export const WhatsAppProvider: React.FC<{ children: ReactNode }> = ({ children }
     
     return tomorrowSchedules.length;
   };
+
+  // Executar pesquisas automatizadas
+  const runAutomatedSurveys = () => {
+    processStudentsForAutomatedSurveys(students, addAlert, addMessage, config);
+    return true;
+  };
+
+  // Enviar pesquisa de WhatsApp para um estudante específico
+  const sendWhatsAppSurvey = (student: StudentData, alertFunction: (alert: AlertItem) => void) => {
+    sendSurveyToWhatsApp(student, alertFunction, addMessage, config);
+  };
   
   return (
     <WhatsAppContext.Provider value={{ 
       whatsAppConfig, 
       setWhatsAppConfig,
-      runAppointmentReminders
+      runAppointmentReminders,
+      runAutomatedSurveys,
+      sendWhatsAppSurvey,
+      whatsAppMessages
     }}>
       {children}
     </WhatsAppContext.Provider>
