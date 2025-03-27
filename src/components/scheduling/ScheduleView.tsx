@@ -16,6 +16,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { useStudents } from '@/context/students/StudentsContext';
 import { sendAppointmentReminders } from '@/utils/appointmentReminders';
 import { useAlerts } from '@/context/alerts/AlertsContext';
+import { WhatsAppProvider } from '@/types/whatsapp';
 
 const ScheduleView: React.FC = () => {
   const scheduleData = useScheduleData();
@@ -47,11 +48,17 @@ const ScheduleView: React.FC = () => {
     setIsProcessing(true);
     
     try {
+      // Ensure the provider is of type WhatsAppProvider before passing to the function
+      const typedConfig = {
+        ...whatsAppConfig,
+        provider: whatsAppConfig.provider as WhatsAppProvider
+      };
+      
       // Enviar lembretes de agendamento para o dia seguinte
       const messageCount = await sendAppointmentReminders(
         scheduleData.schedules,
         students,
-        whatsAppConfig,
+        typedConfig,
         (message) => {
           // Aqui usaríamos o hook de WhatsApp para adicionar a mensagem
           console.log("Mensagem enviada:", message);

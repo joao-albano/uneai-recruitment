@@ -2,7 +2,7 @@
 import { Schedule } from '@/types/schedule';
 import { StudentData } from '@/types/data';
 import { WhatsAppConfig, formatAppointmentDateTime, sendWhatsAppMessage } from './whatsappIntegration';
-import { WhatsAppMessage } from '@/types/whatsapp';
+import { WhatsAppMessage, MessageStatus } from '@/types/whatsapp';
 
 export const sendAppointmentReminders = async (
   schedules: Schedule[],
@@ -93,7 +93,7 @@ export const sendAppointmentReminders = async (
         to: student.parentContact,
         recipientNumber: student.parentContact,
         message: reminderMessage,
-        status: 'sending',
+        status: 'sending' as MessageStatus,
         messageType: 'notification',
         createdAt: new Date(),
       };

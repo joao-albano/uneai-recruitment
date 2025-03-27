@@ -1,5 +1,5 @@
 
-export type MessageStatus = 'sent' | 'delivered' | 'read' | 'failed';
+export type MessageStatus = 'sent' | 'delivered' | 'read' | 'failed' | 'sending';
 export type MessageType = 'survey' | 'notification' | 'followup';
 export type WhatsAppProvider = 'disabled' | 'twilio' | 'messagebird' | 'whatsapp-web' | 'n8n_webhook';
 
