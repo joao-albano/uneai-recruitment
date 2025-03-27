@@ -17,6 +17,7 @@ import { useStudents } from '@/context/students/StudentsContext';
 import { sendAppointmentReminders } from '@/utils/appointmentReminders';
 import { useAlerts } from '@/context/alerts/AlertsContext';
 import { WhatsAppProvider } from '@/types/whatsapp';
+import { WhatsAppConfig } from '@/utils/whatsappIntegration';
 
 const ScheduleView: React.FC = () => {
   const scheduleData = useScheduleData();
@@ -34,7 +35,7 @@ const ScheduleView: React.FC = () => {
   const handleSendReminders = async () => {
     if (isProcessing) return;
     
-    if (!whatsAppConfig.enabled) {
+    if (!whatsAppConfig.enabled || whatsAppConfig.provider === 'disabled') {
       toast({
         title: language === 'pt-BR' ? 'WhatsApp desativado' : 'WhatsApp disabled',
         description: language === 'pt-BR' 
@@ -48,10 +49,12 @@ const ScheduleView: React.FC = () => {
     setIsProcessing(true);
     
     try {
-      // Ensure the provider is of type WhatsAppProvider before passing to the function
-      const typedConfig = {
+      // Create a properly typed config object
+      const typedConfig: WhatsAppConfig = {
         ...whatsAppConfig,
-        provider: whatsAppConfig.provider as WhatsAppProvider
+        provider: whatsAppConfig.provider as WhatsAppProvider,
+        reminderTiming: whatsAppConfig.reminderTiming || 1,
+        templateMessages: whatsAppConfig.templateMessages
       };
       
       // Enviar lembretes de agendamento para o dia seguinte
@@ -60,7 +63,7 @@ const ScheduleView: React.FC = () => {
         students,
         typedConfig,
         (message) => {
-          // Aqui usaríamos o hook de WhatsApp para adicionar a mensagem
+          // Add message to WhatsApp history
           console.log("Mensagem enviada:", message);
         },
         addAlert

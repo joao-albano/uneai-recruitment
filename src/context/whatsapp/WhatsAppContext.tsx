@@ -11,12 +11,7 @@ import { processStudentsForAutomatedSurveys } from '@/utils/automatedSurveys';
 import { sendWhatsAppSurvey as sendSurveyToWhatsApp } from '@/utils/notifications';
 import { useStudents } from '@/context/students/StudentsContext';
 import { useAlerts } from '@/context/alerts/AlertsContext';
-
-interface WhatsAppConfig {
-  enabled: boolean;
-  provider: WhatsAppProviderType;
-  apiKey?: string;
-}
+import { WhatsAppConfig } from '@/utils/whatsappIntegration';
 
 interface WhatsAppContextType {
   whatsAppConfig: WhatsAppConfig;
@@ -87,7 +82,7 @@ export const WhatsAppProvider: React.FC<{ children: ReactNode }> = ({ children }
   
   return (
     <WhatsAppContext.Provider value={{ 
-      whatsAppConfig, 
+      whatsAppConfig: config, // Use the config from the hook instead of local state
       setWhatsAppConfig,
       runAppointmentReminders,
       runAutomatedSurveys,

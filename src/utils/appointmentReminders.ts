@@ -76,9 +76,9 @@ export const sendAppointmentReminders = async (
       `Olá {{parentName}}, lembramos que {{studentName}} tem um atendimento agendado para {{appointmentDate}}. Por favor, confirme sua presença. Obrigado!`;
     
     reminderMessage = reminderMessage
-      .replace('{{parentName}}', student.parentName || 'Responsável')
-      .replace('{{studentName}}', student.name)
-      .replace('{{appointmentDate}}', formatAppointmentDateTime(schedule.date));
+      .replace(/\{\{parentName\}\}/g, student.parentName || 'Responsável')
+      .replace(/\{\{studentName\}\}/g, student.name)
+      .replace(/\{\{appointmentDate\}\}/g, formatAppointmentDateTime(schedule.date));
     
     // Send the message
     try {

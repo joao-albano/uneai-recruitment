@@ -9,7 +9,12 @@ export const useWhatsAppConfig = () => {
     const savedConfig = localStorage.getItem('whatsapp_config');
     if (savedConfig) {
       try {
-        return JSON.parse(savedConfig);
+        const parsedConfig = JSON.parse(savedConfig);
+        return {
+          ...parsedConfig,
+          provider: parsedConfig.provider as WhatsAppProvider,
+          enabled: parsedConfig.enabled === true
+        };
       } catch (e) {
         console.error('Error loading WhatsApp config:', e);
       }
