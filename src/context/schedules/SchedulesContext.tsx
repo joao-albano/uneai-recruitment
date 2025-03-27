@@ -1,8 +1,6 @@
 
-import React, { createContext, useContext, ReactNode } from 'react';
-import { useSchedulesState } from '@/hooks/useSchedulesState';
+import React, { createContext, useContext, useState } from 'react';
 import { ScheduleItem } from '@/types/data';
-import { useAuth } from '@/context/auth';
 
 interface SchedulesContextType {
   schedules: ScheduleItem[];
@@ -10,38 +8,48 @@ interface SchedulesContextType {
   addSchedule: (schedule: ScheduleItem) => void;
   updateScheduleStatus: (id: string, status: 'scheduled' | 'completed' | 'canceled') => void;
   updateSchedule: (updatedSchedule: ScheduleItem) => void;
-  clearAllSchedules: () => void;
-  visibleSchedules: ScheduleItem[];
 }
 
 const SchedulesContext = createContext<SchedulesContextType | undefined>(undefined);
 
-export const SchedulesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { 
-    schedules, 
-    setSchedules, 
-    addSchedule, 
-    updateScheduleStatus, 
-    updateSchedule,
-    clearAllSchedules 
-  } = useSchedulesState();
-  const { isAdmin, userEmail } = useAuth();
+export const SchedulesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [schedules, setSchedules] = useState<ScheduleItem[]>([]);
 
-  const visibleSchedules = isAdmin 
-    ? schedules 
-    : schedules.filter(schedule => schedule.agentName === userEmail || schedule.agentName === 'Coord. Mariana');
-
-  const value = {
-    schedules,
-    setSchedules,
-    addSchedule,
-    updateScheduleStatus,
-    updateSchedule,
-    clearAllSchedules,
-    visibleSchedules
+  const addSchedule = (schedule: ScheduleItem) => {
+    setSchedules(prev => [...prev, schedule]);
+  };
+  
+  const updateScheduleStatus = (id: string, status: 'scheduled' | 'completed' | 'canceled') => {
+    setSchedules(prev => 
+      prev.map(schedule => 
+        schedule.id === id 
+          ? { ...schedule, status } 
+          : schedule
+      )
+    );
+  };
+  
+  const updateSchedule = (updatedSchedule: ScheduleItem) => {
+    setSchedules(prev => 
+      prev.map(schedule => 
+        schedule.id === updatedSchedule.id 
+          ? updatedSchedule 
+          : schedule
+      )
+    );
   };
 
-  return <SchedulesContext.Provider value={value}>{children}</SchedulesContext.Provider>;
+  return (
+    <SchedulesContext.Provider value={{
+      schedules,
+      setSchedules,
+      addSchedule,
+      updateScheduleStatus,
+      updateSchedule
+    }}>
+      {children}
+    </SchedulesContext.Provider>
+  );
 };
 
 export const useSchedules = () => {

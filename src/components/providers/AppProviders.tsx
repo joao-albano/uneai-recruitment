@@ -9,7 +9,10 @@ import { ProductProvider } from "@/context/product";
 import { StudentsProvider } from "@/context/students/StudentsContext";
 import { AlertsProvider } from "@/context/alerts/AlertsContext";
 import { SchedulesProvider } from "@/context/schedules/SchedulesContext";
+import { SurveysProvider } from "@/context/surveys/SurveysContext";
 import { UploadsProvider } from "@/context/uploads/UploadsContext";
+import { WhatsAppProvider } from "@/context/whatsapp/WhatsAppContext";
+import { AppStateProvider } from "@/context/app/AppStateContext";
 import { ReactNode } from "react";
 
 interface AppProvidersProps {
@@ -28,13 +31,19 @@ const AppProviders = ({ children }: AppProvidersProps) => {
             <StudentsProvider>
               <AlertsProvider>
                 <SchedulesProvider>
-                  <UploadsProvider>
-                    <TooltipProvider>
-                      <Toaster />
-                      <Sonner />
-                      {children}
-                    </TooltipProvider>
-                  </UploadsProvider>
+                  <SurveysProvider>
+                    <UploadsProvider>
+                      <WhatsAppProvider>
+                        <AppStateProvider>
+                          <TooltipProvider>
+                            <Toaster />
+                            <Sonner />
+                            {children}
+                          </TooltipProvider>
+                        </AppStateProvider>
+                      </WhatsAppProvider>
+                    </UploadsProvider>
+                  </SurveysProvider>
                 </SchedulesProvider>
               </AlertsProvider>
             </StudentsProvider>

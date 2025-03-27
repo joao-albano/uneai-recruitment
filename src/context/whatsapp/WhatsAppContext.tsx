@@ -1,99 +1,44 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import { useSchedules } from '@/context/schedules/SchedulesContext';
-import { StudentData, AlertItem } from '@/types/data';
-import { useWhatsAppHistory } from '@/hooks/useWhatsAppHistory';
-import { useWhatsAppConfig } from '@/hooks/useWhatsAppConfig';
-import { WhatsAppMessage } from '@/types/whatsapp';
-import type { WhatsAppProvider as WhatsAppProviderType } from '@/types/whatsapp';
-import { processStudentsForAutomatedSurveys } from '@/utils/automatedSurveys';
-import { sendWhatsAppSurvey as sendSurveyToWhatsApp } from '@/utils/notifications';
-import { useStudents } from '@/context/students/StudentsContext';
-import { useAlerts } from '@/context/alerts/AlertsContext';
+import React, { createContext, useContext, useState } from 'react';
 import { WhatsAppConfig } from '@/utils/whatsappIntegration';
-import { generateDemoMessages } from '@/hooks/whatsapp/generateDemoMessages';
+import { WhatsAppMessage } from '@/types/whatsapp';
 
 interface WhatsAppContextType {
   whatsAppConfig: WhatsAppConfig;
-  setWhatsAppConfig: (config: WhatsAppConfig) => void;
-  runAppointmentReminders: () => void;
-  runAutomatedSurveys: () => void;
-  sendWhatsAppSurvey: (student: StudentData, addAlert: (alert: AlertItem) => void) => void;
   whatsAppMessages: WhatsAppMessage[];
   addWhatsAppMessage: (message: WhatsAppMessage) => void;
 }
 
+const defaultWhatsAppConfig: WhatsAppConfig = {
+  provider: 'disabled',
+  apiKey: '',
+  enabled: false,
+  templateMessages: {
+    introduction: 'Olá {{parentName}}, somos do Colégio XYZ. Estamos realizando uma pesquisa rápida sobre o {{studentName}}.',
+    followUp: 'Você poderia responder algumas perguntas? É bem rápido, prometo!',
+    thankYou: 'Muito obrigado pela sua participação! Suas respostas são muito importantes para nós.',
+    surveyQuestion1: 'O {{studentName}} mudou de escola recentemente? (Sim/Não)',
+    surveyQuestion2: 'Vocês têm preocupações com bullying ou problemas sociais? (Sim/Não)',
+    surveyQuestion3: 'De 1 a 10, como você avalia a adaptação social do {{studentName}} na escola?',
+    appointmentReminder: 'Olá {{parentName}}, lembramos que você tem uma reunião agendada para amanhã ({{appointmentDate}}) referente ao aluno {{studentName}}. Contamos com sua presença!'
+  }
+};
+
 const WhatsAppContext = createContext<WhatsAppContextType | undefined>(undefined);
 
-export const WhatsAppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { schedules } = useSchedules();
-  const { toast } = useToast();
-  const { messages: whatsAppMessages, addMessage } = useWhatsAppHistory();
-  const { config } = useWhatsAppConfig();
-  const { students } = useStudents();
-  const { addAlert } = useAlerts();
-  
-  // Ensure we have some demo messages for history display
-  React.useEffect(() => {
-    // Only add demo messages if we don't have any
-    if (whatsAppMessages.length === 0) {
-      const demoMessages = generateDemoMessages();
-      demoMessages.forEach(msg => addMessage(msg));
-    }
-  }, []);
-  
-  // Simular envio de lembretes de agendamentos
-  const runAppointmentReminders = () => {
-    // Filtrar agendamentos para amanhã
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    
-    const tomorrowSchedules = schedules.filter(schedule => {
-      const scheduleDate = new Date(schedule.date);
-      return scheduleDate.getDate() === tomorrow.getDate() &&
-             scheduleDate.getMonth() === tomorrow.getMonth() &&
-             scheduleDate.getFullYear() === tomorrow.getFullYear() &&
-             schedule.status === 'scheduled';
-    });
-    
-    // Simular envio de mensagens
-    if (tomorrowSchedules.length > 0) {
-      toast({
-        title: 'Lembretes enviados',
-        description: `${tomorrowSchedules.length} lembretes enviados para agendamentos de amanhã.`
-      });
-    } else {
-      toast({
-        title: 'Nenhum lembrete enviado',
-        description: 'Não há agendamentos para amanhã.',
-        variant: 'default'
-      });
-    }
-    
-    return tomorrowSchedules.length;
+export const WhatsAppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [whatsAppConfig] = useState<WhatsAppConfig>(defaultWhatsAppConfig);
+  const [whatsAppMessages, setWhatsAppMessages] = useState<WhatsAppMessage[]>([]);
+
+  const addWhatsAppMessage = (message: WhatsAppMessage) => {
+    setWhatsAppMessages(prev => [...prev, message]);
   };
 
-  // Executar pesquisas automatizadas
-  const runAutomatedSurveys = () => {
-    processStudentsForAutomatedSurveys(students, addAlert, addMessage, config);
-    return true;
-  };
-
-  // Enviar pesquisa de WhatsApp para um estudante específico
-  const sendWhatsAppSurvey = (student: StudentData, alertFunction: (alert: AlertItem) => void) => {
-    sendSurveyToWhatsApp(student, alertFunction, addMessage, config);
-  };
-  
   return (
-    <WhatsAppContext.Provider value={{ 
-      whatsAppConfig: config, // Use the config from the hook instead of local state
-      setWhatsAppConfig: () => {},
-      runAppointmentReminders,
-      runAutomatedSurveys,
-      sendWhatsAppSurvey,
+    <WhatsAppContext.Provider value={{
+      whatsAppConfig,
       whatsAppMessages,
-      addWhatsAppMessage: addMessage
+      addWhatsAppMessage
     }}>
       {children}
     </WhatsAppContext.Provider>
@@ -102,7 +47,7 @@ export const WhatsAppProvider: React.FC<{ children: ReactNode }> = ({ children }
 
 export const useWhatsApp = () => {
   const context = useContext(WhatsAppContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useWhatsApp must be used within a WhatsAppProvider');
   }
   return context;

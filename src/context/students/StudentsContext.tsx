@@ -1,29 +1,46 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { StudentData } from '@/types/data';
 
 interface StudentsContextType {
   students: StudentData[];
   setStudents: (students: StudentData[]) => void;
-  getStudentById: (id: string) => StudentData | undefined;
+  addStudent: (student: StudentData) => void;
+  updateStudent: (student: StudentData) => void;
+  deleteStudent: (id: string) => void;
 }
 
 const StudentsContext = createContext<StudentsContextType | undefined>(undefined);
 
-export const StudentsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const StudentsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [students, setStudents] = useState<StudentData[]>([]);
 
-  const getStudentById = (id: string) => {
-    return students.find(student => student.id === id);
+  const addStudent = (student: StudentData) => {
+    setStudents(prev => [...prev, student]);
+  };
+  
+  const updateStudent = (student: StudentData) => {
+    setStudents(prev => 
+      prev.map(s => s.id === student.id ? student : s)
+    );
+  };
+  
+  const deleteStudent = (id: string) => {
+    setStudents(prev => prev.filter(s => s.id !== id));
   };
 
-  const value = {
-    students,
-    setStudents,
-    getStudentById,
-  };
-
-  return <StudentsContext.Provider value={value}>{children}</StudentsContext.Provider>;
+  return (
+    <StudentsContext.Provider value={{
+      students,
+      setStudents,
+      addStudent,
+      updateStudent,
+      deleteStudent
+    }}>
+      {children}
+    </StudentsContext.Provider>
+  );
 };
 
 export const useStudents = () => {

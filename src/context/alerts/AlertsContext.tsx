@@ -1,55 +1,55 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { AlertItem } from '@/types/data';
 
 interface AlertsContextType {
   alerts: AlertItem[];
   setAlerts: (alerts: AlertItem[]) => void;
   addAlert: (alert: AlertItem) => void;
-  markAsRead: (id: string) => void;
-  markActionTaken: (id: string) => void;
-  clearAll: () => void;
+  markAlertAsRead: (id: string) => void;
+  markAlertActionTaken: (id: string) => void;
 }
 
 const AlertsContext = createContext<AlertsContextType | undefined>(undefined);
 
-export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AlertsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
 
   const addAlert = (alert: AlertItem) => {
-    setAlerts(prev => [alert, ...prev]);
+    setAlerts(prev => [...prev, alert]);
   };
-
-  const markAsRead = (id: string) => {
-    setAlerts(prev =>
-      prev.map(alert =>
-        alert.id === id ? { ...alert, read: true } : alert
+  
+  const markAlertAsRead = (id: string) => {
+    setAlerts(prev => 
+      prev.map(alert => 
+        alert.id === id 
+          ? { ...alert, read: true } 
+          : alert
+      )
+    );
+  };
+  
+  const markAlertActionTaken = (id: string) => {
+    setAlerts(prev => 
+      prev.map(alert => 
+        alert.id === id 
+          ? { ...alert, actionTaken: true } 
+          : alert
       )
     );
   };
 
-  const markActionTaken = (id: string) => {
-    setAlerts(prev =>
-      prev.map(alert =>
-        alert.id === id ? { ...alert, actionTaken: true } : alert
-      )
-    );
-  };
-
-  const clearAll = () => {
-    setAlerts([]);
-  };
-
-  const value = {
-    alerts,
-    setAlerts,
-    addAlert,
-    markAsRead,
-    markActionTaken,
-    clearAll
-  };
-
-  return <AlertsContext.Provider value={value}>{children}</AlertsContext.Provider>;
+  return (
+    <AlertsContext.Provider value={{
+      alerts,
+      setAlerts,
+      addAlert,
+      markAlertAsRead,
+      markAlertActionTaken
+    }}>
+      {children}
+    </AlertsContext.Provider>
+  );
 };
 
 export const useAlerts = () => {

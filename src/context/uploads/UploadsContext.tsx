@@ -1,5 +1,6 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { UploadRecord } from '@/types/data';
 
 interface UploadsContextType {
@@ -10,28 +11,29 @@ interface UploadsContextType {
 
 const UploadsContext = createContext<UploadsContextType | undefined>(undefined);
 
-export const UploadsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const UploadsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [uploadHistory, setUploadHistory] = useState<UploadRecord[]>([]);
 
   const addUploadRecord = (record: Omit<UploadRecord, 'id'>) => {
-    const newRecord: UploadRecord = {
-      ...record,
-      id: `upload-${Date.now()}-${Math.floor(Math.random() * 1000)}`
-    };
-    setUploadHistory([newRecord, ...uploadHistory]);
+    setUploadHistory(prev => [
+      ...prev,
+      { ...record, id: uuidv4() }
+    ]);
   };
-
+  
   const clearUploadHistory = () => {
     setUploadHistory([]);
   };
 
-  const value = {
-    uploadHistory,
-    addUploadRecord,
-    clearUploadHistory,
-  };
-
-  return <UploadsContext.Provider value={value}>{children}</UploadsContext.Provider>;
+  return (
+    <UploadsContext.Provider value={{
+      uploadHistory,
+      addUploadRecord,
+      clearUploadHistory
+    }}>
+      {children}
+    </UploadsContext.Provider>
+  );
 };
 
 export const useUploads = () => {
