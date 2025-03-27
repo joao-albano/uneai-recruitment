@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +13,7 @@ import CreateStudentDialog from './dialogs/CreateStudentDialog';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Student } from '@/types/data';
 import { useAuth } from '@/context/auth';
+import StudentDetail from './StudentDetail';
 
 const StudentsContent: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -19,6 +21,7 @@ const StudentsContent: React.FC = () => {
   const [studentDetailsOpen, setStudentDetailsOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [createStudentOpen, setCreateStudentOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('list');
   const { students, addStudent, updateStudent, deleteStudent, generateDemoData } = useData();
   const { toast } = useToast();
   const isMobile = useIsMobile();
@@ -37,6 +40,7 @@ const StudentsContent: React.FC = () => {
   const handleOpenDetails = (student: Student) => {
     setSelectedStudent(student);
     setStudentDetailsOpen(true);
+    setActiveTab('details');
   };
 
   const handleCloseDetails = () => {
@@ -71,15 +75,30 @@ const StudentsContent: React.FC = () => {
     });
   };
 
+  const handleScheduleMeeting = (studentId: string, studentName: string) => {
+    toast({
+      title: 'Atendimento agendado',
+      description: `Um novo atendimento para ${studentName} foi adicionado.`,
+    });
+  };
+
+  const handleSendSurvey = (studentId: string) => {
+    toast({
+      title: 'Pesquisa enviada',
+      description: 'Uma pesquisa foi enviada para o responsável pelo aluno.',
+    });
+  };
+
   return (
     <div>
       <StudentsHeader studentCount={students.length} />
 
-      <Tabs defaultValue="list" className="space-y-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList>
           <TabsTrigger value="list">Lista de Alunos</TabsTrigger>
-          {isAdmin && <TabsTrigger value="details">Detalhes</TabsTrigger>}
+          <TabsTrigger value="details">Detalhes</TabsTrigger>
         </TabsList>
+        
         <TabsContent value="list">
           <Card>
             <CardHeader>
@@ -101,26 +120,32 @@ const StudentsContent: React.FC = () => {
           </Card>
         </TabsContent>
 
-        {isAdmin && (
-          <TabsContent value="details">
-            {selectedStudent ? (
-              <StudentsDetailsDialog
-                open={studentDetailsOpen}
-                onOpenChange={setStudentDetailsOpen}
-                student={selectedStudent}
-                onUpdate={handleUpdateStudent}
-                onDelete={handleDeleteStudent}
-              />
-            ) : (
-              <Card>
-                <CardContent>
-                  Selecione um aluno para ver os detalhes
-                </CardContent>
-              </Card>
-            )}
-          </TabsContent>
-        )}
+        <TabsContent value="details">
+          {selectedStudent ? (
+            <StudentDetail 
+              student={selectedStudent} 
+              onScheduleMeeting={handleScheduleMeeting}
+              onSendSurvey={handleSendSurvey}
+            />
+          ) : (
+            <Card>
+              <CardContent className="p-6 text-center">
+                <p className="text-muted-foreground">
+                  Selecione um aluno na lista para visualizar seus detalhes.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
       </Tabs>
+
+      <StudentsDetailsDialog
+        open={studentDetailsOpen}
+        onOpenChange={setStudentDetailsOpen}
+        student={selectedStudent}
+        onUpdate={handleUpdateStudent}
+        onDelete={handleDeleteStudent}
+      />
 
       <CreateStudentDialog
         open={createStudentOpen}
