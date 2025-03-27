@@ -1,18 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { usePlanOptionsStore, PlanOption } from '@/utils/billing/planOptions';
-import { useTheme } from '@/context/ThemeContext';
 import { useToast } from '@/hooks/use-toast';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import PlanCard from './PlanCard';
-import PlanEditForm from './PlanEditForm';
-import ResetPlansDialog from './ResetPlansDialog';
-import ProductAssociationManager from './ProductAssociationManager';
-import PlanLimitsManager from './PlanLimitsManager';
+import { useTheme } from '@/context/ThemeContext';
 import { ProductType } from '@/context/ProductContext';
+import PlanSidebarList from './PlanSidebarList';
+import PlanTabsContainer from './PlanTabsContainer';
+import PlanManagerHeader from './PlanManagerHeader';
 
 const PlanOptionsManager: React.FC = () => {
   const { plans, setPlan, resetToDefaults } = usePlanOptionsStore();
@@ -113,111 +107,33 @@ const PlanOptionsManager: React.FC = () => {
   };
 
   const selectedPlan = plans.find(p => p.id === selectedPlanId) || null;
-  const associatedProducts = selectedPlan?.products as ProductType[] || [];
   
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold tracking-tight">
-          {isPtBR ? "Gerenciar Planos" : "Manage Plans"}
-        </h2>
-        
-        <ResetPlansDialog onReset={handleResetToDefaults} />
-      </div>
+      <PlanManagerHeader onResetToDefaults={handleResetToDefaults} />
       
       <div className="grid md:grid-cols-4 gap-6">
         <div className="md:col-span-1">
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">
-              {isPtBR ? "Planos Disponíveis" : "Available Plans"}
-            </h3>
-            
-            {plans.map((plan) => (
-              <PlanCard 
-                key={plan.id}
-                plan={plan}
-                isSelected={selectedPlanId === plan.id}
-                onEditClick={handleEditClick}
-                onSelect={handlePlanSelect}
-              />
-            ))}
-          </div>
+          <PlanSidebarList 
+            plans={plans}
+            selectedPlanId={selectedPlanId}
+            onPlanSelect={handlePlanSelect}
+            onEditClick={handleEditClick}
+          />
         </div>
         
         <div className="md:col-span-3">
-          {selectedPlan ? (
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="mb-4">
-                <TabsTrigger value="details">
-                  {isPtBR ? "Detalhes" : "Details"}
-                </TabsTrigger>
-                <TabsTrigger value="products">
-                  {isPtBR ? "Produtos" : "Products"}
-                </TabsTrigger>
-                <TabsTrigger value="limits">
-                  {isPtBR ? "Limites e Recursos" : "Limits & Resources"}
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="details">
-                {editingPlan ? (
-                  <PlanEditForm
-                    editingPlan={editingPlan}
-                    onSubmit={handleSubmit}
-                    onCancel={handleCancelEdit}
-                  />
-                ) : (
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-semibold">{selectedPlan.name}</h3>
-                    <p className="text-muted-foreground">{selectedPlan.description}</p>
-                    <div className="font-medium text-lg">{selectedPlan.price}</div>
-                    
-                    <div className="pt-2">
-                      <h4 className="font-medium mb-2">{isPtBR ? "Recursos:" : "Features:"}</h4>
-                      <ul className="list-disc list-inside space-y-1">
-                        {selectedPlan.features?.map((feature, idx) => (
-                          <li key={idx} className="text-muted-foreground">{feature}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <div className="pt-4">
-                      <Button onClick={() => handleEditClick(selectedPlan)}>
-                        {isPtBR ? "Editar Detalhes" : "Edit Details"}
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </TabsContent>
-              
-              <TabsContent value="products">
-                <ProductAssociationManager
-                  planId={selectedPlan.id}
-                  planName={selectedPlan.name}
-                  associatedProducts={associatedProducts}
-                  onUpdateProducts={handleUpdateProducts}
-                />
-              </TabsContent>
-
-              <TabsContent value="limits">
-                <PlanLimitsManager
-                  planId={selectedPlan.id}
-                  planName={selectedPlan.name}
-                  limits={selectedPlan.limits}
-                  onUpdateLimits={handleUpdateLimits}
-                />
-              </TabsContent>
-            </Tabs>
-          ) : (
-            <Alert variant="default">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                {isPtBR 
-                  ? "Selecione um plano para visualizar ou editar seus detalhes." 
-                  : "Select a plan to view or edit its details."}
-              </AlertDescription>
-            </Alert>
-          )}
+          <PlanTabsContainer 
+            selectedPlan={selectedPlan}
+            activeTab={activeTab}
+            editingPlan={editingPlan}
+            setActiveTab={setActiveTab}
+            onEditClick={handleEditClick}
+            onSubmit={handleSubmit}
+            onCancelEdit={handleCancelEdit}
+            onUpdateProducts={handleUpdateProducts}
+            onUpdateLimits={handleUpdateLimits}
+          />
         </div>
       </div>
     </div>
