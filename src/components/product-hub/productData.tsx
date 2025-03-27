@@ -149,5 +149,8 @@ export const getProducts = async (): Promise<ProductInfo[]> => {
   }
   
   // If no segment found or error occurred, return all products
-  return allProducts;
+  // but restrict to logical defaults rather than showing all
+  return allProducts.filter(product => 
+    product.segments.includes('services') // Show only basic products like sales by default
+  );
 };

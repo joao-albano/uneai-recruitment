@@ -98,8 +98,8 @@ const ProductSelection = () => {
         productIds = ['sales'];
         break;
       default:
-        // If no segment is selected, show all products
-        productIds = allProducts.map(p => p.id);
+        // If no segment is selected, don't show any products
+        productIds = [];
         break;
     }
     
