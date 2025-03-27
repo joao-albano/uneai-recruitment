@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { DataProvider } from '@/context/DataContext';
 import { SchedulesProvider } from '@/context/schedules/SchedulesContext';
+import { WhatsAppProvider } from '@/context/whatsapp/WhatsAppContext';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
 import ScheduleView from '@/components/scheduling/ScheduleView';
@@ -55,19 +56,21 @@ const SchedulePage: React.FC = () => {
   return (
     <DataProvider>
       <SchedulesProvider>
-        <div className="h-screen flex flex-col md:flex-row overflow-hidden">
-          <Sidebar 
-            isOpen={sidebarOpen} 
-            onClose={toggleSidebar} 
-            collapsed={sidebarCollapsed}
-            setCollapsed={setSidebarCollapsed}
-          />
-          
-          <div className="flex-1 flex flex-col overflow-hidden">
-            <Header toggleSidebar={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
-            <ScheduleContent />
+        <WhatsAppProvider>
+          <div className="h-screen flex flex-col md:flex-row overflow-hidden">
+            <Sidebar 
+              isOpen={sidebarOpen} 
+              onClose={toggleSidebar} 
+              collapsed={sidebarCollapsed}
+              setCollapsed={setSidebarCollapsed}
+            />
+            
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <Header toggleSidebar={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
+              <ScheduleContent />
+            </div>
           </div>
-        </div>
+        </WhatsAppProvider>
       </SchedulesProvider>
     </DataProvider>
   );

@@ -1,133 +1,143 @@
 
-import { ScheduleItem } from '@/types/data';
-import { WhatsAppConfig, sendWhatsAppMessage, formatAppointmentDateTime } from '@/utils/whatsappIntegration';
+import { Schedule } from '@/types/schedule';
+import { StudentData } from '@/types/data';
+import { WhatsAppConfig, formatAppointmentDateTime, sendWhatsAppMessage } from './whatsappIntegration';
 import { WhatsAppMessage } from '@/types/whatsapp';
-import { v4 as uuidv4 } from 'uuid';
 
-// Function to check if a reminder should be sent for a schedule
-export const shouldSendReminder = (schedule: ScheduleItem, reminderDays: number = 1): boolean => {
-  // Only send reminders for future scheduled appointments
-  if (schedule.status !== 'scheduled') {
-    return false;
-  }
-
-  const now = new Date();
-  const appointmentDate = new Date(schedule.date);
-  
-  // Calculate the date when the reminder should be sent
-  const reminderDate = new Date(appointmentDate);
-  reminderDate.setDate(reminderDate.getDate() - reminderDays);
-  
-  // Check if today is the reminder date
-  return (
-    now.getFullYear() === reminderDate.getFullYear() &&
-    now.getMonth() === reminderDate.getMonth() &&
-    now.getDate() === reminderDate.getDate()
-  );
-};
-
-// Create a message with the reminder template
-export const createReminderMessage = (
-  schedule: ScheduleItem, 
-  parentName: string, 
-  parentContact: string,
-  config: WhatsAppConfig
-): string => {
-  if (!config.templateMessages?.appointmentReminder) {
-    return `Olá ${parentName}, lembramos que você tem uma reunião agendada para amanhã (${formatAppointmentDateTime(schedule.date)}) referente ao aluno ${schedule.studentName}. Contamos com sua presença!`;
-  }
-  
-  // Replace template variables
-  let message = config.templateMessages.appointmentReminder;
-  message = message.replace(/{{parentName}}/g, parentName);
-  message = message.replace(/{{studentName}}/g, schedule.studentName);
-  message = message.replace(/{{appointmentDate}}/g, formatAppointmentDateTime(schedule.date));
-  
-  return message;
-};
-
-// Send reminders for all schedules that need them
 export const sendAppointmentReminders = async (
-  schedules: ScheduleItem[],
-  students: any[],
+  schedules: Schedule[],
+  students: StudentData[],
   whatsAppConfig: WhatsAppConfig,
-  addWhatsAppMessage: (message: WhatsAppMessage) => void,
+  addMessage: (message: WhatsAppMessage) => void,
   addAlert: (alert: any) => void
 ): Promise<void> => {
   if (!whatsAppConfig.enabled || whatsAppConfig.provider === 'disabled') {
-    console.log('WhatsApp reminders are disabled');
+    console.log('[Reminders] WhatsApp integration is disabled');
+    return;
+  }
+
+  // Get the current date and target date based on reminder timing setting
+  const now = new Date();
+  const targetDate = new Date(now);
+  targetDate.setDate(now.getDate() + (whatsAppConfig.reminderTiming || 1));
+  
+  // Reset time for date comparison (we only want to compare the date, not the time)
+  const targetDateNoTime = new Date(
+    targetDate.getFullYear(), 
+    targetDate.getMonth(), 
+    targetDate.getDate()
+  );
+  
+  console.log(`[Reminders] Checking for appointments on ${targetDateNoTime.toLocaleDateString()}`);
+  
+  // Get schedules for the target date that are still scheduled (not canceled or completed)
+  const targetSchedules = schedules.filter(schedule => {
+    const scheduleDate = new Date(schedule.date);
+    const scheduleDateNoTime = new Date(
+      scheduleDate.getFullYear(), 
+      scheduleDate.getMonth(), 
+      scheduleDate.getDate()
+    );
+    
+    return (
+      schedule.status === 'scheduled' && 
+      scheduleDateNoTime.getTime() === targetDateNoTime.getTime()
+    );
+  });
+  
+  console.log(`[Reminders] Found ${targetSchedules.length} appointments for reminder`);
+  
+  if (targetSchedules.length === 0) {
+    addAlert({
+      id: `reminder-${Date.now()}`,
+      type: 'info',
+      message: `Não há agendamentos previstos para ${targetDateNoTime.toLocaleDateString()} para enviar lembretes.`,
+      createdAt: new Date(),
+      read: false,
+      actionTaken: false,
+    });
     return;
   }
   
-  const reminderDays = whatsAppConfig.reminderTiming || 1;
-  
-  // Find schedules that need reminders
-  const schedulesNeedingReminders = schedules.filter(schedule => 
-    shouldSendReminder(schedule, reminderDays)
-  );
-  
-  console.log(`Found ${schedulesNeedingReminders.length} schedules needing reminders`);
-  
-  // Send reminders
-  for (const schedule of schedulesNeedingReminders) {
-    // Find student data
+  // Process each schedule
+  for (const schedule of targetSchedules) {
+    // Find the student associated with this schedule
     const student = students.find(s => s.id === schedule.studentId);
     
-    if (!student || !student.parentContact || !student.parentName) {
-      console.log(`Missing parent contact information for student ${schedule.studentName}`);
+    if (!student || !student.parentContact) {
+      console.log(`[Reminders] No parent contact found for student ID: ${schedule.studentId}`);
       continue;
     }
     
-    // Create reminder message
-    const message = createReminderMessage(
-      schedule,
-      student.parentName,
-      student.parentContact,
-      whatsAppConfig
-    );
+    // Replace template variables in the reminder message
+    let reminderMessage = whatsAppConfig.templateMessages?.appointmentReminder || '';
+    reminderMessage = reminderMessage
+      .replace('{{parentName}}', student.parentName || 'Responsável')
+      .replace('{{studentName}}', student.name)
+      .replace('{{appointmentDate}}', formatAppointmentDateTime(schedule.date));
     
-    // Send WhatsApp message
+    // Send the message
     try {
+      console.log(`[Reminders] Sending reminder to ${student.parentContact}`);
+      
+      // Create a message object for history
+      const whatsAppMessage: WhatsAppMessage = {
+        id: `whatsapp-reminder-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+        studentId: student.id,
+        studentName: student.name,
+        parentName: student.parentName || 'Responsável',
+        to: student.parentContact,
+        recipientNumber: student.parentContact,
+        message: reminderMessage,
+        status: 'sent',
+        messageType: 'notification',
+        createdAt: new Date(),
+      };
+      
+      // Send the message using WhatsApp integration
       const result = await sendWhatsAppMessage(
         whatsAppConfig,
         student.parentContact,
-        message
+        reminderMessage
       );
       
-      // Create message record
-      const whatsAppMessage: WhatsAppMessage = {
-        id: uuidv4(),
-        studentId: student.id,
-        studentName: student.name,
-        parentName: student.parentName,
-        to: student.parentContact,
-        recipientNumber: student.parentContact,
-        messageType: 'notification',
-        status: result.success ? 'sent' : 'failed',
-        createdAt: new Date(),
-        message: message,
-        errorMessage: result.success ? undefined : result.message
-      };
+      // Update message status based on result
+      whatsAppMessage.status = result.success ? 'delivered' : 'failed';
+      if (!result.success && result.message) {
+        whatsAppMessage.errorMessage = result.message;
+      }
       
-      // Add to history
-      addWhatsAppMessage(whatsAppMessage);
+      // Add message to history
+      addMessage(whatsAppMessage);
       
       // Add alert
       addAlert({
-        id: `reminder-${Date.now()}`,
+        id: `reminder-${Date.now()}-${student.id}`,
         studentId: student.id,
         studentName: student.name,
-        studentClass: student.class || '',
-        type: 'meeting-scheduled',
-        message: `Lembrete de agendamento enviado para ${student.parentName} (${student.parentContact})`,
+        studentClass: student.class,
+        type: 'appointment-reminder',
+        message: `Lembrete de agendamento enviado para ${student.parentName} (${student.parentContact}).`,
         createdAt: new Date(),
         read: false,
         actionTaken: false,
       });
       
-      console.log(`Reminder sent for ${schedule.studentName}'s appointment on ${formatAppointmentDateTime(schedule.date)}`);
     } catch (error) {
-      console.error('Error sending reminder:', error);
+      console.error('[Reminders] Error sending reminder:', error);
+      
+      // Add alert for error
+      addAlert({
+        id: `reminder-error-${Date.now()}-${student.id}`,
+        studentId: student.id,
+        studentName: student.name,
+        studentClass: student.class,
+        type: 'error',
+        message: `Erro ao enviar lembrete para ${student.parentName}: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+        createdAt: new Date(),
+        read: false,
+        actionTaken: false,
+      });
     }
   }
 };

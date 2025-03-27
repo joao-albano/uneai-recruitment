@@ -6,6 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AuthProvider } from "@/context/auth";
 import { ProductProvider } from "@/context/product";
+import { StudentsProvider } from "@/context/students/StudentsContext";
+import { AlertsProvider } from "@/context/alerts/AlertsContext";
 import { ReactNode } from "react";
 
 interface AppProvidersProps {
@@ -21,11 +23,15 @@ const AppProviders = ({ children }: AppProvidersProps) => {
       <ThemeProvider>
         <AuthProvider>
           <ProductProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              {children}
-            </TooltipProvider>
+            <StudentsProvider>
+              <AlertsProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  {children}
+                </TooltipProvider>
+              </AlertsProvider>
+            </StudentsProvider>
           </ProductProvider>
         </AuthProvider>
       </ThemeProvider>

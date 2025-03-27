@@ -51,6 +51,7 @@ const TodaySchedules: React.FC<TodaySchedulesProps> = ({
                 notes={schedule.notes}
                 onMarkCompleted={onCompleted}
                 onCancelSchedule={onCanceled}
+                onDetailsClick={() => onDetailsClick(schedule)}
               />
             ))}
           </div>
