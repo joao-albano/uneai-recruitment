@@ -7,6 +7,8 @@ import { useParams } from 'react-router-dom';
 
 const ModelStudentPage: React.FC = () => {
   const { studentId } = useParams<{ studentId: string }>();
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
   
   // Log do ID do aluno para depuração
   useEffect(() => {
@@ -15,7 +17,12 @@ const ModelStudentPage: React.FC = () => {
   
   return (
     <DataProvider>
-      <Layout>
+      <Layout 
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        sidebarCollapsed={sidebarCollapsed}
+        setSidebarCollapsed={setSidebarCollapsed}
+      >
         <ModelStudentContent studentId={studentId} />
       </Layout>
     </DataProvider>

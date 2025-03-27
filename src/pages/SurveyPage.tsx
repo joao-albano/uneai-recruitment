@@ -12,6 +12,9 @@ import Layout from '@/components/layout/Layout';
 import { generateDemoStudents } from '@/data/demoStudents';
 
 const SurveyPage: React.FC = () => {
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
+  
   // Pré-carregar os dados de demonstração no localStorage para garantir que estejam disponíveis
   useEffect(() => {
     const storedStudents = localStorage.getItem('students');
@@ -29,7 +32,12 @@ const SurveyPage: React.FC = () => {
             <UploadsProvider>
               <AppStateProvider>
                 <WhatsAppProvider>
-                  <Layout>
+                  <Layout 
+                    sidebarOpen={sidebarOpen}
+                    setSidebarOpen={setSidebarOpen}
+                    sidebarCollapsed={sidebarCollapsed}
+                    setSidebarCollapsed={setSidebarCollapsed}
+                  >
                     <SurveyPageContent />
                   </Layout>
                 </WhatsAppProvider>

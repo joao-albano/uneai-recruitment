@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import { useAuth } from '@/context/auth';
@@ -8,10 +7,22 @@ import { useTrialPeriod } from '@/hooks/useTrialPeriod';
 import TrialPeriodBanner from '../shared/TrialPeriodBanner';
 import TrialExpiredModal from '../shared/TrialExpiredModal';
 
-const Layout = () => {
+interface LayoutProps {
+  children: React.ReactNode;
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
+  sidebarCollapsed: boolean;
+  setSidebarCollapsed: (collapsed: boolean) => void;
+}
+
+const Layout: React.FC<LayoutProps> = ({
+  children,
+  sidebarOpen,
+  setSidebarOpen,
+  sidebarCollapsed,
+  setSidebarCollapsed
+}) => {
   const { isAuthenticated, isSuperAdmin } = useAuth();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
   const { 
     daysRemaining, 
@@ -50,7 +61,7 @@ const Layout = () => {
             />
           )}
           
-          <Outlet />
+          {children}
         </main>
       </div>
       
