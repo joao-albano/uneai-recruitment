@@ -5,7 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useTheme } from '@/context/ThemeContext';
 import { useStudents } from '@/context/students/StudentsContext';
 import { useAlerts } from '@/context/alerts/AlertsContext';
-import { WhatsAppProvider } from '@/types/whatsapp';
+import { WhatsAppProvider, MessageType } from '@/types/whatsapp';
 import { WhatsAppConfig } from '@/utils/whatsappIntegration';
 import { sendAppointmentReminders } from '@/utils/appointmentReminders';
 import { Schedule } from '@/types/schedule';
@@ -57,7 +57,7 @@ export const useReminderSending = (schedules: Schedule[]) => {
                 recipientNumber: student.parentContact,
                 message: `Olá ${student.parentName || 'Responsável'}, lembramos que ${student.name} tem um atendimento agendado para amanhã às ${new Date(schedule.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}. Por favor, confirme sua presença.`,
                 status: 'delivered',
-                messageType: 'notification',
+                messageType: 'notification' as MessageType,
                 createdAt: new Date(),
               };
               

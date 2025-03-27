@@ -44,7 +44,7 @@ export type AlertItem = {
   studentId: string;
   studentName: string;
   studentClass: string;
-  type: 'high-risk' | 'medium-risk' | 'low-risk' | 'survey-requested' | 'meeting-scheduled';
+  type: 'high-risk' | 'medium-risk' | 'low-risk' | 'survey-requested' | 'meeting-scheduled' | 'appointment-reminder' | 'error' | 'info';
   message: string;
   createdAt: Date;
   read: boolean;
