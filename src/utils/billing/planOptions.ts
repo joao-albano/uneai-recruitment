@@ -10,6 +10,7 @@ export interface PlanOption {
   description: string;
   relatedProduct?: string;
   features?: string[];
+  products?: ProductType[];
 }
 
 interface PlanOptionsStore {
@@ -29,7 +30,8 @@ const getDefaultPlans = (isPtBR: boolean): PlanOption[] => [
       isPtBR ? 'Monitoramento básico' : 'Basic monitoring',
       isPtBR ? 'Alertas de risco' : 'Risk alerts',
       isPtBR ? 'Suporte por email' : 'Email support'
-    ]
+    ],
+    products: ['retention']
   },
   {
     id: 'premium',
@@ -42,7 +44,8 @@ const getDefaultPlans = (isPtBR: boolean): PlanOption[] => [
       isPtBR ? 'Alertas em tempo real' : 'Real-time alerts',
       isPtBR ? 'Suporte prioritário' : 'Priority support',
       isPtBR ? 'Relatórios detalhados' : 'Detailed reports'
-    ]
+    ],
+    products: ['retention', 'scheduling']
   },
   {
     id: 'enterprise',
@@ -56,7 +59,8 @@ const getDefaultPlans = (isPtBR: boolean): PlanOption[] => [
       isPtBR ? 'API personalizada' : 'Custom API access',
       isPtBR ? 'Suporte dedicado' : 'Dedicated support',
       isPtBR ? 'Consultoria estratégica' : 'Strategic consulting'
-    ]
+    ],
+    products: ['retention', 'scheduling', 'sales', 'recruitment', 'secretary', 'pedagogical']
   }
 ];
 
