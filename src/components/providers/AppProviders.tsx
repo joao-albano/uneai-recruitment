@@ -9,6 +9,7 @@ import { ProductProvider } from "@/context/product";
 import { StudentsProvider } from "@/context/students/StudentsContext";
 import { AlertsProvider } from "@/context/alerts/AlertsContext";
 import { SchedulesProvider } from "@/context/schedules/SchedulesContext";
+import { UploadsProvider } from "@/context/uploads/UploadsContext";
 import { ReactNode } from "react";
 
 interface AppProvidersProps {
@@ -27,11 +28,13 @@ const AppProviders = ({ children }: AppProvidersProps) => {
             <StudentsProvider>
               <AlertsProvider>
                 <SchedulesProvider>
-                  <TooltipProvider>
-                    <Toaster />
-                    <Sonner />
-                    {children}
-                  </TooltipProvider>
+                  <UploadsProvider>
+                    <TooltipProvider>
+                      <Toaster />
+                      <Sonner />
+                      {children}
+                    </TooltipProvider>
+                  </UploadsProvider>
                 </SchedulesProvider>
               </AlertsProvider>
             </StudentsProvider>
