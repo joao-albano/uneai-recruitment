@@ -60,34 +60,37 @@ export const validateStudentData = (
     }
   }
 
-  // Validate grade (should be 0-10)
-  if (data.grade === undefined || data.grade === null) {
-    errors.push({
-      row: rowIndex,
-      column: 'nota',
-      message: 'Nota é obrigatória'
-    });
-  } else if (isNaN(data.grade) || data.grade < 0 || data.grade > 10) {
-    errors.push({
-      row: rowIndex,
-      column: 'nota',
-      message: 'Nota deve ser um número entre 0 e 10'
-    });
+  // Validate grade (should be 0-10) - não obrigatório
+  if (data.grade !== undefined && data.grade !== null) {
+    if (isNaN(data.grade) || data.grade < 0 || data.grade > 10) {
+      errors.push({
+        row: rowIndex,
+        column: 'nota',
+        message: 'Nota deve ser um número entre 0 e 10'
+      });
+    }
   }
 
-  // Validate attendance (should be 0-100%)
-  if (data.attendance === undefined || data.attendance === null) {
-    errors.push({
-      row: rowIndex,
-      column: 'frequencia',
-      message: 'Frequência é obrigatória'
-    });
-  } else if (isNaN(data.attendance) || data.attendance < 0 || data.attendance > 100) {
-    errors.push({
-      row: rowIndex,
-      column: 'frequencia',
-      message: 'Frequência deve ser uma porcentagem entre 0 e 100'
-    });
+  // Validate attendance (should be 0-100%) - não obrigatório
+  if (data.attendance !== undefined && data.attendance !== null) {
+    if (isNaN(data.attendance) || data.attendance < 0 || data.attendance > 100) {
+      errors.push({
+        row: rowIndex,
+        column: 'frequencia',
+        message: 'Frequência deve ser uma porcentagem entre 0 e 100'
+      });
+    }
+  }
+
+  // Validate behavior (should be 0-10) - não obrigatório
+  if (data.behavior !== undefined && data.behavior !== null) {
+    if (isNaN(data.behavior) || data.behavior < 0 || data.behavior > 10) {
+      errors.push({
+        row: rowIndex,
+        column: 'comportamento',
+        message: 'Comportamento deve ser um número entre 0 e 10'
+      });
+    }
   }
 
   // Validate parent name if provided

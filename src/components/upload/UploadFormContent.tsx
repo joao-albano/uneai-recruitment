@@ -6,6 +6,7 @@ import DragDropArea from './DragDropArea';
 import ValidationErrorsDisplay from './ValidationErrorsDisplay';
 import ColumnInfoTable from './ColumnInfoTable';
 import FileUploadHandler from './FileUploadHandler';
+import { downloadTemplate } from '@/utils/validation/templateManager';
 
 const UploadFormContent: React.FC = () => {
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -39,14 +40,19 @@ const UploadFormContent: React.FC = () => {
   const toggleColumnInfo = () => {
     setShowColumnInfo(!showColumnInfo);
   };
+
+  const handleDownloadTemplate = () => {
+    downloadTemplate();
+  };
   
   const requiredColumns = [
     { name: 'nome', description: 'Nome completo do aluno', example: 'João Silva', required: true },
     { name: 'registro', description: 'Número de matrícula do aluno', example: '12345', required: true },
     { name: 'turma', description: 'Turma do aluno', example: '9A', required: true },
     { name: 'segmento', description: 'Segmento escolar (ENSINO MÉDIO, FUNDAMENTAL I, etc.)', example: 'ENSINO MÉDIO', required: true },
-    { name: 'nota', description: 'Nota média (0-10)', example: '7.5', required: true },
-    { name: 'frequencia', description: 'Porcentagem de presença (0-100)', example: '85', required: true },
+    { name: 'nota', description: 'Nota média (0-10)', example: '7.5' },
+    { name: 'frequencia', description: 'Porcentagem de presença (0-100)', example: '85' },
+    { name: 'comportamento', description: 'Comportamento do aluno (0-10)', example: '8' },
     { name: 'nome_responsavel', description: 'Nome do responsável', example: 'Maria da Silva' },
     { name: 'contato_responsavel', description: 'Telefone do responsável', example: '(11) 98765-4321' },
   ];
@@ -72,14 +78,25 @@ const UploadFormContent: React.FC = () => {
         }) => (
           <>
             <CardContent className="space-y-4">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={toggleColumnInfo} 
-                className="mb-2 text-xs"
-              >
-                {showColumnInfo ? 'Ocultar informações das colunas' : 'Exibir informações das colunas'}
-              </Button>
+              <div className="flex space-x-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={toggleColumnInfo} 
+                  className="text-xs"
+                >
+                  {showColumnInfo ? 'Ocultar informações da planilha' : 'Exibir informações da planilha'}
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDownloadTemplate}
+                  className="text-xs"
+                >
+                  Baixar modelo
+                </Button>
+              </div>
               
               {showColumnInfo && <ColumnInfoTable columns={requiredColumns} />}
               

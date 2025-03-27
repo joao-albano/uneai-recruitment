@@ -8,6 +8,8 @@ import UploadHistory from '@/components/upload/UploadHistory';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FileSpreadsheet, History, Info } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { downloadTemplate } from '@/utils/validation/templateManager';
 
 const UploadPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -15,6 +17,10 @@ const UploadPage: React.FC = () => {
   
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
+  };
+
+  const handleDownloadTemplate = () => {
+    downloadTemplate();
   };
   
   return (
@@ -74,15 +80,27 @@ const UploadPage: React.FC = () => {
                           A planilha deve estar no formato CSV ou Excel (.xlsx, .xls) com as seguintes colunas:
                         </p>
                         <ul className="list-disc pl-6 mt-2 space-y-1 text-sm">
-                          <li><strong>nome</strong> - Nome completo do aluno</li>
-                          <li><strong>registro</strong> - Número de matrícula do aluno</li>
-                          <li><strong>turma</strong> - Turma do aluno (ex: 9A, 8B)</li>
-                          <li><strong>segmento</strong> - Segmento escolar (ENSINO MÉDIO, FUNDAMENTAL I, etc.)</li>
-                          <li><strong>nota</strong> - Nota média do aluno (de 0 a 10)</li>
-                          <li><strong>frequencia</strong> - Porcentagem de presença (de 0 a 100)</li>
-                          <li><strong>nome_responsavel</strong> - Nome do responsável pelo aluno</li>
-                          <li><strong>contato_responsavel</strong> - Número de telefone do responsável no formato (XX) XXXXX-XXXX</li>
+                          <li><strong>nome</strong> - Nome completo do aluno (obrigatório)</li>
+                          <li><strong>registro</strong> - Número de matrícula do aluno (obrigatório)</li>
+                          <li><strong>turma</strong> - Turma do aluno (ex: 9A, 8B) (obrigatório)</li>
+                          <li><strong>segmento</strong> - Segmento escolar (ENSINO MÉDIO, FUNDAMENTAL I, etc.) (obrigatório)</li>
+                          <li><strong>nota</strong> - Nota média do aluno (de 0 a 10) (opcional)</li>
+                          <li><strong>frequencia</strong> - Porcentagem de presença (de 0 a 100) (opcional)</li>
+                          <li><strong>comportamento</strong> - Avaliação de comportamento (de 0 a 10) (opcional)</li>
+                          <li><strong>nome_responsavel</strong> - Nome do responsável pelo aluno (opcional)</li>
+                          <li><strong>contato_responsavel</strong> - Número de telefone do responsável no formato (XX) XXXXX-XXXX (opcional)</li>
                         </ul>
+                      </div>
+                      
+                      <div className="flex justify-start">
+                        <Button 
+                          onClick={handleDownloadTemplate} 
+                          variant="outline" 
+                          size="sm"
+                          className="mt-2"
+                        >
+                          Baixar modelo de planilha
+                        </Button>
                       </div>
                       
                       <div>
@@ -105,8 +123,10 @@ const UploadPage: React.FC = () => {
                           Os casos de risco médio e alto geram alertas no sistema.
                         </p>
                         <p className="text-muted-foreground text-sm mt-2">
-                          <strong>Nota:</strong> Os campos de comportamento, nível de risco e ações necessárias 
-                          serão gerados automaticamente pelo sistema de IA com base nos dados acadêmicos do aluno.
+                          <strong>Nota:</strong> Os campos como nível de risco e ações necessárias 
+                          serão gerados automaticamente pelo sistema de IA com base nos dados acadêmicos fornecidos. 
+                          Mesmo que alguns campos sejam opcionais, quanto mais informações forem fornecidas, 
+                          mais precisa será a análise.
                         </p>
                       </div>
                     </div>

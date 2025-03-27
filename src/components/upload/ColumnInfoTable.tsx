@@ -39,8 +39,8 @@ const ColumnInfoTable: React.FC<ColumnInfoTableProps> = ({ columns }) => {
       </Table>
       <p className="mt-4 text-xs text-muted-foreground">
         <strong>Nota:</strong> Os campos marcados com <span className="text-red-500">*</span> são obrigatórios.
-        Os campos de comportamento, nível de risco e ações necessárias 
-        serão gerados automaticamente pelo sistema após o processamento.
+        Os demais campos são opcionais. O sistema gerará automaticamente informações de risco e ações necessárias
+        com base nos dados fornecidos.
       </p>
     </div>
   );

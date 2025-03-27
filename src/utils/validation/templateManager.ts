@@ -10,9 +10,9 @@ export const downloadTemplate = (): void => {
     // Headers row
     headers.join(','),
     // Example row with properly encoded text
-    'João da Silva,12345,9A,ENSINO MÉDIO,7.5,85,"Maria da Silva","(11) 98765-4321"',
+    'João da Silva,12345,9A,ENSINO MÉDIO,7.5,85,8,"Maria da Silva","(11) 98765-4321"',
     // Empty row for user to fill - with proper labels
-    'Nome do Aluno,Número de Matrícula,Turma,ENSINO MÉDIO,0.0,0,"Nome do Responsável","(99) 99999-9999"'
+    'Nome do Aluno,Número de Matrícula,Turma,ENSINO MÉDIO,0.0,0,0,"Nome do Responsável","(99) 99999-9999"'
   ].join('\n');
 
   // Create a blob from the CSV content with UTF-8 encoding explicitly set
