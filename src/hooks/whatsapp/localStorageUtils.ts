@@ -1,36 +1,31 @@
 
 import { WhatsAppMessage } from '@/types/whatsapp';
 
-export const STORAGE_KEY = 'whatsapp_history';
-
 export const loadMessagesFromStorage = (): WhatsAppMessage[] | null => {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-  
-  const savedHistory = localStorage.getItem(STORAGE_KEY);
-  if (!savedHistory) {
-    return null;
-  }
-  
   try {
-    const parsed = JSON.parse(savedHistory);
-    // Converte as strings de data para objetos Date
+    const storedMessages = localStorage.getItem('whatsapp_messages');
+    if (!storedMessages) return null;
+    
+    const parsed = JSON.parse(storedMessages);
+    
+    // Convert string dates back to Date objects
     return parsed.map((msg: any) => ({
       ...msg,
       createdAt: new Date(msg.createdAt),
+      sentAt: msg.sentAt ? new Date(msg.sentAt) : undefined,
       updatedAt: msg.updatedAt ? new Date(msg.updatedAt) : undefined,
+      responseTime: msg.responseTime ? new Date(msg.responseTime) : undefined
     }));
-  } catch (e) {
-    console.error('Erro ao carregar histórico de WhatsApp:', e);
+  } catch (error) {
+    console.error('Error loading WhatsApp messages from storage:', error);
     return null;
   }
 };
 
 export const saveMessagesToStorage = (messages: WhatsAppMessage[]): void => {
-  if (typeof window === 'undefined') {
-    return;
+  try {
+    localStorage.setItem('whatsapp_messages', JSON.stringify(messages));
+  } catch (error) {
+    console.error('Error saving WhatsApp messages to storage:', error);
   }
-  
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
 };

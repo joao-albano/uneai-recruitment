@@ -1,152 +1,51 @@
 
-import { v4 as uuidv4 } from 'uuid';
 import { WhatsAppMessage } from '@/types/whatsapp';
+import { v4 as uuidv4 } from 'uuid';
 
 export const generateDemoMessages = (): WhatsAppMessage[] => {
-  return [
-    {
-      id: uuidv4(),
-      studentId: '1',
-      studentName: 'Ana Silva',
-      parentName: 'Roberto Silva',
-      to: '(11) 98765-4321',
-      recipientNumber: '(11) 98765-4321',
-      message: 'Olá Sr. Roberto, gostaríamos de informar que Ana teve uma melhora significativa em Matemática este mês. Continue incentivando os estudos em casa!',
-      status: 'read',
-      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-      updatedAt: new Date(Date.now() - 2.9 * 24 * 60 * 60 * 1000)
-    },
-    {
-      id: uuidv4(),
-      studentId: '5',
-      studentName: 'Elena Costa',
-      parentName: 'Fernando Costa',
-      to: '(11) 99123-8765',
-      recipientNumber: '(11) 99123-8765',
-      message: 'Sr. Fernando, notamos que Elena faltou às últimas 3 aulas de Português. Podemos agendar uma reunião para discutir sua frequência?',
-      status: 'delivered',
-      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-      updatedAt: new Date(Date.now() - 1.8 * 24 * 60 * 60 * 1000)
-    },
-    {
-      id: uuidv4(),
-      studentId: '3',
-      studentName: 'Carla Oliveira',
-      parentName: 'Paulo Oliveira',
-      to: '(11) 99876-5432',
-      recipientNumber: '(11) 99876-5432',
-      message: 'Sr. Paulo, gostaríamos de sua autorização para incluir Carla no programa de reforço escolar às terças e quintas após o horário regular. Por favor, responda sim ou não.',
-      status: 'sent',
-      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-    },
-    {
-      id: uuidv4(),
-      studentId: '2',
-      studentName: 'Bruno Santos',
-      parentName: 'Marta Santos',
-      to: '(11) 91234-5678',
-      recipientNumber: '(11) 91234-5678',
-      message: 'Sra. Marta, lembramos que amanhã teremos reunião de pais e mestres às 18h. Sua presença é muito importante para discutirmos o progresso de Bruno.',
-      status: 'read',
-      createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), // 4 days ago
-      updatedAt: new Date(Date.now() - 3.7 * 24 * 60 * 60 * 1000)
-    },
-    {
-      id: uuidv4(),
-      studentId: '7',
-      studentName: 'Gabriela Lima',
-      parentName: 'Ricardo Lima',
-      to: '(11) 96543-2109',
-      recipientNumber: '(11) 96543-2109',
-      message: 'Sr. Ricardo, a feira de ciências será realizada na próxima sexta-feira. Gabriela está com o projeto bem avançado, mas precisa finalizar alguns detalhes. Pode auxiliá-la?',
-      status: 'delivered',
-      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
-      updatedAt: new Date(Date.now() - 4.8 * 24 * 60 * 60 * 1000)
-    },
-    {
-      id: uuidv4(),
-      studentId: '8',
-      studentName: 'Henrique Alves',
-      parentName: 'Cristina Alves',
-      to: '(11) 95432-1098',
-      recipientNumber: '(11) 95432-1098',
-      message: 'Sra. Cristina, Henrique foi selecionado para representar a escola na Olimpíada de Matemática! Precisamos de sua autorização até amanhã.',
-      status: 'failed',
-      createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), // 6 days ago
-      updatedAt: new Date(Date.now() - 5.9 * 24 * 60 * 60 * 1000),
-      errorMessage: 'Número de telefone inválido ou não disponível'
-    },
-    {
-      id: uuidv4(),
-      studentId: '4',
-      studentName: 'Daniel Pereira',
-      parentName: 'Luisa Pereira',
-      to: '(11) 98123-4567',
-      recipientNumber: '(11) 98123-4567',
-      message: 'Sra. Luisa, parabenizamos Daniel pelo excelente desempenho na avaliação de História. Continue incentivando seu interesse pela disciplina!',
-      status: 'read',
-      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
-      updatedAt: new Date(Date.now() - 6.8 * 24 * 60 * 60 * 1000)
-    },
-    {
-      id: uuidv4(),
-      studentId: '1',
-      studentName: 'Ana Silva',
-      parentName: 'Roberto Silva',
-      to: '(11) 98765-4321',
-      recipientNumber: '(11) 98765-4321',
-      message: 'Sr. Roberto, lembramos que Ana tem uma avaliação de recuperação de Matemática na próxima semana. Por favor, certifique-se de que ela esteja preparada.',
-      status: 'delivered',
-      createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
-      updatedAt: new Date(Date.now() - 7.9 * 24 * 60 * 60 * 1000)
-    },
-    {
-      id: uuidv4(),
-      studentId: '5',
-      studentName: 'Elena Costa',
-      parentName: 'Fernando Costa',
-      to: '(11) 99123-8765',
-      recipientNumber: '(11) 99123-8765',
-      message: 'Sr. Fernando, Elena está com dificuldades em entregar as tarefas de casa. Podemos conversar sobre como estabelecer uma rotina de estudos?',
-      status: 'read',
-      createdAt: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000),
-      updatedAt: new Date(Date.now() - 8.8 * 24 * 60 * 60 * 1000)
-    },
-    {
-      id: uuidv4(),
-      studentId: '6',
-      studentName: 'Felipe Martins',
-      parentName: 'Joana Martins',
-      to: '(11) 97654-3210',
-      recipientNumber: '(11) 97654-3210',
-      message: 'Sra. Joana, o Felipe tem demonstrado grande talento para música. Sugerimos considerar as aulas extracurriculares de música oferecidas pela escola.',
-      status: 'sent',
-      createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
-    },
-    {
-      id: uuidv4(),
-      studentId: '2',
-      studentName: 'Bruno Santos',
-      parentName: 'Marta Santos',
-      to: '(11) 91234-5678',
-      recipientNumber: '(11) 91234-5678',
-      message: 'Sra. Marta, Bruno esqueceu seu livro de ciências na escola hoje. Ele precisará dele para a tarefa de casa.',
-      status: 'read',
-      createdAt: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000),
-      updatedAt: new Date(Date.now() - 10.9 * 24 * 60 * 60 * 1000)
-    },
-    {
-      id: uuidv4(),
-      studentId: '3',
-      studentName: 'Carla Oliveira',
-      parentName: 'Paulo Oliveira',
-      to: '(11) 99876-5432',
-      recipientNumber: '(11) 99876-5432',
-      message: 'Sr. Paulo, a apresentação do projeto de ciências da Carla foi excelente! Ela demonstrou grande conhecimento e criatividade.',
-      status: 'failed',
-      createdAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000),
-      updatedAt: new Date(Date.now() - 11.9 * 24 * 60 * 60 * 1000),
-      errorMessage: 'Falha na entrega da mensagem'
-    }
-  ];
+  const statuses: ('sent' | 'delivered' | 'read' | 'failed')[] = ['sent', 'delivered', 'read', 'failed'];
+  const studentNames = ['Maria Silva', 'João Santos', 'Ana Oliveira', 'Pedro Costa', 'Carla Pereira', 'Lucas Ferreira', 'Juliana Martins'];
+  const parentNames = ['Sr. Silva', 'Sra. Santos', 'Sr. Oliveira', 'Sra. Costa', 'Sr. Pereira', 'Sra. Ferreira', 'Sr. Martins'];
+  const phoneNumbers = ['5511987654321', '5511987654322', '5511987654323', '5511987654324', '5511987654325', '5511987654326', '5511987654327'];
+  
+  const messages: WhatsAppMessage[] = [];
+  
+  // Generate 25 demo messages
+  for (let i = 0; i < 25; i++) {
+    const randomStudentIndex = Math.floor(Math.random() * studentNames.length);
+    const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+    const daysAgo = Math.floor(Math.random() * 14); // Random day in the last 2 weeks
+    const createdAt = new Date();
+    createdAt.setDate(createdAt.getDate() - daysAgo);
+    
+    // Randomly generate response for some messages
+    const hasResponse = Math.random() > 0.4; // 60% chance of having a response
+    const responseTime = hasResponse ? new Date(createdAt.getTime() + Math.floor(Math.random() * 3600000)) : undefined; // Response within an hour
+    
+    const messageId = `whatsapp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    
+    messages.push({
+      id: messageId,
+      studentId: uuidv4(),
+      studentName: studentNames[randomStudentIndex],
+      parentName: parentNames[randomStudentIndex],
+      to: phoneNumbers[randomStudentIndex],
+      recipientNumber: phoneNumbers[randomStudentIndex],
+      messageType: 'survey',
+      status: randomStatus,
+      sentAt: createdAt,
+      createdAt: createdAt,
+      updatedAt: responseTime,
+      message: 'Olá, estamos realizando uma pesquisa sobre o desempenho escolar do seu filho(a). Poderia responder algumas perguntas?',
+      content: 'Olá, estamos realizando uma pesquisa sobre o desempenho escolar do seu filho(a). Poderia responder algumas perguntas?',
+      responseContent: hasResponse ? 'Sim, posso responder agora.' : undefined,
+      responseTime: responseTime,
+      errorMessage: randomStatus === 'failed' ? 'Falha na entrega da mensagem' : undefined
+    });
+  }
+  
+  // Sort by created date (newest first)
+  messages.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  
+  return messages;
 };
