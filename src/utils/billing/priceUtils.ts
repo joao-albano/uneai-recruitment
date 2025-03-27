@@ -38,7 +38,7 @@ export const getPriceValue = (priceString: string): number => {
  * @param isPtBR Whether to format in Brazilian format
  * @returns Formatted currency string
  */
-export const formatCurrency = (value: number, isPtBR: boolean): string => {
+export const formatCurrency = (value: number, isPtBR: boolean = true): string => {
   return new Intl.NumberFormat(isPtBR ? 'pt-BR' : 'en-US', {
     style: 'currency',
     currency: isPtBR ? 'BRL' : 'USD',

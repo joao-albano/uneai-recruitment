@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
 import { ProductType } from '@/context/product/types';
 import PlanFeatureItem from './PlanFeatureItem';
-import { formatCurrency } from '@/utils/billing/priceUtils';
+import { formatCurrency } from '@/utils/billing/formatCurrency';
 import { Package } from 'lucide-react';
 
 export type PlanFeature = {
@@ -83,7 +83,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
       </CardHeader>
       <CardContent className="flex-1">
         <div className="text-3xl font-bold mb-2">
-          {formatCurrency(yearlyBilling ? Math.round(priceYearly / 12) : priceMonthly, isPtBR)}{' '}
+          {formatCurrency(yearlyBilling ? Math.round(priceYearly / 12) : priceMonthly)}{' '}
           <span className="text-sm font-normal text-muted-foreground">
             {isPtBR ? '/mês' : '/month'}
           </span>
@@ -91,7 +91,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
 
         {yearlyBilling && (
           <div className="text-sm text-muted-foreground mb-6">
-            {formatCurrency(priceYearly, isPtBR)}{' '}
+            {formatCurrency(priceYearly)}{' '}
             {isPtBR ? 'cobrados anualmente' : 'billed yearly'}
           </div>
         )}
