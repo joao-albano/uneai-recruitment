@@ -9,14 +9,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { PlanOption } from '@/utils/billing/planOptions';
 import { useTheme } from '@/context/ThemeContext';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 
 const planSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   price: z.string().min(2, "Preço inválido"),
   description: z.string().min(2, "Descrição deve ter pelo menos 2 caracteres"),
-  relatedProduct: z.string().optional(),
   features: z.array(z.string()).optional(),
 });
 
@@ -42,7 +40,6 @@ const PlanEditForm: React.FC<PlanEditFormProps> = ({
       name: editingPlan.name,
       price: editingPlan.price,
       description: editingPlan.description,
-      relatedProduct: editingPlan.relatedProduct || '',
       features: editingPlan.features || [],
     },
   });
@@ -125,46 +122,6 @@ const PlanEditForm: React.FC<PlanEditFormProps> = ({
                   </FormLabel>
                   <FormControl>
                     <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="relatedProduct"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {isPtBR ? "Produto Relacionado" : "Related Product"}
-                  </FormLabel>
-                  <FormControl>
-                    <Select
-                      value={field.value}
-                      onValueChange={field.onChange}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={isPtBR ? "Selecione um produto" : "Select a product"} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="retention">
-                          {isPtBR ? "Retenção de Alunos" : "Student Retention"}
-                        </SelectItem>
-                        <SelectItem value="billing">
-                          {isPtBR ? "Gestão Financeira" : "Financial Management"}
-                        </SelectItem>
-                        <SelectItem value="recruitment">
-                          {isPtBR ? "Captação" : "Recruitment"}
-                        </SelectItem>
-                        <SelectItem value="secretary">
-                          {isPtBR ? "Secretaria Digital" : "Digital Secretary"}
-                        </SelectItem>
-                        <SelectItem value="pedagogical">
-                          {isPtBR ? "Gestão Pedagógica" : "Pedagogical Management"}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

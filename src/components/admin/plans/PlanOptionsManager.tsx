@@ -40,12 +40,13 @@ const PlanOptionsManager: React.FC = () => {
   const handleSubmit = (values: any) => {
     if (!editingPlan) return;
     
+    // Preserve the existing relatedProduct when updating
     setPlan(editingPlan.id, {
       name: values.name,
       price: values.price,
       description: values.description,
-      relatedProduct: values.relatedProduct,
       features: values.features,
+      relatedProduct: editingPlan.relatedProduct, // Keep the existing value
     });
     
     toast({

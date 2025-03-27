@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Pencil, Package, CheckCircle2, Users, MessageSquare, Database } from 'lucide-react';
+import { Pencil, CheckCircle2, Users, MessageSquare, Database } from 'lucide-react';
 import { PlanOption } from '@/utils/billing/planOptions';
 import { useTheme } from '@/context/ThemeContext';
 import { cn } from '@/lib/utils';
@@ -54,13 +54,6 @@ const PlanCard: React.FC<PlanCardProps> = ({
       </CardHeader>
       <CardContent className="pb-2">
         <div className="text-2xl font-bold">{plan.price}</div>
-        
-        {plan.relatedProduct && (
-          <div className="mt-2 text-sm text-muted-foreground flex items-center">
-            <Package className="h-4 w-4 mr-1" />
-            <span>{plan.relatedProduct}</span>
-          </div>
-        )}
         
         <div className="mt-3 grid grid-cols-2 gap-2">
           <div className="flex items-center text-xs text-muted-foreground">
