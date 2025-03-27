@@ -5,6 +5,7 @@ import Layout from '@/components/layout/Layout';
 import Dashboard from '@/components/dashboard/Dashboard';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { AppStateProvider } from '@/context/app/AppStateContext';
+import { SchedulesProvider } from '@/context/schedules/SchedulesContext';
 
 const DashboardPage: React.FC = () => {
   const isMobile = useIsMobile();
@@ -13,18 +14,20 @@ const DashboardPage: React.FC = () => {
   
   return (
     <DataProvider>
-      <AppStateProvider>
-        <Layout 
-          sidebarOpen={sidebarOpen}
-          setSidebarOpen={setSidebarOpen}
-          sidebarCollapsed={sidebarCollapsed}
-          setSidebarCollapsed={setSidebarCollapsed}
-        >
-          <div className={`container mx-auto ${isMobile ? 'px-2' : 'px-4'} py-6`}>
-            <Dashboard />
-          </div>
-        </Layout>
-      </AppStateProvider>
+      <SchedulesProvider>
+        <AppStateProvider>
+          <Layout 
+            sidebarOpen={sidebarOpen}
+            setSidebarOpen={setSidebarOpen}
+            sidebarCollapsed={sidebarCollapsed}
+            setSidebarCollapsed={setSidebarCollapsed}
+          >
+            <div className={`container mx-auto ${isMobile ? 'px-2' : 'px-4'} py-6`}>
+              <Dashboard />
+            </div>
+          </Layout>
+        </AppStateProvider>
+      </SchedulesProvider>
     </DataProvider>
   );
 };

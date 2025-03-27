@@ -8,6 +8,7 @@ import { AuthProvider } from "@/context/auth";
 import { ProductProvider } from "@/context/product";
 import { StudentsProvider } from "@/context/students/StudentsContext";
 import { AlertsProvider } from "@/context/alerts/AlertsContext";
+import { SchedulesProvider } from "@/context/schedules/SchedulesContext";
 import { ReactNode } from "react";
 
 interface AppProvidersProps {
@@ -25,11 +26,13 @@ const AppProviders = ({ children }: AppProvidersProps) => {
           <ProductProvider>
             <StudentsProvider>
               <AlertsProvider>
-                <TooltipProvider>
-                  <Toaster />
-                  <Sonner />
-                  {children}
-                </TooltipProvider>
+                <SchedulesProvider>
+                  <TooltipProvider>
+                    <Toaster />
+                    <Sonner />
+                    {children}
+                  </TooltipProvider>
+                </SchedulesProvider>
               </AlertsProvider>
             </StudentsProvider>
           </ProductProvider>
