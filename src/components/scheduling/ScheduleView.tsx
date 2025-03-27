@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useScheduleData } from '@/hooks/useScheduleData';
 import CalendarView from './CalendarView';
 import ScheduleDialog from './ScheduleDialog';
@@ -9,18 +9,30 @@ import TodaySchedules from './TodaySchedules';
 import UpcomingSchedules from './UpcomingSchedules';
 import ScheduleStats from './ScheduleStats';
 import { Button } from '@/components/ui/button';
-import { MessageSquare } from 'lucide-react';
+import { Plus, MessageSquare, Calendar } from 'lucide-react';
 import { useWhatsApp } from '@/context/whatsapp/WhatsAppContext';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from '@/context/ThemeContext';
+import { useStudents } from '@/context/students/StudentsContext';
+import { sendAppointmentReminders } from '@/utils/appointmentReminders';
+import { useAlerts } from '@/context/alerts/AlertsContext';
 
 const ScheduleView: React.FC = () => {
   const scheduleData = useScheduleData();
-  const { runAppointmentReminders, whatsAppConfig } = useWhatsApp();
+  const { whatsAppConfig, whatsAppMessages } = useWhatsApp();
   const { toast } = useToast();
   const { language } = useTheme();
+  const { students } = useStudents();
+  const { addAlert } = useAlerts();
+  const [isProcessing, setIsProcessing] = useState(false);
   
-  const handleSendReminders = () => {
+  // Calcula estatísticas adicionais
+  const completedCount = scheduleData.visibleSchedules.filter(s => s.status === 'completed').length;
+  const canceledCount = scheduleData.visibleSchedules.filter(s => s.status === 'canceled').length;
+  
+  const handleSendReminders = async () => {
+    if (isProcessing) return;
+    
     if (!whatsAppConfig.enabled) {
       toast({
         title: language === 'pt-BR' ? 'WhatsApp desativado' : 'WhatsApp disabled',
@@ -32,34 +44,78 @@ const ScheduleView: React.FC = () => {
       return;
     }
     
-    runAppointmentReminders();
+    setIsProcessing(true);
     
-    toast({
-      title: language === 'pt-BR' ? 'Lembretes enviados' : 'Reminders sent',
-      description: language === 'pt-BR' 
-        ? 'Os lembretes de agendamento foram processados com sucesso.' 
-        : 'Appointment reminders were processed successfully.'
-    });
+    try {
+      // Enviar lembretes de agendamento para o dia seguinte
+      const messageCount = await sendAppointmentReminders(
+        scheduleData.schedules,
+        students,
+        whatsAppConfig,
+        (message) => {
+          // Aqui usaríamos o hook de WhatsApp para adicionar a mensagem
+          console.log("Mensagem enviada:", message);
+        },
+        addAlert
+      );
+      
+      toast({
+        title: language === 'pt-BR' ? 'Lembretes processados' : 'Reminders processed',
+        description: language === 'pt-BR' 
+          ? `${messageCount} lembretes de agendamento foram enviados com sucesso.` 
+          : `${messageCount} appointment reminders were successfully sent.`
+      });
+    } catch (error) {
+      console.error("Erro ao enviar lembretes:", error);
+      toast({
+        title: language === 'pt-BR' ? 'Erro ao enviar lembretes' : 'Error sending reminders',
+        description: language === 'pt-BR'
+          ? 'Ocorreu um erro ao tentar enviar os lembretes. Tente novamente.'
+          : 'An error occurred while trying to send reminders. Please try again.',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
       <div className="md:col-span-8 flex flex-col space-y-4">
-        <div className="flex justify-between items-center mb-2">
-          <ScheduleStats 
-            todayCount={scheduleData.todaySchedules.length} 
-            upcomingCount={scheduleData.upcomingSchedules.length} 
-          />
+        <div className="flex flex-col md:flex-row gap-4 mb-2">
+          <div className="md:w-2/3">
+            <ScheduleStats 
+              todayCount={scheduleData.todaySchedules.length} 
+              upcomingCount={scheduleData.upcomingSchedules.length}
+              completedCount={completedCount}
+              canceledCount={canceledCount}
+            />
+          </div>
           
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleSendReminders}
-            className="flex items-center gap-2"
-          >
-            <MessageSquare className="h-4 w-4" />
-            {language === 'pt-BR' ? 'Enviar Lembretes' : 'Send Reminders'}
-          </Button>
+          <div className="md:w-1/3 flex flex-col gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => scheduleData.setShowAddDialog(true)}
+              className="flex items-center gap-2 w-full justify-start"
+            >
+              <Plus className="h-4 w-4" />
+              {language === 'pt-BR' ? 'Novo Atendimento' : 'New Appointment'}
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleSendReminders}
+              disabled={isProcessing}
+              className="flex items-center gap-2 w-full justify-start"
+            >
+              <MessageSquare className="h-4 w-4" />
+              {isProcessing
+                ? (language === 'pt-BR' ? 'Enviando...' : 'Sending...')
+                : (language === 'pt-BR' ? 'Enviar Lembretes' : 'Send Reminders')}
+            </Button>
+          </div>
         </div>
         
         <div className="bg-white dark:bg-gray-800 rounded-md shadow p-4">

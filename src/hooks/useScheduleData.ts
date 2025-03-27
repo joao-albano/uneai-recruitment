@@ -61,6 +61,16 @@ export const useScheduleData = () => {
     setShowDayDialog(true);
   };
 
+  // Estatísticas adicionais
+  const stats = useMemo(() => {
+    return {
+      total: visibleSchedules.length,
+      scheduled: visibleSchedules.filter(s => s.status === 'scheduled').length,
+      completed: visibleSchedules.filter(s => s.status === 'completed').length,
+      canceled: visibleSchedules.filter(s => s.status === 'canceled').length
+    };
+  }, [visibleSchedules]);
+
   // Return combined object with all needed properties and methods
   return {
     // Data
@@ -89,6 +99,13 @@ export const useScheduleData = () => {
     today,
     todaySchedules: scheduleFilters.todaySchedules,
     upcomingSchedules: scheduleFilters.upcomingSchedules,
+    completedSchedules: scheduleFilters.completedSchedules,
+    canceledSchedules: scheduleFilters.canceledSchedules,
+    
+    // Estatísticas
+    stats,
+    schedulesByMonth: scheduleFilters.schedulesByMonth,
+    schedulesByAgent: scheduleFilters.schedulesByAgent,
     
     // Operations with arguments adjusted for composition
     handleScheduleSubmit,

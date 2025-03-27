@@ -10,10 +10,10 @@ export const sendAppointmentReminders = async (
   whatsAppConfig: WhatsAppConfig,
   addMessage: (message: WhatsAppMessage) => void,
   addAlert: (alert: any) => void
-): Promise<void> => {
+): Promise<number> => {
   if (!whatsAppConfig.enabled || whatsAppConfig.provider === 'disabled') {
     console.log('[Reminders] WhatsApp integration is disabled');
-    return;
+    return 0;
   }
 
   // Get the current date and target date based on reminder timing setting
@@ -56,8 +56,10 @@ export const sendAppointmentReminders = async (
       read: false,
       actionTaken: false,
     });
-    return;
+    return 0;
   }
+  
+  let remindersSent = 0;
   
   // Process each schedule
   for (const schedule of targetSchedules) {
@@ -70,7 +72,9 @@ export const sendAppointmentReminders = async (
     }
     
     // Replace template variables in the reminder message
-    let reminderMessage = whatsAppConfig.templateMessages?.appointmentReminder || '';
+    let reminderMessage = whatsAppConfig.templateMessages?.appointmentReminder || 
+      `Olá {{parentName}}, lembramos que {{studentName}} tem um atendimento agendado para {{appointmentDate}}. Por favor, confirme sua presença. Obrigado!`;
+    
     reminderMessage = reminderMessage
       .replace('{{parentName}}', student.parentName || 'Responsável')
       .replace('{{studentName}}', student.name)
@@ -89,7 +93,7 @@ export const sendAppointmentReminders = async (
         to: student.parentContact,
         recipientNumber: student.parentContact,
         message: reminderMessage,
-        status: 'sent',
+        status: 'sending',
         messageType: 'notification',
         createdAt: new Date(),
       };
@@ -110,14 +114,20 @@ export const sendAppointmentReminders = async (
       // Add message to history
       addMessage(whatsAppMessage);
       
+      if (result.success) {
+        remindersSent++;
+      }
+      
       // Add alert
       addAlert({
         id: `reminder-${Date.now()}-${student.id}`,
         studentId: student.id,
         studentName: student.name,
         studentClass: student.class,
-        type: 'appointment-reminder',
-        message: `Lembrete de agendamento enviado para ${student.parentName} (${student.parentContact}).`,
+        type: result.success ? 'appointment-reminder' : 'error',
+        message: result.success 
+          ? `Lembrete de agendamento enviado para ${student.parentName || 'Responsável'} (${student.parentContact}).`
+          : `Erro ao enviar lembrete para ${student.parentName || 'Responsável'}: ${result.message || 'Erro desconhecido'}`,
         createdAt: new Date(),
         read: false,
         actionTaken: false,
@@ -133,11 +143,13 @@ export const sendAppointmentReminders = async (
         studentName: student.name,
         studentClass: student.class,
         type: 'error',
-        message: `Erro ao enviar lembrete para ${student.parentName}: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+        message: `Erro ao enviar lembrete para ${student.parentName || 'Responsável'}: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
         createdAt: new Date(),
         read: false,
         actionTaken: false,
       });
     }
   }
+  
+  return remindersSent;
 };

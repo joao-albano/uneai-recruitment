@@ -1,3 +1,4 @@
+
 import { WhatsAppProvider } from '@/types/whatsapp';
 
 export interface WhatsAppConfig {
@@ -13,7 +14,7 @@ export interface WhatsAppConfig {
     surveyQuestion1: string;
     surveyQuestion2: string;
     surveyQuestion3: string;
-    appointmentReminder: string; // New template for appointment reminders
+    appointmentReminder: string; // Template for appointment reminders
   };
 }
 
@@ -39,6 +40,11 @@ export const sendWhatsAppMessage = async (
     // Simulate API request delay
     await new Promise(resolve => setTimeout(resolve, 500));
     
+    // Simulate a 10% failure rate for demo purposes
+    if (Math.random() < 0.1) {
+      throw new Error('Simulação de falha de conexão com API WhatsApp');
+    }
+    
     // In a real implementation, you would make an API request to your WhatsApp provider
     console.log(`[WhatsApp] Successfully sent message via ${config.provider}`);
     
@@ -52,11 +58,11 @@ export const sendWhatsAppMessage = async (
   }
 };
 
-// Add the missing test connection function
-export const testWhatsAppConnection = async (config: Pick<WhatsAppConfig, 'provider' | 'webhookUrl'>): Promise<boolean> => {
+// Add the test connection function
+export const testWhatsAppConnection = async (config: WhatsAppConfig): Promise<boolean> => {
   console.log(`[WhatsApp] Testing connection with provider: ${config.provider}`);
   
-  if (config.provider === 'disabled') {
+  if (config.provider === 'disabled' || !config.enabled) {
     console.log('[WhatsApp] Cannot test connection - provider is disabled');
     return false;
   }
@@ -90,4 +96,46 @@ export const formatAppointmentDateTime = (date: Date): string => {
     hour: '2-digit',
     minute: '2-digit'
   });
+};
+
+// Gera uma mensagem de template personalizada com os dados do estudante
+export const generateTemplateMessage = (
+  template: string,
+  student: { name: string; parentName?: string },
+  date?: Date,
+  appointmentTime?: string
+): string => {
+  let message = template;
+  
+  // Substituir variáveis padrão
+  message = message
+    .replace(/\{\{studentName\}\}/g, student.name)
+    .replace(/\{\{parentName\}\}/g, student.parentName || 'Responsável');
+    
+  // Substituir data e hora se fornecidas
+  if (date) {
+    message = message.replace(/\{\{appointmentDate\}\}/g, formatAppointmentDateTime(date));
+  }
+  
+  if (appointmentTime) {
+    message = message.replace(/\{\{appointmentTime\}\}/g, appointmentTime);
+  }
+  
+  // Substituir variáveis com valores padrão se não forem substituídas
+  message = message
+    .replace(/\{\{appointmentDate\}\}/g, 'data agendada')
+    .replace(/\{\{appointmentTime\}\}/g, 'hora agendada');
+    
+  return message;
+};
+
+// Mensagens de template padrão
+export const defaultTemplateMessages = {
+  introduction: "Olá {{parentName}}, sou da escola do(a) {{studentName}}. Gostaria de fazer algumas perguntas sobre o desempenho e bem-estar dele(a). Você tem alguns minutos?",
+  followUp: "Obrigado pelas informações. Estaremos acompanhando o progresso do(a) {{studentName}} com atenção especial baseado em seus comentários.",
+  thankYou: "Agradecemos por seu tempo e colaboração. Juntos podemos apoiar o desenvolvimento escolar do(a) {{studentName}}.",
+  surveyQuestion1: "Como você avalia o envolvimento do(a) {{studentName}} com as atividades escolares em casa?",
+  surveyQuestion2: "Você percebeu alguma dificuldade específica que o(a) {{studentName}} tem demonstrado recentemente?",
+  surveyQuestion3: "Existe algo mais que gostaria de compartilhar conosco para ajudarmos no desenvolvimento do(a) {{studentName}}?",
+  appointmentReminder: "Olá {{parentName}}, lembramos que {{studentName}} tem um atendimento agendado para {{appointmentDate}}. Por favor, confirme sua presença respondendo esta mensagem. Obrigado!"
 };

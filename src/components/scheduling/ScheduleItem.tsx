@@ -1,10 +1,8 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreVertical, Check, X, Calendar } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Check, Calendar, X, User, Clock, FileText, ExternalLink } from 'lucide-react';
+import { formatDateForDisplay, formatTimeForDisplay } from '@/data/schedules/scheduleUtils';
 
 interface ScheduleItemProps {
   id: string;
@@ -12,10 +10,10 @@ interface ScheduleItemProps {
   date: Date;
   agentName: string;
   notes?: string;
-  onMarkCompleted: (id: string) => void;
-  onCancelSchedule: (id: string) => void;
+  status: 'scheduled' | 'completed' | 'canceled';
+  onMarkCompleted?: (id: string) => void;
+  onCancelSchedule?: (id: string) => void;
   onDetailsClick?: () => void;
-  status?: 'scheduled' | 'completed' | 'canceled';
 }
 
 const ScheduleItem: React.FC<ScheduleItemProps> = ({
@@ -24,81 +22,121 @@ const ScheduleItem: React.FC<ScheduleItemProps> = ({
   date,
   agentName,
   notes,
+  status,
   onMarkCompleted,
   onCancelSchedule,
-  onDetailsClick,
-  status = 'scheduled'
+  onDetailsClick
 }) => {
-  const formattedTime = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  const formattedDate = formatDateForDisplay(date);
+  const formattedTime = formatTimeForDisplay(date);
   
-  const renderStatusBadge = () => {
-    if (status === 'completed') {
-      return (
-        <Badge variant="outline" className="bg-green-100 text-green-700 border border-green-300">
-          Concluído
-        </Badge>
-      );
-    } else if (status === 'canceled') {
-      return (
-        <Badge variant="outline" className="bg-red-100 text-red-700 border border-red-300">
-          Cancelado
-        </Badge>
-      );
-    } else {
-      return (
-        <Badge variant="outline" className="bg-blue-100 text-blue-700 border border-blue-300">
-          Agendado
-        </Badge>
-      );
-    }
+  const statusColor = {
+    scheduled: 'bg-blue-50 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
+    completed: 'bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300',
+    canceled: 'bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-300',
+  };
+  
+  const statusText = {
+    scheduled: 'Agendado',
+    completed: 'Concluído',
+    canceled: 'Cancelado',
   };
   
   return (
-    <Card className="shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer" onClick={onDetailsClick}>
-      <CardContent className="p-4">
-        <div className="flex justify-between items-start">
-          <div className="flex flex-col">
-            <span className="font-medium text-base">{studentName}</span>
-            <span className="text-sm text-muted-foreground">{formattedTime} - {agentName}</span>
-            
-            {notes && (
-              <p className="text-sm mt-2 text-muted-foreground line-clamp-2">{notes}</p>
-            )}
-            
-            <div className="mt-2">
-              {renderStatusBadge()}
-            </div>
+    <div 
+      className={`p-3 rounded-lg transition-colors ${
+        status === 'scheduled' 
+          ? 'bg-card hover:bg-muted/50 border border-muted cursor-pointer' 
+          : 'bg-muted/30 border border-muted'
+      }`}
+      onClick={onDetailsClick}
+    >
+      <div className="flex justify-between items-start mb-2">
+        <div className="flex flex-col">
+          <div className="flex items-center gap-1">
+            <User className="h-4 w-4 text-primary" />
+            <span className="font-medium">{studentName}</span>
           </div>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+            <Clock className="h-3 w-3" />
+            <span>{formattedTime}</span>
+          </div>
+        </div>
+        <div>
+          <span className={`text-xs px-2 py-1 rounded-full ${statusColor[status]}`}>
+            {statusText[status]}
+          </span>
+        </div>
+      </div>
+      
+      <div className="flex flex-col gap-1 mb-3">
+        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+          <Calendar className="h-3 w-3" />
+          <span>{formattedDate}</span>
+        </div>
+        
+        <div className="flex items-center gap-1 text-xs">
+          <span className="text-muted-foreground">Responsável:</span>
+          <span>{agentName}</span>
+        </div>
+        
+        {notes && (
+          <div className="mt-2 text-xs text-muted-foreground flex items-start gap-1">
+            <FileText className="h-3 w-3 mt-0.5 flex-shrink-0" />
+            <span className="line-clamp-2">{notes}</span>
+          </div>
+        )}
+      </div>
+      
+      {status === 'scheduled' && (
+        <div className="flex justify-between gap-2 mt-2">
+          {onMarkCompleted && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="flex items-center gap-1 text-xs flex-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMarkCompleted(id);
+              }}
+            >
+              <Check className="h-3 w-3" />
+              <span>Concluir</span>
+            </Button>
+          )}
           
-          {status === 'scheduled' && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
-                  <MoreVertical className="h-4 w-4" />
-                  <span className="sr-only">Opções</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={(e) => {
-                  e.stopPropagation();
-                  onMarkCompleted(id);
-                }} className="cursor-pointer">
-                  <Check className="mr-2 h-4 w-4 text-green-500" />
-                  <span>Marcar como concluído</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={(e) => {
-                  e.stopPropagation();
-                  onCancelSchedule(id);
-                }} className="cursor-pointer">
-                  <X className="mr-2 h-4 w-4 text-red-500" />
-                  <span>Cancelar agendamento</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          {onCancelSchedule && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="flex items-center gap-1 text-xs text-destructive hover:text-destructive flex-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCancelSchedule(id);
+              }}
+            >
+              <X className="h-3 w-3" />
+              <span>Cancelar</span>
+            </Button>
           )}
         </div>
-      </CardContent>
-    </Card>
+      )}
+      
+      {(status === 'completed' || status === 'canceled') && onDetailsClick && (
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full text-xs mt-1 flex items-center justify-center gap-1"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDetailsClick();
+          }}
+        >
+          <ExternalLink className="h-3 w-3" />
+          <span>Detalhes</span>
+        </Button>
+      )}
+    </div>
   );
 };
 
