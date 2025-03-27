@@ -1,17 +1,30 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useData } from '@/context/DataContext';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import DashboardContent from './DashboardContent';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Alert } from '@/types/alert';
+import { useAppState } from '@/context/app/AppStateContext';
 
 const Dashboard: React.FC = () => {
   const { students, alerts, schedules, isLoading } = useData();
   const navigate = useNavigate();
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const { generateDemoData } = useAppState();
+  
+  useEffect(() => {
+    // Carregar dados de demonstração se não houver dados
+    if (!isLoading && students.length === 0 && alerts.length === 0 && schedules.length === 0) {
+      generateDemoData();
+      toast({
+        title: 'Dados de demonstração',
+        description: 'Carregamos dados fictícios para você explorar o sistema.',
+      });
+    }
+  }, [isLoading, students.length, alerts.length, schedules.length, generateDemoData, toast]);
   
   const handleViewAlertDetails = (alertId: string) => {
     navigate(`/alerts?id=${alertId}`);
