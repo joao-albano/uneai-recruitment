@@ -49,6 +49,7 @@ const TodaySchedules: React.FC<TodaySchedulesProps> = ({
                 date={schedule.date}
                 agentName={schedule.agentName}
                 notes={schedule.notes}
+                status={schedule.status}
                 onMarkCompleted={onCompleted}
                 onCancelSchedule={onCanceled}
                 onDetailsClick={() => onDetailsClick(schedule)}

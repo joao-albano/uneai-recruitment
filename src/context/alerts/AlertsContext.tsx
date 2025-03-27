@@ -4,6 +4,7 @@ import { AlertItem } from '@/types/data';
 
 interface AlertsContextType {
   alerts: AlertItem[];
+  setAlerts: (alerts: AlertItem[]) => void;
   addAlert: (alert: AlertItem) => void;
   markAsRead: (id: string) => void;
   markActionTaken: (id: string) => void;
@@ -41,6 +42,7 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   const value = {
     alerts,
+    setAlerts,
     addAlert,
     markAsRead,
     markActionTaken,

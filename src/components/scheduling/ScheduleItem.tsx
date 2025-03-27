@@ -14,6 +14,7 @@ interface ScheduleItemProps {
   notes?: string;
   onMarkCompleted: (id: string) => void;
   onCancelSchedule: (id: string) => void;
+  onDetailsClick?: () => void;
   status?: 'scheduled' | 'completed' | 'canceled';
 }
 
@@ -25,6 +26,7 @@ const ScheduleItem: React.FC<ScheduleItemProps> = ({
   notes,
   onMarkCompleted,
   onCancelSchedule,
+  onDetailsClick,
   status = 'scheduled'
 }) => {
   const formattedTime = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
@@ -52,7 +54,7 @@ const ScheduleItem: React.FC<ScheduleItemProps> = ({
   };
   
   return (
-    <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
+    <Card className="shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer" onClick={onDetailsClick}>
       <CardContent className="p-4">
         <div className="flex justify-between items-start">
           <div className="flex flex-col">
@@ -71,17 +73,23 @@ const ScheduleItem: React.FC<ScheduleItemProps> = ({
           {status === 'scheduled' && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
                   <MoreVertical className="h-4 w-4" />
                   <span className="sr-only">Opções</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => onMarkCompleted(id)} className="cursor-pointer">
+                <DropdownMenuItem onClick={(e) => {
+                  e.stopPropagation();
+                  onMarkCompleted(id);
+                }} className="cursor-pointer">
                   <Check className="mr-2 h-4 w-4 text-green-500" />
                   <span>Marcar como concluído</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onCancelSchedule(id)} className="cursor-pointer">
+                <DropdownMenuItem onClick={(e) => {
+                  e.stopPropagation();
+                  onCancelSchedule(id);
+                }} className="cursor-pointer">
                   <X className="mr-2 h-4 w-4 text-red-500" />
                   <span>Cancelar agendamento</span>
                 </DropdownMenuItem>
