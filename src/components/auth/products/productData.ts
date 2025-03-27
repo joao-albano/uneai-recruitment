@@ -92,20 +92,20 @@ export const getProductsBySegment = (marketSegment: string) => {
       productIds = ['retention', 'recruitment', 'secretary', 'pedagogical'];
       break;
     case 'health':
-      productIds = ['sales', 'scheduling', 'retention'];
+      productIds = ['sales', 'scheduling'];
       break;
     case 'beauty':
-      productIds = ['sales', 'scheduling', 'retention'];
+      productIds = ['sales', 'scheduling'];
       break;
     case 'services':
-      productIds = ['sales', 'retention', 'scheduling'];
+      productIds = ['sales', 'scheduling'];
       break;
     case 'commerce':
-      productIds = ['sales', 'retention'];
+      productIds = ['sales'];
       break;
     case 'other':
-      // Para segmento personalizado, mostrar vendas e retenção como padrão
-      productIds = ['sales', 'retention'];
+      // Para segmento personalizado, mostrar apenas vendas
+      productIds = ['sales'];
       break;
     default:
       // Se for um valor desconhecido, mostrar todos os produtos
