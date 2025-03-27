@@ -27,13 +27,14 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   
   // Pre-select organization for non-superadmin users
   useEffect(() => {
-    if (open && !isSuperAdmin && currentUser?.organizationId && !newUser.organizationId) {
+    if (open && !isSuperAdmin && currentUser?.organizationId) {
       setNewUser(prev => ({ 
         ...prev, 
-        organizationId: currentUser.organizationId || ''
+        organizationId: currentUser.organizationId || '',
+        organizationName: currentUser.organization?.name || 'Minha Organização'
       }));
     }
-  }, [open, currentUser, isSuperAdmin, newUser.organizationId, setNewUser]);
+  }, [open, currentUser, isSuperAdmin, setNewUser]);
   
   // Verificar se é possível criar um usuário (organização selecionada)
   const canCreateUser = isSuperAdmin ? 

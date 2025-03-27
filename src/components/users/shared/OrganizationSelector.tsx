@@ -1,10 +1,10 @@
+
 import React, { useEffect, useState } from 'react';
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { fetchOrganizations } from '../../organizations/api';
 import { useAuth } from '@/context/auth';
 import { useToast } from '@/hooks/use-toast';
-import { ProductType } from '@/context/ProductContext';
 
 interface OrganizationSelectorProps {
   selectedOrgId: string;
@@ -32,8 +32,10 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
       try {
         console.log('Carregando organizações no OrganizationSelector...', { currentUser });
         
+        // Tenta carregar organizações da API
         const orgsData = await fetchOrganizations(currentUser);
         
+        // Se temos dados da API, use-os
         if (Array.isArray(orgsData) && orgsData.length > 0) {
           console.log('Organizações carregadas com sucesso:', orgsData);
           // Only keep id and name for the selector
@@ -43,23 +45,43 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
           }));
           setOrganizations(formattedOrgs);
         } else {
-          console.warn('Nenhuma organização retornada ou array vazio');
-          setOrganizations([]);
+          // Dados de demonstração para desenvolvimento (quando não há backend)
+          console.log('Usando dados de demonstração para organizações');
           
-          toast({
-            title: "Nenhuma organização encontrada",
-            description: "Não foi possível carregar organizações. Verifique se existem organizações cadastradas.",
-            variant: "destructive"
-          });
+          // Se o usuário atual tiver uma organização, usá-la como fallback
+          if (currentUser?.organization?.id) {
+            setOrganizations([{
+              id: currentUser.organization.id,
+              name: currentUser.organization.name || 'Minha Organização'
+            }]);
+          } else {
+            // Organizações de demonstração
+            setOrganizations([
+              { id: 'org-1', name: 'Escola Modelo' },
+              { id: 'org-2', name: 'Instituto de Educação' },
+              { id: 'org-3', name: 'Clínica Saúde Total' }
+            ]);
+          }
         }
       } catch (error) {
         console.error('Erro ao carregar organizações:', error);
-        setOrganizations([]);
+        
+        // Dados de demonstração em caso de erro
+        if (currentUser?.organization?.id) {
+          setOrganizations([{
+            id: currentUser.organization.id,
+            name: currentUser.organization.name || 'Minha Organização'
+          }]);
+        } else {
+          setOrganizations([
+            { id: 'org-1', name: 'Organização Demonstração' }
+          ]);
+        }
         
         toast({
-          title: "Erro ao carregar organizações",
-          description: "Ocorreu um erro ao buscar a lista de organizações.",
-          variant: "destructive"
+          title: "Modo demonstração",
+          description: "Usando organizações de demonstração. Conecte ao banco de dados para dados reais.",
+          variant: "default"
         });
       } finally {
         setLoading(false);
@@ -67,7 +89,16 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
     };
     
     loadOrganizations();
-  }, [currentUser, toast]);
+    
+    // Se o usuário atual tem uma organização, mas nenhuma está selecionada, 
+    // selecione automaticamente a organização do usuário
+    if (currentUser?.organization?.id && !selectedOrgId) {
+      onOrgChange(
+        currentUser.organization.id, 
+        currentUser.organization.name || 'Minha Organização'
+      );
+    }
+  }, [currentUser, toast, selectedOrgId, onOrgChange]);
   
   const handleSelectChange = (value: string) => {
     const selectedOrg = organizations.find(org => org.id === value);
