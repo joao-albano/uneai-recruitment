@@ -1,5 +1,5 @@
 
-import { StudentData } from "../context/DataContext";
+import { StudentData, SurveyData } from "../types/data";
 import { getOpenAIConfig } from "./aiAnalysis";
 
 // Default risk thresholds - these define our decision boundaries
@@ -47,7 +47,10 @@ export const shouldUseAIForRiskAnalysis = (): boolean => {
 };
 
 // Decision Tree logic implementation for risk prediction
-export const calculateRiskLevel = (student: Omit<StudentData, 'riskLevel' | 'actionItems'>): {
+export const calculateRiskLevel = (
+  student: Omit<StudentData, 'riskLevel' | 'actionItems'>, 
+  survey?: SurveyData
+): {
   riskLevel: 'low' | 'medium' | 'high';
   actionItems: string[];
   decisionPath: string[];
@@ -186,18 +189,85 @@ export const calculateRiskLevel = (student: Omit<StudentData, 'riskLevel' | 'act
     actionItems.push('Manter acompanhamento regular');
   }
   
+  // Analyze survey data if available
+  if (survey) {
+    decisionPath.push(`Análise de pesquisa diagnóstica incorporada`);
+    
+    // Check high-risk factors from survey
+    if (survey.movedRecently) {
+      decisionPath.push(`Fator detectado: Aluno mudou recentemente de escola`);
+      if (riskLevel === 'low') {
+        riskLevel = 'medium';
+        decisionPath.push(`Risco aumentado para MÉDIO devido à mudança recente`);
+      }
+      actionItems.push('Verificar adaptação à nova escola');
+    }
+    
+    if (survey.bullyingConcerns) {
+      decisionPath.push(`Fator detectado: Preocupações com bullying reportadas`);
+      if (riskLevel !== 'high') {
+        riskLevel = 'high';
+        decisionPath.push(`Risco aumentado para ALTO devido a preocupações com bullying`);
+      }
+      actionItems.push('Investigar situações de bullying reportadas');
+      actionItems.push('Implementar ações anti-bullying com urgência');
+    }
+    
+    // Check social integration
+    if (survey.socialIntegration < 5) {
+      decisionPath.push(`Fator detectado: Baixa integração social (${survey.socialIntegration}/10)`);
+      if (riskLevel === 'low') {
+        riskLevel = 'medium';
+        decisionPath.push(`Risco aumentado para MÉDIO devido à baixa integração social`);
+      }
+      actionItems.push('Promover atividades de integração social');
+    } else if (survey.socialIntegration >= 5 && survey.socialIntegration <= 7) {
+      decisionPath.push(`Fator detectado: Integração social moderada (${survey.socialIntegration}/10)`);
+      actionItems.push('Monitorar integração social do aluno');
+    }
+    
+    // Additional notes analysis - simplified
+    if (survey.additionalNotes) {
+      decisionPath.push(`Notas adicionais foram fornecidas na pesquisa`);
+      actionItems.push('Revisar informações adicionais da pesquisa');
+    }
+  }
+
   return { riskLevel, actionItems, decisionPath };
 };
 
-// Process a batch of students with the decision tree model
-export const processStudentData = (students: Omit<StudentData, 'riskLevel' | 'actionItems'>[]): StudentData[] => {
+// Process a batch of students with the decision tree model, incorporating survey data
+export const processStudentData = (
+  students: Omit<StudentData, 'riskLevel' | 'actionItems'>[],
+  surveys: SurveyData[] = []
+): StudentData[] => {
   return students.map(student => {
-    const { riskLevel, actionItems, decisionPath } = calculateRiskLevel(student);
+    // Find survey for this student if available
+    const studentSurvey = surveys.find(survey => survey.studentId === student.id);
+    
+    // Calculate risk with survey data if available
+    const { riskLevel, actionItems, decisionPath } = calculateRiskLevel(student, studentSurvey);
+    
     return {
       ...student,
       riskLevel,
       actionItems,
-      decisionPath // Adding the decision path to the student data
+      decisionPath
     };
   });
+};
+
+// Process a single survey and update student risk
+export const processSurveyForRisk = (
+  student: StudentData,
+  survey: SurveyData
+): StudentData => {
+  const { riskLevel, actionItems, decisionPath } = calculateRiskLevel(student, survey);
+  
+  return {
+    ...student,
+    riskLevel,
+    actionItems,
+    decisionPath
+  };
 };

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -55,13 +56,17 @@ const SurveyForm: React.FC = () => {
     setIsSubmitting(true);
     
     setTimeout(() => {
-      addSurvey({
+      // Criando o objeto de pesquisa a ser processado pelo modelo
+      const surveyData = {
         studentId: values.studentId,
         movedRecently: values.movedRecently,
         bullyingConcerns: values.bullyingConcerns,
         socialIntegration: values.socialIntegration,
         additionalNotes: values.additionalNotes,
-      });
+      };
+      
+      // Adicionando a pesquisa (isso também irá processar com o modelo de risco)
+      addSurvey(surveyData);
       
       const student = students.find(s => s.id === values.studentId);
       if (student) {
@@ -80,7 +85,7 @@ const SurveyForm: React.FC = () => {
       
       toast({
         title: 'Pesquisa enviada com sucesso',
-        description: 'Obrigado por fornecer essas informações importantes.',
+        description: 'Obrigado por fornecer essas informações importantes. Os dados foram processados pelo modelo de previsão.',
       });
       
       setIsSubmitting(false);

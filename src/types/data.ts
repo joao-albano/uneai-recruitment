@@ -89,4 +89,6 @@ export type DataContextType = {
   addStudent: (student: Student) => void;
   updateStudent: (student: Student) => void;
   deleteStudent: (id: string) => void;
+  // Nova função para processar as pesquisas com o modelo de IA
+  processSurveyWithRiskModel: (survey: SurveyData) => void;
 };
