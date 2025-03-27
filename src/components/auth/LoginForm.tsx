@@ -110,7 +110,7 @@ const LoginForm = ({ onSwitchTab }: LoginFormProps) => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="email@escola.edu" {...field} />
+                  <Input placeholder="email@email.com.br" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

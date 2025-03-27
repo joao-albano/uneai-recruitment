@@ -27,7 +27,7 @@ const AuthLogo = () => {
           <span className="text-2xl font-light">EduCare</span>
         </div>
         <p className="text-sm text-muted-foreground mt-1">
-          Sistema de prevenção à evasão escolar
+          Une CX: sua plataforma completa para alavancar sua empresa
         </p>
       </div>
     </div>
