@@ -5,7 +5,8 @@ import { useSchedules } from '@/context/schedules/SchedulesContext';
 import { StudentData, AlertItem } from '@/types/data';
 import { useWhatsAppHistory } from '@/hooks/useWhatsAppHistory';
 import { useWhatsAppConfig } from '@/hooks/useWhatsAppConfig';
-import { WhatsAppMessage, WhatsAppProvider } from '@/types/whatsapp';
+import { WhatsAppMessage } from '@/types/whatsapp';
+import type { WhatsAppProvider as WhatsAppProviderType } from '@/types/whatsapp';
 import { processStudentsForAutomatedSurveys } from '@/utils/automatedSurveys';
 import { sendWhatsAppSurvey as sendSurveyToWhatsApp } from '@/utils/notifications';
 import { useStudents } from '@/context/students/StudentsContext';
@@ -13,7 +14,7 @@ import { useAlerts } from '@/context/alerts/AlertsContext';
 
 interface WhatsAppConfig {
   enabled: boolean;
-  provider: WhatsAppProvider;
+  provider: WhatsAppProviderType;
   apiKey?: string;
 }
 
@@ -31,7 +32,7 @@ const WhatsAppContext = createContext<WhatsAppContextType | undefined>(undefined
 export const WhatsAppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [whatsAppConfig, setWhatsAppConfig] = useState<WhatsAppConfig>({
     enabled: false,
-    provider: 'disabled' as WhatsAppProvider,
+    provider: 'disabled' as WhatsAppProviderType,
     apiKey: ''
   });
   
