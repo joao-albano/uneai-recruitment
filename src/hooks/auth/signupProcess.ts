@@ -9,11 +9,31 @@ export async function processSignup(
 ): Promise<boolean> {
   console.log('Dados completos para cadastro:', { 
     userData, 
-    planId: planData.planId 
+    selectedProducts: planData.selectedProducts 
   });
   
   try {
-    // Step 1: Create the organization first with normalized CNPJ
+    // Step 1: Check if CNPJ already exists
+    const { data: existingOrg, error: checkError } = await supabase
+      .from('organizations')
+      .select('id, name')
+      .eq('cnpj', userData.cnpj)
+      .maybeSingle();
+    
+    if (checkError) {
+      console.error('Erro ao verificar CNPJ:', checkError);
+      toast.error('Não foi possível verificar disponibilidade do CNPJ');
+      return false;
+    }
+    
+    // If CNPJ already exists, show error and stop
+    if (existingOrg) {
+      console.log('CNPJ já cadastrado:', existingOrg);
+      toast.error(`CNPJ já cadastrado para a organização "${existingOrg.name}"`);
+      return false;
+    }
+    
+    // Step 2: Create the organization first with normalized CNPJ
     const { data: newOrg, error: orgError } = await supabase
       .from('organizations')
       .insert([{ 
@@ -24,6 +44,8 @@ export async function processSignup(
         state: userData.state,
         postal_code: userData.postalCode,
         contact_phone: userData.contactPhone,
+        market_segment: userData.marketSegment,
+        custom_segment: userData.customSegment,
         is_main_org: false 
       }])
       .select('id')
@@ -36,18 +58,6 @@ export async function processSignup(
     }
     
     console.log('Organização criada com sucesso:', newOrg);
-    
-    // Step 2: Get the plan information to determine associated products
-    const { data: planInfo, error: planError } = await supabase
-      .from('plans')
-      .select('*, related_product')
-      .eq('id', planData.planId)
-      .single();
-      
-    if (planError) {
-      console.error('Erro ao obter informações do plano:', planError);
-      // Continue anyway as this is not critical
-    }
     
     // Step 3: Create the user with the organization ID in metadata
     const { data, error } = await supabase.auth.signUp({
@@ -91,22 +101,22 @@ export async function processSignup(
         return false;
       }
       
-      // Step 5: Associate organization with products based on plan
-      if (planInfo && planInfo.related_product) {
-        const { error: productError } = await supabase
-          .from('organization_products')
-          .insert([{
-            organization_id: newOrg.id,
-            type: planInfo.related_product,
-            active: true
-          }]);
+      // Step 5: Associate organization with selected products
+      const productEntries = planData.selectedProducts.map(productType => ({
+        organization_id: newOrg.id,
+        type: productType,
+        active: true
+      }));
+      
+      const { error: productError } = await supabase
+        .from('organization_products')
+        .insert(productEntries);
           
-        if (productError) {
-          console.error('Erro ao associar produto:', productError);
-          // Non-critical, so continue
-        } else {
-          console.log('Produto associado com sucesso à organização!');
-        }
+      if (productError) {
+        console.error('Erro ao associar produtos:', productError);
+        // Non-critical, so continue
+      } else {
+        console.log('Produtos associados com sucesso à organização!');
       }
       
       // Step 6: Create subscription with trial period
@@ -114,25 +124,27 @@ export async function processSignup(
       const trialEndDate = new Date(now);
       trialEndDate.setDate(now.getDate() + 14); // 14 days trial
       
-      console.log('Criando assinatura com plano:', planData.planId);
+      console.log('Criando assinatura para produtos:', planData.selectedProducts);
       
-      const { error: subscriptionError } = await supabase
-        .from('subscriptions')
-        .insert([{
-          user_id: data.user.id,
-          organization_id: newOrg.id,
-          plan_id: planData.planId,
-          status: 'trial',
-          trial_start_date: now.toISOString(),
-          trial_end_date: trialEndDate.toISOString()
-        }]);
-          
-      if (subscriptionError) {
-        console.error('Erro ao criar assinatura:', subscriptionError);
-        toast.error('Erro ao configurar período de teste');
-        // Continue anyway since the user account is created
-      } else {
-        console.log('Assinatura criada com sucesso!');
+      // Create a subscription for each selected product
+      for (const productType of planData.selectedProducts) {
+        const { error: subscriptionError } = await supabase
+          .from('subscriptions')
+          .insert([{
+            user_id: data.user.id,
+            organization_id: newOrg.id,
+            product_type: productType,
+            status: 'trial',
+            trial_start_date: now.toISOString(),
+            trial_end_date: trialEndDate.toISOString()
+          }]);
+            
+        if (subscriptionError) {
+          console.error(`Erro ao criar assinatura para ${productType}:`, subscriptionError);
+          // Continue anyway since the user account is created
+        } else {
+          console.log(`Assinatura para ${productType} criada com sucesso!`);
+        }
       }
     }
     

@@ -2,7 +2,7 @@
 import { z } from 'zod';
 import { isValidCNPJ } from '@/utils/formatters';
 
-// Schema for user and institution data (first step)
+// Schema for user and company data (first step)
 export const userDataSchema = z.object({
   name: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
   email: z.string().email('Email inválido'),
@@ -17,15 +17,23 @@ export const userDataSchema = z.object({
   city: z.string().min(2, 'Cidade inválida'),
   state: z.string().length(2, 'Use a sigla do estado (2 letras)'),
   postalCode: z.string().min(8, 'CEP inválido').max(9, 'CEP inválido'),
-  contactPhone: z.string().min(10, 'Telefone inválido').max(15, 'Telefone inválido')
+  contactPhone: z.string().min(10, 'Telefone inválido').max(15, 'Telefone inválido'),
+  marketSegment: z.string().min(1, 'Selecione um segmento'),
+  customSegment: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"],
-});
+}).refine(
+  (data) => data.marketSegment !== 'other' || (data.marketSegment === 'other' && data.customSegment && data.customSegment.length >= 3),
+  {
+    message: "Especifique o segmento com pelo menos 3 caracteres",
+    path: ["customSegment"],
+  }
+);
 
-// Schema for plan selection (second step)
+// Schema for product selection (second step)
 export const planSelectionSchema = z.object({
-  planId: z.string().min(1, 'Selecione um plano')
+  selectedProducts: z.array(z.string()).min(1, 'Selecione pelo menos um produto')
 });
 
 export type UserDataFormValues = z.infer<typeof userDataSchema>;

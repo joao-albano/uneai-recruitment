@@ -1,38 +1,52 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import { useAuth } from '@/context/auth';
+import { useTrialPeriod } from '@/hooks/useTrialPeriod';
+import TrialPeriodBanner from '../shared/TrialPeriodBanner';
+import TrialExpiredModal from '../shared/TrialExpiredModal';
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-export const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = React.useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
-  
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+const Layout = () => {
+  const { isAuthenticated, isSuperAdmin } = useAuth();
+  const { 
+    daysRemaining, 
+    showBanner, 
+    isExpired,
+    isLoading, 
+    errorMessage 
+  } = useTrialPeriod();
   
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        onClose={() => setSidebarOpen(false)} 
-        collapsed={sidebarCollapsed}
-        setCollapsed={setSidebarCollapsed}
-      />
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
+      <Header />
       
-      <div className="flex flex-col flex-1 overflow-hidden">
-        <Header toggleSidebar={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar />
         
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          <div className="container mx-auto max-w-7xl">
-            {children}
-          </div>
+        <main className="flex-1 overflow-auto p-6">
+          {isAuthenticated && showBanner && (
+            <TrialPeriodBanner 
+              daysRemaining={daysRemaining}
+              isLoading={isLoading}
+              errorMessage={errorMessage}
+              isSuperAdmin={isSuperAdmin}
+            />
+          )}
+          
+          <Outlet />
         </main>
       </div>
+      
+      {isAuthenticated && (
+        <TrialExpiredModal 
+          isExpired={isExpired} 
+          isSuperAdmin={isSuperAdmin} 
+        />
+      )}
     </div>
   );
 };
+
+export default Layout;

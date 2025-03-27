@@ -5,13 +5,13 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
 
-export type ProductType = 'retention' | 'billing' | 'recruitment' | 'secretary' | 'pedagogical';
+export type ProductType = 'retention' | 'sales' | 'scheduling' | 'recruitment' | 'secretary' | 'pedagogical';
 
 export interface ProductSubscription {
   id: string;
   productType: ProductType;
   startDate: Date;
-  status: 'active' | 'inactive' | 'pending';
+  status: 'active' | 'inactive' | 'pending' | 'trial';
 }
 
 export interface OrganizationProduct {
@@ -45,52 +45,74 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
   // Carregar produtos disponíveis para o usuário atual
   useEffect(() => {
     const fetchUserProducts = async () => {
-      if (!currentUser?.isSuperAdmin && !currentUser?.email) return;
+      if (!currentUser?.id) return;
       
       try {
         if (currentUser?.isSuperAdmin) {
           // Super admins têm acesso a todos os produtos
-          const { data: products } = await supabase
-            .from('products')
-            .select('type');
+          const allProductTypes: ProductType[] = [
+            'retention', 
+            'sales', 
+            'scheduling', 
+            'recruitment', 
+            'secretary', 
+            'pedagogical'
+          ];
           
-          if (products && products.length > 0) {
-            const productTypes = products.map(p => p.type) as ProductType[];
-            setAvailableProducts(productTypes);
-            
-            // Criar assinaturas simuladas para todos os produtos
-            const subscriptions: ProductSubscription[] = productTypes.map(type => ({
-              id: uuidv4(),
-              productType: type,
-              startDate: new Date(),
-              status: 'active'
-            }));
-            
-            setUserSubscriptions(subscriptions);
-          }
+          setAvailableProducts(allProductTypes);
+          
+          // Criar assinaturas simuladas para todos os produtos
+          const subscriptions: ProductSubscription[] = allProductTypes.map(type => ({
+            id: uuidv4(),
+            productType: type,
+            startDate: new Date(),
+            status: 'active'
+          }));
+          
+          setUserSubscriptions(subscriptions);
         } else {
           // Usuários normais só têm acesso aos produtos atribuídos
-          // Aqui precisamos usar o email do usuário ou outro identificador disponível
-          // já que o UserProfile pode não ter um campo id
-          const { data: userProducts } = await supabase
-            .from('user_products')
-            .select('product_type, is_active')
-            .eq('user_id', currentUser?.email || '')
-            .eq('is_active', true);
+          const { data: subscriptions, error } = await supabase
+            .from('subscriptions')
+            .select('id, product_type, status, trial_start_date, trial_end_date')
+            .eq('user_id', currentUser.id);
           
-          if (userProducts && userProducts.length > 0) {
-            const productTypes = userProducts.map(p => p.product_type) as ProductType[];
+          if (error) {
+            console.error('Erro ao buscar assinaturas:', error);
+            return;
+          }
+          
+          if (subscriptions && subscriptions.length > 0) {
+            // Check if trial is expired for each subscription
+            const now = new Date();
+            
+            const productSubscriptions: ProductSubscription[] = subscriptions.map(sub => {
+              let status = sub.status;
+              
+              // If trial, check if expired
+              if (status === 'trial' && sub.trial_end_date) {
+                const trialEndDate = new Date(sub.trial_end_date);
+                if (now > trialEndDate) {
+                  status = 'inactive'; // Trial expired
+                }
+              }
+              
+              return {
+                id: sub.id,
+                productType: sub.product_type as ProductType,
+                startDate: sub.trial_start_date ? new Date(sub.trial_start_date) : new Date(),
+                status: status as 'active' | 'inactive' | 'pending' | 'trial'
+              };
+            });
+            
+            setUserSubscriptions(productSubscriptions);
+            
+            // Set available products based on active or trial subscriptions
+            const productTypes = productSubscriptions
+              .filter(sub => sub.status === 'active' || sub.status === 'trial')
+              .map(sub => sub.productType);
+            
             setAvailableProducts(productTypes);
-            
-            // Criar assinaturas baseadas nos produtos do usuário
-            const subscriptions: ProductSubscription[] = productTypes.map(type => ({
-              id: uuidv4(),
-              productType: type,
-              startDate: new Date(),
-              status: 'active'
-            }));
-            
-            setUserSubscriptions(subscriptions);
           }
         }
       } catch (error) {
@@ -110,7 +132,7 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
     if (isSuperAdmin) return true;
     
     return userSubscriptions.some(sub => 
-      sub.productType === productType && sub.status === 'active'
+      sub.productType === productType && (sub.status === 'active' || sub.status === 'trial')
     );
   };
   
@@ -124,7 +146,7 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
         id: uuidv4(),
         productType,
         startDate: new Date(),
-        status: 'active'
+        status: 'trial'
       }]);
       
       // Mostra toast de sucesso

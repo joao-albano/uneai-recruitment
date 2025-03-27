@@ -5,9 +5,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Separator } from '@/components/ui/separator';
-import InstitutionDataForm from './InstitutionDataForm';
 import AdminDataForm from './AdminDataForm';
-import PlanSelection from './PlanSelection';
+import CompanyDataForm from './CompanyDataForm';
+import MarketSegmentForm from './MarketSegmentForm';
+import ProductSelection from './ProductSelection';
 import { useSignupFlow, userDataSchema, planSelectionSchema, UserDataFormValues, PlanSelectionFormValues } from '@/hooks/useSignupFlow';
 
 interface SignupFormContainerProps {
@@ -38,15 +39,17 @@ const SignupFormContainer = ({ onSwitchTab, onSuccess }: SignupFormContainerProp
       city: '',
       state: '',
       postalCode: '',
-      contactPhone: ''
+      contactPhone: '',
+      marketSegment: '',
+      customSegment: ''
     },
   });
 
-  // Form for plan selection (step 2)
+  // Form for product selection (step 2)
   const planSelectionForm = useForm<PlanSelectionFormValues>({
     resolver: zodResolver(planSelectionSchema),
     defaultValues: {
-      planId: ''
+      selectedProducts: []
     },
   });
 
@@ -60,14 +63,18 @@ const SignupFormContainer = ({ onSwitchTab, onSuccess }: SignupFormContainerProp
               
               <Separator />
               
-              <InstitutionDataForm />
+              <CompanyDataForm />
+
+              <Separator />
+              
+              <MarketSegmentForm />
               
               <Button 
                 type="submit" 
                 className="w-full" 
                 disabled={isProcessing}
               >
-                {isProcessing ? 'Verificando dados...' : 'Próximo: Escolher Plano'}
+                {isProcessing ? 'Verificando dados...' : 'Próximo: Escolher Produtos'}
               </Button>
             </form>
           </Form>
@@ -76,7 +83,7 @@ const SignupFormContainer = ({ onSwitchTab, onSuccess }: SignupFormContainerProp
         <FormProvider {...planSelectionForm}>
           <Form {...planSelectionForm}>
             <form onSubmit={planSelectionForm.handleSubmit(handleFinishSignup)} className="space-y-6">
-              <PlanSelection />
+              <ProductSelection />
               
               <div className="flex gap-3">
                 <Button 

@@ -25,11 +25,9 @@ export const useTrialPeriod = () => {
         setErrorMessage(null);
         const { data, error } = await supabase
           .from('subscriptions')
-          .select('status, trial_start_date, trial_end_date')
+          .select('status, trial_start_date, trial_end_date, product_type')
           .eq('user_id', currentUser.id)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
+          .order('created_at', { ascending: false });
           
         if (error) {
           console.error('Erro ao verificar assinatura:', error);
@@ -38,17 +36,31 @@ export const useTrialPeriod = () => {
           return;
         }
         
-        // Se não tem assinatura ou não está em período de teste, não mostrar banner
-        if (!data || data.status !== 'trial') {
+        // If no subscriptions or none are in trial period, don't show banner
+        if (!data || data.length === 0) {
           setShowBanner(false);
           setIsLoading(false);
           return;
         }
         
-        // Calcular dias restantes do período de teste
+        // Filter only trial subscriptions
+        const trialSubscriptions = data.filter(sub => sub.status === 'trial');
+        
+        if (trialSubscriptions.length === 0) {
+          setShowBanner(false);
+          setIsLoading(false);
+          return;
+        }
+        
+        // Find the subscription with the furthest end date
+        const latestEndDate = trialSubscriptions.reduce((latest, sub) => {
+          const endDate = new Date(sub.trial_end_date);
+          return endDate > latest ? endDate : latest;
+        }, new Date(trialSubscriptions[0].trial_end_date));
+        
+        // Calculate days remaining from the furthest end date
         const now = new Date();
-        const endDate = new Date(data.trial_end_date);
-        const msRemaining = endDate.getTime() - now.getTime();
+        const msRemaining = latestEndDate.getTime() - now.getTime();
         const daysLeft = Math.ceil(msRemaining / (1000 * 60 * 60 * 24));
         
         setDaysRemaining(daysLeft);
