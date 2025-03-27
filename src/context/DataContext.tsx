@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { generateDemoStudents } from '@/data/demoStudents';
@@ -15,6 +14,7 @@ import {
 } from '@/types/data';
 import { WhatsAppConfig } from '@/utils/whatsappIntegration';
 import { WhatsAppMessage } from '@/types/whatsapp';
+import { processSurveyForRisk } from '@/utils/riskCalculator';
 
 const defaultWhatsAppConfig: WhatsAppConfig = {
   provider: 'disabled',
@@ -45,6 +45,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const addSurvey = (survey: SurveyData) => {
     setSurveys(prev => [...prev, survey]);
+    processSurveyWithRiskModel(survey);
   };
 
   const addSchedule = (schedule: ScheduleItem) => {
@@ -166,6 +167,57 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
+  const processSurveyWithRiskModel = (survey: SurveyData) => {
+    const student = students.find(s => s.id === survey.studentId);
+    
+    if (!student) {
+      console.error('Estudante não encontrado para processar pesquisa:', survey.studentId);
+      return;
+    }
+    
+    // Process the survey using the risk model
+    const updatedStudent = processSurveyForRisk(student, survey);
+    
+    // Update the student in the list
+    const updatedStudents = students.map(s => 
+      s.id === updatedStudent.id ? updatedStudent : s
+    );
+    
+    // Update the students state
+    setStudents(updatedStudents);
+    
+    // Save the updated students to localStorage
+    localStorage.setItem('students', JSON.stringify(updatedStudents));
+    
+    // Create an alert if the risk level changed
+    if (updatedStudent.riskLevel !== student.riskLevel) {
+      let riskType: 'high-risk' | 'medium-risk' | 'low-risk';
+      
+      switch (updatedStudent.riskLevel) {
+        case 'high':
+          riskType = 'high-risk';
+          break;
+        case 'medium':
+          riskType = 'medium-risk';
+          break;
+        default:
+          riskType = 'low-risk';
+      }
+      
+      addAlert({
+        id: uuidv4(),
+        studentId: updatedStudent.id,
+        studentName: updatedStudent.name,
+        studentClass: updatedStudent.class,
+        type: riskType,
+        message: `Nível de risco atualizado para ${updatedStudent.riskLevel === 'high' ? 'ALTO' : updatedStudent.riskLevel === 'medium' ? 'MÉDIO' : 'BAIXO'} com base na pesquisa diagnóstica.`,
+        createdAt: new Date(),
+        read: false,
+        actionTaken: false,
+      });
+    }
+  };
+
   return (
     <DataContext.Provider
       value={{
@@ -192,7 +244,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         sendWhatsAppSurvey,
         addStudent,
         updateStudent,
-        deleteStudent
+        deleteStudent,
+        processSurveyWithRiskModel
       }}
     >
       {children}
