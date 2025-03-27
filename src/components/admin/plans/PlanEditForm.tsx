@@ -10,6 +10,7 @@ import * as z from 'zod';
 import { PlanOption } from '@/utils/billing/planOptions';
 import { useTheme } from '@/context/ThemeContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
 const planSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
@@ -45,6 +46,20 @@ const PlanEditForm: React.FC<PlanEditFormProps> = ({
       features: editingPlan.features || [],
     },
   });
+  
+  // Handle features as a comma-separated string
+  const featuresString = editingPlan.features?.join('\n') || '';
+  const [featuresInput, setFeaturesInput] = React.useState(featuresString);
+  
+  const handleFeaturesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFeaturesInput(e.target.value);
+    // Convert text to array of features (splitting by newline)
+    const featuresArray = e.target.value
+      .split('\n')
+      .map(item => item.trim())
+      .filter(item => item.length > 0);
+    form.setValue('features', featuresArray);
+  };
   
   return (
     <Card className="mt-6">
@@ -133,11 +148,21 @@ const PlanEditForm: React.FC<PlanEditFormProps> = ({
                         <SelectValue placeholder={isPtBR ? "Selecione um produto" : "Select a product"} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="retention">Retenção de Alunos</SelectItem>
-                        <SelectItem value="billing">Gestão Financeira</SelectItem>
-                        <SelectItem value="recruitment">Recrutamento</SelectItem>
-                        <SelectItem value="secretary">Secretaria Digital</SelectItem>
-                        <SelectItem value="pedagogical">Gestão Pedagógica</SelectItem>
+                        <SelectItem value="retention">
+                          {isPtBR ? "Retenção de Alunos" : "Student Retention"}
+                        </SelectItem>
+                        <SelectItem value="billing">
+                          {isPtBR ? "Gestão Financeira" : "Financial Management"}
+                        </SelectItem>
+                        <SelectItem value="recruitment">
+                          {isPtBR ? "Captação" : "Recruitment"}
+                        </SelectItem>
+                        <SelectItem value="secretary">
+                          {isPtBR ? "Secretaria Digital" : "Digital Secretary"}
+                        </SelectItem>
+                        <SelectItem value="pedagogical">
+                          {isPtBR ? "Gestão Pedagógica" : "Pedagogical Management"}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -145,6 +170,27 @@ const PlanEditForm: React.FC<PlanEditFormProps> = ({
                 </FormItem>
               )}
             />
+            
+            <FormItem>
+              <FormLabel>
+                {isPtBR ? "Recursos (um por linha)" : "Features (one per line)"}
+              </FormLabel>
+              <FormControl>
+                <Textarea 
+                  value={featuresInput}
+                  onChange={handleFeaturesChange}
+                  placeholder={isPtBR 
+                    ? "Digite os recursos, um por linha" 
+                    : "Enter features, one per line"}
+                  rows={5}
+                />
+              </FormControl>
+              <FormDescription>
+                {isPtBR 
+                  ? "Liste cada recurso em uma linha separada"
+                  : "List each feature on a separate line"}
+              </FormDescription>
+            </FormItem>
             
             <div className="flex justify-end space-x-2 pt-4">
               <Button 

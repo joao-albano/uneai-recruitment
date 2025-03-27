@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Pencil, Package, CheckCircle2 } from 'lucide-react';
+import { Pencil, Package, CheckCircle2, Users, MessageSquare, Database } from 'lucide-react';
 import { PlanOption } from '@/utils/billing/planOptions';
 import { useTheme } from '@/context/ThemeContext';
 import { cn } from '@/lib/utils';
@@ -25,6 +25,12 @@ const PlanCard: React.FC<PlanCardProps> = ({
   const isPtBR = language === 'pt-BR';
   
   const productsCount = plan.products?.length || 0;
+  
+  const formatValue = (value: number | undefined) => {
+    if (value === undefined) return '-';
+    if (value < 0) return '∞'; // Infinity symbol for unlimited
+    return value.toLocaleString();
+  };
   
   return (
     <Card 
@@ -55,6 +61,28 @@ const PlanCard: React.FC<PlanCardProps> = ({
             <span>{plan.relatedProduct}</span>
           </div>
         )}
+        
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <div className="flex items-center text-xs text-muted-foreground">
+            <Users className="h-3 w-3 mr-1" />
+            <span>{formatValue(plan.limits?.students)} {isPtBR ? "alunos" : "students"}</span>
+          </div>
+          
+          <div className="flex items-center text-xs text-muted-foreground">
+            <Users className="h-3 w-3 mr-1" />
+            <span>{formatValue(plan.limits?.users)} {isPtBR ? "usuários" : "users"}</span>
+          </div>
+          
+          <div className="flex items-center text-xs text-muted-foreground">
+            <MessageSquare className="h-3 w-3 mr-1" />
+            <span>{formatValue(plan.limits?.whatsappMessages)} {isPtBR ? "msgs" : "msgs"}</span>
+          </div>
+          
+          <div className="flex items-center text-xs text-muted-foreground">
+            <Database className="h-3 w-3 mr-1" />
+            <span>{formatValue(plan.limits?.imports)} {isPtBR ? "importações" : "imports"}</span>
+          </div>
+        </div>
         
         {productsCount > 0 && (
           <div className="mt-2 text-sm text-muted-foreground">

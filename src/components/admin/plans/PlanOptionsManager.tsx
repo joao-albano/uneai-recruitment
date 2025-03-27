@@ -11,6 +11,7 @@ import PlanCard from './PlanCard';
 import PlanEditForm from './PlanEditForm';
 import ResetPlansDialog from './ResetPlansDialog';
 import ProductAssociationManager from './ProductAssociationManager';
+import PlanLimitsManager from './PlanLimitsManager';
 import { ProductType } from '@/context/ProductContext';
 
 const PlanOptionsManager: React.FC = () => {
@@ -93,6 +94,23 @@ const PlanOptionsManager: React.FC = () => {
     }
   };
 
+  const handleUpdateLimits = (planId: string, limits: PlanOption['limits']) => {
+    const plan = plans.find(p => p.id === planId);
+    if (plan) {
+      setPlan(planId, {
+        ...plan,
+        limits: limits
+      });
+
+      toast({
+        title: isPtBR ? "Limites atualizados" : "Limits updated",
+        description: isPtBR 
+          ? `Os limites do plano ${plan.name} foram atualizados com sucesso.` 
+          : `Limits for the ${plan.name} plan were successfully updated.`,
+      });
+    }
+  };
+
   const selectedPlan = plans.find(p => p.id === selectedPlanId) || null;
   const associatedProducts = selectedPlan?.products as ProductType[] || [];
   
@@ -135,6 +153,9 @@ const PlanOptionsManager: React.FC = () => {
                 <TabsTrigger value="products">
                   {isPtBR ? "Produtos" : "Products"}
                 </TabsTrigger>
+                <TabsTrigger value="limits">
+                  {isPtBR ? "Limites e Recursos" : "Limits & Resources"}
+                </TabsTrigger>
               </TabsList>
               
               <TabsContent value="details">
@@ -174,6 +195,15 @@ const PlanOptionsManager: React.FC = () => {
                   planName={selectedPlan.name}
                   associatedProducts={associatedProducts}
                   onUpdateProducts={handleUpdateProducts}
+                />
+              </TabsContent>
+
+              <TabsContent value="limits">
+                <PlanLimitsManager
+                  planId={selectedPlan.id}
+                  planName={selectedPlan.name}
+                  limits={selectedPlan.limits}
+                  onUpdateLimits={handleUpdateLimits}
                 />
               </TabsContent>
             </Tabs>
