@@ -1,10 +1,11 @@
+
 import React from 'react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Package } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { ProductType } from '@/context/product/types';
-import { formatCurrency } from '@/utils/billing/priceUtils';
+import { formatCurrency } from '@/utils/billing/formatCurrency';
 
 interface Plan {
   id: string;
@@ -80,7 +81,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({ plan, yearlyBilling }) 
           {isPtBR ? 'Subtotal' : 'Subtotal'}
         </div>
         <div className="font-medium">
-          {formatCurrency(yearlyBilling ? plan.priceYearly : plan.priceMonthly * 12, isPtBR)}
+          {formatCurrency(yearlyBilling ? plan.priceYearly : plan.priceMonthly * 12)}
         </div>
       </div>
       
@@ -89,7 +90,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({ plan, yearlyBilling }) 
           {isPtBR ? 'Total' : 'Total'}
         </div>
         <div>
-          {formatCurrency(yearlyBilling ? plan.priceYearly : plan.priceMonthly * 12, isPtBR)}
+          {formatCurrency(yearlyBilling ? plan.priceYearly : plan.priceMonthly * 12)}
         </div>
       </div>
     </div>
