@@ -4,14 +4,32 @@ import { Schedule } from '@/types/schedule';
 
 export const useDialogState = (schedules: Schedule[]) => {
   const [showAddDialog, setShowAddDialog] = useState(false);
-  const [showScheduleDetails, setShowScheduleDetails] = useState(false);
+  const [showDayDialog, setShowDayDialog] = useState(false);
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null);
   const [finalPreSelectedStudentId, setFinalPreSelectedStudentId] = useState<string | null>(null);
 
   // View schedule details
-  const viewScheduleDetails = useCallback((schedule: Schedule) => {
+  const handleOpenDetails = useCallback((schedule: Schedule) => {
     setSelectedSchedule(schedule);
-    setShowScheduleDetails(true);
+    setShowDetailsDialog(true);
+  }, []);
+
+  // Get schedules for the selected day
+  const getSchedulesForDay = useCallback((date: Date) => {
+    return schedules.filter(schedule => {
+      const scheduleDate = new Date(schedule.date);
+      return scheduleDate.getDate() === date.getDate() &&
+             scheduleDate.getMonth() === date.getMonth() &&
+             scheduleDate.getFullYear() === date.getFullYear();
+    });
+  }, [schedules]);
+
+  // Handle day click in the calendar
+  const handleDayClick = useCallback((day: number) => {
+    const selectedDate = new Date();
+    selectedDate.setDate(day);
+    setShowDayDialog(true);
   }, []);
 
   // Clean close of the add dialog
@@ -21,7 +39,7 @@ export const useDialogState = (schedules: Schedule[]) => {
 
   // Clean close of the details dialog
   const handleSetShowScheduleDetails = useCallback((show: boolean = false) => {
-    setShowScheduleDetails(show);
+    setShowDetailsDialog(show);
     
     if (!show) {
       setTimeout(() => setSelectedSchedule(null), 300);
@@ -31,10 +49,13 @@ export const useDialogState = (schedules: Schedule[]) => {
   return {
     showAddDialog,
     setShowAddDialog: handleSetShowAddDialog,
-    showScheduleDetails,
-    setShowScheduleDetails: handleSetShowScheduleDetails,
+    showDayDialog,
+    setShowDayDialog,
+    showDetailsDialog,
+    setShowDetailsDialog: handleSetShowScheduleDetails,
     selectedSchedule,
-    viewScheduleDetails,
+    handleOpenDetails,
+    schedulesForSelectedDay: selectedSchedule ? [selectedSchedule] : [],
     finalPreSelectedStudentId,
     setFinalPreSelectedStudentId
   };

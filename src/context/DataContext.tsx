@@ -26,7 +26,8 @@ const defaultWhatsAppConfig: WhatsAppConfig = {
     thankYou: 'Muito obrigado pela sua participação! Suas respostas são muito importantes para nós.',
     surveyQuestion1: 'O {{studentName}} mudou de escola recentemente? (Sim/Não)',
     surveyQuestion2: 'Vocês têm preocupações com bullying ou problemas sociais? (Sim/Não)',
-    surveyQuestion3: 'De 1 a 10, como você avalia a adaptação social do {{studentName}} na escola?'
+    surveyQuestion3: 'De 1 a 10, como você avalia a adaptação social do {{studentName}} na escola?',
+    appointmentReminder: 'Olá {{parentName}}, lembramos que você tem uma reunião agendada para amanhã ({{appointmentDate}}) referente ao aluno {{studentName}}. Contamos com sua presença!'
   }
 };
 

@@ -9,18 +9,12 @@ import { Schedule } from '@/types/schedule';
 
 interface UpcomingSchedulesProps {
   upcomingSchedules: Schedule[];
-  onCancelSchedule: (id: string) => void;
-  onNewSchedule: () => void;
-  onEditSchedule: (schedule: Schedule) => void;
-  isMobile?: boolean;
+  onDetailsClick: (schedule: Schedule) => void;
 }
 
 const UpcomingSchedules: React.FC<UpcomingSchedulesProps> = ({
   upcomingSchedules,
-  onCancelSchedule,
-  onNewSchedule,
-  onEditSchedule,
-  isMobile
+  onDetailsClick
 }) => {
   return (
     <Card className="shadow-md">
@@ -31,7 +25,6 @@ const UpcomingSchedules: React.FC<UpcomingSchedulesProps> = ({
             variant="ghost" 
             size="sm" 
             className="h-8"
-            onClick={onNewSchedule}
           >
             <Plus className="h-4 w-4" />
           </Button>
@@ -45,6 +38,7 @@ const UpcomingSchedules: React.FC<UpcomingSchedulesProps> = ({
                 <div 
                   key={schedule.id}
                   className="flex gap-3 p-3 rounded-lg border transition-colors hover:bg-muted/20"
+                  onClick={() => onDetailsClick(schedule)}
                 >
                   <div className="flex-shrink-0 rounded-full bg-primary/10 p-2 h-10 w-10 flex items-center justify-center">
                     <Users className="h-4 w-4 text-primary" />
@@ -59,10 +53,7 @@ const UpcomingSchedules: React.FC<UpcomingSchedulesProps> = ({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={(e) => {
-                            e.stopPropagation();
-                            onCancelSchedule(schedule.id);
-                          }}>
+                          <DropdownMenuItem>
                             <Trash className="mr-2 h-4 w-4" />
                             Cancelar
                           </DropdownMenuItem>

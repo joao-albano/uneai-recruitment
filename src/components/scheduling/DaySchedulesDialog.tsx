@@ -10,21 +10,21 @@ import EmptyScheduleState from './EmptyScheduleState';
 import { CalendarClock, CheckCircle2, XCircle } from 'lucide-react';
 
 interface DaySchedulesDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   date: Date;
   schedules: Schedule[];
-  onMarkCompleted: (id: string) => void;
-  onCancelSchedule: (id: string) => void;
+  onScheduleClick: (schedule: Schedule) => void;
+  onAddNew: () => void;
 }
 
 const DaySchedulesDialog: React.FC<DaySchedulesDialogProps> = ({
-  isOpen,
-  onClose,
+  open,
+  onOpenChange,
   date,
   schedules,
-  onMarkCompleted,
-  onCancelSchedule
+  onScheduleClick,
+  onAddNew
 }) => {
   const formattedDate = format(date, "EEEE, d 'de' MMMM", { locale: ptBR });
   
@@ -54,8 +54,8 @@ const DaySchedulesDialog: React.FC<DaySchedulesDialogProps> = ({
             date={schedule.date}
             agentName={schedule.agentName}
             notes={schedule.notes}
-            onMarkCompleted={onMarkCompleted}
-            onCancelSchedule={onCancelSchedule}
+            onMarkCompleted={() => {}}
+            onCancelSchedule={() => {}}
             status={schedule.status}
           />
         ))}
@@ -64,7 +64,7 @@ const DaySchedulesDialog: React.FC<DaySchedulesDialogProps> = ({
   };
   
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Atendimentos do dia</DialogTitle>

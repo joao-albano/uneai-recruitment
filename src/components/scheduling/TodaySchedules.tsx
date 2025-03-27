@@ -16,18 +16,16 @@ interface Schedule {
 
 interface TodaySchedulesProps {
   todaySchedules: Schedule[];
-  onMarkCompleted: (id: string) => void;
-  onCancelSchedule: (id: string) => void;
-  onNewSchedule: () => void;
-  isMobile?: boolean;
+  onCompleted: (id: string) => void;
+  onCanceled: (id: string) => void;
+  onDetailsClick: (schedule: Schedule) => void;
 }
 
 const TodaySchedules: React.FC<TodaySchedulesProps> = ({
   todaySchedules,
-  onMarkCompleted,
-  onCancelSchedule,
-  onNewSchedule,
-  isMobile
+  onCompleted,
+  onCanceled,
+  onDetailsClick
 }) => {
   return (
     <Card className="shadow-md">
@@ -51,8 +49,8 @@ const TodaySchedules: React.FC<TodaySchedulesProps> = ({
                 date={schedule.date}
                 agentName={schedule.agentName}
                 notes={schedule.notes}
-                onMarkCompleted={onMarkCompleted}
-                onCancelSchedule={onCancelSchedule}
+                onMarkCompleted={onCompleted}
+                onCancelSchedule={onCanceled}
               />
             ))}
           </div>
@@ -60,7 +58,7 @@ const TodaySchedules: React.FC<TodaySchedulesProps> = ({
           <EmptyScheduleState 
             message="Não há atendimentos agendados para hoje"
             buttonText="Agendar atendimento"
-            onAction={onNewSchedule}
+            onAction={() => {}}
           />
         )}
       </CardContent>

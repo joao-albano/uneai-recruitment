@@ -74,22 +74,44 @@ const ScheduleView: React.FC = () => {
             hasSchedulesOnDay={scheduleData.hasSchedulesOnDay}
             getScheduleCountForDay={scheduleData.getScheduleCountForDay}
             getScheduleStatusForDay={scheduleData.getScheduleStatusForDay}
-            onDayClick={scheduleData.handleDayClick}
+            onDayClick={(day) => {
+              // Set the selected date to the clicked day
+              const newDate = new Date(scheduleData.selectedDate);
+              newDate.setDate(day);
+              
+              // Get schedules for this day and open dialog
+              const daySchedules = scheduleData.visibleSchedules.filter(s => {
+                const scheduleDate = new Date(s.date);
+                return scheduleDate.getDate() === day &&
+                       scheduleDate.getMonth() === newDate.getMonth() &&
+                       scheduleDate.getFullYear() === newDate.getFullYear();
+              });
+              
+              if (daySchedules.length > 0) {
+                // If there are schedules, show the day dialog
+                if (scheduleData.setShowDayDialog) {
+                  scheduleData.setShowDayDialog(true);
+                }
+              } else {
+                // If there are no schedules, show the add dialog
+                scheduleData.setShowAddDialog(true);
+              }
+            }}
           />
         </div>
       </div>
       
       <div className="md:col-span-4 space-y-4">
         <TodaySchedules 
-          schedules={scheduleData.todaySchedules} 
+          todaySchedules={scheduleData.todaySchedules} 
           onCompleted={scheduleData.markCompleted}
           onCanceled={scheduleData.cancelSchedule}
-          onDetailsClick={scheduleData.handleOpenDetails}
+          onDetailsClick={scheduleData.handleOpenDetails || (() => {})}
         />
         
         <UpcomingSchedules 
-          schedules={scheduleData.upcomingSchedules} 
-          onDetailsClick={scheduleData.handleOpenDetails}
+          upcomingSchedules={scheduleData.upcomingSchedules} 
+          onDetailsClick={scheduleData.handleOpenDetails || (() => {})}
         />
       </div>
       
@@ -98,23 +120,31 @@ const ScheduleView: React.FC = () => {
         onOpenChange={scheduleData.setShowAddDialog}
         students={scheduleData.studentsWithoutSchedules}
         onSubmit={scheduleData.handleScheduleSubmit}
-        selectedDate={scheduleData.selectedDate}
+        isOpen={scheduleData.showAddDialog}
+        onClose={() => scheduleData.setShowAddDialog(false)}
       />
       
-      <DaySchedulesDialog 
-        open={scheduleData.showDayDialog}
-        onOpenChange={scheduleData.setShowDayDialog}
-        date={scheduleData.selectedDate}
-        schedules={scheduleData.schedulesForSelectedDay}
-        onScheduleClick={scheduleData.handleOpenDetails}
-        onAddNew={() => scheduleData.setShowAddDialog(true)}
-      />
+      {scheduleData.showDayDialog && (
+        <DaySchedulesDialog 
+          open={scheduleData.showDayDialog}
+          onOpenChange={scheduleData.setShowDayDialog || (() => {})}
+          date={scheduleData.selectedDate}
+          schedules={scheduleData.visibleSchedules.filter(s => {
+            const scheduleDate = new Date(s.date);
+            return scheduleDate.getDate() === scheduleData.selectedDate.getDate() &&
+                  scheduleDate.getMonth() === scheduleData.selectedDate.getMonth() &&
+                  scheduleDate.getFullYear() === scheduleData.selectedDate.getFullYear();
+          })}
+          onScheduleClick={scheduleData.handleOpenDetails || (() => {})}
+          onAddNew={() => scheduleData.setShowAddDialog(true)}
+        />
+      )}
       
       <ScheduleDetailsDialog 
-        open={scheduleData.showDetailsDialog}
-        onOpenChange={scheduleData.setShowDetailsDialog}
+        open={scheduleData.showDetailsDialog || false}
+        onOpenChange={scheduleData.setShowDetailsDialog || (() => {})}
         schedule={scheduleData.selectedSchedule}
-        onStatusChange={scheduleData.updateScheduleStatus}
+        onStatusChange={scheduleData.updateScheduleStatus || (() => {})}
       />
     </div>
   );

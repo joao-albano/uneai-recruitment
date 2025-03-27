@@ -1,163 +1,153 @@
 
-import React, { useRef } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
+import React from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
+import { useForm } from 'react-hook-form';
+import { Calendar, Clock, User } from 'lucide-react';
 
-// Changed to match StudentData by making riskLevel optional
+// Import any necessary types
 interface Student {
   id: string;
   name: string;
-  riskLevel?: string;
+  riskLevel?: 'low' | 'medium' | 'high';
 }
 
 interface ScheduleDialogProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange: (show: boolean) => void;
   students: Student[];
-  studentsWithoutSchedules: Student[];
-  preSelectedStudentId: string;
-  onSubmit: (formData: FormData) => void;
-  currentUserEmail: string | null;
+  onSubmit: (formData: FormData) => boolean;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
   open,
   onOpenChange,
   students,
-  studentsWithoutSchedules,
-  preSelectedStudentId,
   onSubmit,
-  currentUserEmail
+  isOpen,
+  onClose
 }) => {
-  const formRef = useRef<HTMLFormElement>(null);
-  const { toast } = useToast();
-
+  const form = useForm();
+  
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const success = onSubmit(formData);
     
-    if (!formRef.current) return;
-    
-    const formData = new FormData(formRef.current);
-    
-    const studentId = formData.get('studentId') as string;
-    const date = formData.get('date') as string;
-    const time = formData.get('time') as string;
-    
-    if (!studentId || !date || !time) {
-      toast({
-        title: 'Campos obrigatórios',
-        description: 'Por favor, preencha todos os campos obrigatórios.',
-        variant: 'destructive'
-      });
-      return;
+    if (success) {
+      // Reset form
+      e.currentTarget.reset();
     }
-    
-    // Adicionar o email do usuário atual como agente
-    if (currentUserEmail) {
-      formData.set('agentName', currentUserEmail);
-    }
-    
-    onSubmit(formData);
   };
-
-  // Get prioritized students - students at risk first
-  const availableStudents = studentsWithoutSchedules
-    .filter(student => student.riskLevel !== 'low')
-    .sort((a, b) => {
-      if (a.riskLevel === 'high' && b.riskLevel !== 'high') return -1;
-      if (a.riskLevel !== 'high' && b.riskLevel === 'high') return 1;
-      return a.name.localeCompare(b.name);
-    });
-
+  
+  const today = new Date().toISOString().split('T')[0];
+  
+  // Get current hour and minute for default time (nearest 30 min)
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  let defaultHour = currentHour;
+  let defaultMinute = currentMinute < 30 ? 30 : 0;
+  
+  // If minutes are past 30, increment hour
+  if (currentMinute >= 30) {
+    defaultHour = (currentHour + 1) % 24;
+  }
+  
+  const defaultTime = `${defaultHour.toString().padStart(2, '0')}:${defaultMinute.toString().padStart(2, '0')}`;
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Agendar atendimento</DialogTitle>
-          <DialogDescription>
-            Agende um atendimento para um aluno em risco
-          </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} ref={formRef}>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="studentId">Aluno</Label>
-              <Select name="studentId" defaultValue={preSelectedStudentId} required>
-                <SelectTrigger id="studentId" className="w-full bg-background">
+        <form onSubmit={handleSubmit} className="space-y-6 mt-4">
+          <div className="flex gap-4 items-start">
+            <div className="flex-shrink-0 rounded-full bg-primary/10 p-2 flex items-center justify-center">
+              <User className="h-5 w-5 text-primary" />
+            </div>
+            <div className="w-full">
+              <FormLabel>Aluno</FormLabel>
+              <Select name="studentId" required>
+                <SelectTrigger>
                   <SelectValue placeholder="Selecione um aluno" />
                 </SelectTrigger>
-                <SelectContent align="start" className="w-full max-h-[200px] overflow-auto z-[100] bg-background">
-                  {availableStudents.length > 0 ? (
-                    availableStudents.map(student => (
-                      <SelectItem key={student.id} value={student.id} className="flex items-center justify-between">
-                        <span>{student.name}</span>
-                        {student.riskLevel === 'high' && (
-                          <Badge className="ml-2 bg-red-500 text-[10px]">
-                            Alto risco
-                          </Badge>
-                        )}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <SelectItem value="loading" disabled>Nenhum aluno disponível</SelectItem>
-                  )}
+                <SelectContent>
+                  {students.map(student => (
+                    <SelectItem key={student.id} value={student.id}>
+                      {student.name} 
+                      {student.riskLevel && (
+                        <span className={`ml-2 text-xs px-1.5 py-0.5 rounded ${
+                          student.riskLevel === 'high' ? 'bg-red-100 text-red-700' :
+                          student.riskLevel === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-green-100 text-green-700'
+                        }`}>
+                          {student.riskLevel === 'high' ? 'Alto' :
+                          student.riskLevel === 'medium' ? 'Médio' : 'Baixo'}
+                        </span>
+                      )}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
-            
-            <div className="grid grid-cols-2 gap-3">
-              <div className="grid gap-2">
-                <Label htmlFor="date">Data</Label>
-                <Input
-                  type="date"
-                  name="date"
-                  id="date"
-                  min={new Date().toISOString().split('T')[0]}
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="time">Horário</Label>
-                <Input type="time" name="time" id="time" required />
-              </div>
+          </div>
+          
+          <div className="flex gap-4 items-start">
+            <div className="flex-shrink-0 rounded-full bg-primary/10 p-2 flex items-center justify-center">
+              <Calendar className="h-5 w-5 text-primary" />
             </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="agentName">Responsável</Label>
-              <Input
-                type="text"
-                name="agentName"
-                id="agentName"
-                defaultValue={currentUserEmail || ""}
-                className="bg-muted/30"
-                readOnly
-              />
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="notes">Anotações</Label>
-              <Textarea
-                name="notes"
-                id="notes"
-                placeholder="Detalhes sobre o atendimento..."
-                className="min-h-[80px]"
+            <div className="w-full">
+              <FormLabel>Data</FormLabel>
+              <Input 
+                type="date" 
+                name="date" 
+                defaultValue={today}
+                required
               />
             </div>
           </div>
           
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          <div className="flex gap-4 items-start">
+            <div className="flex-shrink-0 rounded-full bg-primary/10 p-2 flex items-center justify-center">
+              <Clock className="h-5 w-5 text-primary" />
+            </div>
+            <div className="w-full">
+              <FormLabel>Hora</FormLabel>
+              <Input 
+                type="time" 
+                name="time" 
+                defaultValue={defaultTime}
+                required
+              />
+            </div>
+          </div>
+          
+          <div>
+            <FormLabel>Observações</FormLabel>
+            <Textarea 
+              name="notes" 
+              placeholder="Informe os detalhes do atendimento"
+              className="min-h-[100px]"
+            />
+          </div>
+          
+          <div className="flex justify-end pt-2">
+            <Button variant="outline" type="button" className="mr-2" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button type="submit">Agendar</Button>
-          </DialogFooter>
+            <Button type="submit">
+              Agendar
+            </Button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>
