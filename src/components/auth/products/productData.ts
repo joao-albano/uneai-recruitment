@@ -25,7 +25,7 @@ export const allProducts: Product[] = [
     title: 'Retenção',
     description: 'Sistema para gestão e retenção de clientes/alunos',
     price: 199.90,
-    icon: <Users className="h-6 w-6 text-white" />,
+    icon: React.createElement(Users, { className: "h-6 w-6 text-white" }),
     bgColor: 'bg-blue-500'
   },
   {
@@ -33,7 +33,7 @@ export const allProducts: Product[] = [
     title: 'Vendas',
     description: 'Plataforma de vendas customizável para qualquer nicho',
     price: 249.90,
-    icon: <ShoppingCart className="h-6 w-6 text-white" />,
+    icon: React.createElement(ShoppingCart, { className: "h-6 w-6 text-white" }),
     bgColor: 'bg-green-500'
   },
   {
@@ -41,7 +41,7 @@ export const allProducts: Product[] = [
     title: 'Agendamento',
     description: 'Sistema de agendamentos adaptável para qualquer nicho',
     price: 179.90,
-    icon: <Calendar className="h-6 w-6 text-white" />,
+    icon: React.createElement(Calendar, { className: "h-6 w-6 text-white" }),
     bgColor: 'bg-purple-500'
   },
   {
@@ -49,7 +49,7 @@ export const allProducts: Product[] = [
     title: 'Captação',
     description: 'Ferramentas para captação de alunos/clientes',
     price: 219.90,
-    icon: <UserPlus className="h-6 w-6 text-white" />,
+    icon: React.createElement(UserPlus, { className: "h-6 w-6 text-white" }),
     bgColor: 'bg-orange-500'
   },
   {
@@ -57,7 +57,7 @@ export const allProducts: Product[] = [
     title: 'Secretaria',
     description: 'Sistema de gestão acadêmica e administrativa',
     price: 189.90,
-    icon: <FileText className="h-6 w-6 text-white" />,
+    icon: React.createElement(FileText, { className: "h-6 w-6 text-white" }),
     bgColor: 'bg-amber-500'
   },
   {
@@ -65,7 +65,7 @@ export const allProducts: Product[] = [
     title: 'Pedagógico',
     description: 'Sistema de gestão pedagógica com IA',
     price: 259.90,
-    icon: <BrainCircuit className="h-6 w-6 text-white" />,
+    icon: React.createElement(BrainCircuit, { className: "h-6 w-6 text-white" }),
     bgColor: 'bg-rose-500'
   }
 ];
