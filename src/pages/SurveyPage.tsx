@@ -8,7 +8,7 @@ import { AppStateProvider } from '@/context/app/AppStateContext';
 import { SchedulesProvider } from '@/context/schedules/SchedulesContext';
 import { UploadsProvider } from '@/context/uploads/UploadsContext';
 import SurveyPageContent from '@/components/survey/SurveyPageContent';
-import { Layout } from '@/components/layout/Layout';
+import Layout from '@/components/layout/Layout';
 import { generateDemoStudents } from '@/data/demoStudents';
 
 const SurveyPage: React.FC = () => {

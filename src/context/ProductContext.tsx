@@ -5,7 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
 
-export type ProductType = 'retention' | 'sales' | 'scheduling' | 'recruitment' | 'secretary' | 'pedagogical';
+export type ProductType = 'retention' | 'sales' | 'scheduling' | 'recruitment' | 'secretary' | 'pedagogical' | 'billing';
 
 export interface ProductSubscription {
   id: string;
@@ -56,7 +56,8 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
             'scheduling', 
             'recruitment', 
             'secretary', 
-            'pedagogical'
+            'pedagogical',
+            'billing'
           ];
           
           setAvailableProducts(allProductTypes);

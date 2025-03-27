@@ -53,14 +53,18 @@ export const getProductDisplayName = (productType: ProductType): string => {
   switch(productType) {
     case 'retention':
       return 'Retenção de Alunos';
-    case 'billing':
-      return 'Cobrança de Mensalidades';
+    case 'sales':
+      return 'Vendas';
+    case 'scheduling':
+      return 'Agendamento';
     case 'recruitment':
       return 'Captação de Alunos';
     case 'secretary':
       return 'Secretaria';
     case 'pedagogical':
       return 'Pedagógico';
+    case 'billing':
+      return 'Cobrança de Mensalidades';
     default:
       return productType;
   }

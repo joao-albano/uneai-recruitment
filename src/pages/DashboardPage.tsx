@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { DataProvider } from '@/context/DataContext';
-import { Layout } from '@/components/layout/Layout';
+import Layout from '@/components/layout/Layout';
 import Dashboard from '@/components/dashboard/Dashboard';
 import { useIsMobile } from '@/hooks/use-mobile';
 

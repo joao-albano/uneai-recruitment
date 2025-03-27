@@ -59,7 +59,7 @@ const CreateOrganizationForm: React.FC<CreateOrganizationFormProps> = ({
   };
   
   // List of all available product types
-  const allProductTypes: ProductType[] = ['retention', 'billing', 'recruitment', 'secretary', 'pedagogical'];
+  const allProductTypes: ProductType[] = ['retention', 'sales', 'scheduling', 'recruitment', 'secretary', 'pedagogical', 'billing'];
 
   return (
     <div className="grid gap-4 py-4">

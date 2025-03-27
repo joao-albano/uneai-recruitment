@@ -31,6 +31,13 @@ const getProductDetails = (type: ProductType) => {
         icon: BrainCircuit,
         color: 'bg-purple-600 text-white'
       };
+    case 'sales':
+      return {
+        name: 'Vendas',
+        description: 'Plataforma de vendas customizável para qualquer nicho',
+        icon: Receipt,
+        color: 'bg-green-600 text-white'
+      };
     case 'billing':
       return {
         name: 'Cobrança',
@@ -58,6 +65,13 @@ const getProductDetails = (type: ProductType) => {
         description: 'Acompanhamento pedagógico e avaliações',
         icon: BookOpen,
         color: 'bg-indigo-600 text-white'
+      };
+    case 'scheduling':
+      return {
+        name: 'Agendamento',
+        description: 'Sistema de agendamentos e gerenciamento de horários',
+        icon: BookOpen,
+        color: 'bg-teal-600 text-white'
       };
     default:
       return {

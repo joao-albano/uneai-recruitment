@@ -26,6 +26,8 @@ const ProductHub: React.FC = () => {
       navigate('/dashboard');
     } else if (productType === 'billing') {
       navigate('/billing');
+    } else if (productType === 'sales') {
+      navigate('/sales');
     } else if (productType === 'recruitment') {
       navigate('/recruitment');
     }

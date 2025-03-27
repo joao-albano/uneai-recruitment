@@ -26,8 +26,7 @@ export const useTrialPeriod = () => {
         const { data, error } = await supabase
           .from('subscriptions')
           .select('status, trial_start_date, trial_end_date, product_type')
-          .eq('user_id', currentUser.id)
-          .order('created_at', { ascending: false });
+          .eq('user_id', currentUser.id);
           
         if (error) {
           console.error('Erro ao verificar assinatura:', error);
