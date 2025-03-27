@@ -4,17 +4,18 @@ import ProductCard from './ProductCard';
 import { ProductType } from '@/context/ProductContext';
 
 export interface ProductInfo {
-  id: ProductType;
+  id: string;  // Changed from ProductType to string to be more flexible
   title: string;
   description: string;
   icon: React.ReactNode;
   iconColor: string;
   isActive: boolean;
+  segments: string[];
 }
 
 interface ProductsGridProps {
   products: ProductInfo[];
-  onNavigateToProduct: (productType: ProductType) => void;
+  onNavigateToProduct: (productType: string) => void;  // Updated to match id type
 }
 
 const ProductsGrid: React.FC<ProductsGridProps> = ({ products, onNavigateToProduct }) => {

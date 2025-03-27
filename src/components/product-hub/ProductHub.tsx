@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
-import { useProduct, ProductType } from '@/context/ProductContext';
+import { useProduct } from '@/context/ProductContext';
 import ProductHeader from './ProductHeader';
 import ProductsGrid from './ProductsGrid';
 import AdminSection from './AdminSection';
@@ -32,14 +32,15 @@ const ProductHub: React.FC = () => {
     loadProducts();
   }, []);
   
-  const handleSubscribe = async (productType: ProductType) => {
-    const success = await subscribeToProduct(productType);
+  const handleSubscribe = async (productType: string) => {
+    // Cast the string to ProductType where needed
+    const success = await subscribeToProduct(productType as any);
     if (success) {
       navigateToProduct(productType);
     }
   };
   
-  const navigateToProduct = (productType: ProductType) => {
+  const navigateToProduct = (productType: string) => {
     // Redirecionar conforme o produto
     if (productType === 'retention') {
       navigate('/dashboard');
@@ -49,6 +50,12 @@ const ProductHub: React.FC = () => {
       navigate('/sales');
     } else if (productType === 'recruitment') {
       navigate('/recruitment');
+    } else if (productType === 'scheduling') {
+      navigate('/schedule');
+    } else if (productType === 'secretary') {
+      navigate('/secretary');
+    } else if (productType === 'pedagogical') {
+      navigate('/pedagogical');
     }
   };
   

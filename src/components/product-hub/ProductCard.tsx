@@ -2,16 +2,15 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ProductType } from '@/context/ProductContext';
 
 interface ProductCardProps {
-  id: ProductType;
+  id: string;  // Changed from ProductType to string
   title: string;
   description: string;
   icon: React.ReactNode;
   iconColor: string;
   isActive: boolean;
-  onNavigate: (productType: ProductType) => void;
+  onNavigate: (productType: string) => void;  // Updated to match id type
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({

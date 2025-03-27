@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Users, ShoppingCart, Calendar, UserPlus, FileText, BrainCircuit } from 'lucide-react';
-import { ProductType } from '@/context/ProductContext';
 import { ProductInfo } from './ProductsGrid';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -69,14 +68,21 @@ export const getProducts = async (): Promise<ProductInfo[]> => {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (user) {
-      const { data: organization } = await supabase
+      const { data: organization, error } = await supabase
         .from('organizations')
-        .select('market_segment, custom_segment')
+        .select('*')
         .eq('id', user.user_metadata?.organization_id)
         .single();
       
       if (organization) {
-        const segment = organization.market_segment || 'other';
+        // Check for custom segment first
+        let segment = 'other';
+        
+        if (organization.custom_segment) {
+          segment = 'other'; // If there's a custom segment, use 'other' category
+        } else if (organization.market_segment) {
+          segment = organization.market_segment;
+        }
         
         // If the user is super admin, show all products
         const authResponse = await supabase.rpc('is_super_admin');
