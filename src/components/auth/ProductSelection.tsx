@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { useFormContext } from 'react-hook-form';
+import React, { useMemo } from 'react';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { FormField, FormItem } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -12,12 +12,11 @@ import {
   Calendar, 
   UserPlus, 
   FileText, 
-  BookOpen,
   BrainCircuit 
 } from 'lucide-react';
 
-// Products data
-const products = [
+// All available products
+const allProducts = [
   {
     id: 'retention',
     title: 'Retenção',
@@ -78,10 +77,38 @@ const formatCurrency = (value: number) => {
 const ProductSelection = () => {
   const { control, watch } = useFormContext();
   const selectedProductIds = watch('selectedProducts') || [];
+  const marketSegment = useWatch({ control, name: 'marketSegment' });
+  const customSegment = useWatch({ control, name: 'customSegment' });
+  
+  // Define products based on market segment
+  const segmentProducts = useMemo(() => {
+    let productIds: string[] = [];
+    
+    switch (marketSegment) {
+      case 'education':
+        productIds = ['retention', 'recruitment', 'secretary', 'pedagogical'];
+        break;
+      case 'health':
+      case 'beauty':
+        productIds = ['sales', 'scheduling'];
+        break;
+      case 'services':
+      case 'commerce':
+      case 'other':
+        productIds = ['sales'];
+        break;
+      default:
+        // If no segment is selected, show all products
+        productIds = allProducts.map(p => p.id);
+        break;
+    }
+    
+    return allProducts.filter(product => productIds.includes(product.id));
+  }, [marketSegment]);
   
   // Calculate total price
   const totalPrice = selectedProductIds.reduce((total, productId) => {
-    const product = products.find(p => p.id === productId);
+    const product = allProducts.find(p => p.id === productId);
     return total + (product?.price || 0);
   }, 0);
 
@@ -92,10 +119,15 @@ const ProductSelection = () => {
         <p className="text-muted-foreground">
           Escolha os produtos que deseja utilizar. Você terá 14 dias para testar gratuitamente.
         </p>
+        {marketSegment && (
+          <p className="mt-2 text-sm font-medium text-blue-600">
+            Produtos recomendados para segmento: {marketSegment === 'other' ? customSegment : marketSegment}
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {products.map((product) => (
+        {segmentProducts.map((product) => (
           <FormField
             key={product.id}
             control={control}
