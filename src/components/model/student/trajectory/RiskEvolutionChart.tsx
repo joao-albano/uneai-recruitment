@@ -41,20 +41,21 @@ const RiskEvolutionChart: React.FC<RiskEvolutionChartProps> = ({ trajectoryData 
         <CardTitle className="text-xl text-center">Evolução do Nível de Risco</CardTitle>
       </CardHeader>
       <CardContent className="p-2">
-        <div className="h-[480px] w-full">
+        <div className="h-[480px] w-full overflow-x-hidden">
           <ChartContainer config={chartConfig}>
             <LineChart 
               data={trajectoryData} 
-              margin={{ top: 20, right: 60, left: 20, bottom: 80 }}
+              margin={{ top: 20, right: 60, left: 20, bottom: 100 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="month" 
-                tick={{ fontSize: 12 }}
-                tickMargin={20}
-                height={70}
+                tick={{ fontSize: 11 }}
+                tickMargin={15}
+                height={80}
                 angle={-45}
                 textAnchor="end"
+                interval={0}
               />
               <YAxis 
                 domain={[0, 100]} 
@@ -66,7 +67,7 @@ const RiskEvolutionChart: React.FC<RiskEvolutionChartProps> = ({ trajectoryData 
               <Legend 
                 verticalAlign="bottom" 
                 height={36} 
-                wrapperStyle={{ paddingTop: '10px' }}
+                wrapperStyle={{ paddingTop: '10px', marginTop: '10px' }}
               />
               <ReferenceLine 
                 y={40} 
