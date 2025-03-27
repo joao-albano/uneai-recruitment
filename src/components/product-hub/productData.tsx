@@ -75,13 +75,28 @@ export const getProducts = async (): Promise<ProductInfo[]> => {
         .single();
       
       if (organization) {
-        // Check for custom segment first
-        let segment = 'other';
+        // Since market_segment and custom_segment don't exist in the database,
+        // we'll use a default segment based on organization name or other logic
+        let segment = 'other'; // Default segment
         
-        if (organization.custom_segment) {
-          segment = 'other'; // If there's a custom segment, use 'other' category
-        } else if (organization.market_segment) {
-          segment = organization.market_segment;
+        // Determine segment based on organization name or some other logic
+        // This is a temporary solution until the database schema is updated
+        const orgName = organization.name?.toLowerCase() || '';
+        
+        if (orgName.includes('school') || orgName.includes('college') || orgName.includes('university') || 
+            orgName.includes('escola') || orgName.includes('colégio') || orgName.includes('universidade')) {
+          segment = 'education';
+        } else if (orgName.includes('clinic') || orgName.includes('hospital') || 
+                  orgName.includes('clínica') || orgName.includes('hospital')) {
+          segment = 'health';
+        } else if (orgName.includes('salon') || orgName.includes('spa') || 
+                  orgName.includes('salão') || orgName.includes('beleza')) {
+          segment = 'beauty';
+        } else if (orgName.includes('store') || orgName.includes('shop') || 
+                  orgName.includes('loja')) {
+          segment = 'commerce';
+        } else if (orgName.includes('service') || orgName.includes('serviço')) {
+          segment = 'services';
         }
         
         // If the user is super admin, show all products
