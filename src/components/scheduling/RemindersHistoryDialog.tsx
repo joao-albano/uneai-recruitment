@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { format } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
 import { 
@@ -23,6 +23,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { generateDemoMessages } from '@/hooks/whatsapp/generateDemoMessages';
 
 interface RemindersHistoryDialogProps {
   open: boolean;
@@ -39,10 +40,38 @@ const RemindersHistoryDialog: React.FC<RemindersHistoryDialogProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const dateLocale = language === 'pt-BR' ? ptBR : enUS;
   const [selectedMessage, setSelectedMessage] = useState<WhatsAppMessage | null>(null);
+  const [displayMessages, setDisplayMessages] = useState<WhatsAppMessage[]>(messages);
+  
+  // When dialog opens, ensure we have messages to display
+  useEffect(() => {
+    if (open) {
+      // If we don't have any notification messages, use demo ones
+      const reminderMessages = messages.filter(msg => 
+        msg.messageType === 'notification' || 
+        (msg.message && (
+          msg.message.includes('agendamento') || 
+          msg.message.includes('reunião') || 
+          msg.message.includes('appointment') ||
+          msg.message.includes('atendimento')
+        ))
+      );
+      
+      if (reminderMessages.length === 0) {
+        // Use only notification-type messages from demo data
+        const demoMessages = generateDemoMessages()
+          .filter(msg => msg.messageType === 'notification')
+          .slice(0, 5);
+        
+        setDisplayMessages(demoMessages);
+      } else {
+        setDisplayMessages(messages);
+      }
+    }
+  }, [open, messages]);
   
   // Filter only appointment reminder messages
   const reminderMessages = useMemo(() => {
-    return messages.filter(msg => 
+    return displayMessages.filter(msg => 
       // Filter for reminder-type messages (either by explicit messageType or by content)
       (msg.messageType === 'notification' || 
        (msg.message && (
@@ -53,7 +82,7 @@ const RemindersHistoryDialog: React.FC<RemindersHistoryDialogProps> = ({
        ))
       )
     );
-  }, [messages]);
+  }, [displayMessages]);
   
   // Filter by search query
   const filteredMessages = useMemo(() => {

@@ -12,6 +12,7 @@ import { sendWhatsAppSurvey as sendSurveyToWhatsApp } from '@/utils/notification
 import { useStudents } from '@/context/students/StudentsContext';
 import { useAlerts } from '@/context/alerts/AlertsContext';
 import { WhatsAppConfig } from '@/utils/whatsappIntegration';
+import { generateDemoMessages } from '@/hooks/whatsapp/generateDemoMessages';
 
 interface WhatsAppContextType {
   whatsAppConfig: WhatsAppConfig;
@@ -20,23 +21,27 @@ interface WhatsAppContextType {
   runAutomatedSurveys: () => void;
   sendWhatsAppSurvey: (student: StudentData, addAlert: (alert: AlertItem) => void) => void;
   whatsAppMessages: WhatsAppMessage[];
+  addWhatsAppMessage: (message: WhatsAppMessage) => void;
 }
 
 const WhatsAppContext = createContext<WhatsAppContextType | undefined>(undefined);
 
 export const WhatsAppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [whatsAppConfig, setWhatsAppConfig] = useState<WhatsAppConfig>({
-    enabled: false,
-    provider: 'disabled' as WhatsAppProviderType,
-    apiKey: ''
-  });
-  
   const { schedules } = useSchedules();
   const { toast } = useToast();
   const { messages: whatsAppMessages, addMessage } = useWhatsAppHistory();
   const { config } = useWhatsAppConfig();
   const { students } = useStudents();
   const { addAlert } = useAlerts();
+  
+  // Ensure we have some demo messages for history display
+  React.useEffect(() => {
+    // Only add demo messages if we don't have any
+    if (whatsAppMessages.length === 0) {
+      const demoMessages = generateDemoMessages();
+      demoMessages.forEach(msg => addMessage(msg));
+    }
+  }, []);
   
   // Simular envio de lembretes de agendamentos
   const runAppointmentReminders = () => {
@@ -83,11 +88,12 @@ export const WhatsAppProvider: React.FC<{ children: ReactNode }> = ({ children }
   return (
     <WhatsAppContext.Provider value={{ 
       whatsAppConfig: config, // Use the config from the hook instead of local state
-      setWhatsAppConfig,
+      setWhatsAppConfig: () => {},
       runAppointmentReminders,
       runAutomatedSurveys,
       sendWhatsAppSurvey,
-      whatsAppMessages
+      whatsAppMessages,
+      addWhatsAppMessage: addMessage
     }}>
       {children}
     </WhatsAppContext.Provider>
