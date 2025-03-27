@@ -13,7 +13,10 @@ const ProductSelection = () => {
   
   // Define products based on market segment
   const segmentProducts = useMemo(() => {
-    return getProductsBySegment(marketSegment);
+    console.log('Market segment changed:', marketSegment);
+    const products = getProductsBySegment(marketSegment);
+    console.log('Products for segment:', products);
+    return products;
   }, [marketSegment]);
   
   // Calculate total price
@@ -33,11 +36,17 @@ const ProductSelection = () => {
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {segmentProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
+      {segmentProducts.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {segmentProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      ) : (
+        <div className="p-6 text-center bg-slate-50 rounded-lg">
+          <p className="text-muted-foreground">Selecione um segmento para ver os produtos recomendados.</p>
+        </div>
+      )}
 
       <PriceSummary totalPrice={totalPrice} />
     </div>
