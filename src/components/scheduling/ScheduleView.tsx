@@ -1,95 +1,23 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useScheduleData } from '@/hooks/useScheduleData';
+import { useReminderSending } from '@/hooks/schedule/useReminderSending';
 import CalendarView from './CalendarView';
-import ScheduleDialog from './ScheduleDialog';
-import DaySchedulesDialog from './DaySchedulesDialog';
-import ScheduleDetailsDialog from './ScheduleDetailsDialog';
 import TodaySchedules from './TodaySchedules';
 import UpcomingSchedules from './UpcomingSchedules';
 import ScheduleStats from './ScheduleStats';
-import RemindersHistoryDialog from './RemindersHistoryDialog';
-import { Button } from '@/components/ui/button';
-import { Plus, MessageSquare, Calendar, History } from 'lucide-react';
-import { useWhatsApp } from '@/context/whatsapp/WhatsAppContext';
-import { useToast } from '@/hooks/use-toast';
-import { useTheme } from '@/context/ThemeContext';
-import { useStudents } from '@/context/students/StudentsContext';
-import { sendAppointmentReminders } from '@/utils/appointmentReminders';
-import { useAlerts } from '@/context/alerts/AlertsContext';
-import { WhatsAppProvider } from '@/types/whatsapp';
-import { WhatsAppConfig } from '@/utils/whatsappIntegration';
+import ScheduleActionButtons from './ScheduleActionButtons';
+import ScheduleDialogs from './ScheduleDialogs';
 
 const ScheduleView: React.FC = () => {
   const scheduleData = useScheduleData();
-  const { whatsAppConfig, whatsAppMessages } = useWhatsApp();
-  const { toast } = useToast();
-  const { language } = useTheme();
-  const { students } = useStudents();
-  const { addAlert } = useAlerts();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [showRemindersHistory, setShowRemindersHistory] = useState(false);
   
-  // Calcula estatísticas adicionais
+  // Extract reminder functionality to a custom hook
+  const reminderManager = useReminderSending(scheduleData.schedules);
+  
+  // Calculate additional stats
   const completedCount = scheduleData.visibleSchedules.filter(s => s.status === 'completed').length;
   const canceledCount = scheduleData.visibleSchedules.filter(s => s.status === 'canceled').length;
-  
-  const handleSendReminders = async () => {
-    if (isProcessing) return;
-    
-    if (!whatsAppConfig.enabled || whatsAppConfig.provider === 'disabled') {
-      toast({
-        title: language === 'pt-BR' ? 'WhatsApp desativado' : 'WhatsApp disabled',
-        description: language === 'pt-BR' 
-          ? 'Ative a integração com WhatsApp nas configurações para enviar lembretes.' 
-          : 'Enable WhatsApp integration in settings to send reminders.',
-        variant: 'destructive'
-      });
-      return;
-    }
-    
-    setIsProcessing(true);
-    
-    try {
-      // Create a properly typed config object
-      const typedConfig: WhatsAppConfig = {
-        ...whatsAppConfig,
-        provider: whatsAppConfig.provider as WhatsAppProvider,
-        reminderTiming: whatsAppConfig.reminderTiming || 1,
-        templateMessages: whatsAppConfig.templateMessages
-      };
-      
-      // Enviar lembretes de agendamento para o dia seguinte
-      const messageCount = await sendAppointmentReminders(
-        scheduleData.schedules,
-        students,
-        typedConfig,
-        (message) => {
-          // Add message to WhatsApp history
-          console.log("Mensagem enviada:", message);
-        },
-        addAlert
-      );
-      
-      toast({
-        title: language === 'pt-BR' ? 'Lembretes processados' : 'Reminders processed',
-        description: language === 'pt-BR' 
-          ? `${messageCount} lembretes de agendamento foram enviados com sucesso.` 
-          : `${messageCount} appointment reminders were successfully sent.`
-      });
-    } catch (error) {
-      console.error("Erro ao enviar lembretes:", error);
-      toast({
-        title: language === 'pt-BR' ? 'Erro ao enviar lembretes' : 'Error sending reminders',
-        description: language === 'pt-BR'
-          ? 'Ocorreu um erro ao tentar enviar os lembretes. Tente novamente.'
-          : 'An error occurred while trying to send reminders. Please try again.',
-        variant: 'destructive'
-      });
-    } finally {
-      setIsProcessing(false);
-    }
-  };
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
@@ -104,39 +32,13 @@ const ScheduleView: React.FC = () => {
             />
           </div>
           
-          <div className="md:w-1/3 flex flex-col gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => scheduleData.setShowAddDialog(true)}
-              className="flex items-center gap-2 w-full justify-start"
-            >
-              <Plus className="h-4 w-4" />
-              {language === 'pt-BR' ? 'Novo Atendimento' : 'New Appointment'}
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleSendReminders}
-              disabled={isProcessing}
-              className="flex items-center gap-2 w-full justify-start"
-            >
-              <MessageSquare className="h-4 w-4" />
-              {isProcessing
-                ? (language === 'pt-BR' ? 'Enviando...' : 'Sending...')
-                : (language === 'pt-BR' ? 'Enviar Lembretes' : 'Send Reminders')}
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setShowRemindersHistory(true)}
-              className="flex items-center gap-2 w-full justify-start"
-            >
-              <History className="h-4 w-4" />
-              {language === 'pt-BR' ? 'Histórico de Lembretes' : 'Reminders History'}
-            </Button>
+          <div className="md:w-1/3">
+            <ScheduleActionButtons
+              onNewAppointment={() => scheduleData.setShowAddDialog(true)}
+              onSendReminders={reminderManager.handleSendReminders}
+              isProcessing={reminderManager.isProcessing}
+              onShowHistory={() => reminderManager.setShowRemindersHistory(true)}
+            />
           </div>
         </div>
         
@@ -171,37 +73,23 @@ const ScheduleView: React.FC = () => {
         />
       </div>
       
-      <ScheduleDialog 
-        open={scheduleData.showAddDialog} 
-        onOpenChange={scheduleData.setShowAddDialog}
-        students={scheduleData.studentsWithoutSchedules}
-        onSubmit={scheduleData.handleScheduleSubmit}
-        isOpen={scheduleData.showAddDialog}
-        onClose={() => scheduleData.setShowAddDialog(false)}
-      />
-      
-      {scheduleData.showDayDialog && (
-        <DaySchedulesDialog 
-          open={scheduleData.showDayDialog}
-          onOpenChange={scheduleData.setShowDayDialog}
-          date={scheduleData.selectedDate}
-          schedules={scheduleData.schedulesForSelectedDay}
-          onScheduleClick={scheduleData.handleOpenDetails}
-          onAddNew={() => scheduleData.setShowAddDialog(true)}
-        />
-      )}
-      
-      <ScheduleDetailsDialog 
-        open={scheduleData.showDetailsDialog}
-        onOpenChange={scheduleData.setShowDetailsDialog}
-        schedule={scheduleData.selectedSchedule}
-        onStatusChange={scheduleData.updateScheduleStatus}
-      />
-      
-      <RemindersHistoryDialog
-        open={showRemindersHistory}
-        onOpenChange={setShowRemindersHistory}
-        messages={whatsAppMessages}
+      <ScheduleDialogs
+        showAddDialog={scheduleData.showAddDialog}
+        setShowAddDialog={scheduleData.setShowAddDialog}
+        showDayDialog={scheduleData.showDayDialog}
+        setShowDayDialog={scheduleData.setShowDayDialog}
+        showDetailsDialog={scheduleData.showDetailsDialog}
+        setShowDetailsDialog={scheduleData.setShowDetailsDialog}
+        showRemindersHistory={reminderManager.showRemindersHistory}
+        setShowRemindersHistory={reminderManager.setShowRemindersHistory}
+        selectedDate={scheduleData.selectedDate}
+        selectedSchedule={scheduleData.selectedSchedule}
+        schedulesForSelectedDay={scheduleData.schedulesForSelectedDay}
+        studentsWithoutSchedules={scheduleData.studentsWithoutSchedules}
+        whatsAppMessages={reminderManager.whatsAppMessages}
+        handleScheduleSubmit={scheduleData.handleScheduleSubmit}
+        handleOpenDetails={scheduleData.handleOpenDetails}
+        updateScheduleStatus={scheduleData.updateScheduleStatus}
       />
     </div>
   );
