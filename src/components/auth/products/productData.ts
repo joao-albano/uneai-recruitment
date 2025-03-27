@@ -83,6 +83,8 @@ export const getProductsBySegment = (marketSegment: string) => {
     return [];
   }
   
+  console.log('Buscando produtos para o segmento:', marketSegment);
+  
   let productIds: string[] = [];
   
   switch (marketSegment) {
@@ -90,13 +92,13 @@ export const getProductsBySegment = (marketSegment: string) => {
       productIds = ['retention', 'recruitment', 'secretary', 'pedagogical'];
       break;
     case 'health':
-      productIds = ['sales', 'scheduling'];
+      productIds = ['sales', 'scheduling', 'retention'];
       break;
     case 'beauty':
-      productIds = ['sales', 'scheduling'];
+      productIds = ['sales', 'scheduling', 'retention'];
       break;
     case 'services':
-      productIds = ['sales', 'retention'];
+      productIds = ['sales', 'retention', 'scheduling'];
       break;
     case 'commerce':
       productIds = ['sales', 'retention'];
@@ -111,7 +113,9 @@ export const getProductsBySegment = (marketSegment: string) => {
   }
   
   // Filtrar e retornar apenas os produtos correspondentes ao segmento
-  return allProducts.filter(product => productIds.includes(product.id));
+  const filteredProducts = allProducts.filter(product => productIds.includes(product.id));
+  console.log('Produtos filtrados:', filteredProducts);
+  return filteredProducts;
 };
 
 export const calculateTotalPrice = (selectedProductIds: string[]): number => {

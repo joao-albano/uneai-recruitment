@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,8 @@ interface SignupFormContainerProps {
 }
 
 const SignupFormContainer = ({ onSwitchTab, onSuccess }: SignupFormContainerProps) => {
+  const [formValues, setFormValues] = useState<Partial<UserDataFormValues>>({});
+  
   const { 
     currentStep, 
     isProcessing, 
@@ -49,16 +51,33 @@ const SignupFormContainer = ({ onSwitchTab, onSuccess }: SignupFormContainerProp
   const planSelectionForm = useForm<PlanSelectionFormValues>({
     resolver: zodResolver(planSelectionSchema),
     defaultValues: {
-      selectedProducts: []
+      selectedProducts: [],
+      marketSegment: formValues.marketSegment || '',
+      customSegment: formValues.customSegment || ''
     },
   });
+  
+  // Custom handler for next step to store form values
+  const onNextStep = async (data: UserDataFormValues) => {
+    console.log('Dados do usuário para próximo passo:', data);
+    setFormValues(data);
+    
+    // Pass the market segment to plan selection form
+    planSelectionForm.setValue('marketSegment', data.marketSegment);
+    if (data.customSegment) {
+      planSelectionForm.setValue('customSegment', data.customSegment);
+    }
+    
+    // Continue with normal flow
+    await handleNextStep(data);
+  };
 
   return (
     <>
       {currentStep === 'user-data' ? (
         <FormProvider {...userDataForm}>
           <Form {...userDataForm}>
-            <form onSubmit={userDataForm.handleSubmit(handleNextStep)} className="space-y-6">
+            <form onSubmit={userDataForm.handleSubmit(onNextStep)} className="space-y-6">
               <AdminDataForm />
               
               <Separator />
