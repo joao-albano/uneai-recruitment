@@ -52,7 +52,7 @@ export const generateDemoAlerts = (): AlertItem[] => {
       studentId: '2',
       studentName: 'Bruno Santos',
       studentClass: '9A',
-      type: 'positive',
+      type: 'low-risk',
       message: 'Bruno Santos manteve excelente desempenho por 3 meses consecutivos. Considerar indicação para programa de alunos destaque.',
       createdAt: new Date(Date.now() - 86400000 * 4), // 4 dias atrás
       read: true,
@@ -63,7 +63,7 @@ export const generateDemoAlerts = (): AlertItem[] => {
       studentId: '8',
       studentName: 'Henrique Alves',
       studentClass: '9D',
-      type: 'positive',
+      type: 'low-risk',
       message: 'Henrique Alves conquistou primeiro lugar na Olimpíada de Matemática. Oportunidade para destacar conquista.',
       createdAt: new Date(Date.now() - 86400000 * 1), // 1 dia atrás
       read: false,
