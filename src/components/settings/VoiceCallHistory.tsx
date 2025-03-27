@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { format, isAfter, isBefore, isEqual, parseISO } from 'date-fns';
+import { format, isAfter, isBefore, isEqual } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
 import { useTheme } from '@/context/ThemeContext';
 import { VoiceCall } from '@/types/voicecall';
@@ -38,7 +37,6 @@ const VoiceCallHistory: React.FC<VoiceCallHistoryProps> = ({ calls }) => {
   
   const dateLocale = language === 'pt-BR' ? ptBR : enUS;
   
-  // Filter calls by search term and date range
   const filteredCalls = calls.filter(call => {
     const matchesSearch = call.studentName.toLowerCase().includes(search.toLowerCase()) || 
                            call.parentName.toLowerCase().includes(search.toLowerCase()) ||
@@ -49,7 +47,6 @@ const VoiceCallHistory: React.FC<VoiceCallHistoryProps> = ({ calls }) => {
       matchesDateRange = matchesDateRange && (isAfter(call.createdAt, startDate) || isEqual(call.createdAt, startDate));
     }
     if (endDate) {
-      // Set time to end of day for end date comparison
       const endOfDay = new Date(endDate);
       endOfDay.setHours(23, 59, 59, 999);
       matchesDateRange = matchesDateRange && (isBefore(call.createdAt, endOfDay) || isEqual(call.createdAt, endOfDay));
@@ -58,7 +55,6 @@ const VoiceCallHistory: React.FC<VoiceCallHistoryProps> = ({ calls }) => {
     return matchesSearch && matchesDateRange;
   });
   
-  // Pagination logic
   const totalPages = Math.ceil(filteredCalls.length / callsPerPage);
   const startIndex = (currentPage - 1) * callsPerPage;
   const paginatedCalls = filteredCalls.slice(startIndex, startIndex + callsPerPage);
@@ -78,7 +74,7 @@ const VoiceCallHistory: React.FC<VoiceCallHistoryProps> = ({ calls }) => {
   };
 
   const applyDateFilter = () => {
-    setOpen(false); // Close the popover when applying the filter
+    setOpen(false);
   };
   
   return (

@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import SettingsCallStatusBadge from './SettingsCallStatusBadge';
 import { format } from 'date-fns';
+import { ptBR, enUS } from 'date-fns/locale';
 
 interface SettingsCallDetailDialogProps {
   call: VoiceCall | null;
@@ -34,7 +35,11 @@ const SettingsCallDetailDialog: React.FC<SettingsCallDetailDialogProps> = ({
   // Format date with time
   const formatDate = (date: Date | null) => {
     if (!date) return '-';
-    return format(date, 'PPpp', { locale: language === 'pt-BR' ? require('date-fns/locale/pt-BR') : undefined });
+    return format(
+      date, 
+      'PPpp', 
+      { locale: language === 'pt-BR' ? ptBR : enUS }
+    );
   };
   
   // Format duration from seconds to MM:SS
