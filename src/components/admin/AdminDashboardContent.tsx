@@ -1,5 +1,5 @@
+
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTheme } from '@/context/ThemeContext';
 import { useData } from '@/context/DataContext';
@@ -7,13 +7,10 @@ import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import { Settings, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import UsageStats from './dashboard/UsageStats';
-import RiskDistribution from './dashboard/RiskDistribution';
-import SystemActivity from './dashboard/SystemActivity';
-import UserActivityChart from './dashboard/UserActivityChart';
-import ExportReports from './dashboard/ExportReports';
-import WhatsappStats from './dashboard/WhatsappStats';
-import { useWhatsAppHistory } from '@/hooks/useWhatsAppHistory';
+import OverviewTabContent from './dashboard/OverviewTabContent';
+import ActivityTabContent from './dashboard/ActivityTabContent';
+import WhatsAppTabContent from './dashboard/WhatsAppTabContent';
+import ReportsTabContent from './dashboard/ReportsTabContent';
 
 const AdminDashboardContent: React.FC = () => {
   const { language } = useTheme();
@@ -99,124 +96,19 @@ const AdminDashboardContent: React.FC = () => {
         </TabsList>
         
         <TabsContent value="overview" className="space-y-6">
-          <UsageStats />
-          <div className="grid gap-6 md:grid-cols-2 mt-6">
-            <RiskDistribution />
-            
-            <Card className="col-span-1">
-              <CardHeader>
-                <CardTitle>
-                  {language === 'pt-BR' ? 'Detalhamento por Turma' : 'Class Details'}
-                </CardTitle>
-                <CardDescription>
-                  {language === 'pt-BR' 
-                    ? 'Distribuição de risco por turma' 
-                    : 'Risk distribution by class'}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {['9A', '9B', '9C', '9D'].map(className => {
-                    const classStudents = students.filter(s => s.class === className);
-                    const highRiskInClass = classStudents.filter(s => s.riskLevel === 'high').length;
-                    const totalInClass = classStudents.length;
-                    const riskPercentage = totalInClass > 0 ? (highRiskInClass / totalInClass) * 100 : 0;
-                    
-                    return (
-                      <div key={className} className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-3 h-3 rounded-full ${riskPercentage > 30 ? 'bg-red-500' : riskPercentage > 15 ? 'bg-amber-500' : 'bg-green-500'}`}></div>
-                          <span className="font-medium">Turma {className}</span>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <span className="text-sm text-muted-foreground">{totalInClass} alunos</span>
-                          <div className="w-24 bg-muted rounded-full h-2 overflow-hidden">
-                            <div 
-                              className={`h-full ${riskPercentage > 30 ? 'bg-red-500' : riskPercentage > 15 ? 'bg-amber-500' : 'bg-green-500'}`}
-                              style={{ width: `${riskPercentage}%` }}
-                            ></div>
-                          </div>
-                          <span className="text-sm font-medium">{riskPercentage.toFixed(1)}%</span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <OverviewTabContent />
         </TabsContent>
         
         <TabsContent value="activity" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            <SystemActivity />
-            <UserActivityChart />
-          </div>
+          <ActivityTabContent />
         </TabsContent>
         
         <TabsContent value="whatsapp" className="space-y-6">
-          <WhatsappStats />
-          <div className="grid gap-6 md:grid-cols-1">
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {language === 'pt-BR' ? 'Histórico de Mensagens' : 'Message History'}
-                </CardTitle>
-                <CardDescription>
-                  {language === 'pt-BR' 
-                    ? 'Últimas mensagens enviadas via WhatsApp' 
-                    : 'Recent WhatsApp messages sent'}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="relative overflow-x-auto rounded-md border">
-                  <table className="w-full text-sm text-left">
-                    <thead className="text-xs bg-muted">
-                      <tr>
-                        <th className="px-4 py-2">{language === 'pt-BR' ? 'Estudante' : 'Student'}</th>
-                        <th className="px-4 py-2">{language === 'pt-BR' ? 'Destinatário' : 'Recipient'}</th>
-                        <th className="px-4 py-2">{language === 'pt-BR' ? 'Data' : 'Date'}</th>
-                        <th className="px-4 py-2">{language === 'pt-BR' ? 'Status' : 'Status'}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {useWhatsAppHistory().messages.slice(0, 5).map((msg, index) => (
-                        <tr key={msg.id || index} className="border-b">
-                          <td className="px-4 py-3">{msg.studentName}</td>
-                          <td className="px-4 py-3">{msg.parentName} ({msg.recipientNumber})</td>
-                          <td className="px-4 py-3">{new Date(msg.createdAt).toLocaleString()}</td>
-                          <td className="px-4 py-3">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              msg.status === 'sent' ? 'bg-blue-100 text-blue-800' :
-                              msg.status === 'delivered' ? 'bg-yellow-100 text-yellow-800' :
-                              msg.status === 'read' ? 'bg-green-100 text-green-800' :
-                              'bg-red-100 text-red-800'
-                            }`}>
-                              {msg.status === 'sent' ? (language === 'pt-BR' ? 'Enviado' : 'Sent') :
-                              msg.status === 'delivered' ? (language === 'pt-BR' ? 'Entregue' : 'Delivered') :
-                              msg.status === 'read' ? (language === 'pt-BR' ? 'Lido' : 'Read') :
-                              (language === 'pt-BR' ? 'Falha' : 'Failed')}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="mt-4 flex justify-end">
-                  <Button variant="outline" asChild>
-                    <Link to="/settings/whatsapp">
-                      {language === 'pt-BR' ? 'Ver Todas as Mensagens' : 'View All Messages'}
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <WhatsAppTabContent />
         </TabsContent>
         
         <TabsContent value="reports" className="space-y-6">
-          <ExportReports onError={handleExportError} />
+          <ReportsTabContent onError={handleExportError} />
         </TabsContent>
       </Tabs>
     </div>
