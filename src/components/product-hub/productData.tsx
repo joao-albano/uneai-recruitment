@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Users, ShoppingCart, Calendar, UserPlus, FileText, BrainCircuit } from 'lucide-react';
+import { Users, ShoppingCart, Calendar, UserPlus, FileText, BrainCircuit, Receipt } from 'lucide-react';
 import { ProductInfo } from './ProductsGrid';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -60,6 +60,15 @@ export const getProducts = async (): Promise<ProductInfo[]> => {
       iconColor: 'bg-rose-500',
       isActive: true,
       segments: ['education']
+    },
+    {
+      id: 'billing',
+      title: 'Faturamento',
+      description: 'Sistema completo de gestão financeira, controle de mensalidades e emissão de boletos e notas fiscais.',
+      icon: <Receipt className="h-6 w-6 text-white" />,
+      iconColor: 'bg-emerald-500',
+      isActive: true,
+      segments: ['education', 'health', 'beauty', 'services']
     }
   ];
 

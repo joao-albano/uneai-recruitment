@@ -14,6 +14,10 @@ export const generateDemoSchedules = (): ScheduleItem[] => {
   yesterday.setDate(yesterday.getDate() - 1);
   yesterday.setHours(11, 0, 0, 0);
   
+  const twoDaysFromNow = new Date();
+  twoDaysFromNow.setDate(twoDaysFromNow.getDate() + 2);
+  twoDaysFromNow.setHours(15, 0, 0, 0);
+  
   return [
     {
       id: 'schedule-1',
@@ -22,7 +26,7 @@ export const generateDemoSchedules = (): ScheduleItem[] => {
       date: tomorrow,
       agentName: 'Coord. Mariana',
       status: 'scheduled',
-      notes: 'Acompanhamento para prevenção de evasão'
+      notes: 'Reunião de urgência com responsáveis para discutir queda no desempenho e plano de recuperação'
     },
     {
       id: 'schedule-2',
@@ -31,16 +35,34 @@ export const generateDemoSchedules = (): ScheduleItem[] => {
       date: nextWeek,
       agentName: 'Psic. Rafael',
       status: 'scheduled',
-      notes: 'Avaliação psicopedagógica'
+      notes: 'Avaliação psicopedagógica e elaboração de plano de intervenção'
     },
     {
       id: 'schedule-3',
       studentId: '3',
       studentName: 'Carla Oliveira',
       date: yesterday,
-      agentName: 'Coord. Mariana',
+      agentName: 'Prof. Marcos',
       status: 'completed',
-      notes: 'Conversa sobre desempenho em matemática'
+      notes: 'Acompanhamento de matemática - aluna mostrou melhora na compreensão de álgebra'
+    },
+    {
+      id: 'schedule-4',
+      studentId: '7',
+      studentName: 'Gabriela Lima',
+      date: twoDaysFromNow,
+      agentName: 'Coord. Mariana',
+      status: 'scheduled',
+      notes: 'Conversa sobre frequência e dificuldades de transporte'
+    },
+    {
+      id: 'schedule-5',
+      studentId: '2',
+      studentName: 'Bruno Santos',
+      date: nextWeek,
+      agentName: 'Prof. Carla',
+      status: 'scheduled',
+      notes: 'Orientação sobre olimpíada de matemática e preparação especial'
     }
   ];
 };
