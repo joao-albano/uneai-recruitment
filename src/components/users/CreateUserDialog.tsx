@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { NewUserType } from './types';
@@ -22,24 +22,38 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   setNewUser,
   onSubmit
 }) => {
-  const { currentUser, isSuperAdmin, isAdmin } = useAuth();
+  const { currentUser, isSuperAdmin } = useAuth();
   const { toast } = useToast();
+  const [organizationChecked, setOrganizationChecked] = useState(false);
   
   // Pre-select organization for non-superadmin users
   useEffect(() => {
-    if (open && !isSuperAdmin && currentUser?.organizationId) {
-      setNewUser(prev => ({ 
-        ...prev, 
-        organizationId: currentUser.organizationId || '',
-        organizationName: currentUser.organization?.name || 'Minha Organização'
-      }));
+    if (open && !organizationChecked) {
+      setOrganizationChecked(true);
+      
+      if (!isSuperAdmin && currentUser?.organizationId) {
+        setNewUser(prev => ({ 
+          ...prev, 
+          organizationId: currentUser.organizationId || '',
+          organizationName: currentUser.organization?.name || 'Minha Organização'
+        }));
+      }
     }
-  }, [open, currentUser, isSuperAdmin, setNewUser]);
+  }, [open, currentUser, isSuperAdmin, setNewUser, organizationChecked]);
   
-  // Verificar se é possível criar um usuário (organização selecionada)
-  const canCreateUser = isSuperAdmin ? 
-    !!newUser.organizationId : 
-    !!currentUser?.organizationId;
+  // Reset organization checked state when dialog closes
+  useEffect(() => {
+    if (!open) {
+      setOrganizationChecked(false);
+    }
+  }, [open]);
+  
+  // Habilitar criação de usuário fictício (para testes)
+  const enableFictitiousUserCreation = true;
+  
+  // Verificar se é possível criar um usuário
+  const canCreateUser = enableFictitiousUserCreation || 
+    (isSuperAdmin ? !!newUser.organizationId : !!currentUser?.organizationId);
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -54,7 +68,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
         <form onSubmit={onSubmit}>
           <CreateUserForm newUser={newUser} setNewUser={setNewUser} />
           
-          {!canCreateUser && isSuperAdmin && (
+          {!canCreateUser && isSuperAdmin && !enableFictitiousUserCreation && (
             <div className="text-sm text-amber-500 mt-2">
               É necessário criar pelo menos uma organização antes de adicionar usuários.
             </div>
@@ -64,7 +78,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={!canCreateUser && isSuperAdmin}>
+            <Button type="submit" disabled={!canCreateUser}>
               Adicionar
             </Button>
           </DialogFooter>

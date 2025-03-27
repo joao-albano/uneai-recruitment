@@ -30,30 +30,23 @@ export const useUserCreate = (fetchUsers: () => Promise<void>) => {
         return;
       }
       
-      // Validação extra para organização
-      if (!newUser.organizationId) {
-        toast({
-          title: "Organização obrigatória",
-          description: "Por favor, selecione uma organização.",
-          variant: "destructive"
-        });
-        return;
-      }
+      // Modo de demonstração: aceitar usuários sem organização definida
+      const organizationId = newUser.organizationId || 'org-fictitious';
       
       console.log('Enviando dados para criar usuário:', {
         email,
         name,
         role,
-        organizationId: newUser.organizationId
+        organizationId
       });
       
-      // Chamar a função de API para criar o usuário
+      // Chamar a função de API para criar o usuário (modo fictício se não houver organizationId real)
       await createUser({
         email,
         password,
         name,
         role: role || 'user',
-        organizationId: newUser.organizationId,
+        organizationId,
         isSuperAdmin: false,
         initials: name.substring(0, 2).toUpperCase()
       });
