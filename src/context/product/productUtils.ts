@@ -7,6 +7,8 @@ export const fetchUserProducts = async (userId: string, isSuperAdmin: boolean): 
   subscriptions: ProductSubscription[],
   availableProducts: ProductType[]
 }> => {
+  console.log('Fetching user products with params:', { userId, isSuperAdmin });
+
   // Super admins have access to all products
   if (isSuperAdmin) {
     const allProductTypes: ProductType[] = [
@@ -18,6 +20,8 @@ export const fetchUserProducts = async (userId: string, isSuperAdmin: boolean): 
       'pedagogical',
       'billing'
     ];
+    
+    console.log('User is super admin - providing access to all products:', allProductTypes);
     
     // Create simulated subscriptions for all products
     const subscriptions: ProductSubscription[] = allProductTypes.map(type => ({
@@ -77,6 +81,11 @@ export const fetchUserProducts = async (userId: string, isSuperAdmin: boolean): 
     const productTypes = productSubscriptions
       .filter(sub => sub.status === 'active' || sub.status === 'trial')
       .map(sub => sub.productType);
+    
+    console.log('Regular user products fetched:', { 
+      subscriptions: productSubscriptions,
+      availableProducts: productTypes 
+    });
     
     return {
       subscriptions: productSubscriptions,

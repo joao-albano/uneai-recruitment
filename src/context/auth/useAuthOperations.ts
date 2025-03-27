@@ -23,14 +23,14 @@ const SUPER_ADMIN_USER = {
   id: 'super-admin-id',
   name: 'Paula Martins',
   email: 'paula.martins@une.cx',
-  role: 'admin',
+  role: 'superadmin', // Changed to superadmin
   organizationId: 'une-cx-org-id',
   organization: {
     id: 'une-cx-org-id',
     name: 'UNE CX',
     isMainOrg: true
   },
-  isSuperAdmin: true
+  isSuperAdmin: true // Always true for this user
 };
 
 export const useAuthOperations = () => {
@@ -59,16 +59,25 @@ export const useAuthOperations = () => {
     const result = await loginWithEmail(email, password);
     
     if (result.success) {
-      // Check if the user is the special super admin
-      const isSuperAdmin = email.toLowerCase() === 'paula.martins@une.cx';
-      const userToUse = isSuperAdmin ? SUPER_ADMIN_USER : MOCK_USER;
+      // Special handling for paula.martins@une.cx - always make them super admin
+      const isPaulaEmail = email.toLowerCase() === 'paula.martins@une.cx';
+      const userToUse = isPaulaEmail ? SUPER_ADMIN_USER : MOCK_USER;
+      
+      // Override isSuperAdmin for Paula
+      const superAdminStatus = isPaulaEmail || Boolean(userToUse.isSuperAdmin);
+      
+      console.log('Login successful for:', email, { isPaulaEmail, superAdminStatus });
       
       // Set auth state based on the user type
       setIsAuthenticated(true);
       setIsAdmin(true);
-      setIsSuperAdmin(isSuperAdmin);
+      setIsSuperAdmin(superAdminStatus);
       setUserEmail(email);
-      setCurrentUser(userToUse);
+      setCurrentUser({
+        ...userToUse,
+        email: email, // Use the actual email
+        isSuperAdmin: superAdminStatus // Ensure super admin status is set correctly
+      });
       setCurrentOrganization(userToUse.organization);
       
       // Create a mock session object with all required properties

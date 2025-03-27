@@ -63,13 +63,12 @@ export const fetchUserProfile = async (userId: string) => {
       }
     }
     
-    // Special case: hardcode paula.martins@une.cx as super admin always
+    // Special check for paula.martins@une.cx - ALWAYS make this user a super admin
     // This ensures this specific user always has super admin access
-    const isSuperAdmin = email === 'paula.martins@une.cx' || Boolean(profile?.is_super_admin);
+    const isSuperAdmin = (email === 'paula.martins@une.cx') || Boolean(profile?.is_super_admin);
     const isAdmin = Boolean(profile?.is_admin) || isSuperAdmin;
     
-    console.log('Is super admin check:', { 
-      email, 
+    console.log('Super admin check for', email, ':', { 
       isSuperAdmin, 
       profileIsSuperAdmin: Boolean(profile?.is_super_admin),
       isAdmin 

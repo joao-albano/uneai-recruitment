@@ -64,23 +64,46 @@ export const getProducts = async (): Promise<ProductInfo[]> => {
   ];
 
   try {
-    // Try to get the user's organization to check market segment
+    // Try to get the user's information to check if they are a super admin
     const { data: { user } } = await supabase.auth.getUser();
     
     if (user) {
-      const { data: organization, error } = await supabase
+      // Check if user is super admin
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_super_admin, email')
+        .eq('id', user.id)
+        .single();
+      
+      // Force super admin status for paula.martins@une.cx or if is_super_admin is true in profile
+      const isSuperAdmin = (profile?.email === 'paula.martins@une.cx') || 
+                          (profile?.is_super_admin === true);
+      
+      console.log('User check:', { 
+        userId: user.id, 
+        email: profile?.email,
+        isSuperAdmin: isSuperAdmin
+      });
+      
+      // If super admin, return all products as active
+      if (isSuperAdmin) {
+        console.log('Super admin detected, showing all products');
+        return allProducts;
+      }
+      
+      // For regular users, continue with existing logic
+      const { data: organization } = await supabase
         .from('organizations')
         .select('*')
         .eq('id', user.user_metadata?.organization_id)
         .single();
       
       if (organization) {
-        // Since market_segment and custom_segment don't exist in the database,
-        // we'll use a default segment based on organization name or other logic
+        // Since market_segment doesn't exist in the database,
+        // we'll use a default segment based on organization name
         let segment = 'other'; // Default segment
         
-        // Determine segment based on organization name or some other logic
-        // This is a temporary solution until the database schema is updated
+        // Determine segment based on organization name
         const orgName = organization.name?.toLowerCase() || '';
         
         if (orgName.includes('school') || orgName.includes('college') || orgName.includes('university') || 
@@ -97,14 +120,6 @@ export const getProducts = async (): Promise<ProductInfo[]> => {
           segment = 'commerce';
         } else if (orgName.includes('service') || orgName.includes('serviço')) {
           segment = 'services';
-        }
-        
-        // If the user is super admin, show all products
-        const authResponse = await supabase.rpc('is_super_admin');
-        const isSuperAdmin = authResponse || false;
-        
-        if (isSuperAdmin) {
-          return allProducts;
         }
         
         // Get user's active products
@@ -145,12 +160,9 @@ export const getProducts = async (): Promise<ProductInfo[]> => {
       }
     }
   } catch (error) {
-    console.error('Error fetching organization segment:', error);
+    console.error('Error fetching organization segment or user data:', error);
   }
   
   // If no segment found or error occurred, return all products
-  // but restrict to logical defaults rather than showing all
-  return allProducts.filter(product => 
-    product.segments.includes('services') // Show only basic products like sales by default
-  );
+  return allProducts;
 };
