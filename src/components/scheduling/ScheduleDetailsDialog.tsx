@@ -11,7 +11,7 @@ interface ScheduleDetailsDialogProps {
   open: boolean;
   onOpenChange: (show: boolean) => void;
   schedule: Schedule | null;
-  onStatusChange: (id: string, status: 'scheduled' | 'completed' | 'canceled') => void;
+  onStatusChange: (id: string, status: 'scheduled' | 'completed' | 'canceled', updatedSchedule?: Schedule) => void;
 }
 
 const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
