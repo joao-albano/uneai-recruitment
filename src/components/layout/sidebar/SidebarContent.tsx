@@ -9,7 +9,7 @@ import SidebarSettingsSection from './SidebarSettingsSection';
 import SidebarAdminSection from './SidebarAdminSection';
 import SidebarBillingSection from './SidebarBillingSection';
 import SidebarMonitoringSection from './SidebarMonitoringSection';
-import { useProduct, ProductType } from '@/context/ProductContext';
+import { useProduct, ProductType } from '@/context/product';
 import { useAuth } from '@/context/auth';
 import { AlertTriangle } from 'lucide-react';
 

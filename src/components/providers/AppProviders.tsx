@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AuthProvider } from "@/context/auth";
-import { ProductProvider } from "@/context/ProductContext";
+import { ProductProvider } from "@/context/product";
 import { ReactNode } from "react";
 
 interface AppProvidersProps {
