@@ -69,7 +69,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
     });
   };
 
-  // Format the price with correct thousand separators
+  // Format the price with correct thousand separators and currency for Brazilian format
   const formatPrice = (value: number): string => {
     if (isPtBR) {
       return `R$ ${value.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
@@ -77,16 +77,24 @@ const PlanCard: React.FC<PlanCardProps> = ({
     return `$${value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
   };
 
-  // Format the yearly price text to match what's shown in the image
+  // Get the yearly price based on plan ID
+  const getYearlyPrice = () => {
+    if (id === 'basic') return 249;
+    if (id === 'premium') return 499;
+    if (id === 'enterprise') return 999;
+    return priceYearly;
+  };
+  
+  // Format the yearly price text 
   const getYearlyPriceText = () => {
     if (isPtBR) {
-      if (id === 'basic') return 'R$ 2.990,00 cobrados anualmente';
-      if (id === 'premium') return 'R$ 5.990,00 cobrados anualmente';
-      if (id === 'enterprise') return 'R$ 9.990,00 cobrados anualmente';
+      if (id === 'basic') return 'R$ 249,00 cobrados anualmente';
+      if (id === 'premium') return 'R$ 499,00 cobrados anualmente';
+      if (id === 'enterprise') return 'R$ 999,00 cobrados anualmente';
     } else {
-      if (id === 'basic') return '$2,990.00 billed yearly';
-      if (id === 'premium') return '$5,990.00 billed yearly';
-      if (id === 'enterprise') return '$9,990.00 billed yearly';
+      if (id === 'basic') return '$249.00 billed yearly';
+      if (id === 'premium') return '$499.00 billed yearly';
+      if (id === 'enterprise') return '$999.00 billed yearly';
     }
     return formatPrice(priceYearly) + (isPtBR ? ' cobrados anualmente' : ' billed yearly');
   };

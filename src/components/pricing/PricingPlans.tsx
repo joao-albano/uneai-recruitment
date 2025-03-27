@@ -22,18 +22,22 @@ const PricingPlans: React.FC = () => {
   
   const getPlansFromOptions = (): Plan[] => {
     return planOptions.map(option => {
-      // For the image, monthly prices are shown as R$ 0,00 for basic and premium, 
-      // and R$ 1,00 for enterprise
+      // Monthly prices from the image: R$ 0,00 for basic and premium, and R$ 1,00 for enterprise
       let priceMonthly = 0;
+      
+      if (option.id === 'enterprise') {
+        priceMonthly = 1;
+      }
+      
+      // For yearly pricing, use the values from planOptions
       let priceYearly = 0;
       
       if (option.id === 'basic') {
-        priceYearly = 2990;
+        priceYearly = 249;
       } else if (option.id === 'premium') {
-        priceYearly = 5990;
+        priceYearly = 499;
       } else if (option.id === 'enterprise') {
-        priceYearly = 9990;
-        priceMonthly = 1;
+        priceYearly = 999;
       }
       
       return {

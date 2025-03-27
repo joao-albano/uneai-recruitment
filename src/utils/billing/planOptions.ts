@@ -31,15 +31,14 @@ const getDefaultPlans = (isPtBR: boolean): PlanOption[] => [
   {
     id: 'basic',
     name: isPtBR ? 'Básico' : 'Basic',
-    price: isPtBR ? 'R$ 2.990,00/ano' : '$2,990.00/year',
+    price: isPtBR ? 'R$ 249,00/ano' : '$249.00/year',
     description: isPtBR ? 'Para instituições pequenas' : 'For small institutions',
     relatedProduct: 'retention',
     features: [
-      isPtBR ? 'Monitoramento básico' : 'Basic monitoring',
-      isPtBR ? 'Alertas de risco' : 'Risk alerts',
-      isPtBR ? 'Suporte por email' : 'Email support'
+      isPtBR ? 'Manual' : 'Manual',
+      isPtBR ? 'Suporte' : 'Support'
     ],
-    products: ['retention'],
+    products: ['retention', 'sales'],
     limits: {
       students: 500,
       users: 4,
@@ -52,16 +51,16 @@ const getDefaultPlans = (isPtBR: boolean): PlanOption[] => [
   {
     id: 'premium',
     name: 'Premium',
-    price: isPtBR ? 'R$ 5.990,00/ano' : '$5,990.00/year',
+    price: isPtBR ? 'R$ 499,00/ano' : '$499.00/year',
     description: isPtBR ? 'Para instituições médias' : 'For medium institutions',
     relatedProduct: 'retention',
     features: [
-      isPtBR ? 'Monitoramento avançado' : 'Advanced monitoring',
-      isPtBR ? 'Alertas em tempo real' : 'Real-time alerts',
-      isPtBR ? 'Suporte prioritário' : 'Priority support',
-      isPtBR ? 'Relatórios detalhados' : 'Detailed reports'
+      isPtBR ? 'Recursos' : 'Resources',
+      isPtBR ? 'API' : 'API',
+      isPtBR ? 'WhatsApp Business' : 'WhatsApp Business',
+      isPtBR ? 'Ligações inteligentes' : 'Smart calls'
     ],
-    products: ['retention', 'scheduling'],
+    products: ['retention', 'scheduling', 'sales'],
     limits: {
       students: 1500,
       users: 50,
@@ -74,15 +73,13 @@ const getDefaultPlans = (isPtBR: boolean): PlanOption[] => [
   {
     id: 'enterprise',
     name: 'Enterprise',
-    price: isPtBR ? 'R$ 9.990,00/ano' : '$9,990.00/year',
+    price: isPtBR ? 'R$ 999,00/ano' : '$999.00/year',
     description: isPtBR ? 'Para grandes instituições' : 'For large institutions',
     relatedProduct: 'retention',
     features: [
-      isPtBR ? 'Todos os recursos premium' : 'All premium features',
-      isPtBR ? 'Alunos ilimitados' : 'Unlimited students',
-      isPtBR ? 'API personalizada' : 'Custom API access',
-      isPtBR ? 'Suporte dedicado' : 'Dedicated support',
-      isPtBR ? 'Consultoria estratégica' : 'Strategic consulting'
+      isPtBR ? 'APIs' : 'APIs',
+      isPtBR ? 'Suporte' : 'Support',
+      isPtBR ? 'Canal de vendas' : 'Sales channel'
     ],
     products: ['retention', 'scheduling', 'sales', 'recruitment', 'secretary', 'pedagogical'],
     limits: {
@@ -140,10 +137,10 @@ export const usePlanOptions = (): PlanOption[] => {
     ...plan,
     name: plan.id === 'basic' ? (isPtBR ? 'Básico' : 'Basic') : plan.name,
     price: plan.id === 'basic'
-      ? (isPtBR ? 'R$ 2.990,00/ano' : '$2,990.00/year')
+      ? (isPtBR ? 'R$ 249,00/ano' : '$249.00/year')
       : (plan.id === 'premium'
-          ? (isPtBR ? 'R$ 5.990,00/ano' : '$5,990.00/year')
-          : (isPtBR ? 'R$ 9.990,00/ano' : '$9,990.00/year')),
+          ? (isPtBR ? 'R$ 499,00/ano' : '$499.00/year')
+          : (isPtBR ? 'R$ 999,00/ano' : '$999.00/year')),
     description: plan.id === 'basic' 
       ? (isPtBR ? 'Para instituições pequenas' : 'For small institutions')
       : (plan.id === 'premium' 

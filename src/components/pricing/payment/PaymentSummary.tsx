@@ -39,10 +39,16 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({ plan, yearlyBilling }) 
   
   // Get the correct yearly price based on plan ID
   const getYearlyPrice = () => {
-    if (plan.id === 'basic') return 2990;
-    if (plan.id === 'premium') return 5990;
-    if (plan.id === 'enterprise') return 9990;
+    if (plan.id === 'basic') return 249;
+    if (plan.id === 'premium') return 499;
+    if (plan.id === 'enterprise') return 999;
     return plan.priceYearly;
+  };
+  
+  // Get the correct monthly price based on plan ID
+  const getMonthlyPrice = () => {
+    if (plan.id === 'enterprise') return 1;
+    return 0; // Basic and Premium plans are free monthly
   };
   
   // Format currency for display
@@ -52,6 +58,8 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({ plan, yearlyBilling }) 
     }
     return `$${value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
   };
+  
+  const price = yearlyBilling ? getYearlyPrice() : getMonthlyPrice() * 12;
   
   return (
     <div className="space-y-4 py-2 mb-4">
@@ -96,7 +104,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({ plan, yearlyBilling }) 
           {isPtBR ? 'Subtotal' : 'Subtotal'}
         </div>
         <div className="font-medium">
-          {formatPrice(yearlyBilling ? getYearlyPrice() : plan.priceMonthly * 12)}
+          {formatPrice(price)}
         </div>
       </div>
       
@@ -105,7 +113,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({ plan, yearlyBilling }) 
           {isPtBR ? 'Total' : 'Total'}
         </div>
         <div>
-          {formatPrice(yearlyBilling ? getYearlyPrice() : plan.priceMonthly * 12)}
+          {formatPrice(price)}
         </div>
       </div>
     </div>
