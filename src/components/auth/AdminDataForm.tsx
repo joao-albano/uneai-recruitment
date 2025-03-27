@@ -10,13 +10,16 @@ const AdminDataForm = () => {
   return (
     <div>
       <h3 className="text-lg font-medium">Dados do Administrador</h3>
-      <div className="grid gap-4 mt-3">
+      <p className="text-sm text-muted-foreground mb-3">
+        Informações do usuário administrador da conta
+      </p>
+      <div className="grid gap-4">
         <FormField
           control={control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome</FormLabel>
+              <FormLabel>Nome Completo</FormLabel>
               <FormControl>
                 <Input placeholder="Seu nome completo" {...field} />
               </FormControl>
@@ -32,42 +35,40 @@ const AdminDataForm = () => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="email@escola.edu" {...field} />
+                <Input placeholder="email@email.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Senha</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="••••••" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={control}
-            name="confirmPassword"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Confirmar Senha</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="••••••" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <FormField
+          control={control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Senha</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="Mínimo de 6 caracteres" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={control}
+          name="confirmPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Confirme a Senha</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="Digite a senha novamente" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
     </div>
   );

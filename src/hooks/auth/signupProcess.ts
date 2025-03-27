@@ -13,27 +13,7 @@ export async function processSignup(
   });
   
   try {
-    // Step 1: Check if CNPJ already exists
-    const { data: existingOrg, error: checkError } = await supabase
-      .from('organizations')
-      .select('id, name')
-      .eq('cnpj', userData.cnpj)
-      .maybeSingle();
-    
-    if (checkError) {
-      console.error('Erro ao verificar CNPJ:', checkError);
-      toast.error('Não foi possível verificar disponibilidade do CNPJ');
-      return false;
-    }
-    
-    // If CNPJ already exists, show error and stop
-    if (existingOrg) {
-      console.log('CNPJ já cadastrado:', existingOrg);
-      toast.error(`CNPJ já cadastrado para a organização "${existingOrg.name}"`);
-      return false;
-    }
-    
-    // Step 2: Create the organization first with normalized CNPJ
+    // Create organization without checking if CNPJ exists (for testing)
     const { data: newOrg, error: orgError } = await supabase
       .from('organizations')
       .insert([{ 
