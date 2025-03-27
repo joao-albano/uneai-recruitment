@@ -78,6 +78,11 @@ export const formatCurrency = (value: number) => {
 };
 
 export const getProductsBySegment = (marketSegment: string) => {
+  // Se não houver segmento selecionado, retornar array vazio
+  if (!marketSegment) {
+    return [];
+  }
+  
   let productIds: string[] = [];
   
   switch (marketSegment) {
@@ -85,20 +90,27 @@ export const getProductsBySegment = (marketSegment: string) => {
       productIds = ['retention', 'recruitment', 'secretary', 'pedagogical'];
       break;
     case 'health':
+      productIds = ['sales', 'scheduling'];
+      break;
     case 'beauty':
       productIds = ['sales', 'scheduling'];
       break;
     case 'services':
+      productIds = ['sales', 'retention'];
+      break;
     case 'commerce':
+      productIds = ['sales', 'retention'];
+      break;
     case 'other':
-      productIds = ['sales'];
+      // Para segmento personalizado, mostrar vendas e retenção como padrão
+      productIds = ['sales', 'retention'];
       break;
     default:
-      // If no segment is selected, don't show any products
-      productIds = [];
-      break;
+      // Se for um valor desconhecido, mostrar todos os produtos
+      return allProducts;
   }
   
+  // Filtrar e retornar apenas os produtos correspondentes ao segmento
   return allProducts.filter(product => productIds.includes(product.id));
 };
 
