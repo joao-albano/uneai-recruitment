@@ -1,9 +1,10 @@
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useMemo } from 'react';
 import { ScheduleItem } from '@/types/data';
 
 interface SchedulesContextType {
   schedules: ScheduleItem[];
+  visibleSchedules: ScheduleItem[]; // Added visibleSchedules
   setSchedules: (schedules: ScheduleItem[]) => void;
   addSchedule: (schedule: ScheduleItem) => void;
   updateScheduleStatus: (id: string, status: 'scheduled' | 'completed' | 'canceled') => void;
@@ -14,6 +15,9 @@ const SchedulesContext = createContext<SchedulesContextType | undefined>(undefin
 
 export const SchedulesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [schedules, setSchedules] = useState<ScheduleItem[]>([]);
+  
+  // Add computed property for visible schedules (currently showing all)
+  const visibleSchedules = useMemo(() => schedules, [schedules]);
 
   const addSchedule = (schedule: ScheduleItem) => {
     setSchedules(prev => [...prev, schedule]);
@@ -42,6 +46,7 @@ export const SchedulesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   return (
     <SchedulesContext.Provider value={{
       schedules,
+      visibleSchedules, // Expose visibleSchedules
       setSchedules,
       addSchedule,
       updateScheduleStatus,

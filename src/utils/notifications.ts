@@ -1,111 +1,115 @@
 
-import { StudentData, AlertItem } from '../types/data';
-import { WhatsAppMessage } from '../types/whatsapp';
-import { sendWhatsAppMessage, WhatsAppConfig } from './whatsappIntegration';
+import { v4 as uuidv4 } from 'uuid';
+import { StudentData, AlertItem } from '@/types/data';
+import { WhatsAppMessage } from '@/types/whatsapp';
+import { WhatsAppConfig, sendWhatsAppMessage, generateTemplateMessage } from './whatsappIntegration';
 
-export const sendWhatsAppSurvey = async (
+// Send WhatsApp survey to a specific student
+export const sendWhatsAppSurvey = (
   student: StudentData,
   addAlert: (alert: AlertItem) => void,
-  addToHistory?: (message: WhatsAppMessage) => void,
-  whatsappConfig?: WhatsAppConfig
-): Promise<void> => {
+  addWhatsAppMessage: (message: WhatsAppMessage) => void,
+  whatsAppConfig: WhatsAppConfig
+) => {
   if (!student || !student.parentContact) return;
   
-  const message = `Olá ${student.parentName}, gostaríamos de fazer uma pesquisa sobre ${student.name}. Por favor, responda as seguintes perguntas:
-  1. A família mudou de residência nos últimos 6 meses?
-  2. O aluno relatou episódios de bullying ou tratamento inadequado?
-  3. Como você avalia a integração social do aluno na escola? (1-5)
-  4. Com que frequência o aluno enfrenta dificuldades para chegar à escola?
-  5. Alguma observação adicional?`;
+  // Create template message
+  const messageContent = generateTemplateMessage(
+    whatsAppConfig.templateMessages?.introduction || '',
+    student
+  );
   
-  console.log(`Preparando envio de WhatsApp para ${student.parentName}: ${student.parentContact}`);
-  
-  let success = false;
-  let errorMessage = '';
-  
-  // Create a message object for history
-  const whatsAppMessage: WhatsAppMessage = {
-    id: `whatsapp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+  // Create record of message
+  const message: WhatsAppMessage = {
+    id: uuidv4(),
     studentId: student.id,
     studentName: student.name,
-    parentName: student.parentName || 'Responsável',
-    to: student.parentContact,
+    parentName: student.parentName || "Responsável",
+    to: student.parentContact, 
     recipientNumber: student.parentContact,
-    message,
+    messageType: 'survey',
     status: 'sent',
+    sentAt: new Date(),
     createdAt: new Date(),
+    message: messageContent,
+    content: messageContent,
   };
   
-  // If we have a WhatsApp configuration, use the configured integration
-  if (whatsappConfig && whatsappConfig.provider !== 'disabled') {
-    console.log(`Usando integração ${whatsappConfig.provider} para envio`);
-    
-    try {
-      const result = await sendWhatsAppMessage(
-        whatsappConfig,
-        student.parentContact,
-        message
-      );
-      
-      success = result.success;
-      errorMessage = result.message || '';
-      
-      // Update message status in history
-      if (addToHistory) {
-        whatsAppMessage.status = success ? 'delivered' : 'failed';
-        if (!success && errorMessage) {
-          whatsAppMessage.errorMessage = errorMessage;
-        }
-      }
-    } catch (error) {
-      console.error('Erro ao enviar mensagem:', error);
-      success = false;
-      errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-      
-      // Update message status in history with error
-      if (addToHistory) {
-        whatsAppMessage.status = 'failed';
-        whatsAppMessage.errorMessage = errorMessage;
-      }
-    }
-  } else {
-    // Simulation of sending (previous behavior)
-    console.log('Usando simulação de envio (sem integração configurada)');
-    console.log(message);
-    success = true;
+  // Add to message history
+  addWhatsAppMessage(message);
+  
+  // Try to send message through configured provider
+  if (whatsAppConfig.enabled && whatsAppConfig.provider !== 'disabled') {
+    sendWhatsAppMessage(whatsAppConfig, student.parentContact, messageContent)
+      .catch(error => console.error('Error sending WhatsApp message:', error));
   }
   
-  // Add message to history
-  if (addToHistory) {
-    addToHistory(whatsAppMessage);
-  }
-  
-  // Always add alert, regardless of send success
+  // Create alert for the sent survey
   addAlert({
-    id: `whatsapp-${Date.now()}`,
+    id: uuidv4(),
     studentId: student.id,
-    studentName: student.name,
-    studentClass: student.class,
+    studentName: student.name, 
+    studentClass: student.class || '',
     type: 'survey-requested',
-    message: success 
-      ? `Pesquisa diagnóstica enviada via WhatsApp para ${student.parentName} (${student.parentContact}).`
-      : `Falha ao enviar WhatsApp para ${student.parentName}: ${errorMessage}`,
+    message: `Pesquisa enviada para o responsável de ${student.name}`,
     createdAt: new Date(),
     read: false,
     actionTaken: false,
   });
+};
+
+// Send appointment reminder message
+export const sendAppointmentReminder = (
+  student: StudentData,
+  appointmentDate: Date,
+  addAlert: (alert: AlertItem) => void,
+  addWhatsAppMessage: (message: WhatsAppMessage) => void,
+  whatsAppConfig: WhatsAppConfig
+) => {
+  if (!student || !student.parentContact) return;
   
-  if (success) {
-    setTimeout(() => {
-      console.log(`Simulação: ${student.parentName} visualizou a mensagem.`);
-      
-      // Update message status in history (for simulation only)
-      if (addToHistory) {
-        setTimeout(() => {
-          const readMessage = { ...whatsAppMessage, status: 'read' as const, updatedAt: new Date() };
-          addToHistory(readMessage);
-        }, 3000);
-      }
-    }, 2000);
+  // Create template message
+  const messageContent = generateTemplateMessage(
+    whatsAppConfig.templateMessages?.appointmentReminder || '',
+    student,
+    appointmentDate
+  );
+  
+  // Create record of message
+  const message: WhatsAppMessage = {
+    id: uuidv4(),
+    studentId: student.id,
+    studentName: student.name,
+    parentName: student.parentName || "Responsável",
+    to: student.parentContact,
+    recipientNumber: student.parentContact,
+    messageType: 'notification',
+    status: 'sent',
+    sentAt: new Date(),
+    createdAt: new Date(),
+    message: messageContent,
+    content: messageContent,
+  };
+  
+  // Add to message history
+  addWhatsAppMessage(message);
+  
+  // Try to send message through configured provider
+  if (whatsAppConfig.enabled && whatsAppConfig.provider !== 'disabled') {
+    sendWhatsAppMessage(whatsAppConfig, student.parentContact, messageContent)
+      .catch(error => console.error('Error sending appointment reminder:', error));
   }
+  
+  // Create alert for the sent reminder
+  addAlert({
+    id: uuidv4(),
+    studentId: student.id,
+    studentName: student.name,
+    studentClass: student.class || '',
+    type: 'appointment-reminder',
+    message: `Lembrete de agendamento enviado para o responsável de ${student.name}`,
+    createdAt: new Date(),
+    read: false,
+    actionTaken: false,
+  });
 };

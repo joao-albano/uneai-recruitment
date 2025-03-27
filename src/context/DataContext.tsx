@@ -9,8 +9,7 @@ import { useUploads } from './uploads/UploadsContext';
 import { useWhatsApp } from './whatsapp/WhatsAppContext';
 import { useAppState } from './app/AppStateContext';
 import { processSurveyForRisk } from '@/utils/riskCalculator';
-import { Alert } from '@/types/alert';
-import { DataContextType } from '@/types/data';
+import { DataContextType, AlertItem, StudentData } from '@/types/data';
 
 // Main context combining all sub-contexts
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -22,11 +21,11 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { schedules, setSchedules, addSchedule, updateScheduleStatus, updateSchedule } = useSchedules();
   const { surveys, addSurvey } = useSurveys();
   const { uploadHistory, addUploadRecord, clearUploadHistory } = useUploads();
-  const { whatsAppConfig, whatsAppMessages, addWhatsAppMessage } = useWhatsApp();
+  const { whatsAppConfig, whatsAppMessages, addWhatsAppMessage, sendWhatsAppSurvey } = useWhatsApp();
   const { isLoading, generateDemoData } = useAppState();
 
   // Process survey with risk model
-  const processSurveyWithRiskModel = useCallback((survey: SurveyData) => {
+  const processSurveyWithRiskModel = useCallback((survey: any) => {
     const student = students.find(s => s.id === survey.studentId);
     
     if (!student) {
@@ -69,54 +68,13 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [students, updateStudent, addAlert]);
 
-  // Send WhatsApp survey
-  const sendWhatsAppSurvey = useCallback((studentId: string) => {
-    const student = students.find(s => s.id === studentId);
-    if (!student || !student.parentContact) return;
-    
-    const message = {
-      id: uuidv4(),
-      studentId: student.id,
-      studentName: student.name,
-      parentName: student.parentName || "Responsável",
-      to: student.parentContact,
-      recipientNumber: student.parentContact,
-      messageType: 'survey' as const,
-      status: 'sent' as const,
-      sentAt: new Date(),
-      createdAt: new Date(),
-      message: `Olá ${student.parentName || "Responsável"}, gostaríamos de fazer uma pesquisa sobre ${student.name}.`,
-      content: `Olá ${student.parentName || "Responsável"}, gostaríamos de fazer uma pesquisa sobre ${student.name}.`,
-    };
-    
-    addWhatsAppMessage(message);
-    
-    addAlert({
-      id: uuidv4(),
-      studentId: student.id,
-      studentName: student.name,
-      studentClass: student.class,
-      type: 'survey-requested',
-      message: `Pesquisa enviada para o responsável de ${student.name}`,
-      createdAt: new Date(),
-      read: false,
-      actionTaken: false,
-    });
-  }, [students, addWhatsAppMessage, addAlert]);
-
-  // Convert AlertItem[] to Alert[] by formatting createdAt to string
-  const formattedAlerts: Alert[] = alerts.map(alert => ({
-    ...alert,
-    createdAt: alert.createdAt instanceof Date ? alert.createdAt.toISOString() : alert.createdAt
-  }));
-
   return (
     <DataContext.Provider
       value={{
         students,
         surveys,
         schedules,
-        alerts: formattedAlerts,
+        alerts,
         uploadHistory,
         isLoading,
         whatsAppConfig,
@@ -133,7 +91,12 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateScheduleStatus,
         updateSchedule,
         generateDemoData,
-        sendWhatsAppSurvey,
+        sendWhatsAppSurvey: (studentId: string) => {
+          const student = students.find(s => s.id === studentId);
+          if (student) {
+            sendWhatsAppSurvey(student, addAlert);
+          }
+        },
         addStudent,
         updateStudent,
         deleteStudent,

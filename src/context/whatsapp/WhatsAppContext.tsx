@@ -1,12 +1,19 @@
 
 import React, { createContext, useContext, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { WhatsAppConfig } from '@/utils/whatsappIntegration';
 import { WhatsAppMessage } from '@/types/whatsapp';
+import { Student, AlertItem } from '@/types/data';
+import { processStudentsForAutomatedSurveys } from '@/utils/automatedSurveys';
+import { useStudents } from '../students/StudentsContext';
+import { useAlerts } from '../alerts/AlertsContext';
 
 interface WhatsAppContextType {
   whatsAppConfig: WhatsAppConfig;
   whatsAppMessages: WhatsAppMessage[];
   addWhatsAppMessage: (message: WhatsAppMessage) => void;
+  sendWhatsAppSurvey: (student: Student, addAlert: (alert: AlertItem) => void) => void;
+  runAutomatedSurveys: () => void;
 }
 
 const defaultWhatsAppConfig: WhatsAppConfig = {
@@ -29,16 +36,64 @@ const WhatsAppContext = createContext<WhatsAppContextType | undefined>(undefined
 export const WhatsAppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [whatsAppConfig] = useState<WhatsAppConfig>(defaultWhatsAppConfig);
   const [whatsAppMessages, setWhatsAppMessages] = useState<WhatsAppMessage[]>([]);
+  const { students } = useStudents();
+  const { addAlert } = useAlerts();
 
   const addWhatsAppMessage = (message: WhatsAppMessage) => {
     setWhatsAppMessages(prev => [...prev, message]);
+  };
+
+  // Send WhatsApp survey to a specific student
+  const sendWhatsAppSurvey = (student: Student, addAlertFn = addAlert) => {
+    if (!student || !student.parentContact) return;
+    
+    const message = {
+      id: uuidv4(),
+      studentId: student.id,
+      studentName: student.name,
+      parentName: student.parentName || "Responsável",
+      to: student.parentContact,
+      recipientNumber: student.parentContact,
+      messageType: 'survey' as const,
+      status: 'sent' as const,
+      sentAt: new Date(),
+      createdAt: new Date(),
+      message: `Olá ${student.parentName || "Responsável"}, gostaríamos de fazer uma pesquisa sobre ${student.name}.`,
+      content: `Olá ${student.parentName || "Responsável"}, gostaríamos de fazer uma pesquisa sobre ${student.name}.`,
+    };
+    
+    addWhatsAppMessage(message);
+    
+    addAlertFn({
+      id: uuidv4(),
+      studentId: student.id,
+      studentName: student.name,
+      studentClass: student.class,
+      type: 'survey-requested',
+      message: `Pesquisa enviada para o responsável de ${student.name}`,
+      createdAt: new Date(),
+      read: false,
+      actionTaken: false,
+    });
+  };
+
+  // Run automated surveys for high-risk students
+  const runAutomatedSurveys = () => {
+    processStudentsForAutomatedSurveys(
+      students,
+      addAlert,
+      addWhatsAppMessage,
+      whatsAppConfig
+    );
   };
 
   return (
     <WhatsAppContext.Provider value={{
       whatsAppConfig,
       whatsAppMessages,
-      addWhatsAppMessage
+      addWhatsAppMessage,
+      sendWhatsAppSurvey,
+      runAutomatedSurveys
     }}>
       {children}
     </WhatsAppContext.Provider>

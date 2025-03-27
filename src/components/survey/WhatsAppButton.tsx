@@ -23,7 +23,7 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
   const { toast } = useToast();
   const { students } = useStudents();
   const { addAlert } = useAlerts();
-  const { whatsAppConfig, sendWhatsAppSurvey: sendWhatsAppSurveyToStudent } = useWhatsApp();
+  const { whatsAppConfig, sendWhatsAppSurvey } = useWhatsApp();
 
   const handleSendWhatsApp = () => {
     try {
@@ -46,7 +46,7 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
       }
       
       // Send WhatsApp survey
-      sendWhatsAppSurveyToStudent(student, addAlert);
+      sendWhatsAppSurvey(student, addAlert);
       
       const configEnabled = whatsAppConfig && whatsAppConfig.provider !== 'disabled';
       
@@ -72,11 +72,6 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
       }, 2000);
     }
   };
-
-  // Debug console logs
-  const studentId = form.getValues('studentId');
-  console.log('Student ID:', studentId);
-  console.log('Button disabled state:', sendingWhatsApp || !studentId);
 
   return (
     <Button 
