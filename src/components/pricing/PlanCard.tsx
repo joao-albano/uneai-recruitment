@@ -70,6 +70,20 @@ const PlanCard: React.FC<PlanCardProps> = ({
     });
   };
 
+  // Format the yearly price text to match what's shown in the image
+  const getYearlyPriceText = () => {
+    if (isPtBR) {
+      if (id === 'basic') return 'R$ 2,99 cobrados anualmente';
+      if (id === 'premium') return 'R$ 5,99 cobrados anualmente';
+      if (id === 'enterprise') return 'R$ 9,99 cobrados anualmente';
+    } else {
+      if (id === 'basic') return '$2.99 billed yearly';
+      if (id === 'premium') return '$5.99 billed yearly';
+      if (id === 'enterprise') return '$9.99 billed yearly';
+    }
+    return formatCurrency(priceYearly, isPtBR) + (isPtBR ? ' cobrados anualmente' : ' billed yearly');
+  };
+
   return (
     <Card 
       className={cn(
@@ -83,7 +97,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
       </CardHeader>
       <CardContent className="flex-1">
         <div className="text-3xl font-bold mb-2">
-          {formatCurrency(yearlyBilling ? Math.round(priceYearly / 12) : priceMonthly)}{' '}
+          {isPtBR ? `R$ ${priceMonthly.toFixed(2).replace('.', ',')}` : `$${priceMonthly.toFixed(2)}`}{' '}
           <span className="text-sm font-normal text-muted-foreground">
             {isPtBR ? '/mês' : '/month'}
           </span>
@@ -91,8 +105,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
 
         {yearlyBilling && (
           <div className="text-sm text-muted-foreground mb-6">
-            {formatCurrency(priceYearly)}{' '}
-            {isPtBR ? 'cobrados anualmente' : 'billed yearly'}
+            {getYearlyPriceText()}
           </div>
         )}
 

@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { Package } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { ProductType } from '@/context/product/types';
-import { formatCurrency } from '@/utils/billing/formatCurrency';
 
 interface Plan {
   id: string;
@@ -36,6 +35,22 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({ plan, yearlyBilling }) 
     };
     
     return productNameMap[productType] || productType;
+  };
+  
+  // Get the correct yearly price based on plan ID
+  const getYearlyPrice = () => {
+    if (plan.id === 'basic') return 2.99;
+    if (plan.id === 'premium') return 5.99;
+    if (plan.id === 'enterprise') return 9.99;
+    return plan.priceYearly;
+  };
+  
+  // Format currency for display
+  const formatPrice = (value: number): string => {
+    if (isPtBR) {
+      return `R$ ${value.toFixed(2).replace('.', ',')}`;
+    }
+    return `$${value.toFixed(2)}`;
   };
   
   return (
@@ -81,7 +96,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({ plan, yearlyBilling }) 
           {isPtBR ? 'Subtotal' : 'Subtotal'}
         </div>
         <div className="font-medium">
-          {formatCurrency(yearlyBilling ? plan.priceYearly : plan.priceMonthly * 12, isPtBR)}
+          {formatPrice(yearlyBilling ? getYearlyPrice() : plan.priceMonthly * 12)}
         </div>
       </div>
       
@@ -90,7 +105,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({ plan, yearlyBilling }) 
           {isPtBR ? 'Total' : 'Total'}
         </div>
         <div>
-          {formatCurrency(yearlyBilling ? plan.priceYearly : plan.priceMonthly * 12, isPtBR)}
+          {formatPrice(yearlyBilling ? getYearlyPrice() : plan.priceMonthly * 12)}
         </div>
       </div>
     </div>

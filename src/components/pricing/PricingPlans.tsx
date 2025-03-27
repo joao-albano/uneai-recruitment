@@ -21,18 +21,24 @@ const PricingPlans: React.FC = () => {
   const planOptions = usePlanOptions();
   const isPtBR = language === 'pt-BR';
   
-  const calculateMonthlyPrice = (yearlyPrice: number): number => {
-    return Math.round(yearlyPrice / 12);
-  };
-  
   const getPlansFromOptions = (): Plan[] => {
     return planOptions.map(option => {
+      // Extract only the numeric value from price strings
+      const yearlyPrice = getPriceValue(option.price);
+      
+      // For the image, monthly prices are shown as R$ 0,00 for basic and premium, 
+      // and R$ 1,00 for enterprise
+      let monthlyPrice = 0;
+      if (option.id === 'enterprise') {
+        monthlyPrice = 1;
+      }
+      
       return {
         id: option.id,
         name: option.name,
         description: option.description,
-        priceMonthly: calculateMonthlyPrice(getPriceValue(option.price)),
-        priceYearly: getPriceValue(option.price),
+        priceMonthly: monthlyPrice,
+        priceYearly: yearlyPrice,
         features: [
           ...(option.features || []).map(feature => ({ included: true, text: feature })),
           // Add some features as not included for basic and premium plans
