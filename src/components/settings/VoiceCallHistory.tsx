@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { format, isAfter, isBefore, isEqual } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
@@ -8,6 +9,7 @@ import { Search, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { toast } from 'sonner';
 import SettingsEmptyCallState from './voice-history/SettingsEmptyCallState';
 import SettingsCallList from './voice-history/SettingsCallList';
 import SettingsCallDetailDialog from './voice-history/SettingsCallDetailDialog';
@@ -33,6 +35,8 @@ const VoiceCallHistory: React.FC<VoiceCallHistoryProps> = ({ calls }) => {
   const [showDialog, setShowDialog] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [open, setOpen] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
   const callsPerPage = 10;
   
   const dateLocale = language === 'pt-BR' ? ptBR : enUS;
@@ -75,6 +79,55 @@ const VoiceCallHistory: React.FC<VoiceCallHistoryProps> = ({ calls }) => {
 
   const applyDateFilter = () => {
     setOpen(false);
+  };
+  
+  const handlePlayRecording = (call: VoiceCall) => {
+    // In a real implementation, this would fetch and play the actual recording URL
+    // For demo purposes, we'll show a toast message
+    
+    // Stop current audio if playing
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    }
+    
+    // In a real app, you would have a recording URL in your call object
+    // For demo purposes, we're using a simulated approach
+    const demoRecordingUrl = "https://example.com/recordings/" + call.id + ".mp3";
+    
+    // Simulate playing audio (in a real app, you would use the actual URL)
+    toast.info(
+      language === 'pt-BR' 
+        ? `Reproduzindo gravação da ligação para ${call.parentName}...` 
+        : `Playing call recording for ${call.parentName}...`
+    );
+    
+    setIsPlaying(true);
+    
+    // Simulate a short audio playback
+    setTimeout(() => {
+      setIsPlaying(false);
+      
+      toast.success(
+        language === 'pt-BR' 
+          ? `Reprodução concluída` 
+          : `Playback completed`
+      );
+    }, 3000);
+    
+    // In a real implementation, you would:
+    // 1. Create an audio element
+    // 2. Set its source to the recording URL
+    // 3. Play it and handle events appropriately
+    // const audio = new Audio(call.recordingUrl);
+    // setCurrentAudio(audio);
+    // audio.play().catch(error => {
+    //   toast.error('Error playing recording');
+    //   console.error('Error playing audio:', error);
+    // });
+    // audio.onended = () => {
+    //   setIsPlaying(false);
+    // };
   };
   
   return (
@@ -144,6 +197,7 @@ const VoiceCallHistory: React.FC<VoiceCallHistoryProps> = ({ calls }) => {
           <SettingsCallList 
             calls={paginatedCalls} 
             onViewCall={handleViewCall} 
+            onPlayRecording={handlePlayRecording}
           />
           
           {totalPages > 1 && (

@@ -9,9 +9,10 @@ import SettingsCallStatusBadge from './SettingsCallStatusBadge';
 interface SettingsCallListProps {
   calls: VoiceCall[];
   onViewCall: (call: VoiceCall) => void;
+  onPlayRecording?: (call: VoiceCall) => void;
 }
 
-const SettingsCallList: React.FC<SettingsCallListProps> = ({ calls, onViewCall }) => {
+const SettingsCallList: React.FC<SettingsCallListProps> = ({ calls, onViewCall, onPlayRecording }) => {
   const { language } = useTheme();
   
   // Format call duration from seconds to MM:SS
@@ -51,6 +52,17 @@ const SettingsCallList: React.FC<SettingsCallListProps> = ({ calls, onViewCall }
               <td className="px-4 py-3 text-right">
                 {call.status === 'completed' && (
                   <div className="flex justify-end gap-2">
+                    {onPlayRecording && (
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8" 
+                        onClick={() => onPlayRecording(call)}
+                        title={language === 'pt-BR' ? 'Ouvir gravação' : 'Play recording'}
+                      >
+                        <Play className="h-4 w-4" />
+                      </Button>
+                    )}
                     {call.transcription && (
                       <Button 
                         variant="ghost" 

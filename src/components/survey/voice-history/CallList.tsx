@@ -5,6 +5,7 @@ import { VoiceCall } from '@/types/voicecall';
 import { FileText, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 
 interface CallListProps {
   calls: VoiceCall[];
@@ -70,6 +71,25 @@ const CallList: React.FC<CallListProps> = ({ calls, onViewCall }) => {
     }
   };
   
+  const handlePlayRecording = (call: VoiceCall) => {
+    // In a real implementation, this would play the actual recording
+    // For demo purposes, we'll show a toast message
+    toast.info(
+      language === 'pt-BR' 
+        ? `Reproduzindo gravação da ligação para ${call.parentName}...` 
+        : `Playing call recording for ${call.parentName}...`
+    );
+    
+    // Simulate a short audio playback
+    setTimeout(() => {
+      toast.success(
+        language === 'pt-BR' 
+          ? `Reprodução concluída` 
+          : `Playback completed`
+      );
+    }, 3000);
+  };
+  
   return (
     <div>
       {calls.length === 0 ? (
@@ -106,6 +126,7 @@ const CallList: React.FC<CallListProps> = ({ calls, onViewCall }) => {
                   <Button 
                     variant="ghost" 
                     size="icon" 
+                    onClick={() => handlePlayRecording(call)}
                     title={language === 'pt-BR' ? 'Ouvir gravação' : 'Play recording'}
                   >
                     <Play className="h-4 w-4" />

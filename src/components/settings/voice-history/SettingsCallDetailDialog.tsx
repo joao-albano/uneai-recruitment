@@ -2,6 +2,7 @@
 import React from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { VoiceCall } from '@/types/voicecall';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -13,6 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Play } from 'lucide-react';
 import SettingsCallStatusBadge from './SettingsCallStatusBadge';
 import { format } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
@@ -49,6 +51,25 @@ const SettingsCallDetailDialog: React.FC<SettingsCallDetailDialogProps> = ({
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+  
+  const handlePlayRecording = () => {
+    // In a real implementation, this would play the actual recording
+    // For demo purposes, we'll show a toast message
+    toast.info(
+      language === 'pt-BR' 
+        ? `Reproduzindo gravação da ligação para ${call.parentName}...` 
+        : `Playing call recording for ${call.parentName}...`
+    );
+    
+    // Simulate a short audio playback
+    setTimeout(() => {
+      toast.success(
+        language === 'pt-BR' 
+          ? `Reprodução concluída` 
+          : `Playback completed`
+      );
+    }, 3000);
   };
   
   return (
@@ -92,6 +113,19 @@ const SettingsCallDetailDialog: React.FC<SettingsCallDetailDialogProps> = ({
               <p className="text-sm">{formatDuration(call.duration)}</p>
             </div>
           </div>
+          
+          {call.status === 'completed' && (
+            <div className="mb-4">
+              <Button 
+                variant="outline" 
+                onClick={handlePlayRecording}
+                className="flex items-center gap-2"
+              >
+                <Play className="h-4 w-4" />
+                {language === 'pt-BR' ? 'Ouvir gravação' : 'Play recording'}
+              </Button>
+            </div>
+          )}
           
           {call.status === 'completed' && call.transcription && (
             <Tabs defaultValue="transcript" className="w-full mt-4">
