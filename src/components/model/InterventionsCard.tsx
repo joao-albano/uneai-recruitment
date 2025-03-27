@@ -12,35 +12,32 @@ const InterventionsCard: React.FC = () => {
   const { schedules } = useData();
   const navigate = useNavigate();
   
-  // Calculate completed interventions (schedules with 'completed' status)
-  const completedInterventionsCount = schedules.filter(
-    schedule => schedule.status === 'completed'
-  ).length;
-
-  // Calculate AI-assisted interventions (a subset of completed interventions that used AI insights)
-  const aiAssistedCount = Math.min(completedInterventionsCount, 
-    Math.floor(completedInterventionsCount * 0.8)); // Assume 80% of interventions used AI insights
+  // FICTITIOUS DATA: More realistic numbers for demonstration
+  // Total number of completed interventions
+  const completedInterventionsCount = 24;
   
-  const aiAssistedPercentage = completedInterventionsCount > 0 
-    ? Math.floor((aiAssistedCount / completedInterventionsCount) * 100) 
-    : 0;
+  // Number of interventions that used AI assistance
+  const aiAssistedCount = 19;
+  
+  // Calculate percentage for progress bar
+  const aiAssistedPercentage = Math.floor((aiAssistedCount / completedInterventionsCount) * 100);
 
-  // Example interventions with AI recommendations
+  // More detailed example interventions with AI recommendations
   const exampleInterventions = [
     {
       type: 'Reforço acadêmico',
-      description: 'Atividades extras de matemática e ciências com base no histórico de dificuldades do aluno.',
-      recommendation: 'Exercícios adaptados ao nível atual do aluno com progressão gradual.'
+      description: 'Aluno João Silva apresentou dificuldades significativas em matemática nas últimas avaliações.',
+      recommendation: 'Exercícios personalizados focados em álgebra básica e resolução de problemas, com aumento gradual de dificuldade.'
     },
     {
       type: 'Programa de mentoria',
-      description: 'Acompanhamento individual semanal para melhoria de hábitos de estudo.',
-      recommendation: 'Foco em organização e planejamento, com check-ins diários.'
+      description: 'Estudante Maria Oliveira demonstra grande potencial, mas falta engajamento consistente.',
+      recommendation: 'Mentoria quinzenal com acompanhamento de progresso e estabelecimento de metas de curto prazo.'
     },
     {
       type: 'Suporte comportamental',
-      description: 'Estratégias para melhorar a disciplina e engajamento em sala de aula.',
-      recommendation: 'Incentivos positivos e sistema de recompensas para participação.'
+      description: 'Carlos Santos tem apresentado comportamento disruptivo em sala de aula e faltas frequentes.',
+      recommendation: 'Abordagem coordenada entre família e escola, com sistema de recompensas e acompanhamento diário.'
     }
   ];
 
