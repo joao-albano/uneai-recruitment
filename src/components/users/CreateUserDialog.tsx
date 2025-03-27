@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { NewUserType } from './types';
 import { useAuth } from '@/context/auth';
-import { useToast } from '@/hooks/use-toast';
 import CreateUserForm from './create/CreateUserForm';
 
 interface CreateUserDialogProps {
@@ -23,9 +22,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   onSubmit
 }) => {
   const { currentUser, isSuperAdmin } = useAuth();
-  const { toast } = useToast();
   const [organizationChecked, setOrganizationChecked] = useState(false);
-  const [warningDisplayed, setWarningDisplayed] = useState(false);
   
   // Pre-select organization for non-superadmin users
   useEffect(() => {
@@ -46,23 +43,11 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   useEffect(() => {
     if (!open) {
       setOrganizationChecked(false);
-      setWarningDisplayed(false);
     }
   }, [open]);
   
-  // Show warning only once per dialog session
-  useEffect(() => {
-    if (open && !warningDisplayed && isSuperAdmin && !newUser.organizationId) {
-      setWarningDisplayed(true);
-    }
-  }, [open, warningDisplayed, isSuperAdmin, newUser.organizationId]);
-  
-  // Habilitar criação de usuário fictício (para testes)
-  const enableFictitiousUserCreation = true;
-  
-  // Verificar se é possível criar um usuário
-  const canCreateUser = enableFictitiousUserCreation || 
-    (isSuperAdmin ? !!newUser.organizationId : !!currentUser?.organizationId);
+  // Always enable creation of users
+  const canCreateUser = true;
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -76,12 +61,6 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
         
         <form onSubmit={onSubmit}>
           <CreateUserForm newUser={newUser} setNewUser={setNewUser} />
-          
-          {!canCreateUser && isSuperAdmin && !enableFictitiousUserCreation && warningDisplayed && (
-            <div className="text-sm text-amber-500 mt-2">
-              É necessário criar pelo menos uma organização antes de adicionar usuários.
-            </div>
-          )}
           
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

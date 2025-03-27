@@ -1,10 +1,8 @@
-
 import React, { useEffect, useState } from 'react';
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { fetchOrganizations } from '../../organizations/api';
 import { useAuth } from '@/context/auth';
-import { useToast } from '@/hooks/use-toast';
 
 interface OrganizationSelectorProps {
   selectedOrgId: string;
@@ -23,7 +21,6 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
 }) => {
   const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const { toast } = useToast();
   const { currentUser } = useAuth();
 
   useEffect(() => {
@@ -77,12 +74,6 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
             { id: 'org-1', name: 'Organização Demonstração' }
           ]);
         }
-        
-        toast({
-          title: "Modo demonstração",
-          description: "Usando organizações de demonstração. Conecte ao banco de dados para dados reais.",
-          variant: "default"
-        });
       } finally {
         setLoading(false);
       }
@@ -98,7 +89,7 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
         currentUser.organization.name || 'Minha Organização'
       );
     }
-  }, [currentUser, toast, selectedOrgId, onOrgChange]);
+  }, [currentUser, selectedOrgId, onOrgChange]);
   
   const handleSelectChange = (value: string) => {
     const selectedOrg = organizations.find(org => org.id === value);
