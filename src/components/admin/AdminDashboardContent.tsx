@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import OverviewTabContent from './dashboard/OverviewTabContent';
 import ActivityTabContent from './dashboard/ActivityTabContent';
 import WhatsAppTabContent from './dashboard/WhatsAppTabContent';
+import VoiceCallsTabContent from './dashboard/VoiceCallsTabContent';
 import ReportsTabContent from './dashboard/ReportsTabContent';
 
 const AdminDashboardContent: React.FC = () => {
@@ -80,7 +81,7 @@ const AdminDashboardContent: React.FC = () => {
         onValueChange={setActiveTab}
         className="space-y-6"
       >
-        <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8">
+        <TabsList className="grid grid-cols-2 md:grid-cols-5 mb-8">
           <TabsTrigger value="overview">
             {language === 'pt-BR' ? 'Visão Geral' : 'Overview'}
           </TabsTrigger>
@@ -89,6 +90,9 @@ const AdminDashboardContent: React.FC = () => {
           </TabsTrigger>
           <TabsTrigger value="whatsapp">
             {language === 'pt-BR' ? 'WhatsApp' : 'WhatsApp'}
+          </TabsTrigger>
+          <TabsTrigger value="voicecalls">
+            {language === 'pt-BR' ? 'Ligações' : 'Voice Calls'}
           </TabsTrigger>
           <TabsTrigger value="reports">
             {language === 'pt-BR' ? 'Relatórios' : 'Reports'}
@@ -105,6 +109,10 @@ const AdminDashboardContent: React.FC = () => {
         
         <TabsContent value="whatsapp" className="space-y-6">
           <WhatsAppTabContent />
+        </TabsContent>
+        
+        <TabsContent value="voicecalls" className="space-y-6">
+          <VoiceCallsTabContent />
         </TabsContent>
         
         <TabsContent value="reports" className="space-y-6">
