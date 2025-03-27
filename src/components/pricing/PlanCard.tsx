@@ -2,9 +2,13 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
+import { ProductType } from '@/context/product/types';
 import PlanFeatureItem from './PlanFeatureItem';
+import { formatCurrency } from '@/utils/billing/formatCurrency';
+import { Package } from 'lucide-react';
 
 export type PlanFeature = {
   included: boolean;
@@ -21,6 +25,7 @@ export type PlanCardProps = {
   highlightPlan?: boolean;
   yearlyBilling: boolean;
   onSelect: (plan: any) => void;
+  associatedProducts?: ProductType[];
 };
 
 const PlanCard: React.FC<PlanCardProps> = ({
@@ -32,17 +37,24 @@ const PlanCard: React.FC<PlanCardProps> = ({
   features,
   highlightPlan,
   yearlyBilling,
-  onSelect
+  onSelect,
+  associatedProducts = []
 }) => {
   const { language } = useTheme();
   const isPtBR = language === 'pt-BR';
 
-  const formatCurrency = (value: number): string => {
-    // Use Intl.NumberFormat to properly format currency values
-    return new Intl.NumberFormat(isPtBR ? 'pt-BR' : 'en-US', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(value);
+  const getProductName = (productType: ProductType): string => {
+    const productNameMap: Record<ProductType, string> = {
+      retention: isPtBR ? 'Retenção' : 'Retention',
+      sales: isPtBR ? 'Vendas' : 'Sales',
+      scheduling: isPtBR ? 'Agendamento' : 'Scheduling',
+      recruitment: isPtBR ? 'Captação' : 'Recruitment',
+      secretary: isPtBR ? 'Secretaria' : 'Secretary',
+      pedagogical: isPtBR ? 'Pedagógico' : 'Pedagogical',
+      billing: isPtBR ? 'Faturamento' : 'Billing'
+    };
+    
+    return productNameMap[productType] || productType;
   };
 
   const handleSelect = () => {
@@ -53,7 +65,8 @@ const PlanCard: React.FC<PlanCardProps> = ({
       priceMonthly,
       priceYearly,
       features,
-      highlightPlan
+      highlightPlan,
+      associatedProducts
     });
   };
 
@@ -70,7 +83,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
       </CardHeader>
       <CardContent className="flex-1">
         <div className="text-3xl font-bold mb-2">
-          {isPtBR ? 'R$' : '$'} {formatCurrency(yearlyBilling ? Math.round(priceYearly / 12) : priceMonthly)}{' '}
+          {formatCurrency(yearlyBilling ? Math.round(priceYearly / 12) : priceMonthly, isPtBR)}{' '}
           <span className="text-sm font-normal text-muted-foreground">
             {isPtBR ? '/mês' : '/month'}
           </span>
@@ -78,9 +91,24 @@ const PlanCard: React.FC<PlanCardProps> = ({
 
         {yearlyBilling && (
           <div className="text-sm text-muted-foreground mb-6">
-            {isPtBR 
-              ? `R$ ${formatCurrency(priceYearly)} cobrados anualmente` 
-              : `$${formatCurrency(priceYearly)} billed yearly`}
+            {formatCurrency(priceYearly, isPtBR)}{' '}
+            {isPtBR ? 'cobrados anualmente' : 'billed yearly'}
+          </div>
+        )}
+
+        {associatedProducts && associatedProducts.length > 0 && (
+          <div className="mt-2 mb-4">
+            <p className="text-sm text-muted-foreground mb-2">
+              {isPtBR ? 'Produtos incluídos:' : 'Included products:'}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {associatedProducts.map(product => (
+                <Badge key={product} variant="outline" className="flex items-center gap-1">
+                  <Package className="h-3 w-3" />
+                  {getProductName(product)}
+                </Badge>
+              ))}
+            </div>
           </div>
         )}
 

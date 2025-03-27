@@ -1,113 +1,80 @@
 
 import React, { useState } from 'react';
-import { useTheme } from '@/context/ThemeContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ProductType } from '@/context/ProductContext';
 import ProductAssociationDialog from './ProductAssociationDialog';
 import ProductAssociationHeader from './ProductAssociationHeader';
 import ProductList from './ProductList';
 
-interface ProductAssociationManagerProps {
-  planId: string;
+// Mock product data
+const productsList = [
+  { id: 'retention' as ProductType, name: 'Retenção', description: 'Sistema de monitoramento e retenção de alunos' },
+  { id: 'sales' as ProductType, name: 'Vendas', description: 'Gestão de vendas e matrículas' },
+  { id: 'scheduling' as ProductType, name: 'Agendamento', description: 'Agendamento de aulas e atendimentos' },
+  { id: 'recruitment' as ProductType, name: 'Captação', description: 'Ferramentas para captação de novos alunos' },
+  { id: 'secretary' as ProductType, name: 'Secretaria', description: 'Gestão da secretaria acadêmica' },
+  { id: 'pedagogical' as ProductType, name: 'Pedagógico', description: 'Sistema de gestão pedagógica' },
+  { id: 'billing' as ProductType, name: 'Faturamento', description: 'Gestão de mensalidades e faturamento' }
+];
+
+interface ProductsAssociationManagerProps {
   planName: string;
+  planId: string;
   associatedProducts: ProductType[];
-  onUpdateProducts: (planId: string, products: ProductType[]) => void;
+  onProductsChange: (products: ProductType[]) => void;
 }
 
-const ProductAssociationManager: React.FC<ProductAssociationManagerProps> = ({
-  planId,
+const ProductAssociationManager: React.FC<ProductsAssociationManagerProps> = ({
   planName,
+  planId,
   associatedProducts,
-  onUpdateProducts,
+  onProductsChange
 }) => {
-  const { language } = useTheme();
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const isPtBR = language === 'pt-BR';
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Available product options that can be associated with plans
-  const availableProducts: Array<{ id: ProductType; name: string; description: string }> = [
-    { 
-      id: 'retention', 
-      name: isPtBR ? 'Retenção' : 'Retention', 
-      description: isPtBR ? 'Sistema para gestão e retenção de alunos' : 'Student retention management system' 
-    },
-    { 
-      id: 'sales', 
-      name: isPtBR ? 'Vendas' : 'Sales', 
-      description: isPtBR ? 'Sistema de vendas e matrículas' : 'Sales and enrollment system' 
-    },
-    { 
-      id: 'scheduling', 
-      name: isPtBR ? 'Agendamentos' : 'Scheduling', 
-      description: isPtBR ? 'Sistema de agendamentos e reuniões' : 'Scheduling and meeting system' 
-    },
-    { 
-      id: 'recruitment', 
-      name: isPtBR ? 'Captação' : 'Recruitment', 
-      description: isPtBR ? 'Sistema de captação de alunos' : 'Student recruitment system' 
-    },
-    { 
-      id: 'secretary', 
-      name: isPtBR ? 'Secretaria' : 'Secretary', 
-      description: isPtBR ? 'Sistema de gestão de secretaria' : 'Secretary management system' 
-    },
-    { 
-      id: 'pedagogical', 
-      name: isPtBR ? 'Pedagógico' : 'Pedagogical', 
-      description: isPtBR ? 'Sistema de gestão pedagógica' : 'Pedagogical management system' 
-    },
-  ];
-
+  // Function to get product details by ID
   const getProductDetails = (productId: ProductType) => {
-    return availableProducts.find(product => product.id === productId) || {
+    return productsList.find(product => product.id === productId) || {
       id: productId,
       name: productId,
       description: ''
     };
   };
 
-  const handleDialogClose = (selectedProducts?: ProductType[]) => {
+  // Handle confirmation from the dialog
+  const handleConfirm = (selectedProducts?: ProductType[]) => {
     if (selectedProducts) {
-      onUpdateProducts(planId, selectedProducts);
+      onProductsChange(selectedProducts);
     }
-    setDialogOpen(false);
+    setIsDialogOpen(false);
   };
 
   return (
-    <Card className="mt-4">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg">
-          {isPtBR ? 'Produtos associados' : 'Associated Products'}
-        </CardTitle>
-        <CardDescription>
-          {isPtBR 
-            ? `Gerencie os produtos disponíveis no plano ${planName}`
-            : `Manage products available in the ${planName} plan`}
-        </CardDescription>
+    <Card>
+      <CardHeader>
+        <CardTitle>Produtos Associados</CardTitle>
       </CardHeader>
       <CardContent>
-        <ProductAssociationHeader 
+        <ProductAssociationHeader
           associatedProducts={associatedProducts}
-          onManageClick={() => setDialogOpen(true)}
+          onManageClick={() => setIsDialogOpen(true)}
         />
-
-        <Separator className="my-2" />
-
-        <ProductList 
+        
+        <ProductList
           associatedProducts={associatedProducts}
           getProductDetails={getProductDetails}
         />
+        
+        <ProductAssociationDialog
+          open={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+          onConfirm={handleConfirm}
+          availableProducts={productsList}
+          selectedProducts={associatedProducts}
+          planName={planName}
+          planId={planId}
+        />
       </CardContent>
-
-      <ProductAssociationDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        onConfirm={handleDialogClose}
-        availableProducts={availableProducts}
-        selectedProducts={associatedProducts}
-        planName={planName}
-      />
     </Card>
   );
 };

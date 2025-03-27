@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { ProductType } from '@/context/product/types';
 
 export interface Plan {
   id: string;
@@ -10,6 +11,7 @@ export interface Plan {
   price: number;
   features?: string[];
   relatedProduct?: string;
+  associatedProducts?: ProductType[];
 }
 
 export const usePlans = () => {
@@ -25,7 +27,7 @@ export const usePlans = () => {
       console.log('Buscando planos da tabela plans...');
       const { data, error } = await supabase
         .from('plans')
-        .select('*, related_product');
+        .select('*, related_product, associated_products');
           
       if (error) {
         console.error('Erro ao carregar planos:', error);
@@ -42,7 +44,8 @@ export const usePlans = () => {
           description: plan.description,
           price: plan.price,
           features: plan.features ? JSON.parse(String(plan.features)) : [],
-          relatedProduct: plan.related_product
+          relatedProduct: plan.related_product,
+          associatedProducts: plan.associated_products || []
         }));
         setPlans(formattedPlans as Plan[]);
       } else {

@@ -1,14 +1,19 @@
 
 import React from 'react';
-import { useTheme } from '@/context/ThemeContext';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+import { Package } from 'lucide-react';
+import { useTheme } from '@/context/ThemeContext';
+import { ProductType } from '@/context/product/types';
+import { formatCurrency } from '@/utils/billing/formatCurrency';
 
-type Plan = {
+interface Plan {
   id: string;
   name: string;
   priceMonthly: number;
   priceYearly: number;
-};
+  associatedProducts?: ProductType[];
+}
 
 interface PaymentSummaryProps {
   plan: Plan;
@@ -19,41 +24,76 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({ plan, yearlyBilling }) 
   const { language } = useTheme();
   const isPtBR = language === 'pt-BR';
   
-  const finalPrice = yearlyBilling ? plan.priceYearly : plan.priceMonthly;
+  const getProductName = (productType: ProductType): string => {
+    const productNameMap: Record<ProductType, string> = {
+      retention: isPtBR ? 'Retenção' : 'Retention',
+      sales: isPtBR ? 'Vendas' : 'Sales',
+      scheduling: isPtBR ? 'Agendamento' : 'Scheduling',
+      recruitment: isPtBR ? 'Captação' : 'Recruitment',
+      secretary: isPtBR ? 'Secretaria' : 'Secretary',
+      pedagogical: isPtBR ? 'Pedagógico' : 'Pedagogical',
+      billing: isPtBR ? 'Faturamento' : 'Billing'
+    };
+    
+    return productNameMap[productType] || productType;
+  };
   
   return (
-    <>
-      <div className="mb-4">
-        <div className="flex justify-between text-sm mb-2">
-          <span className="text-muted-foreground">
-            {isPtBR ? 'Plano selecionado:' : 'Selected plan:'}
-          </span>
-          <span className="font-medium">{plan.name}</span>
+    <div className="space-y-4 py-2 mb-4">
+      <div className="flex justify-between">
+        <div className="text-sm font-medium">
+          {isPtBR ? 'Plano' : 'Plan'}
         </div>
-        
-        <div className="flex justify-between text-sm mb-2">
-          <span className="text-muted-foreground">
-            {isPtBR ? 'Período de cobrança:' : 'Billing period:'}
-          </span>
-          <span className="font-medium">
-            {yearlyBilling 
-              ? (isPtBR ? 'Anual' : 'Yearly') 
-              : (isPtBR ? 'Mensal' : 'Monthly')}
-          </span>
+        <div className="font-medium">{plan.name}</div>
+      </div>
+      
+      <div className="flex justify-between">
+        <div className="text-sm font-medium">
+          {isPtBR ? 'Periodicidade' : 'Billing cycle'}
         </div>
-        
-        <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">
-            {isPtBR ? 'Valor total:' : 'Total amount:'}
-          </span>
-          <span className="font-bold">
-            {isPtBR ? `R$ ${finalPrice.toFixed(2)}` : `$${finalPrice.toFixed(2)}`}
-          </span>
+        <div>
+          {yearlyBilling ? 
+            (isPtBR ? 'Anual' : 'Yearly') : 
+            (isPtBR ? 'Mensal' : 'Monthly')}
         </div>
       </div>
       
-      <Separator className="my-4" />
-    </>
+      {plan.associatedProducts && plan.associatedProducts.length > 0 && (
+        <div>
+          <div className="text-sm font-medium mb-2">
+            {isPtBR ? 'Produtos incluídos' : 'Included products'}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {plan.associatedProducts.map(product => (
+              <Badge key={product} variant="outline" className="flex items-center gap-1">
+                <Package className="h-3 w-3" />
+                {getProductName(product)}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      <Separator />
+      
+      <div className="flex justify-between">
+        <div className="text-sm font-medium">
+          {isPtBR ? 'Subtotal' : 'Subtotal'}
+        </div>
+        <div className="font-medium">
+          {formatCurrency(yearlyBilling ? plan.priceYearly : plan.priceMonthly * 12, isPtBR)}
+        </div>
+      </div>
+      
+      <div className="flex justify-between text-lg font-bold">
+        <div>
+          {isPtBR ? 'Total' : 'Total'}
+        </div>
+        <div>
+          {formatCurrency(yearlyBilling ? plan.priceYearly : plan.priceMonthly * 12, isPtBR)}
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -1,9 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/context/ThemeContext';
 import { ProductType } from '@/context/ProductContext';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import ProductCheckboxItem from './ProductCheckboxItem';
 
 interface Product {
@@ -19,6 +21,7 @@ interface ProductAssociationDialogProps {
   availableProducts: Product[];
   selectedProducts: ProductType[];
   planName: string;
+  planId: string;
 }
 
 const ProductAssociationDialog: React.FC<ProductAssociationDialogProps> = ({
@@ -28,10 +31,18 @@ const ProductAssociationDialog: React.FC<ProductAssociationDialogProps> = ({
   availableProducts,
   selectedProducts,
   planName,
+  planId,
 }) => {
   const { language } = useTheme();
   const isPtBR = language === 'pt-BR';
   const [selection, setSelection] = useState<ProductType[]>([...selectedProducts]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setSelection([...selectedProducts]);
+    }
+  }, [open, selectedProducts]);
 
   const handleProductToggle = (productId: ProductType) => {
     setSelection(prev => {
@@ -48,8 +59,40 @@ const ProductAssociationDialog: React.FC<ProductAssociationDialogProps> = ({
     onOpenChange(false);
   };
 
-  const handleSave = () => {
-    onConfirm(selection);
+  const handleSave = async () => {
+    setIsSubmitting(true);
+    
+    try {
+      // Update the plan in the database with the selected products
+      const { error } = await supabase
+        .from('plans')
+        .update({ 
+          associated_products: selection 
+        })
+        .eq('id', planId);
+      
+      if (error) {
+        console.error('Error updating plan products:', error);
+        toast.error(isPtBR 
+          ? 'Erro ao atualizar produtos do plano' 
+          : 'Error updating plan products');
+        return;
+      }
+      
+      toast.success(isPtBR 
+        ? 'Produtos do plano atualizados com sucesso' 
+        : 'Plan products updated successfully');
+      
+      onConfirm(selection);
+    } catch (err) {
+      console.error('Error in saving products:', err);
+      toast.error(isPtBR 
+        ? 'Erro ao salvar alterações' 
+        : 'Error saving changes');
+    } finally {
+      setIsSubmitting(false);
+      onOpenChange(false);
+    }
   };
 
   return (
@@ -78,11 +121,13 @@ const ProductAssociationDialog: React.FC<ProductAssociationDialogProps> = ({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={handleCancel}>
+          <Button variant="outline" onClick={handleCancel} disabled={isSubmitting}>
             {isPtBR ? 'Cancelar' : 'Cancel'}
           </Button>
-          <Button onClick={handleSave}>
-            {isPtBR ? 'Salvar alterações' : 'Save changes'}
+          <Button onClick={handleSave} disabled={isSubmitting}>
+            {isSubmitting 
+              ? (isPtBR ? 'Salvando...' : 'Saving...') 
+              : (isPtBR ? 'Salvar alterações' : 'Save changes')}
           </Button>
         </DialogFooter>
       </DialogContent>

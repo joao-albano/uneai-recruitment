@@ -1,72 +1,79 @@
 
-import React from 'react';
-import { PlanOption } from '@/utils/billing/planOptions';
-import { useTheme } from '@/context/ThemeContext';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { Pencil } from 'lucide-react';
+import { usePlanOptionsStore, PlanOption } from '@/utils/billing/planOptions';
+import { ProductType } from '@/context/product/types';
+import ProductAssociationManager from '../ProductAssociationManager';
+import PlanLimitsManager from '../PlanLimitsManager';
 import PlanEditForm from '../PlanEditForm';
 
 interface PlanDetailsTabProps {
-  selectedPlan: PlanOption | null;
-  editingPlan: PlanOption | null;
-  onEditClick: (plan: PlanOption) => void;
-  onSubmit: (values: any) => void;
-  onCancelEdit: () => void;
+  selectedPlan: PlanOption;
 }
 
-const PlanDetailsTab: React.FC<PlanDetailsTabProps> = ({
-  selectedPlan,
-  editingPlan,
-  onEditClick,
-  onSubmit,
-  onCancelEdit,
-}) => {
-  const { language } = useTheme();
-  const isPtBR = language === 'pt-BR';
-
-  if (!selectedPlan) {
+const PlanDetailsTab = ({ selectedPlan }: PlanDetailsTabProps) => {
+  const { setPlan } = usePlanOptionsStore();
+  const [isEditMode, setIsEditMode] = useState(false);
+  
+  const handleEditClick = () => {
+    setIsEditMode(true);
+  };
+  
+  const handleCancelEdit = () => {
+    setIsEditMode(false);
+  };
+  
+  const handleSaveEdit = (updatedPlan: Partial<PlanOption>) => {
+    setPlan(selectedPlan.id, updatedPlan);
+    setIsEditMode(false);
+  };
+  
+  const handleProductsChange = (products: ProductType[]) => {
+    setPlan(selectedPlan.id, { products });
+  };
+  
+  const handleLimitsChange = (limits: PlanOption['limits']) => {
+    setPlan(selectedPlan.id, { limits });
+  };
+  
+  if (isEditMode) {
     return (
-      <Alert variant="default">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>
-          {isPtBR 
-            ? "Selecione um plano para visualizar ou editar seus detalhes." 
-            : "Select a plan to view or edit its details."}
-        </AlertDescription>
-      </Alert>
-    );
-  }
-
-  if (editingPlan) {
-    return (
-      <PlanEditForm
-        editingPlan={editingPlan}
-        onSubmit={onSubmit}
-        onCancel={onCancelEdit}
+      <PlanEditForm 
+        plan={selectedPlan}
+        onSave={handleSaveEdit}
+        onCancel={handleCancelEdit}
       />
     );
   }
-
+  
   return (
-    <div className="space-y-4">
-      <h3 className="text-xl font-semibold">{selectedPlan.name}</h3>
-      <p className="text-muted-foreground">{selectedPlan.description}</p>
-      <div className="font-medium text-lg">{selectedPlan.price}</div>
-      
-      <div className="pt-2">
-        <h4 className="font-medium mb-2">{isPtBR ? "Recursos:" : "Features:"}</h4>
-        <ul className="list-disc list-inside space-y-1">
-          {selectedPlan.features?.map((feature, idx) => (
-            <li key={idx} className="text-muted-foreground">{feature}</li>
-          ))}
-        </ul>
+    <div className="space-y-6">
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">{selectedPlan.name}</h2>
+          <p className="text-muted-foreground">{selectedPlan.description}</p>
+          <p className="text-lg font-medium mt-2">{selectedPlan.price}</p>
+        </div>
+        <Button variant="outline" onClick={handleEditClick} className="gap-1">
+          <Pencil className="h-4 w-4" />
+          Editar
+        </Button>
       </div>
       
-      <div className="pt-4">
-        <Button onClick={() => onEditClick(selectedPlan)}>
-          {isPtBR ? "Editar Detalhes" : "Edit Details"}
-        </Button>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <ProductAssociationManager 
+          planName={selectedPlan.name}
+          planId={selectedPlan.id}
+          associatedProducts={selectedPlan.products || []}
+          onProductsChange={handleProductsChange}
+        />
+        
+        <PlanLimitsManager 
+          planName={selectedPlan.name}
+          planLimits={selectedPlan.limits}
+          onLimitsChange={handleLimitsChange}
+        />
       </div>
     </div>
   );
