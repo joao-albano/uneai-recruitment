@@ -2,12 +2,11 @@
 import React, { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Plus, Package } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { ProductType } from '@/context/ProductContext';
 import ProductAssociationDialog from './ProductAssociationDialog';
+import ProductAssociationHeader from './ProductAssociationHeader';
+import ProductList from './ProductList';
 
 interface ProductAssociationManagerProps {
   planId: string;
@@ -88,47 +87,17 @@ const ProductAssociationManager: React.FC<ProductAssociationManagerProps> = ({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex justify-between items-center mb-4">
-          <div className="text-sm text-muted-foreground">
-            {isPtBR 
-              ? `${associatedProducts.length} produto(s) associado(s)` 
-              : `${associatedProducts.length} associated product(s)`}
-          </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="flex items-center gap-1"
-            onClick={() => setDialogOpen(true)}
-          >
-            <Plus className="h-4 w-4" />
-            {isPtBR ? 'Gerenciar produtos' : 'Manage products'}
-          </Button>
-        </div>
+        <ProductAssociationHeader 
+          associatedProducts={associatedProducts}
+          onManageClick={() => setDialogOpen(true)}
+        />
 
         <Separator className="my-2" />
 
-        {associatedProducts.length > 0 ? (
-          <div className="space-y-2">
-            {associatedProducts.map(productId => {
-              const product = getProductDetails(productId);
-              return (
-                <div key={productId} className="flex items-center p-2 border rounded-md">
-                  <Package className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <div>
-                    <div className="font-medium">{product.name}</div>
-                    <div className="text-xs text-muted-foreground">{product.description}</div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="py-8 text-center text-muted-foreground">
-            {isPtBR 
-              ? 'Nenhum produto associado a este plano' 
-              : 'No products associated with this plan'}
-          </div>
-        )}
+        <ProductList 
+          associatedProducts={associatedProducts}
+          getProductDetails={getProductDetails}
+        />
       </CardContent>
 
       <ProductAssociationDialog

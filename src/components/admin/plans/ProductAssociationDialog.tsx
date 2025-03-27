@@ -2,10 +2,9 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
 import { useTheme } from '@/context/ThemeContext';
 import { ProductType } from '@/context/ProductContext';
+import ProductCheckboxItem from './ProductCheckboxItem';
 
 interface Product {
   id: ProductType;
@@ -69,21 +68,12 @@ const ProductAssociationDialog: React.FC<ProductAssociationDialogProps> = ({
 
         <div className="py-4 max-h-[300px] overflow-y-auto space-y-4">
           {availableProducts.map(product => (
-            <div key={product.id} className="flex space-x-2 items-start border p-3 rounded-md">
-              <Checkbox 
-                id={product.id} 
-                checked={selection.includes(product.id)}
-                onCheckedChange={() => handleProductToggle(product.id)}
-              />
-              <div className="space-y-1">
-                <Label htmlFor={product.id} className="font-medium cursor-pointer">
-                  {product.name}
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  {product.description}
-                </p>
-              </div>
-            </div>
+            <ProductCheckboxItem 
+              key={product.id}
+              product={product}
+              isSelected={selection.includes(product.id)}
+              onToggle={handleProductToggle}
+            />
           ))}
         </div>
 
