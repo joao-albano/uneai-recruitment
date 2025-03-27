@@ -52,11 +52,13 @@ export const useAuthOperations = () => {
       setCurrentUser(MOCK_USER);
       setCurrentOrganization(MOCK_USER.organization);
       
-      // Create a mock session object
+      // Create a mock session object with all required properties
       const mockSession = {
         access_token: 'mock-access-token',
         refresh_token: 'mock-refresh-token',
         expires_at: Date.now() + 3600000, // One hour from now
+        expires_in: 3600, // Expires in 1 hour (seconds)
+        token_type: 'bearer', // Standard token type for JWT
         user: {
           id: MOCK_USER.id,
           email: email,
