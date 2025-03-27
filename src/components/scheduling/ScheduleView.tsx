@@ -70,6 +70,8 @@ const ScheduleView: React.FC = () => {
         <UpcomingSchedules 
           upcomingSchedules={scheduleData.upcomingSchedules} 
           onDetailsClick={scheduleData.handleOpenDetails}
+          onCompleted={scheduleData.markCompleted}
+          onCanceled={scheduleData.cancelSchedule}
         />
       </div>
       

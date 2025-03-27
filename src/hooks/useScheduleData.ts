@@ -17,7 +17,7 @@ export const useScheduleData = () => {
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null);
   
   // Basic state and data
-  const { schedules, visibleSchedules, updateScheduleStatus } = useSchedules();
+  const { schedules, visibleSchedules, updateScheduleStatus, updateSchedule } = useSchedules();
   const { userEmail } = useAuth();
   
   // Fixed value for today
@@ -55,6 +55,11 @@ export const useScheduleData = () => {
     newDate.setDate(day);
     calendarHooks.selectedDate.setDate(day);
     setShowDayDialog(true);
+  };
+
+  // Update schedule - used for editing date, time, and notes
+  const handleUpdateSchedule = (updatedSchedule: Schedule) => {
+    updateSchedule(updatedSchedule);
   };
 
   // Estatísticas adicionais
@@ -108,6 +113,7 @@ export const useScheduleData = () => {
     markCompleted: scheduleOperations.markCompleted,
     cancelSchedule: scheduleOperations.cancelSchedule,
     updateScheduleStatus,
+    updateSchedule: handleUpdateSchedule,
     handleOpenDetails
   };
 };

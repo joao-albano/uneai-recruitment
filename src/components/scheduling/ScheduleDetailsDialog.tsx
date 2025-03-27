@@ -1,15 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Schedule } from '@/types/schedule';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Clock, MapPin, User, X } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Schedule } from '@/types/schedule';
+import { formatDateForDisplay, formatTimeForDisplay } from '@/data/schedules/scheduleUtils';
 
 interface ScheduleDetailsDialogProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange: (show: boolean) => void;
   schedule: Schedule | null;
   onStatusChange: (id: string, status: 'scheduled' | 'completed' | 'canceled') => void;
 }
@@ -20,108 +20,166 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
   schedule,
   onStatusChange
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editDate, setEditDate] = useState('');
+  const [editTime, setEditTime] = useState('');
+  const [editNotes, setEditNotes] = useState('');
+
+  // Prepare edit form when dialog opens or schedule changes
+  React.useEffect(() => {
+    if (schedule) {
+      const date = schedule.date;
+      const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      const formattedTime = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+      
+      setEditDate(formattedDate);
+      setEditTime(formattedTime);
+      setEditNotes(schedule.notes || '');
+    }
+  }, [schedule, open]);
+
+  const handleSaveEdit = () => {
+    if (!schedule) return;
+    
+    const [year, month, day] = editDate.split('-').map(Number);
+    const [hours, minutes] = editTime.split(':').map(Number);
+    
+    // Create a new date object
+    const updatedDate = new Date(year, month - 1, day, hours, minutes);
+    
+    // Update the schedule with the new values
+    const updatedSchedule = {
+      ...schedule,
+      date: updatedDate,
+      notes: editNotes
+    };
+    
+    // Call an update function from props
+    onStatusChange(schedule.id, 'scheduled');
+    setIsEditing(false);
+    
+    // Close the dialog
+    onOpenChange(false);
+  };
+
   if (!schedule) return null;
-  
-  const formattedDate = schedule.date.toLocaleDateString('pt-BR', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-  
-  const formattedTime = schedule.date.toLocaleTimeString('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-  
-  const isScheduled = schedule.status === 'scheduled';
-  
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Detalhes do atendimento</DialogTitle>
+          <DialogTitle>Detalhes do Agendamento</DialogTitle>
         </DialogHeader>
         
-        <div className="mt-2 space-y-4">
-          <div className="flex items-center gap-2">
-            <User className="h-5 w-5 text-muted-foreground" />
-            <span className="font-medium">{schedule.studentName}</span>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-muted-foreground" />
+        {isEditing ? (
+          <div className="space-y-4 mt-4">
             <div>
-              <div className="capitalize">{formattedDate}</div>
-              <div className="text-sm text-muted-foreground">{formattedTime}</div>
+              <label className="text-sm font-medium">Data</label>
+              <Input 
+                type="date" 
+                value={editDate}
+                onChange={(e) => setEditDate(e.target.value)}
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium">Hora</label>
+              <Input 
+                type="time" 
+                value={editTime}
+                onChange={(e) => setEditTime(e.target.value)}
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium">Observações</label>
+              <Textarea 
+                value={editNotes}
+                onChange={(e) => setEditNotes(e.target.value)}
+                className="min-h-[100px]"
+              />
+            </div>
+            
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setIsEditing(false)}>
+                Cancelar
+              </Button>
+              <Button onClick={handleSaveEdit}>
+                Salvar
+              </Button>
             </div>
           </div>
-          
-          <div className="flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-muted-foreground" />
-            <span>Sala de atendimento {Math.floor(Math.random() * 10) + 1}</span>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <User className="h-5 w-5 text-muted-foreground" />
-            <span>{schedule.agentName}</span>
-          </div>
-          
-          {schedule.notes && (
-            <>
-              <Separator />
+        ) : (
+          <div className="space-y-4 mt-4">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <h4 className="font-medium mb-1">Observações:</h4>
-                <p className="text-sm text-muted-foreground">{schedule.notes}</p>
+                <h3 className="text-sm font-medium text-muted-foreground">Aluno</h3>
+                <p>{schedule.studentName}</p>
               </div>
-            </>
-          )}
-          
-          <div className="flex items-center gap-2 mt-2">
-            <div className="font-medium">Status:</div>
-            {schedule.status === 'scheduled' && (
-              <Badge variant="outline" className="bg-blue-100 text-blue-700 border border-blue-300">
-                Agendado
-              </Badge>
-            )}
-            {schedule.status === 'completed' && (
-              <Badge variant="outline" className="bg-green-100 text-green-700 border border-green-300">
-                Concluído
-              </Badge>
-            )}
-            {schedule.status === 'canceled' && (
-              <Badge variant="outline" className="bg-red-100 text-red-700 border border-red-300">
-                Cancelado
-              </Badge>
-            )}
-          </div>
-        </div>
-        
-        {isScheduled && (
-          <div className="flex justify-between mt-6">
-            <Button 
-              variant="outline" 
-              className="border-red-200 hover:bg-red-50 text-red-600"
-              onClick={() => {
-                onStatusChange(schedule.id, 'canceled');
-                onOpenChange(false);
-              }}
-            >
-              <X className="mr-2 h-4 w-4" />
-              Cancelar
-            </Button>
+              
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">Responsável</h3>
+                <p>{schedule.agentName}</p>
+              </div>
+              
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">Data</h3>
+                <p>{formatDateForDisplay(schedule.date)}</p>
+              </div>
+              
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">Hora</h3>
+                <p>{formatTimeForDisplay(schedule.date)}</p>
+              </div>
+            </div>
             
-            <Button 
-              variant="outline"
-              className="border-green-200 hover:bg-green-50 text-green-600"
-              onClick={() => {
-                onStatusChange(schedule.id, 'completed');
-                onOpenChange(false);
-              }}
-            >
-              <CheckCircle className="mr-2 h-4 w-4" />
-              Concluído
-            </Button>
+            {schedule.notes && (
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">Observações</h3>
+                <p className="mt-1">{schedule.notes}</p>
+              </div>
+            )}
+            
+            <div className="pt-4 border-t">
+              <h3 className="text-sm font-medium">Status</h3>
+              <div className="flex items-center space-x-2 mt-2">
+                <div className={`px-2 py-1 rounded-full text-xs ${
+                  schedule.status === 'scheduled' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300' :
+                  schedule.status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300' :
+                  'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300'
+                }`}>
+                  {schedule.status === 'scheduled' ? 'Agendado' :
+                   schedule.status === 'completed' ? 'Concluído' : 'Cancelado'}
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-2 pt-4">
+              {schedule.status === 'scheduled' && (
+                <>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsEditing(true)}
+                  >
+                    Editar
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="text-green-600 hover:text-green-700 border-green-200 hover:border-green-300"
+                    onClick={() => onStatusChange(schedule.id, 'completed')}
+                  >
+                    Marcar como Concluído
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
+                    onClick={() => onStatusChange(schedule.id, 'canceled')}
+                  >
+                    Cancelar Agendamento
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
         )}
       </DialogContent>
