@@ -8,8 +8,9 @@ import ScheduleDetailsDialog from './ScheduleDetailsDialog';
 import TodaySchedules from './TodaySchedules';
 import UpcomingSchedules from './UpcomingSchedules';
 import ScheduleStats from './ScheduleStats';
+import RemindersHistoryDialog from './RemindersHistoryDialog';
 import { Button } from '@/components/ui/button';
-import { Plus, MessageSquare, Calendar } from 'lucide-react';
+import { Plus, MessageSquare, Calendar, History } from 'lucide-react';
 import { useWhatsApp } from '@/context/whatsapp/WhatsAppContext';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from '@/context/ThemeContext';
@@ -27,6 +28,7 @@ const ScheduleView: React.FC = () => {
   const { students } = useStudents();
   const { addAlert } = useAlerts();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showRemindersHistory, setShowRemindersHistory] = useState(false);
   
   // Calcula estatísticas adicionais
   const completedCount = scheduleData.visibleSchedules.filter(s => s.status === 'completed').length;
@@ -125,6 +127,16 @@ const ScheduleView: React.FC = () => {
                 ? (language === 'pt-BR' ? 'Enviando...' : 'Sending...')
                 : (language === 'pt-BR' ? 'Enviar Lembretes' : 'Send Reminders')}
             </Button>
+            
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowRemindersHistory(true)}
+              className="flex items-center gap-2 w-full justify-start"
+            >
+              <History className="h-4 w-4" />
+              {language === 'pt-BR' ? 'Histórico de Lembretes' : 'Reminders History'}
+            </Button>
           </div>
         </div>
         
@@ -184,6 +196,12 @@ const ScheduleView: React.FC = () => {
         onOpenChange={scheduleData.setShowDetailsDialog}
         schedule={scheduleData.selectedSchedule}
         onStatusChange={scheduleData.updateScheduleStatus}
+      />
+      
+      <RemindersHistoryDialog
+        open={showRemindersHistory}
+        onOpenChange={setShowRemindersHistory}
+        messages={whatsAppMessages}
       />
     </div>
   );
