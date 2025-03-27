@@ -1,16 +1,21 @@
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useSchedules } from '@/context/schedules/SchedulesContext';
 import { useCalendarState } from './useCalendarState';
 import { useScheduleOperations } from './schedule/useScheduleOperations';
 import { useScheduleFilters } from './schedule/useScheduleFilters';
-import { useDialogState } from './schedule/useDialogState';
 import { useAuth } from '@/context/auth';
 import { Schedule } from '@/types/schedule';
 
 export type { Schedule } from '@/types/schedule';
 
 export const useScheduleData = () => {
+  // Estado para controlar diálogos e detalhes
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showDayDialog, setShowDayDialog] = useState(false);
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+  const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null);
+  
   // Basic state and data
   const { schedules, visibleSchedules, updateScheduleStatus } = useSchedules();
   const { userEmail } = useAuth();
@@ -22,14 +27,18 @@ export const useScheduleData = () => {
   const calendarHooks = useCalendarState(visibleSchedules);
   const scheduleOperations = useScheduleOperations();
   const scheduleFilters = useScheduleFilters(visibleSchedules, today);
-  const dialogState = useDialogState(visibleSchedules);
+  
+  // Manipulação de detalhes do agendamento
+  const handleOpenDetails = (schedule: Schedule) => {
+    setSelectedSchedule(schedule);
+    setShowDetailsDialog(true);
+  };
   
   // Handle schedule submission 
   const handleScheduleSubmit = (formData: FormData) => {
     const success = scheduleOperations.handleScheduleSubmit(formData);
     if (success) {
-      // Explicit false parameter
-      dialogState.setShowAddDialog(false);
+      setShowAddDialog(false);
     }
     return success;
   };
@@ -46,12 +55,10 @@ export const useScheduleData = () => {
 
   // Handle day click in the calendar
   const handleDayClick = (day: number) => {
-    const newDate = new Date(calendarHooks.selectedDate.getFullYear(), 
-                            calendarHooks.selectedDate.getMonth(), 
-                            day);
-    // Update the selected date
-    // Set show day dialog
-    dialogState.setShowDayDialog(true);
+    const newDate = new Date(calendarHooks.selectedDate);
+    newDate.setDate(day);
+    calendarHooks.selectedDate.setDate(day);
+    setShowDayDialog(true);
   };
 
   // Return combined object with all needed properties and methods
@@ -66,7 +73,13 @@ export const useScheduleData = () => {
     ...calendarHooks,
     
     // Dialog state
-    ...dialogState,
+    showAddDialog,
+    setShowAddDialog,
+    showDayDialog,
+    setShowDayDialog,
+    showDetailsDialog,
+    setShowDetailsDialog,
+    selectedSchedule,
     
     // Day handling
     handleDayClick,
@@ -81,6 +94,7 @@ export const useScheduleData = () => {
     handleScheduleSubmit,
     markCompleted: scheduleOperations.markCompleted,
     cancelSchedule: scheduleOperations.cancelSchedule,
-    updateScheduleStatus
+    updateScheduleStatus,
+    handleOpenDetails
   };
 };

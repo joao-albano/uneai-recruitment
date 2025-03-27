@@ -3,16 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import ScheduleItem from './ScheduleItem';
 import EmptyScheduleState from './EmptyScheduleState';
-
-interface Schedule {
-  id: string;
-  studentId: string;
-  studentName: string;
-  date: Date;
-  agentName: string;
-  status: 'scheduled' | 'completed' | 'canceled';
-  notes?: string;
-}
+import { Schedule } from '@/types/schedule';
 
 interface TodaySchedulesProps {
   todaySchedules: Schedule[];

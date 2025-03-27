@@ -74,29 +74,7 @@ const ScheduleView: React.FC = () => {
             hasSchedulesOnDay={scheduleData.hasSchedulesOnDay}
             getScheduleCountForDay={scheduleData.getScheduleCountForDay}
             getScheduleStatusForDay={scheduleData.getScheduleStatusForDay}
-            onDayClick={(day) => {
-              // Set the selected date to the clicked day
-              const newDate = new Date(scheduleData.selectedDate);
-              newDate.setDate(day);
-              
-              // Get schedules for this day and open dialog
-              const daySchedules = scheduleData.visibleSchedules.filter(s => {
-                const scheduleDate = new Date(s.date);
-                return scheduleDate.getDate() === day &&
-                       scheduleDate.getMonth() === newDate.getMonth() &&
-                       scheduleDate.getFullYear() === newDate.getFullYear();
-              });
-              
-              if (daySchedules.length > 0) {
-                // If there are schedules, show the day dialog
-                if (scheduleData.setShowDayDialog) {
-                  scheduleData.setShowDayDialog(true);
-                }
-              } else {
-                // If there are no schedules, show the add dialog
-                scheduleData.setShowAddDialog(true);
-              }
-            }}
+            onDayClick={scheduleData.handleDayClick}
           />
         </div>
       </div>
@@ -106,12 +84,12 @@ const ScheduleView: React.FC = () => {
           todaySchedules={scheduleData.todaySchedules} 
           onCompleted={scheduleData.markCompleted}
           onCanceled={scheduleData.cancelSchedule}
-          onDetailsClick={scheduleData.handleOpenDetails || (() => {})}
+          onDetailsClick={scheduleData.handleOpenDetails}
         />
         
         <UpcomingSchedules 
           upcomingSchedules={scheduleData.upcomingSchedules} 
-          onDetailsClick={scheduleData.handleOpenDetails || (() => {})}
+          onDetailsClick={scheduleData.handleOpenDetails}
         />
       </div>
       
@@ -127,24 +105,19 @@ const ScheduleView: React.FC = () => {
       {scheduleData.showDayDialog && (
         <DaySchedulesDialog 
           open={scheduleData.showDayDialog}
-          onOpenChange={scheduleData.setShowDayDialog || (() => {})}
+          onOpenChange={scheduleData.setShowDayDialog}
           date={scheduleData.selectedDate}
-          schedules={scheduleData.visibleSchedules.filter(s => {
-            const scheduleDate = new Date(s.date);
-            return scheduleDate.getDate() === scheduleData.selectedDate.getDate() &&
-                  scheduleDate.getMonth() === scheduleData.selectedDate.getMonth() &&
-                  scheduleDate.getFullYear() === scheduleData.selectedDate.getFullYear();
-          })}
-          onScheduleClick={scheduleData.handleOpenDetails || (() => {})}
+          schedules={scheduleData.schedulesForSelectedDay}
+          onScheduleClick={scheduleData.handleOpenDetails}
           onAddNew={() => scheduleData.setShowAddDialog(true)}
         />
       )}
       
       <ScheduleDetailsDialog 
-        open={scheduleData.showDetailsDialog || false}
-        onOpenChange={scheduleData.setShowDetailsDialog || (() => {})}
+        open={scheduleData.showDetailsDialog}
+        onOpenChange={scheduleData.setShowDetailsDialog}
         schedule={scheduleData.selectedSchedule}
-        onStatusChange={scheduleData.updateScheduleStatus || (() => {})}
+        onStatusChange={scheduleData.updateScheduleStatus}
       />
     </div>
   );
