@@ -1,12 +1,12 @@
 
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import ProductCard from './products/ProductCard';
 import PriceSummary from './products/PriceSummary';
 import { getProductsBySegment, calculateTotalPrice } from './products/productData';
 
 const ProductSelection = () => {
-  const { control, watch, setValue } = useFormContext();
+  const { control, watch } = useFormContext();
   const selectedProductIds = watch('selectedProducts') || [];
   const marketSegment = useWatch({ control, name: 'marketSegment' });
   const customSegment = useWatch({ control, name: 'customSegment' });
@@ -21,13 +21,6 @@ const ProductSelection = () => {
   
   // Calculate total price
   const totalPrice = calculateTotalPrice(selectedProductIds);
-  
-  // Set default selection if no products selected and we have segment products
-  useEffect(() => {
-    if (segmentProducts.length > 0 && selectedProductIds.length === 0) {
-      setValue('selectedProducts', [segmentProducts[0].id]);
-    }
-  }, [segmentProducts, selectedProductIds.length, setValue]);
 
   return (
     <div className="space-y-6">
