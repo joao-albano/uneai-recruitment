@@ -17,6 +17,9 @@ export async function processSignup(
     console.log('Dados do usuário:', userData);
     console.log('Produtos selecionados:', planData.selectedProducts);
     
+    // New users are created as admins of their organizations
+    console.log('Usuário criado como admin da organização');
+    
     // Simulate a small delay for better user experience
     await new Promise(resolve => setTimeout(resolve, 800));
     

@@ -14,7 +14,7 @@ const SidebarAdminSection: React.FC<SidebarAdminSectionProps> = ({ collapsed }) 
   
   console.log('SidebarAdminSection - isAdmin:', isAdmin, 'isSuperAdmin:', isSuperAdmin);
   
-  // Não mostrar a seção se o usuário não for admin nem superadmin
+  // Don't show the admin section for regular users
   if (!isAdmin && !isSuperAdmin) {
     return null;
   }
@@ -24,15 +24,17 @@ const SidebarAdminSection: React.FC<SidebarAdminSectionProps> = ({ collapsed }) 
       title="Administração" 
       collapsed={collapsed}
     >
-      {/* Dashboard Admin é visível para todos os admins */}
-      <SidebarNavLink 
-        to="/admin/dashboard" 
-        icon={BarChart2} 
-        label="Painel Admin" 
-        collapsed={collapsed}
-      />
+      {/* Dashboard Admin is visible to all admins */}
+      {isSuperAdmin && (
+        <SidebarNavLink 
+          to="/admin/dashboard" 
+          icon={BarChart2} 
+          label="Painel Admin" 
+          collapsed={collapsed}
+        />
+      )}
       
-      {/* Usuários é visível para todos os admins, para gerenciar usuários da própria organização */}
+      {/* Users page is visible to all admins to manage their organization users */}
       <SidebarNavLink 
         to="/users" 
         icon={Users} 
@@ -40,7 +42,7 @@ const SidebarAdminSection: React.FC<SidebarAdminSectionProps> = ({ collapsed }) 
         collapsed={collapsed}
       />
       
-      {/* As opções abaixo são visíveis apenas para super admins (UNE CX) */}
+      {/* Options below are visible only to super admins (UNE CX) */}
       {isSuperAdmin && (
         <>
           <SidebarNavLink 

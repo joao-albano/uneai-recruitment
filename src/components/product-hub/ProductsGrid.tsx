@@ -16,9 +16,14 @@ export interface ProductInfo {
 interface ProductsGridProps {
   products: ProductInfo[];
   onNavigateToProduct: (productType: string) => void;  // Updated to match id type
+  onSubscribeToProduct: (productType: string) => void;
 }
 
-const ProductsGrid: React.FC<ProductsGridProps> = ({ products, onNavigateToProduct }) => {
+const ProductsGrid: React.FC<ProductsGridProps> = ({ 
+  products, 
+  onNavigateToProduct,
+  onSubscribeToProduct
+}) => {
   return (
     <div className="grid gap-8 md:grid-cols-3 sm:grid-cols-2">
       {products.map((product) => (
@@ -31,6 +36,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products, onNavigateToProdu
           iconColor={product.iconColor}
           isActive={product.isActive}
           onNavigate={onNavigateToProduct}
+          onSubscribe={onSubscribeToProduct}
         />
       ))}
     </div>

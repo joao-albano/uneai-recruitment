@@ -41,7 +41,7 @@ const ProductHub: React.FC = () => {
   };
   
   const navigateToProduct = (productType: string) => {
-    // Redirecionar conforme o produto
+    // Redirect based on the product
     if (productType === 'retention') {
       navigate('/dashboard');
     } else if (productType === 'billing') {
@@ -78,8 +78,11 @@ const ProductHub: React.FC = () => {
       <ProductsGrid 
         products={products} 
         onNavigateToProduct={navigateToProduct} 
+        onSubscribeToProduct={handleSubscribe}
       />
-      <AdminSection isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} />
+      {isSuperAdmin && (
+        <AdminSection isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} />
+      )}
     </div>
   );
 };

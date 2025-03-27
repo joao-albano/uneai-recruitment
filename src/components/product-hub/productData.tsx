@@ -107,10 +107,41 @@ export const getProducts = async (): Promise<ProductInfo[]> => {
           return allProducts;
         }
         
+        // Get user's active products
+        const { data: userProducts } = await supabase
+          .from('user_products')
+          .select('product_type, is_active')
+          .eq('user_id', user.id);
+        
+        // If the user has products, mark them as active/inactive based on subscriptions
+        if (userProducts && userProducts.length > 0) {
+          // Convert to map for quick lookup
+          const productMap = new Map(
+            userProducts.map(p => [p.product_type, p.is_active])
+          );
+          
+          // Filter products by segment and update active status
+          return allProducts
+            .filter(product => 
+              product.segments.includes(segment) || product.segments.includes('all')
+            )
+            .map(product => ({
+              ...product,
+              isActive: productMap.has(product.id) 
+                ? Boolean(productMap.get(product.id)) 
+                : false // Only purchased products are active
+            }));
+        }
+        
         // Filter products by segment
-        return allProducts.filter(product => 
-          product.segments.includes(segment) || product.segments.includes('all')
-        );
+        return allProducts
+          .filter(product => 
+            product.segments.includes(segment) || product.segments.includes('all')
+          )
+          .map(product => ({
+            ...product,
+            isActive: false // Mark all as inactive until purchased
+          }));
       }
     }
   } catch (error) {

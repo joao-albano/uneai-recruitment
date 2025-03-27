@@ -15,6 +15,21 @@ const MOCK_USER = {
     name: 'Organização Teste',
     isMainOrg: false
   },
+  isSuperAdmin: false // Default is not a super admin
+};
+
+// Special UNE CX Super Admin mock data
+const SUPER_ADMIN_USER = {
+  id: 'super-admin-id',
+  name: 'Paula Martins',
+  email: 'paula.martins@une.cx',
+  role: 'admin',
+  organizationId: 'une-cx-org-id',
+  organization: {
+    id: 'une-cx-org-id',
+    name: 'UNE CX',
+    isMainOrg: true
+  },
   isSuperAdmin: true
 };
 
@@ -44,13 +59,17 @@ export const useAuthOperations = () => {
     const result = await loginWithEmail(email, password);
     
     if (result.success) {
-      // Set mock auth state for testing
+      // Check if the user is the special super admin
+      const isSuperAdmin = email.toLowerCase() === 'paula.martins@une.cx';
+      const userToUse = isSuperAdmin ? SUPER_ADMIN_USER : MOCK_USER;
+      
+      // Set auth state based on the user type
       setIsAuthenticated(true);
       setIsAdmin(true);
-      setIsSuperAdmin(true);
+      setIsSuperAdmin(isSuperAdmin);
       setUserEmail(email);
-      setCurrentUser(MOCK_USER);
-      setCurrentOrganization(MOCK_USER.organization);
+      setCurrentUser(userToUse);
+      setCurrentOrganization(userToUse.organization);
       
       // Create a mock session object with all required properties
       const mockSession = {
@@ -60,11 +79,11 @@ export const useAuthOperations = () => {
         expires_in: 3600, // Expires in 1 hour (seconds)
         token_type: 'bearer', // Standard token type for JWT
         user: {
-          id: MOCK_USER.id,
+          id: userToUse.id,
           email: email,
           app_metadata: {},
           user_metadata: {
-            full_name: MOCK_USER.name
+            full_name: userToUse.name
           },
           aud: 'authenticated',
           created_at: new Date().toISOString()
