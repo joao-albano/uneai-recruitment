@@ -7,7 +7,9 @@ import { WhatsAppConfig } from '@/utils/whatsappIntegration';
 import { sendWhatsAppSurvey as sendWhatsAppSurveyUtil } from '@/utils/notifications';
 import { StudentData } from '@/types/data';
 import { processStudentsForAutomatedSurveys } from '@/utils/automatedSurveys';
+import { sendAppointmentReminders } from '@/utils/appointmentReminders';
 import { useStudents } from '@/context/students/StudentsContext';
+import { useSchedules } from '@/context/schedules/SchedulesContext';
 import { useAlerts } from '@/context/alerts/AlertsContext';
 
 interface WhatsAppContextType {
@@ -16,6 +18,7 @@ interface WhatsAppContextType {
   addWhatsAppMessage: (message: WhatsAppMessage) => void;
   sendWhatsAppSurvey: (student: StudentData, addAlert: any) => void;
   runAutomatedSurveys: () => void;
+  runAppointmentReminders: () => void;
 }
 
 const WhatsAppContext = createContext<WhatsAppContextType | undefined>(undefined);
@@ -24,6 +27,7 @@ export const WhatsAppProvider: React.FC<{ children: ReactNode }> = ({ children }
   const { config: whatsAppConfig } = useWhatsAppConfig();
   const { messages: whatsAppMessages, addMessage: addWhatsAppMessage } = useWhatsAppHistory();
   const { students } = useStudents();
+  const { schedules } = useSchedules();
   const { addAlert } = useAlerts();
 
   const sendWhatsAppSurvey = (student: StudentData, addAlert: any) => {
@@ -42,26 +46,39 @@ export const WhatsAppProvider: React.FC<{ children: ReactNode }> = ({ children }
     );
   };
 
-  // Executa o processamento automático periodicamente (a cada 24h)
+  // Function to run appointment reminders
+  const runAppointmentReminders = () => {
+    sendAppointmentReminders(
+      schedules,
+      students,
+      whatsAppConfig,
+      addWhatsAppMessage,
+      addAlert
+    );
+  };
+
+  // Execute automated processing periodically (every 24h)
   useEffect(() => {
     if (whatsAppConfig.provider !== 'disabled' && students.length > 0) {
-      // Executa na inicialização - apenas para fins de demonstração
-      // Em produção, você pode querer usar um agendador mais robusto
+      // Run on initialization - for demo purposes only
+      // In production, you might want to use a more robust scheduler
       const timeoutId = setTimeout(() => {
         runAutomatedSurveys();
-      }, 5000); // Executa após 5 segundos para demonstração
+        runAppointmentReminders();
+      }, 5000); // Run after 5 seconds for demonstration
       
-      // Configura um intervalo para verificar diariamente
+      // Set up interval to check daily
       const intervalId = setInterval(() => {
         runAutomatedSurveys();
-      }, 24 * 60 * 60 * 1000); // 24 horas
+        runAppointmentReminders();
+      }, 24 * 60 * 60 * 1000); // 24 hours
       
       return () => {
         clearTimeout(timeoutId);
         clearInterval(intervalId);
       };
     }
-  }, [whatsAppConfig.provider, students]);
+  }, [whatsAppConfig.provider, students, schedules]);
 
   const value = {
     whatsAppConfig,
@@ -69,6 +86,7 @@ export const WhatsAppProvider: React.FC<{ children: ReactNode }> = ({ children }
     addWhatsAppMessage,
     sendWhatsAppSurvey,
     runAutomatedSurveys,
+    runAppointmentReminders,
   };
 
   return <WhatsAppContext.Provider value={value}>{children}</WhatsAppContext.Provider>;

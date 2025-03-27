@@ -13,6 +13,8 @@ import {
   FormMessage 
 } from '@/components/ui/form';
 import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -22,6 +24,8 @@ import WhatsAppConnectionTest from './WhatsAppConnectionTest';
 const whatsAppFormSchema = z.object({
   webhookUrl: z.string().url({ message: 'URL inválida' }).min(1, { message: 'URL do webhook é obrigatória' }),
   enabled: z.boolean().default(true),
+  reminderTiming: z.coerce.number().min(1).max(7).default(1),
+  appointmentReminder: z.string().optional(),
 });
 
 export type WhatsAppFormValues = z.infer<typeof whatsAppFormSchema>;
@@ -39,12 +43,35 @@ const WhatsAppConfigForm: React.FC<WhatsAppConfigFormProps> = ({ config, onSubmi
     defaultValues: {
       webhookUrl: config.webhookUrl || '',
       enabled: config.enabled ?? (config.provider !== 'disabled'),
+      reminderTiming: config.reminderTiming || 1,
+      appointmentReminder: config.templateMessages?.appointmentReminder || 'Olá {{parentName}}, lembramos que você tem uma reunião agendada para amanhã ({{appointmentDate}}) referente ao aluno {{studentName}}. Contamos com sua presença!',
     },
   });
   
+  const handleSubmit = async (values: WhatsAppFormValues) => {
+    // Update the template messages with the appointment reminder
+    const updatedConfig: Partial<WhatsAppConfig> = {
+      provider: values.enabled ? 'n8n_webhook' : 'disabled',
+      webhookUrl: values.webhookUrl,
+      enabled: values.enabled,
+      reminderTiming: values.reminderTiming,
+      templateMessages: {
+        ...config.templateMessages,
+        appointmentReminder: values.appointmentReminder,
+      },
+    };
+    
+    await onSubmit({
+      webhookUrl: values.webhookUrl,
+      enabled: values.enabled,
+      reminderTiming: values.reminderTiming,
+      appointmentReminder: values.appointmentReminder,
+    });
+  };
+  
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="webhookUrl"
@@ -91,6 +118,57 @@ const WhatsAppConfigForm: React.FC<WhatsAppConfigFormProps> = ({ config, onSubmi
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="reminderTiming"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {language === 'pt-BR' ? 'Dias de antecedência para lembrete' : 'Days in advance for reminder'}
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  min={1}
+                  max={7}
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                {language === 'pt-BR' 
+                  ? 'Quantos dias antes do agendamento o lembrete deve ser enviado' 
+                  : 'How many days before the appointment the reminder should be sent'}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="appointmentReminder"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {language === 'pt-BR' ? 'Modelo de mensagem para lembrete' : 'Reminder message template'}
+              </FormLabel>
+              <FormControl>
+                <Textarea
+                  rows={4}
+                  className="resize-y"
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                {language === 'pt-BR'
+                  ? 'Use {{parentName}}, {{studentName}} e {{appointmentDate}} como variáveis na mensagem'
+                  : 'Use {{parentName}}, {{studentName}} and {{appointmentDate}} as variables in the message'}
+              </FormDescription>
+              <FormMessage />
             </FormItem>
           )}
         />

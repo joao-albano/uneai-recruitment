@@ -1,4 +1,3 @@
-
 import { WhatsAppProvider } from '@/types/whatsapp';
 
 export interface WhatsAppConfig {
@@ -6,6 +5,7 @@ export interface WhatsAppConfig {
   apiKey?: string;
   enabled?: boolean;
   webhookUrl?: string;
+  reminderTiming?: number; // Days before appointment to send reminder
   templateMessages?: {
     introduction: string;
     followUp: string;
@@ -13,6 +13,7 @@ export interface WhatsAppConfig {
     surveyQuestion1: string;
     surveyQuestion2: string;
     surveyQuestion3: string;
+    appointmentReminder: string; // New template for appointment reminders
   };
 }
 
@@ -76,4 +77,17 @@ export const testWhatsAppConnection = async (config: Pick<WhatsAppConfig, 'provi
     console.error('[WhatsApp] Error testing connection:', error);
     return false;
   }
+};
+
+// Function to format date and time for WhatsApp messages
+export const formatAppointmentDateTime = (date: Date): string => {
+  return date.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  }) + ' às ' + 
+  date.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 };

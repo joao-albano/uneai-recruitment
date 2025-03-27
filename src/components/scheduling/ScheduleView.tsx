@@ -1,144 +1,120 @@
-import React, { useState, useEffect } from 'react';
-import { useTheme } from '@/context/ThemeContext';
-import { useIsMobile } from '@/hooks/use-mobile';
+
+import React from 'react';
+import { useScheduleData } from '@/hooks/useScheduleData';
 import CalendarView from './CalendarView';
+import ScheduleDialog from './ScheduleDialog';
+import DaySchedulesDialog from './DaySchedulesDialog';
+import ScheduleDetailsDialog from './ScheduleDetailsDialog';
 import TodaySchedules from './TodaySchedules';
 import UpcomingSchedules from './UpcomingSchedules';
 import ScheduleStats from './ScheduleStats';
-import ScheduleDialog from './ScheduleDialog';
-import ScheduleDetailsDialog from './ScheduleDetailsDialog';
-import DaySchedulesDialog from './DaySchedulesDialog';
-import { useScheduleData } from '@/hooks/useScheduleData';
-import { useAuth } from '@/context/auth';
+import { Button } from '@/components/ui/button';
+import { MessageSquare } from 'lucide-react';
+import { useWhatsApp } from '@/context/whatsapp/WhatsAppContext';
+import { useToast } from '@/hooks/use-toast';
+import { useTheme } from '@/context/ThemeContext';
 
 const ScheduleView: React.FC = () => {
-  const [showDaySchedules, setShowDaySchedules] = useState(false);
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const { userEmail } = useAuth();
-  const isMobile = useIsMobile();
+  const scheduleData = useScheduleData();
+  const { runAppointmentReminders, whatsAppConfig } = useWhatsApp();
+  const { toast } = useToast();
+  const { language } = useTheme();
   
-  const {
-    students,
-    studentsWithoutSchedules,
-    schedules,
-    visibleSchedules,
-    showAddDialog,
-    setShowAddDialog,
-    formattedMonthYear,
-    daysInMonth,
-    firstDayOfMonth,
-    today,
-    selectedDate,
-    todaySchedules,
-    upcomingSchedules,
-    previousMonth,
-    nextMonth,
-    handleScheduleSubmit,
-    markCompleted,
-    cancelSchedule,
-    hasSchedulesOnDay,
-    getScheduleCountForDay,
-    getScheduleStatusForDay,
-    finalPreSelectedStudentId,
-    showScheduleDetails,
-    setShowScheduleDetails,
-    selectedSchedule
-  } = useScheduleData();
-  
-  const handleDayClick = (day: number) => {
-    setSelectedDay(day);
-    setShowDaySchedules(true);
-  };
-  
-  const getSchedulesForDay = () => {
-    if (selectedDay === null) return [];
+  const handleSendReminders = () => {
+    if (!whatsAppConfig.enabled) {
+      toast({
+        title: language === 'pt-BR' ? 'WhatsApp desativado' : 'WhatsApp disabled',
+        description: language === 'pt-BR' 
+          ? 'Ative a integração com WhatsApp nas configurações para enviar lembretes.' 
+          : 'Enable WhatsApp integration in settings to send reminders.',
+        variant: 'destructive'
+      });
+      return;
+    }
     
-    return visibleSchedules.filter(schedule => {
-      const scheduleDate = new Date(schedule.date);
-      return scheduleDate.getDate() === selectedDay &&
-             scheduleDate.getMonth() === selectedDate.getMonth() &&
-             scheduleDate.getFullYear() === selectedDate.getFullYear();
-    }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  };
-  
-  const getSelectedDayDate = () => {
-    if (selectedDay === null) return new Date();
+    runAppointmentReminders();
     
-    return new Date(
-      selectedDate.getFullYear(),
-      selectedDate.getMonth(),
-      selectedDay
-    );
+    toast({
+      title: language === 'pt-BR' ? 'Lembretes enviados' : 'Reminders sent',
+      description: language === 'pt-BR' 
+        ? 'Os lembretes de agendamento foram processados com sucesso.' 
+        : 'Appointment reminders were processed successfully.'
+    });
   };
   
   return (
-    <div className={`w-full animate-fade-in ${isMobile ? 'px-2' : ''}`}>
-      <div className="grid gap-4 sm:gap-8 lg:grid-cols-5 mt-4">
-        <div className="lg:col-span-3 space-y-4 sm:space-y-6">
-          <CalendarView
-            formattedMonthYear={formattedMonthYear}
-            firstDayOfMonth={firstDayOfMonth}
-            daysInMonth={daysInMonth}
-            today={today}
-            selectedDate={selectedDate}
-            previousMonth={previousMonth}
-            nextMonth={nextMonth}
-            hasSchedulesOnDay={hasSchedulesOnDay}
-            getScheduleCountForDay={getScheduleCountForDay}
-            getScheduleStatusForDay={getScheduleStatusForDay}
-            onDayClick={handleDayClick}
-            isMobile={isMobile}
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+      <div className="md:col-span-8 flex flex-col space-y-4">
+        <div className="flex justify-between items-center mb-2">
+          <ScheduleStats 
+            todayCount={scheduleData.todaySchedules.length} 
+            upcomingCount={scheduleData.upcomingSchedules.length} 
           />
           
-          <TodaySchedules
-            todaySchedules={todaySchedules}
-            onMarkCompleted={markCompleted}
-            onCancelSchedule={cancelSchedule}
-            onNewSchedule={() => setShowAddDialog(true)}
-            isMobile={isMobile}
-          />
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleSendReminders}
+            className="flex items-center gap-2"
+          >
+            <MessageSquare className="h-4 w-4" />
+            {language === 'pt-BR' ? 'Enviar Lembretes' : 'Send Reminders'}
+          </Button>
         </div>
         
-        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-          <UpcomingSchedules
-            upcomingSchedules={upcomingSchedules}
-            onCancelSchedule={cancelSchedule}
-            onNewSchedule={() => setShowAddDialog(true)}
-            onEditSchedule={() => {}}
-            isMobile={isMobile}
+        <div className="bg-white dark:bg-gray-800 rounded-md shadow p-4">
+          <CalendarView 
+            formattedMonthYear={scheduleData.formattedMonthYear}
+            firstDayOfMonth={scheduleData.firstDayOfMonth}
+            daysInMonth={scheduleData.daysInMonth}
+            today={scheduleData.today}
+            selectedDate={scheduleData.selectedDate}
+            previousMonth={scheduleData.previousMonth}
+            nextMonth={scheduleData.nextMonth}
+            hasSchedulesOnDay={scheduleData.hasSchedulesOnDay}
+            getScheduleCountForDay={scheduleData.getScheduleCountForDay}
+            getScheduleStatusForDay={scheduleData.getScheduleStatusForDay}
+            onDayClick={scheduleData.handleDayClick}
           />
-          
-          <ScheduleStats schedules={visibleSchedules} isMobile={isMobile} />
         </div>
       </div>
       
-      <ScheduleDialog
-        open={showAddDialog}
-        onOpenChange={setShowAddDialog}
-        students={students}
-        studentsWithoutSchedules={studentsWithoutSchedules}
-        preSelectedStudentId={finalPreSelectedStudentId}
-        onSubmit={handleScheduleSubmit}
-        currentUserEmail={userEmail}
+      <div className="md:col-span-4 space-y-4">
+        <TodaySchedules 
+          schedules={scheduleData.todaySchedules} 
+          onCompleted={scheduleData.markCompleted}
+          onCanceled={scheduleData.cancelSchedule}
+          onDetailsClick={scheduleData.handleOpenDetails}
+        />
+        
+        <UpcomingSchedules 
+          schedules={scheduleData.upcomingSchedules} 
+          onDetailsClick={scheduleData.handleOpenDetails}
+        />
+      </div>
+      
+      <ScheduleDialog 
+        open={scheduleData.showAddDialog} 
+        onOpenChange={scheduleData.setShowAddDialog}
+        students={scheduleData.studentsWithoutSchedules}
+        onSubmit={scheduleData.handleScheduleSubmit}
+        selectedDate={scheduleData.selectedDate}
       />
       
-      {selectedSchedule && (
-        <ScheduleDetailsDialog
-          open={showScheduleDetails}
-          onOpenChange={setShowScheduleDetails}
-          schedule={selectedSchedule}
-          onMarkCompleted={markCompleted}
-          onCancelSchedule={cancelSchedule}
-        />
-      )}
+      <DaySchedulesDialog 
+        open={scheduleData.showDayDialog}
+        onOpenChange={scheduleData.setShowDayDialog}
+        date={scheduleData.selectedDate}
+        schedules={scheduleData.schedulesForSelectedDay}
+        onScheduleClick={scheduleData.handleOpenDetails}
+        onAddNew={() => scheduleData.setShowAddDialog(true)}
+      />
       
-      <DaySchedulesDialog
-        isOpen={showDaySchedules}
-        onClose={() => setShowDaySchedules(false)}
-        date={getSelectedDayDate()}
-        schedules={getSchedulesForDay()}
-        onMarkCompleted={markCompleted}
-        onCancelSchedule={cancelSchedule}
+      <ScheduleDetailsDialog 
+        open={scheduleData.showDetailsDialog}
+        onOpenChange={scheduleData.setShowDetailsDialog}
+        schedule={scheduleData.selectedSchedule}
+        onStatusChange={scheduleData.updateScheduleStatus}
       />
     </div>
   );

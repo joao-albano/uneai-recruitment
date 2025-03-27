@@ -2,7 +2,7 @@
 import React from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useWhatsAppConfig } from '@/hooks/useWhatsAppConfig';
 import WhatsAppConfigForm, { WhatsAppFormValues } from './WhatsAppConfigForm';
 
@@ -17,6 +17,11 @@ const WhatsAppConfigTab: React.FC = () => {
       provider: values.enabled ? 'n8n_webhook' : 'disabled',
       webhookUrl: values.webhookUrl,
       enabled: values.enabled,
+      reminderTiming: values.reminderTiming,
+      templateMessages: {
+        ...config.templateMessages,
+        appointmentReminder: values.appointmentReminder,
+      }
     });
     
     toast({
