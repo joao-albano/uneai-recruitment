@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,6 +13,7 @@ import SystemActivity from './dashboard/SystemActivity';
 import UserActivityChart from './dashboard/UserActivityChart';
 import ExportReports from './dashboard/ExportReports';
 import WhatsappStats from './dashboard/WhatsappStats';
+import { useWhatsAppHistory } from '@/hooks/useWhatsAppHistory';
 
 const AdminDashboardContent: React.FC = () => {
   const { language } = useTheme();
@@ -21,7 +21,6 @@ const AdminDashboardContent: React.FC = () => {
   const { isLoading, students, generateDemoData } = useData();
   const [activeTab, setActiveTab] = useState<string>('overview');
   
-  // Make sure we have demo data
   useEffect(() => {
     if (students.length === 0 && !isLoading) {
       generateDemoData();
@@ -104,7 +103,6 @@ const AdminDashboardContent: React.FC = () => {
           <div className="grid gap-6 md:grid-cols-2 mt-6">
             <RiskDistribution />
             
-            {/* Class Details Card (moved from Risk Analysis tab) */}
             <Card className="col-span-1">
               <CardHeader>
                 <CardTitle>
@@ -159,7 +157,6 @@ const AdminDashboardContent: React.FC = () => {
         <TabsContent value="whatsapp" className="space-y-6">
           <WhatsappStats />
           <div className="grid gap-6 md:grid-cols-1">
-            {/* Add WhatsApp History Widget */}
             <Card>
               <CardHeader>
                 <CardTitle>
