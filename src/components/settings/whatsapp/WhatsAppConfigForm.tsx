@@ -2,7 +2,6 @@
 import React from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { Button } from '@/components/ui/button';
-import { ApiKeyInput } from '@/components/ui/api-key-input';
 import { 
   Form, 
   FormControl, 
@@ -19,10 +18,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { WhatsAppConfig } from '@/utils/whatsappIntegration';
-import WhatsAppConnectionTest from './WhatsAppConnectionTest';
+import WhatsAppConnectionStatus from './WhatsAppConnectionStatus';
+import WhatsAppQRCodeScanner from './WhatsAppQRCodeScanner';
+import { Badge } from '@/components/ui/badge';
 
 const whatsAppFormSchema = z.object({
-  webhookUrl: z.string().url({ message: 'URL inválida' }).min(1, { message: 'URL do webhook é obrigatória' }),
   enabled: z.boolean().default(true),
   reminderTiming: z.coerce.number().min(1).max(7).default(1),
   appointmentReminder: z.string().optional(),
@@ -41,7 +41,6 @@ const WhatsAppConfigForm: React.FC<WhatsAppConfigFormProps> = ({ config, onSubmi
   const form = useForm<WhatsAppFormValues>({
     resolver: zodResolver(whatsAppFormSchema),
     defaultValues: {
-      webhookUrl: config.webhookUrl || '',
       enabled: config.enabled ?? (config.provider !== 'disabled'),
       reminderTiming: config.reminderTiming || 1,
       appointmentReminder: config.templateMessages?.appointmentReminder || 'Olá {{parentName}}, lembramos que você tem uma reunião agendada para amanhã ({{appointmentDate}}) referente ao aluno {{studentName}}. Contamos com sua presença!',
@@ -49,20 +48,7 @@ const WhatsAppConfigForm: React.FC<WhatsAppConfigFormProps> = ({ config, onSubmi
   });
   
   const handleSubmit = async (values: WhatsAppFormValues) => {
-    // Update the template messages with the appointment reminder
-    const updatedConfig: Partial<WhatsAppConfig> = {
-      provider: values.enabled ? 'n8n_webhook' : 'disabled',
-      webhookUrl: values.webhookUrl,
-      enabled: values.enabled,
-      reminderTiming: values.reminderTiming,
-      templateMessages: {
-        ...config.templateMessages,
-        appointmentReminder: values.appointmentReminder,
-      },
-    };
-    
     await onSubmit({
-      webhookUrl: values.webhookUrl,
       enabled: values.enabled,
       reminderTiming: values.reminderTiming,
       appointmentReminder: values.appointmentReminder,
@@ -72,30 +58,34 @@ const WhatsAppConfigForm: React.FC<WhatsAppConfigFormProps> = ({ config, onSubmi
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="webhookUrl"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                {language === 'pt-BR' ? 'URL do Webhook do n8n' : 'n8n Webhook URL'}
-              </FormLabel>
-              <FormControl>
-                <ApiKeyInput
-                  {...field}
-                  onChange={field.onChange}
-                  placeholder="https://"
-                />
-              </FormControl>
-              <FormDescription>
-                {language === 'pt-BR' 
-                  ? 'URL do webhook do n8n para envio de mensagens do WhatsApp' 
-                  : 'n8n webhook URL for sending WhatsApp messages'}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="flex flex-col gap-6">
+          <div className="rounded-lg border p-4 space-y-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-lg font-medium">
+                  {language === 'pt-BR' ? 'Status do WhatsApp' : 'WhatsApp Status'}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {language === 'pt-BR' 
+                    ? 'Status atual da conexão com WhatsApp Business' 
+                    : 'Current WhatsApp Business connection status'}
+                </p>
+              </div>
+              
+              <Badge variant={config.connected ? "success" : "destructive"} className="ml-2">
+                {config.connected 
+                  ? (language === 'pt-BR' ? 'Conectado' : 'Connected') 
+                  : (language === 'pt-BR' ? 'Desconectado' : 'Disconnected')}
+              </Badge>
+            </div>
+            
+            <WhatsAppConnectionStatus />
+            
+            <div className="mt-4">
+              <WhatsAppQRCodeScanner />
+            </div>
+          </div>
+        </div>
         
         <FormField
           control={form.control}
@@ -173,12 +163,7 @@ const WhatsAppConfigForm: React.FC<WhatsAppConfigFormProps> = ({ config, onSubmi
           )}
         />
         
-        <div className="flex flex-col sm:flex-row gap-3 justify-between">
-          <WhatsAppConnectionTest 
-            enabled={form.watch('enabled')} 
-            webhookUrl={form.watch('webhookUrl')}
-          />
-          
+        <div className="flex justify-end">
           <Button type="submit">
             {language === 'pt-BR' ? 'Salvar Configurações' : 'Save Settings'}
           </Button>

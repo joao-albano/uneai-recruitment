@@ -6,6 +6,7 @@ export interface WhatsAppConfig {
   apiKey?: string;
   enabled?: boolean;
   webhookUrl?: string;
+  connected?: boolean; // New field for connection status
   reminderTiming?: number; // Days before appointment to send reminder
   templateMessages?: {
     introduction: string;

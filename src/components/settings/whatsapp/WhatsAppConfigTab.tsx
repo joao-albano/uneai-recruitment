@@ -15,7 +15,6 @@ const WhatsAppConfigTab: React.FC = () => {
     // Update configuration
     updateConfig({
       provider: values.enabled ? 'n8n_webhook' : 'disabled',
-      webhookUrl: values.webhookUrl,
       enabled: values.enabled,
       reminderTiming: values.reminderTiming,
       templateMessages: {
@@ -40,8 +39,8 @@ const WhatsAppConfigTab: React.FC = () => {
         </CardTitle>
         <CardDescription>
           {language === 'pt-BR' 
-            ? 'Configure a integração com WhatsApp Business via webhook do n8n' 
-            : 'Configure WhatsApp Business integration via n8n webhook'}
+            ? 'Configure a integração com WhatsApp Business' 
+            : 'Configure WhatsApp Business integration'}
         </CardDescription>
       </CardHeader>
       <CardContent>
