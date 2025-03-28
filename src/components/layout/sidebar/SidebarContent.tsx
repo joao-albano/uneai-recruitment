@@ -103,7 +103,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
         )}
         
         {/* Menus de administração são exibidos com base no nível de acesso e não estando no produto de captação */}
-        {(isAdmin || isSuperAdmin) && currentProduct !== 'recruitment' && (
+        {(isAdmin || isSuperAdmin) && (currentProduct !== 'recruitment') && (
           <SidebarAdminSection collapsed={collapsed} />
         )}
       </div>
