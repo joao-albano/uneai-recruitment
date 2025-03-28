@@ -76,6 +76,13 @@ const AdminSection: React.FC<AdminSectionProps> = ({ isAdmin, isSuperAdmin }) =>
             
             <Button 
               variant="outline" 
+              onClick={() => navigate('/admin/api-integrations')}
+            >
+              Integrações API
+            </Button>
+            
+            <Button 
+              variant="outline" 
               onClick={() => navigate('/admin/ai-settings')}
             >
               Integrações IA

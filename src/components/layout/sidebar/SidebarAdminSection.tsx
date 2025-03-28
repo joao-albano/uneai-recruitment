@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BarChart2, Users, DollarSign, Building, Settings, FileText, Shield, Brain } from 'lucide-react';
+import { BarChart2, Users, DollarSign, Building, Settings, FileText, Shield, Brain, Webhook } from 'lucide-react';
 import SidebarNavigationGroup from './SidebarNavigationGroup';
 import SidebarNavLink from './SidebarNavLink';
 import { useAuth } from '@/context/auth';
@@ -81,6 +81,13 @@ const SidebarAdminSection: React.FC<SidebarAdminSectionProps> = ({ collapsed }) 
             to="/admin/apis" 
             icon={FileText} 
             label="Relatório APIs" 
+            collapsed={collapsed}
+          />
+          
+          <SidebarNavLink 
+            to="/admin/api-integrations" 
+            icon={Webhook} 
+            label="Integrações API" 
             collapsed={collapsed}
           />
           

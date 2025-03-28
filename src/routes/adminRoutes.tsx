@@ -9,6 +9,7 @@ import AdminPlansPage from "@/pages/AdminPlansPage";
 import UsersPage from "@/pages/UsersPage";
 import OrganizationsPage from "@/pages/OrganizationsPage";
 import AdminApisReportPage from "@/pages/AdminApisReportPage";
+import AdminApiIntegrationsPage from "@/pages/AdminApiIntegrationsPage";
 
 interface RouteConfig {
   path: string;
@@ -74,6 +75,14 @@ export const adminRoutes: RouteConfig[] = [
     element: (
       <SuperAdminRoute>
         <AdminApisReportPage />
+      </SuperAdminRoute>
+    )
+  },
+  {
+    path: "/admin/api-integrations",
+    element: (
+      <SuperAdminRoute>
+        <AdminApiIntegrationsPage />
       </SuperAdminRoute>
     )
   },
