@@ -106,12 +106,12 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
             </SelectItem>
           ))}
           {organizations.length === 0 && !loading && (
-            <SelectItem value="" disabled>
+            <SelectItem value="no-orgs" disabled>
               Nenhuma organização disponível
             </SelectItem>
           )}
           {loading && (
-            <SelectItem value="" disabled>
+            <SelectItem value="loading" disabled>
               Carregando...
             </SelectItem>
           )}
