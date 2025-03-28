@@ -1,90 +1,67 @@
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { UserPlus, LineChart, Calendar, CheckCircle } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { BarChart, UserPlus, CalendarCheck, School, TrendingUp } from 'lucide-react';
 
 const RecruitmentStats: React.FC = () => {
+  // Estatísticas de exemplo para o dashboard
+  const stats = [
+    {
+      label: 'Total de Leads',
+      value: '173',
+      change: '+12%',
+      icon: <UserPlus className="h-5 w-5" />,
+      color: 'bg-blue-500',
+    },
+    {
+      label: 'Agendamentos',
+      value: '47',
+      change: '+5%',
+      icon: <CalendarCheck className="h-5 w-5" />,
+      color: 'bg-amber-500',
+    },
+    {
+      label: 'Matrículas',
+      value: '28',
+      change: '+8%',
+      icon: <School className="h-5 w-5" />,
+      color: 'bg-green-500',
+    },
+    {
+      label: 'Taxa de Conversão',
+      value: '16.2%',
+      change: '+2.4%',
+      icon: <TrendingUp className="h-5 w-5" />,
+      color: 'bg-purple-500',
+    },
+  ];
+
   return (
-    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <div className="space-y-0.5">
-            <CardTitle className="text-base font-medium">Novos Leads</CardTitle>
-            <CardDescription>Este mês</CardDescription>
-          </div>
-          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-500">
-            <UserPlus className="h-4 w-4" />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">127</div>
-          <p className="text-xs text-muted-foreground flex items-center mt-1 space-x-1">
-            <LineChart className="h-3 w-3 text-green-500" />
-            <span className="text-green-500">+14.6%</span>
-            <span>vs. mês anterior</span>
-          </p>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <div className="space-y-0.5">
-            <CardTitle className="text-base font-medium">Agendamentos</CardTitle>
-            <CardDescription>Visitas agendadas</CardDescription>
-          </div>
-          <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-500">
-            <Calendar className="h-4 w-4" />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">42</div>
-          <p className="text-xs text-muted-foreground flex items-center mt-1 space-x-1">
-            <LineChart className="h-3 w-3 text-green-500" />
-            <span className="text-green-500">+7.2%</span>
-            <span>vs. mês anterior</span>
-          </p>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <div className="space-y-0.5">
-            <CardTitle className="text-base font-medium">Taxa de Conversão</CardTitle>
-            <CardDescription>Lead para matrícula</CardDescription>
-          </div>
-          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-500">
-            <LineChart className="h-4 w-4" />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">23.8%</div>
-          <p className="text-xs text-muted-foreground flex items-center mt-1 space-x-1">
-            <LineChart className="h-3 w-3 text-green-500" />
-            <span className="text-green-500">+1.4%</span>
-            <span>vs. período anterior</span>
-          </p>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <div className="space-y-0.5">
-            <CardTitle className="text-base font-medium">Matrículas</CardTitle>
-            <CardDescription>Este mês</CardDescription>
-          </div>
-          <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-500">
-            <CheckCircle className="h-4 w-4" />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">32</div>
-          <p className="text-xs text-muted-foreground flex items-center mt-1 space-x-1">
-            <LineChart className="h-3 w-3 text-green-500" />
-            <span className="text-green-500">+9.7%</span>
-            <span>vs. meta mensal (29)</span>
-          </p>
-        </CardContent>
-      </Card>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {stats.map((stat, i) => (
+        <Card key={i}>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white ${stat.color}`}>
+                {stat.icon}
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-medium text-muted-foreground mb-1">
+                  {stat.label}
+                </p>
+                <div className="flex items-center justify-end">
+                  <h3 className="text-2xl font-bold">{stat.value}</h3>
+                  <span className={`text-xs ${
+                    stat.change.startsWith('+') ? 'text-green-500' : 'text-red-500'
+                  } ml-2`}>
+                    {stat.change}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 };
