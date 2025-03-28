@@ -30,7 +30,7 @@ const modelFeatures: ModelFeature[] = [
     openai: '8K-32K tokens',
     google: '32K tokens',
     claude: '100K tokens',
-    claude: '8K tokens',
+    grok: '8K tokens',
     description: 'Maximum input context length'
   },
   {
