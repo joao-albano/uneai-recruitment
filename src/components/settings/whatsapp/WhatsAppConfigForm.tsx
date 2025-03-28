@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea'; // Importando o componente Textarea
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -201,7 +202,13 @@ const WhatsAppConfigForm: React.FC<WhatsAppConfigFormProps> = ({ config, onSubmi
                     : 'Use {{studentName}}, {{parentName}} and {{appointmentDate}} as variables'}
                 </FormDescription>
                 <FormControl>
-                  <Input {...field} className="h-auto py-2" />
+                  <Textarea 
+                    {...field} 
+                    className="min-h-[100px] resize-y" 
+                    placeholder={language === 'pt-BR' 
+                      ? 'Digite a mensagem de lembrete...' 
+                      : 'Type reminder message...'}
+                  />
                 </FormControl>
               </FormItem>
             )}
