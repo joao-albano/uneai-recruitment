@@ -9,10 +9,12 @@ import FileUploadHandler from './FileUploadHandler';
 import { downloadTemplate } from '@/utils/validation/templateManager';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CheckCircle, InfoIcon } from 'lucide-react';
+import { useProduct } from '@/context/ProductContext';
 
 const UploadFormContent: React.FC = () => {
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [showColumnInfo, setShowColumnInfo] = useState<boolean>(false);
+  const { currentProduct } = useProduct();
   
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -44,27 +46,20 @@ const UploadFormContent: React.FC = () => {
   };
 
   const handleDownloadTemplate = () => {
-    downloadTemplate();
+    downloadTemplate(currentProduct);
   };
-  
-  const requiredColumns = [
-    { name: 'nome', description: 'Nome completo do aluno', example: 'João Silva', required: true },
-    { name: 'registro', description: 'Número de matrícula do aluno', example: '12345', required: true },
-    { name: 'turma', description: 'Turma do aluno', example: '9A', required: true },
-    { name: 'segmento', description: 'Segmento escolar (ENSINO MÉDIO, FUNDAMENTAL I, etc.)', example: 'ENSINO MÉDIO', required: true },
-    { name: 'nota', description: 'Nota média (0-10)', example: '7.5' },
-    { name: 'frequencia', description: 'Porcentagem de presença (0-100)', example: '85' },
-    { name: 'comportamento', description: 'Comportamento do aluno (0-10)', example: '8' },
-    { name: 'nome_responsavel', description: 'Nome do responsável', example: 'Maria da Silva' },
-    { name: 'contato_responsavel', description: 'Telefone do responsável', example: '(11) 98765-4321' },
-  ];
   
   return (
     <Card className="w-full max-w-3xl mx-auto animate-scale-in">
       <CardHeader>
-        <CardTitle className="text-xl font-bold">Upload de Dados</CardTitle>
+        <CardTitle className="text-xl font-bold">
+          {currentProduct === 'recruitment' ? 'Upload de Leads' : 'Upload de Dados de Alunos'}
+        </CardTitle>
         <CardDescription>
-          Faça upload de planilhas com dados dos alunos (CSV ou Excel)
+          {currentProduct === 'recruitment' 
+            ? 'Faça upload de planilhas com dados de leads e prospectos'
+            : 'Faça upload de planilhas com dados dos alunos'}
+           (CSV ou Excel)
         </CardDescription>
       </CardHeader>
       
@@ -86,7 +81,9 @@ const UploadFormContent: React.FC = () => {
                   <CheckCircle className="h-4 w-4 text-green-600" />
                   <AlertTitle className="text-green-800">Upload processado com sucesso!</AlertTitle>
                   <AlertDescription className="text-green-700">
-                    {uploadResults.newCount} novos alunos adicionados e {uploadResults.updatedCount} registros atualizados.
+                    {currentProduct === 'recruitment'
+                      ? `${uploadResults.newCount} novos leads adicionados e ${uploadResults.updatedCount} registros atualizados.`
+                      : `${uploadResults.newCount} novos alunos adicionados e ${uploadResults.updatedCount} registros atualizados.`}
                   </AlertDescription>
                 </Alert>
               )}
@@ -111,15 +108,19 @@ const UploadFormContent: React.FC = () => {
                 </Button>
               </div>
               
-              {showColumnInfo && <ColumnInfoTable columns={requiredColumns} />}
+              {showColumnInfo && <ColumnInfoTable />}
               
               <Alert variant="default" className="bg-blue-50 border-blue-200 my-2">
                 <InfoIcon className="h-4 w-4 text-blue-600" />
-                <AlertTitle className="text-blue-800">Controle mensal de dados</AlertTitle>
+                <AlertTitle className="text-blue-800">
+                  {currentProduct === 'recruitment' 
+                    ? 'Importação de Leads' 
+                    : 'Controle mensal de dados'}
+                </AlertTitle>
                 <AlertDescription className="text-blue-700">
-                  Os dados são mesclados com base na matrícula (RA) e no mês corrente. 
-                  Registros do mesmo aluno no mesmo mês serão atualizados, enquanto importações 
-                  em meses diferentes criarão novos registros.
+                  {currentProduct === 'recruitment'
+                    ? 'Os leads serão mesclados com base no email ou telefone. Leads duplicados serão atualizados com as informações mais recentes.'
+                    : 'Os dados são mesclados com base na matrícula (RA) e no mês corrente. Registros do mesmo aluno no mesmo mês serão atualizados, enquanto importações em meses diferentes criarão novos registros.'}
                 </AlertDescription>
               </Alert>
               

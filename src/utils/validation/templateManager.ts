@@ -1,33 +1,70 @@
 
-import { getExcelFormat } from "./headerValidator";
+import * as FileSaver from 'file-saver';
+import { ProductType } from '@/context/product/types';
 
-// Function to download a template file
-export const downloadTemplate = (): void => {
-  const { headers } = getExcelFormat();
-  
-  // Create CSV content with proper UTF-8 encoding
-  const csvContent = [
-    // Headers row
-    headers.join(','),
-    // Example row with properly encoded text
-    'João da Silva,12345,9A,ENSINO MÉDIO,7.5,85,8,"Maria da Silva","(11) 98765-4321"',
-    // Empty row for user to fill - with proper labels
-    'Nome do Aluno,Número de Matrícula,Turma,ENSINO MÉDIO,0.0,0,0,"Nome do Responsável","(99) 99999-9999"'
-  ].join('\n');
+interface TemplateColumn {
+  header: string;
+  required: boolean;
+  example: string;
+}
 
-  // Create a blob from the CSV content with UTF-8 encoding explicitly set
-  const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
+// Templates específicos por produto
+const templates = {
+  retention: [
+    { header: 'nome', required: true, example: 'João Silva' },
+    { header: 'registro', required: true, example: '123456' },
+    { header: 'turma', required: true, example: '9A' },
+    { header: 'segmento', required: true, example: 'ENSINO MÉDIO' },
+    { header: 'nota', required: false, example: '7.5' },
+    { header: 'frequencia', required: false, example: '85' },
+    { header: 'comportamento', required: false, example: '8' },
+    { header: 'nome_responsavel', required: false, example: 'Maria da Silva' },
+    { header: 'contato_responsavel', required: false, example: '(11) 98765-4321' }
+  ],
+  recruitment: [
+    { header: 'nome', required: true, example: 'Ana Carolina' },
+    { header: 'email', required: true, example: 'ana@email.com' },
+    { header: 'telefone', required: true, example: '(11) 98765-4321' },
+    { header: 'canal', required: true, example: 'Instagram' },
+    { header: 'curso', required: false, example: 'Engenharia' },
+    { header: 'serie', required: false, example: '1º Ano' },
+    { header: 'etapa', required: false, example: 'Contato Inicial' },
+    { header: 'status', required: false, example: 'Interessado' },
+    { header: 'data_contato', required: false, example: '01/06/2023' },
+    { header: 'responsavel', required: false, example: 'Carlos Santos' },
+    { header: 'filhos', required: false, example: '2' },
+    { header: 'observacoes', required: false, example: 'Interessado em bolsa de estudos' }
+  ]
+};
+
+// Função para gerar o conteúdo CSV do template
+const generateTemplateContent = (productType: ProductType = 'retention'): string => {
+  // Seleciona o template adequado para o produto, com fallback para retenção
+  const templateColumns = templates[productType] || templates.retention;
   
-  // Create a download link
-  const link = document.createElement('a');
-  const url = URL.createObjectURL(blob);
+  // Cria o cabeçalho
+  const headers = templateColumns.map(col => col.header);
   
-  link.setAttribute('href', url);
-  link.setAttribute('download', 'modelo_alunos.csv');
-  link.style.visibility = 'hidden';
+  // Cria a linha de exemplo
+  const exampleRow = templateColumns.map(col => col.example);
   
-  // Add to document, trigger download, and clean up
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  // Combina as linhas em um CSV
+  return [headers.join(','), exampleRow.join(',')].join('\n');
+};
+
+// Função principal para download do template
+export const downloadTemplate = (productType: ProductType = 'retention'): void => {
+  const fileContent = generateTemplateContent(productType);
+  const fileName = `${productType === 'recruitment' ? 'leads' : 'alunos'}_template.csv`;
+  
+  // Cria um blob com o conteúdo CSV
+  const blob = new Blob([fileContent], { type: 'text/csv;charset=utf-8' });
+  
+  // Faz o download do arquivo
+  FileSaver.saveAs(blob, fileName);
+};
+
+// Exporta o formato do template para uso em validações
+export const getTemplateFormat = (productType: ProductType = 'retention'): TemplateColumn[] => {
+  return templates[productType] || templates.retention;
 };
