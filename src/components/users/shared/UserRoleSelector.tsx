@@ -3,6 +3,7 @@ import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { UserRole } from '../types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface UserRoleSelectorProps {
   selectedRole: string;
@@ -19,9 +20,11 @@ const UserRoleSelector: React.FC<UserRoleSelectorProps> = ({
   className = "grid grid-cols-4 items-center gap-4",
   showSuperAdmin = false
 }) => {
+  const isMobile = useIsMobile();
+  
   return (
     <div className={className}>
-      <Label htmlFor="role" className="text-right">
+      <Label htmlFor="role" className={isMobile ? "" : "text-right"}>
         Perfil
       </Label>
       <Select
@@ -30,7 +33,7 @@ const UserRoleSelector: React.FC<UserRoleSelectorProps> = ({
         onValueChange={onRoleChange}
         disabled={disabled}
       >
-        <SelectTrigger className="col-span-3">
+        <SelectTrigger className={isMobile ? "" : "col-span-3"}>
           <SelectValue placeholder="Selecione um perfil" />
         </SelectTrigger>
         <SelectContent className="bg-popover">

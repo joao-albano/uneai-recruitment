@@ -8,6 +8,7 @@ import AdminBanner from '../edit/AdminBanner';
 import UserBasicInfoForm from '../edit/UserBasicInfoForm';
 import SuperAdminToggle from '../edit/SuperAdminToggle';
 import UserSubscriptions from '../edit/UserSubscriptions';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface EditUserDialogProps {
   open: boolean;
@@ -30,6 +31,8 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
   isAdmin = false,
   isSuperAdmin = false
 }) => {
+  const isMobile = useIsMobile();
+  
   // Safety check - render nothing if no selected user
   if (!selectedUser) {
     // Only return null if dialog is not open
@@ -83,7 +86,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
   
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className={`${isMobile ? 'w-[95vw] max-w-none p-4' : 'max-w-lg p-6'}`}>
         <DialogHeader>
           <DialogTitle>Editar Usuário</DialogTitle>
           <DialogDescription>
@@ -91,7 +94,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="overflow-y-auto max-h-[70vh]">
           <div className="grid gap-4 py-4">
             <AdminBanner isUneCxAdmin={isUneCxAdmin} />
             
@@ -117,15 +120,21 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
             />
           </div>
           
-          <DialogFooter>
+          <DialogFooter className={`${isMobile ? 'flex-col gap-2 mt-4' : 'mt-6'}`}>
             <Button 
               variant="outline" 
               type="button" 
               onClick={() => onOpenChange(false)}
+              className={isMobile ? "w-full" : ""}
             >
               Cancelar
             </Button>
-            <Button type="submit">Salvar Alterações</Button>
+            <Button 
+              type="submit"
+              className={isMobile ? "w-full" : ""}
+            >
+              Salvar Alterações
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

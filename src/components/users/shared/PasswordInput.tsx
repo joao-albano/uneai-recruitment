@@ -2,6 +2,7 @@
 import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface PasswordInputProps {
   value: string;
@@ -16,9 +17,11 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
   required = true,
   className = "grid grid-cols-4 items-center gap-4"
 }) => {
+  const isMobile = useIsMobile();
+  
   return (
     <div className={className}>
-      <Label htmlFor="password" className="text-right">
+      <Label htmlFor="password" className={isMobile ? "" : "text-right"}>
         Senha
       </Label>
       <Input
@@ -27,7 +30,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
         type="password"
         value={value}
         onChange={onChange}
-        className="col-span-3"
+        className={isMobile ? "" : "col-span-3"}
         required={required}
         autoComplete="new-password"
       />

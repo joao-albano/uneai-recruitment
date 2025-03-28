@@ -5,6 +5,7 @@ import UserNameInput from '../shared/UserNameInput';
 import UserEmailInput from '../shared/UserEmailInput';
 import UserRoleSelector from '../shared/UserRoleSelector';
 import OrganizationSelector from '../shared/OrganizationSelector';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface UserProfileFormProps {
   selectedUser: UserType;
@@ -19,6 +20,8 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
   isSuperAdmin = false,
   isUneCxAdmin = false
 }) => {
+  const isMobile = useIsMobile();
+  
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!selectedUser) return;
@@ -44,23 +47,36 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
     });
   };
   
+  // Determine the className based on screen size
+  const inputClassName = isMobile ? "grid grid-cols-1 gap-2" : "grid grid-cols-4 items-center gap-4";
+  
   return (
     <div className="space-y-4">
-      <UserNameInput value={selectedUser.name} onChange={handleChange} />
+      <UserNameInput 
+        value={selectedUser.name} 
+        onChange={handleChange}
+        className={inputClassName}
+      />
       
-      <UserEmailInput value={selectedUser.email} onChange={handleChange} />
+      <UserEmailInput 
+        value={selectedUser.email} 
+        onChange={handleChange}
+        className={inputClassName}
+      />
       
       <UserRoleSelector
         selectedRole={selectedUser.role || 'user'}
         onRoleChange={handleRoleChange}
         disabled={isUneCxAdmin && !isSuperAdmin}
         showSuperAdmin={isSuperAdmin}
+        className={inputClassName}
       />
       
       <OrganizationSelector
         selectedOrganizationId={selectedUser.organizationId || ''}
         onOrganizationChange={handleOrgChange}
         disabled={!isSuperAdmin}
+        className={inputClassName}
       />
     </div>
   );
