@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, BarChart2, LineChart, Upload, UserPlus } from 'lucide-react';
+import { Home, BarChart2, LineChart, Upload, UserPlus, CalendarCheck, Users } from 'lucide-react';
 import SidebarNavigationGroup from './SidebarNavigationGroup';
 import SidebarNavLink from './SidebarNavLink';
 import { useProduct } from '@/context/ProductContext';
@@ -61,6 +61,18 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
             to="/recruitment/funnel" 
             icon={LineChart} 
             label="Funil" 
+            collapsed={collapsed}
+          />
+          <SidebarNavLink 
+            to="/recruitment/campaigns" 
+            icon={CalendarCheck} 
+            label="Campanhas" 
+            collapsed={collapsed}
+          />
+          <SidebarNavLink 
+            to="/recruitment/analytics" 
+            icon={Users} 
+            label="Analíticos" 
             collapsed={collapsed}
           />
         </>
