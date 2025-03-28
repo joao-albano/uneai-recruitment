@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ProductSubscription } from '@/context/ProductContext';
@@ -33,29 +33,6 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
 }) => {
   const isMobile = useIsMobile();
   
-  // Safety check - render nothing if no selected user
-  if (!selectedUser) {
-    // Only return null if dialog is not open
-    if (!open) return null;
-    
-    // If dialog is open but there's no user, close the dialog
-    console.warn("EditUserDialog opened without a selected user");
-    setTimeout(() => onOpenChange(false), 0);
-    return null;
-  }
-  
-  // Log para debug quando o selectedUser ou o estado muda
-  useEffect(() => {
-    if (selectedUser) {
-      console.log('EditUserDialog - selectedUser no useEffect:', selectedUser);
-      console.log('EditUserDialog - organizationId:', selectedUser.organizationId);
-      console.log('EditUserDialog - organizationName:', selectedUser.organizationName);
-    }
-  }, [selectedUser, open]);
-  
-  // Check if the user is the super admin of UNE CX
-  const isUneCxAdmin = selectedUser.isSuperAdmin;
-  
   // Handle form submission with error prevention
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,6 +61,38 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
     }
   };
   
+  // Safety check - if no selected user and dialog is closed, return null
+  if (!selectedUser && !open) {
+    return null;
+  }
+  
+  // If dialog is open but there's no user, we need to handle this case
+  // by closing the dialog - but we need to render something first
+  if (!selectedUser && open) {
+    // Schedule dialog close for next tick
+    setTimeout(() => onOpenChange(false), 0);
+    
+    // Render a placeholder dialog while closing
+    return (
+      <Dialog open={open} onOpenChange={handleDialogClose}>
+        <DialogContent className={`${isMobile ? 'w-[95vw] max-w-none p-4' : 'max-w-lg p-6'}`}>
+          <DialogHeader>
+            <DialogTitle>Erro</DialogTitle>
+            <DialogDescription>
+              Não foi possível carregar os dados do usuário.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => onOpenChange(false)}>Fechar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+  
+  // At this point, we know selectedUser exists
+  const isUneCxAdmin = selectedUser?.isSuperAdmin || false;
+  
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
       <DialogContent className={`${isMobile ? 'w-[95vw] max-w-none p-4' : 'max-w-lg p-6'}`}>
@@ -98,26 +107,32 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
           <div className="grid gap-4 py-4">
             <AdminBanner isUneCxAdmin={isUneCxAdmin} />
             
-            <UserBasicInfoForm
-              selectedUser={selectedUser}
-              setSelectedUser={setSelectedUser}
-              isSuperAdmin={isSuperAdmin}
-              isUneCxAdmin={isUneCxAdmin}
-            />
+            {selectedUser && (
+              <UserBasicInfoForm
+                selectedUser={selectedUser}
+                setSelectedUser={setSelectedUser}
+                isSuperAdmin={isSuperAdmin}
+                isUneCxAdmin={isUneCxAdmin}
+              />
+            )}
             
-            <SuperAdminToggle
-              selectedUser={selectedUser}
-              setSelectedUser={setSelectedUser}
-              isSuperAdmin={isSuperAdmin}
-              isUneCxAdmin={isUneCxAdmin}
-            />
+            {selectedUser && (
+              <SuperAdminToggle
+                selectedUser={selectedUser}
+                setSelectedUser={setSelectedUser}
+                isSuperAdmin={isSuperAdmin}
+                isUneCxAdmin={isUneCxAdmin}
+              />
+            )}
             
-            <UserSubscriptions
-              selectedUser={selectedUser}
-              subscriptions={subscriptions}
-              isAdmin={isAdmin}
-              isSuperAdmin={isSuperAdmin}
-            />
+            {selectedUser && (
+              <UserSubscriptions
+                selectedUser={selectedUser}
+                subscriptions={subscriptions}
+                isAdmin={isAdmin}
+                isSuperAdmin={isSuperAdmin}
+              />
+            )}
           </div>
           
           <DialogFooter className={`${isMobile ? 'flex-col gap-2 mt-4' : 'mt-6'}`}>
