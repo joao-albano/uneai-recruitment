@@ -63,7 +63,7 @@ export const getProducts = async (): Promise<ProductInfo[]> => {
     },
     {
       id: 'billing',
-      title: 'Faturamento',
+      title: 'Cobrança',
       description: 'Sistema completo de gestão financeira, controle de mensalidades e emissão de boletos e notas fiscais.',
       icon: <Receipt className="h-6 w-6 text-white" />,
       iconColor: 'bg-emerald-500',

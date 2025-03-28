@@ -14,7 +14,7 @@ const productsList = [
   { id: 'recruitment' as ProductType, name: 'Captação', description: 'Ferramentas para captação de novos alunos' },
   { id: 'secretary' as ProductType, name: 'Secretaria', description: 'Gestão da secretaria acadêmica' },
   { id: 'pedagogical' as ProductType, name: 'Pedagógico', description: 'Sistema de gestão pedagógica' },
-  { id: 'billing' as ProductType, name: 'Faturamento', description: 'Gestão de mensalidades e faturamento' }
+  { id: 'billing' as ProductType, name: 'Cobrança', description: 'Gestão de mensalidades e cobrança' }
 ];
 
 interface ProductsAssociationManagerProps {

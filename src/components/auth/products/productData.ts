@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Users, 
@@ -18,7 +17,6 @@ export interface Product {
   bgColor: string;
 }
 
-// All available products
 export const allProducts: Product[] = [
   {
     id: 'retention',
@@ -89,16 +87,16 @@ export const getProductsBySegment = (marketSegment: string) => {
   
   switch (marketSegment) {
     case 'education':
-      productIds = ['retention', 'recruitment', 'secretary', 'pedagogical'];
+      productIds = ['retention', 'recruitment', 'secretary', 'pedagogical', 'billing'];
       break;
     case 'health':
-      productIds = ['sales', 'scheduling'];
+      productIds = ['sales', 'scheduling', 'billing'];
       break;
     case 'beauty':
-      productIds = ['sales', 'scheduling'];
+      productIds = ['sales', 'scheduling', 'billing'];
       break;
     case 'services':
-      productIds = ['sales', 'scheduling'];
+      productIds = ['sales', 'scheduling', 'billing'];
       break;
     case 'commerce':
       productIds = ['sales'];

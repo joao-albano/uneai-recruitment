@@ -11,7 +11,7 @@ interface SidebarBillingSectionProps {
 const SidebarBillingSection: React.FC<SidebarBillingSectionProps> = ({ collapsed }) => {
   return (
     <SidebarNavigationGroup 
-      title="Faturamento" 
+      title="Cobrança" 
       collapsed={collapsed}
     >
       <SidebarNavLink 
@@ -23,7 +23,7 @@ const SidebarBillingSection: React.FC<SidebarBillingSectionProps> = ({ collapsed
       <SidebarNavLink 
         to="/user-billing" 
         icon={DollarSign} 
-        label="Meu Faturamento" 
+        label="Minha Cobrança" 
         collapsed={collapsed}
       />
     </SidebarNavigationGroup>

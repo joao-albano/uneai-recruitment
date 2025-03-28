@@ -1,4 +1,3 @@
-
 import { UserType, NewUserType } from '../types';
 import { ProductType } from '@/context/ProductContext';
 
@@ -69,5 +68,3 @@ export const getProductDisplayName = (productType: ProductType): string => {
       return productType;
   }
 };
-
-// Outras funções relacionadas a usuários podem ser adicionadas aqui

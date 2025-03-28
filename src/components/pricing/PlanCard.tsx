@@ -50,7 +50,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
       recruitment: isPtBR ? 'Captação' : 'Recruitment',
       secretary: isPtBR ? 'Secretaria' : 'Secretary',
       pedagogical: isPtBR ? 'Pedagógico' : 'Pedagogical',
-      billing: isPtBR ? 'Faturamento' : 'Billing'
+      billing: isPtBR ? 'Cobrança' : 'Billing'
     };
     
     return productNameMap[productType] || productType;
