@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import { AdminRoute, SuperAdminRoute } from "@/components/auth/ProtectedRoutes";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
 import AdminSettingsPage from "@/pages/AdminSettingsPage";
+import AdminAiSettingsPage from "@/pages/AdminAiSettingsPage";
 import AdminPaymentsPage from "@/pages/AdminPaymentsPage";
 import AdminPlansPage from "@/pages/AdminPlansPage";
 import UsersPage from "@/pages/UsersPage";
@@ -73,6 +74,14 @@ export const adminRoutes: RouteConfig[] = [
     element: (
       <SuperAdminRoute>
         <AdminApisReportPage />
+      </SuperAdminRoute>
+    )
+  },
+  {
+    path: "/admin/ai-settings",
+    element: (
+      <SuperAdminRoute>
+        <AdminAiSettingsPage />
       </SuperAdminRoute>
     )
   }

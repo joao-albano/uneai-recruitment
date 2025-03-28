@@ -64,7 +64,7 @@ const AdminSection: React.FC<AdminSectionProps> = ({ isAdmin, isSuperAdmin }) =>
               variant="outline" 
               onClick={() => navigate('/admin/payments')}
             >
-              Pagamentos
+              Cobrança
             </Button>
             
             <Button 
@@ -72,6 +72,13 @@ const AdminSection: React.FC<AdminSectionProps> = ({ isAdmin, isSuperAdmin }) =>
               onClick={() => navigate('/admin/apis')}
             >
               Relatório de APIs
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/admin/ai-settings')}
+            >
+              Integrações IA
             </Button>
           </>
         )}

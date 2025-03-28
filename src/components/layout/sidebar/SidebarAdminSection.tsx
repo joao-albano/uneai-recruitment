@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BarChart2, Users, DollarSign, Building, Settings, FileText, Shield } from 'lucide-react';
+import { BarChart2, Users, DollarSign, Building, Settings, FileText, Shield, Brain } from 'lucide-react';
 import SidebarNavigationGroup from './SidebarNavigationGroup';
 import SidebarNavLink from './SidebarNavLink';
 import { useAuth } from '@/context/auth';
@@ -66,7 +66,7 @@ const SidebarAdminSection: React.FC<SidebarAdminSectionProps> = ({ collapsed }) 
           <SidebarNavLink 
             to="/admin/payments" 
             icon={DollarSign} 
-            label="Pagamentos" 
+            label="Cobrança" 
             collapsed={collapsed}
           />
           
@@ -81,6 +81,13 @@ const SidebarAdminSection: React.FC<SidebarAdminSectionProps> = ({ collapsed }) 
             to="/admin/apis" 
             icon={FileText} 
             label="Relatório APIs" 
+            collapsed={collapsed}
+          />
+          
+          <SidebarNavLink 
+            to="/admin/ai-settings" 
+            icon={Brain} 
+            label="Integrações IA" 
             collapsed={collapsed}
           />
         </SidebarNavigationGroup>

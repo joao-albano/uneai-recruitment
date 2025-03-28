@@ -6,7 +6,6 @@ import { Phone } from 'lucide-react';
 import WhatsAppSettings from './WhatsAppSettings';
 import WebhookSettings from './WebhookSettings';
 import ApiSettings from './ApiSettings';
-import OpenAiSettings from './OpenAiSettings';
 import VoiceCallSettings from './VoiceCallSettings';
 
 const AdminSettingsTabs: React.FC = () => {
@@ -14,7 +13,7 @@ const AdminSettingsTabs: React.FC = () => {
   
   return (
     <Tabs defaultValue="whatsapp" className="w-full">
-      <TabsList className="grid grid-cols-2 md:grid-cols-5 mb-8">
+      <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8">
         <TabsTrigger value="whatsapp">
           WhatsApp
         </TabsTrigger>
@@ -29,9 +28,6 @@ const AdminSettingsTabs: React.FC = () => {
         </TabsTrigger>
         <TabsTrigger value="api">
           API
-        </TabsTrigger>
-        <TabsTrigger value="openai">
-          OpenAI
         </TabsTrigger>
       </TabsList>
       
@@ -49,10 +45,6 @@ const AdminSettingsTabs: React.FC = () => {
       
       <TabsContent value="api" className="space-y-6">
         <ApiSettings />
-      </TabsContent>
-      
-      <TabsContent value="openai" className="space-y-6">
-        <OpenAiSettings />
       </TabsContent>
     </Tabs>
   );
