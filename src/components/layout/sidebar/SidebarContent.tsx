@@ -9,7 +9,7 @@ import SidebarSettingsSection from './SidebarSettingsSection';
 import SidebarAdminSection from './SidebarAdminSection';
 import SidebarBillingSection from './SidebarBillingSection';
 import SidebarMonitoringSection from './SidebarMonitoringSection';
-import { useProduct, ProductType } from '@/context/product';
+import { useProduct } from '@/context/product';
 import { useAuth } from '@/context/auth';
 import { AlertTriangle } from 'lucide-react';
 
@@ -31,9 +31,9 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
   const { isAdmin, isSuperAdmin } = useAuth();
   
   // Safe access to ProductContext with fallback values
-  let currentProduct: ProductType | null = null;
-  let hasAccessToProduct = (productType: ProductType) => true; // Fixed signature to match the actual function
-  let availableProducts: ProductType[] = [];
+  let currentProduct = null;
+  let hasAccessToProduct = (productType) => true;
+  let availableProducts = [];
   
   try {
     const productContext = useProduct();
@@ -47,10 +47,12 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
     // Continue with fallback values
   }
   
-  console.log('SidebarContent - isAdmin:', isAdmin, 'isSuperAdmin:', isSuperAdmin);
+  console.log('SidebarContent - currentProduct:', currentProduct, 'isAdmin:', isAdmin, 'isSuperAdmin:', isSuperAdmin);
   
   // Check if the current product is recruitment
   const isRecruitmentProduct = currentProduct === 'recruitment';
+  // Check if the current product is retention
+  const isRetentionProduct = currentProduct === 'retention';
   
   return (
     <div 
@@ -73,19 +75,13 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
             {/* Navegação - sempre renderizado */}
             <SidebarNavigationSection collapsed={collapsed} />
             
-            {/* Monitoramento - apenas para retenção ou super admin, e não para captação */}
-            {(!currentProduct || 
-              (currentProduct === 'retention') || 
-              isSuperAdmin) && 
-              !isRecruitmentProduct && (
+            {/* Monitoramento - mostrar para retenção ou quando não houver produto selecionado */}
+            {(isRetentionProduct || !currentProduct || isSuperAdmin) && !isRecruitmentProduct && (
               <SidebarMonitoringSection collapsed={collapsed} />
             )}
             
-            {/* Faturamento - apenas para billing ou super admin, e não para captação */}
-            {(!currentProduct || 
-              (currentProduct === 'billing') || 
-              isSuperAdmin) && 
-              !isRecruitmentProduct && (
+            {/* Faturamento - mostrar para billing ou quando não houver produto selecionado */}
+            {(currentProduct === 'billing' || !currentProduct || isSuperAdmin) && !isRecruitmentProduct && (
               <SidebarBillingSection collapsed={collapsed} />
             )}
           </>

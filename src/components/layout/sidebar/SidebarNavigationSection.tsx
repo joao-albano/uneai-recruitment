@@ -3,7 +3,7 @@ import React from 'react';
 import { Home, BarChart2, LineChart, Upload, UserPlus, CalendarCheck, Users, BarChart, MessageSquare } from 'lucide-react';
 import SidebarNavigationGroup from './SidebarNavigationGroup';
 import SidebarNavLink from './SidebarNavLink';
-import { useProduct } from '@/context/ProductContext';
+import { useProduct } from '@/context/product';
 
 interface SidebarNavigationSectionProps {
   collapsed: boolean;
@@ -11,6 +11,8 @@ interface SidebarNavigationSectionProps {
 
 const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ collapsed }) => {
   const { currentProduct } = useProduct();
+  
+  console.log('SidebarNavigationSection - currentProduct:', currentProduct);
   
   return (
     <SidebarNavigationGroup 
