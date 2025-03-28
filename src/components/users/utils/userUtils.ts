@@ -1,4 +1,4 @@
-import { UserType, NewUserType } from '../types';
+import { UserType, NewUserType, UserRole } from '../types';
 import { ProductType } from '@/context/ProductContext';
 
 // Função para gerar iniciais a partir do nome
@@ -41,7 +41,7 @@ export const updateUserEmail = (user: UserType, email: string): UserType => {
 export const updateUserRole = (user: UserType, role: string): UserType => {
   return {
     ...user,
-    role,
+    role: role as UserRole,
     // Se o papel for superadmin, também definimos isSuperAdmin como true
     isSuperAdmin: role === 'superadmin' ? true : user.isSuperAdmin
   };

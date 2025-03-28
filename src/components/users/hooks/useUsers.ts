@@ -1,7 +1,6 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/auth';
-import { UserType, NewUserType } from '../types';
+import { UserType, NewUserType, UserRole } from '../types';
 import { useToast } from '@/hooks/use-toast'; 
 import { v4 as uuidv4 } from 'uuid';
 import { fetchUsers, deleteUser } from '../api/userManagementApi';
@@ -40,7 +39,7 @@ export const useUsers = () => {
         id: user.id,
         name: user.email.split('@')[0], // Use o email para gerar um nome se não tiver
         email: user.email,
-        role: user.role || 'user',
+        role: (user.role || 'user') as UserRole,
         initials: user.email.substring(0, 2).toUpperCase(),
         organizationId: user.organization_id,
         organizationName: user.organizations?.name || 'Organização',
@@ -145,7 +144,7 @@ export const useUsers = () => {
         id: newId,
         name: newUser.name,
         email: newUser.email,
-        role: newUser.role || 'user',
+        role: newUser.role,
         initials: newUser.initials || newUser.name.substring(0, 2).toUpperCase(),
         organizationId: newUser.organizationId || currentUser?.organizationId || '',
         organizationName: newUser.organizationName || currentUser?.organization?.name || '',
@@ -179,7 +178,7 @@ export const useUsers = () => {
     }
   }, [newUser, currentUser, toast]);
 
-  // Handle user edit - modificado para aceitar um evento de formulário
+  // Handle user edit
   const handleEditUser = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     

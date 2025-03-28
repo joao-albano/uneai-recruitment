@@ -1,14 +1,14 @@
-
 import { useEffect } from 'react';
 import { useAuthState } from './hooks/useAuthState';
 import { loginWithEmail, loginWithPhone, logout } from './api/authApi';
+import { UserRole } from './types';
 
 // Mock user data for testing
 const MOCK_USER = {
   id: 'mock-user-id',
   name: 'Usuário Teste',
   email: 'usuario@teste.com',
-  role: 'admin',
+  role: 'admin' as UserRole,
   organizationId: 'mock-org-id',
   organization: {
     id: 'mock-org-id',
@@ -23,7 +23,7 @@ const SUPER_ADMIN_USER = {
   id: 'super-admin-id',
   name: 'Paula Martins',
   email: 'paula.martins@une.cx',
-  role: 'superadmin', // Changed to superadmin
+  role: 'superadmin' as UserRole, // Changed to superadmin
   organizationId: 'une-cx-org-id',
   organization: {
     id: 'une-cx-org-id',

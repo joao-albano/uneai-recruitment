@@ -1,6 +1,6 @@
 
 import { useCallback } from 'react';
-import { UserType } from '../types';
+import { UserType, UserRole } from '../types';
 import { updateUser } from '../api/userManagementApi';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth';
@@ -37,7 +37,7 @@ export const useUserEdit = (fetchUsers: () => Promise<void>) => {
       const formData = new FormData(e.currentTarget as HTMLFormElement);
       const name = formData.get('name') as string;
       const email = formData.get('email') as string;
-      const role = formData.get('role') as string;
+      const role = formData.get('role') as UserRole;
       
       // Chamar a função de API para atualizar o usuário
       await updateUser(selectedUser.id.toString(), {

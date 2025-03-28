@@ -2,6 +2,7 @@
 import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { UserRole } from '../types';
 
 interface UserRoleSelectorProps {
   selectedRole: string;
@@ -44,7 +45,7 @@ const UserRoleSelector: React.FC<UserRoleSelectorProps> = ({
           <SelectItem value="financeiro">Financeiro</SelectItem>
           <SelectItem value="vendedor">Vendedor</SelectItem>
           <SelectItem value="atendente">Atendente</SelectItem>
-          <SelectItem value="basico">Usuário Básico</SelectItem>
+          <SelectItem value="user">Usuário Básico</SelectItem>
         </SelectContent>
       </Select>
     </div>

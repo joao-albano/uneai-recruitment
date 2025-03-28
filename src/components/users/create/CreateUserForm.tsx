@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { NewUserType } from '../types';
+import { NewUserType, UserRole } from '../types';
 import UserNameInput from '../shared/UserNameInput';
 import UserEmailInput from '../shared/UserEmailInput';
 import PasswordInput from '../shared/PasswordInput';
@@ -27,7 +27,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
   
   // Handle select changes
   const handleRoleChange = (role: string) => {
-    setNewUser({ ...newUser, role });
+    setNewUser({ ...newUser, role: role as UserRole });
   };
   
   // Handle organization change

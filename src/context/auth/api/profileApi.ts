@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Organization, UserProfile } from '../types';
+import { Organization, UserProfile, UserRole } from '../types';
 
 /**
  * Fetches user profile and organization data from Supabase
@@ -74,12 +74,15 @@ export const fetchUserProfile = async (userId: string) => {
       isAdmin 
     });
     
+    // Create user profile object with the correct UserRole type
+    const userRole: UserRole = isSuperAdmin ? 'superadmin' : (profile?.role as UserRole || 'user');
+    
     // Create user profile object
     const userProfile: UserProfile = {
       id: userId,
       name: fullName || profile?.email?.split('@')[0] || email?.split('@')[0] || '',
       email: email || profile?.email || '',
-      role: isSuperAdmin ? 'superadmin' : (profile?.role || 'user'),
+      role: userRole,
       organizationId: profile?.organization_id,
       organization: organization,
       isSuperAdmin: isSuperAdmin

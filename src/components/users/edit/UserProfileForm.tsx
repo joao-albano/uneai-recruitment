@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { UserType } from '../types';
+import { UserType, UserRole } from '../types';
 import UserNameInput from '../shared/UserNameInput';
 import UserEmailInput from '../shared/UserEmailInput';
 import UserRoleSelector from '../shared/UserRoleSelector';
@@ -30,7 +30,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
   // Handle role change
   const handleRoleChange = (role: string) => {
     if (!selectedUser) return;
-    setSelectedUser({ ...selectedUser, role });
+    setSelectedUser({ ...selectedUser, role: role as UserRole });
   };
   
   // Handle organization change
