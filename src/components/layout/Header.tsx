@@ -16,11 +16,13 @@ import { useAuth } from '@/context/auth';
 interface HeaderProps {
   toggleSidebar: () => void;
   sidebarCollapsed: boolean;
+  hideSidebar?: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
   toggleSidebar, 
-  sidebarCollapsed 
+  sidebarCollapsed,
+  hideSidebar = false
 }) => {
   const navigate = useNavigate();
   const { language, setLanguage } = useTheme();
@@ -45,17 +47,19 @@ const Header: React.FC<HeaderProps> = ({
   
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 lg:px-6">
-      <Button
-        variant="outline"
-        size="icon"
-        className="mr-2 lg:hidden"
-        onClick={toggleSidebar}
-      >
-        <Menu className="h-5 w-5" />
-        <span className="sr-only">Toggle Menu</span>
-      </Button>
+      {!hideSidebar && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="mr-2 lg:hidden"
+          onClick={toggleSidebar}
+        >
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Toggle Menu</span>
+        </Button>
+      )}
       
-      <AppLogo visible={sidebarCollapsed} />
+      <AppLogo visible={sidebarCollapsed || hideSidebar} />
 
       <div className="flex-1" />
       

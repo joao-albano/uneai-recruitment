@@ -13,6 +13,7 @@ const ProductHubPage: React.FC = () => {
       setSidebarOpen={setSidebarOpen}
       sidebarCollapsed={sidebarCollapsed}
       setSidebarCollapsed={setSidebarCollapsed}
+      hideSidebar={true} // Ocultando a sidebar na página de hub
     >
       <ProductHub />
     </Layout>

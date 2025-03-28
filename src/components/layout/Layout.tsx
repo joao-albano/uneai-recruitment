@@ -13,6 +13,7 @@ interface LayoutProps {
   setSidebarOpen: (open: boolean) => void;
   sidebarCollapsed: boolean;
   setSidebarCollapsed: (collapsed: boolean) => void;
+  hideSidebar?: boolean; // Nova propriedade para ocultar a sidebar
 }
 
 const Layout: React.FC<LayoutProps> = ({
@@ -20,7 +21,8 @@ const Layout: React.FC<LayoutProps> = ({
   sidebarOpen,
   setSidebarOpen,
   sidebarCollapsed,
-  setSidebarCollapsed
+  setSidebarCollapsed,
+  hideSidebar = false // Valor padrão falso
 }) => {
   const { isAuthenticated, isSuperAdmin } = useAuth();
   
@@ -40,18 +42,21 @@ const Layout: React.FC<LayoutProps> = ({
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
       <Header 
         toggleSidebar={toggleSidebar} 
-        sidebarCollapsed={sidebarCollapsed} 
+        sidebarCollapsed={sidebarCollapsed}
+        hideSidebar={hideSidebar}
       />
       
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar 
-          isOpen={sidebarOpen} 
-          onClose={() => setSidebarOpen(false)}
-          collapsed={sidebarCollapsed}
-          setCollapsed={setSidebarCollapsed}
-        />
+        {!hideSidebar && (
+          <Sidebar 
+            isOpen={sidebarOpen} 
+            onClose={() => setSidebarOpen(false)}
+            collapsed={sidebarCollapsed}
+            setCollapsed={setSidebarCollapsed}
+          />
+        )}
         
-        <main className="flex-1 overflow-auto p-6">
+        <main className={`flex-1 overflow-auto p-6 ${hideSidebar ? 'ml-0' : ''}`}>
           {isAuthenticated && showBanner && (
             <TrialPeriodBanner 
               daysRemaining={daysRemaining}

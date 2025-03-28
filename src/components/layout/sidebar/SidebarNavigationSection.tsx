@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, BarChart2, LineChart, Upload, UserPlus, CalendarCheck, Users } from 'lucide-react';
+import { Home, BarChart2, LineChart, Upload, UserPlus, CalendarCheck, Users, BarChart, MessageSquare } from 'lucide-react';
 import SidebarNavigationGroup from './SidebarNavigationGroup';
 import SidebarNavLink from './SidebarNavLink';
 import { useProduct } from '@/context/ProductContext';
@@ -47,7 +47,7 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
         <>
           <SidebarNavLink 
             to="/recruitment" 
-            icon={BarChart2} 
+            icon={BarChart} 
             label="Dashboard" 
             collapsed={collapsed}
           />
@@ -77,7 +77,7 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
           />
           <SidebarNavLink 
             to="/recruitment/conversation" 
-            icon={UserPlus} 
+            icon={MessageSquare} 
             label="Conversas" 
             collapsed={collapsed}
           />
@@ -90,13 +90,15 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
         </>
       )}
       
-      {/* Links compartilhados por todos os produtos */}
-      <SidebarNavLink 
-        to="/upload" 
-        icon={Upload} 
-        label="Uploads" 
-        collapsed={collapsed}
-      />
+      {/* Links compartilhados por todos os produtos, mas apenas mostrados quando não estiver no produto de captação */}
+      {currentProduct !== 'recruitment' && (
+        <SidebarNavLink 
+          to="/upload" 
+          icon={Upload} 
+          label="Uploads" 
+          collapsed={collapsed}
+        />
+      )}
     </SidebarNavigationGroup>
   );
 };

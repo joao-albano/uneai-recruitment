@@ -67,18 +67,16 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
         {/* Renderiza menus apenas se o usuário tiver acesso ao produto ou for super admin */}
         {isSuperAdmin || (!currentProduct || hasAccessToProduct(currentProduct)) ? (
           <>
-            {/* Renderização única das seções baseada no produto ou permissões */}
-            
-            {/* Navegação - renderizado apenas uma vez para todos os produtos, ou para super admin */}
+            {/* Navegação - sempre renderizado */}
             <SidebarNavigationSection collapsed={collapsed} />
             
-            {/* Monitoramento - apenas para retenção ou super admin */}
-            {(!currentProduct || currentProduct === 'retention' || isSuperAdmin) && (
+            {/* Monitoramento - apenas para retenção ou super admin, e não para captação */}
+            {(!currentProduct || (currentProduct === 'retention' && currentProduct !== 'recruitment') || isSuperAdmin) && (
               <SidebarMonitoringSection collapsed={collapsed} />
             )}
             
-            {/* Faturamento - apenas para billing ou super admin */}
-            {(!currentProduct || currentProduct === 'billing' || isSuperAdmin) && (
+            {/* Faturamento - apenas para billing ou super admin, e não para captação */}
+            {(!currentProduct || (currentProduct === 'billing' && currentProduct !== 'recruitment') || isSuperAdmin) && (
               <SidebarBillingSection collapsed={collapsed} />
             )}
           </>
@@ -104,8 +102,8 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
           </div>
         )}
         
-        {/* Menus de administração são exibidos com base no nível de acesso */}
-        {(isAdmin || isSuperAdmin) && (
+        {/* Menus de administração são exibidos com base no nível de acesso e não estando no produto de captação */}
+        {(isAdmin || isSuperAdmin) && currentProduct !== 'recruitment' && (
           <SidebarAdminSection collapsed={collapsed} />
         )}
       </div>
