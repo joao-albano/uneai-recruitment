@@ -53,8 +53,8 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
       />
       
       <OrganizationSelector
-        selectedOrgId={newUser.organizationId || ''}
-        onOrgChange={handleOrgChange}
+        selectedOrganizationId={newUser.organizationId || ''}
+        onOrganizationChange={handleOrgChange}
         disabled={!isSuperAdmin}
       />
     </div>

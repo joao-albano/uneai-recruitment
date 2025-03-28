@@ -57,8 +57,8 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
       />
       
       <OrganizationSelector
-        selectedOrgId={selectedUser.organizationId || ''}
-        onOrgChange={handleOrgChange}
+        selectedOrganizationId={selectedUser.organizationId || ''}
+        onOrganizationChange={handleOrgChange}
         disabled={!isSuperAdmin}
       />
     </div>

@@ -38,10 +38,10 @@ export const useUsers = () => {
       // Transformar dados da API para o formato esperado pelo componente
       const processedUsers: UserType[] = usersData.map(user => ({
         id: user.id,
-        name: user.name || user.email.split('@')[0],
+        name: user.email.split('@')[0], // Use o email para gerar um nome se não tiver
         email: user.email,
         role: user.role || 'user',
-        initials: (user.name || user.email.substring(0, 2)).substring(0, 2).toUpperCase(),
+        initials: user.email.substring(0, 2).toUpperCase(),
         organizationId: user.organization_id,
         organizationName: user.organizations?.name || 'Organização',
         isSuperAdmin: user.is_super_admin
@@ -179,15 +179,19 @@ export const useUsers = () => {
     }
   }, [newUser, currentUser, toast]);
 
-  // Handle user edit
-  const handleEditUser = useCallback(async (updatedUser: UserType) => {
+  // Handle user edit - modificado para aceitar um evento de formulário
+  const handleEditUser = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!selectedUser) return;
+    
     try {
       // Simular edição de usuário
       await new Promise(resolve => setTimeout(resolve, 500));
       
       setUsers(prev => 
         prev.map(user => 
-          user.id === updatedUser.id ? updatedUser : user
+          user.id === selectedUser.id ? selectedUser : user
         )
       );
       
@@ -196,7 +200,7 @@ export const useUsers = () => {
       
       toast({
         title: "Usuário atualizado",
-        description: `${updatedUser.name} foi atualizado com sucesso.`,
+        description: `${selectedUser.name} foi atualizado com sucesso.`,
       });
     } catch (error: any) {
       toast({
@@ -205,7 +209,7 @@ export const useUsers = () => {
         variant: "destructive",
       });
     }
-  }, [toast]);
+  }, [selectedUser, toast]);
 
   // Handle user delete
   const handleDeleteUser = useCallback(async () => {
