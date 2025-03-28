@@ -1,91 +1,157 @@
 
 import React from 'react';
-import { Home, BarChart2, LineChart, Upload, UserPlus, CalendarCheck, Users } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { useProduct } from '@/context/ProductContext';
+import { 
+  BarChart, BookOpen, Filter, Home, Mail, MessageSquare, 
+  School, Upload, Users, ListFilter, BarChart3, MessagesSquare
+} from 'lucide-react';
 import SidebarNavigationGroup from './SidebarNavigationGroup';
 import SidebarNavLink from './SidebarNavLink';
-import { useProduct } from '@/context/ProductContext';
 
 interface SidebarNavigationSectionProps {
   collapsed: boolean;
 }
 
 const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ collapsed }) => {
+  const location = useLocation();
   const { currentProduct } = useProduct();
   
+  const isActive = (path: string) => location.pathname === path;
+
+  // Renderiza apenas links relacionados ao produto atual
   return (
-    <SidebarNavigationGroup 
-      title="Navegação" 
-      collapsed={collapsed}
-    >
-      <SidebarNavLink 
-        to="/home" 
-        icon={Home} 
-        label="Início" 
-        collapsed={collapsed}
-      />
-      
-      {/* Links específicos para o produto de retenção */}
-      {(!currentProduct || currentProduct === 'retention') && (
+    <>
+      {currentProduct === 'retention' && (
         <>
-          <SidebarNavLink 
-            to="/dashboard" 
-            icon={BarChart2} 
-            label="Dashboard" 
+          <SidebarNavigationGroup
+            title="Principal"
             collapsed={collapsed}
-          />
-          <SidebarNavLink 
-            to="/model" 
-            icon={LineChart} 
-            label="Modelo" 
+          >
+            <SidebarNavLink 
+              to="/" 
+              icon={Home} 
+              label="Dashboard" 
+              active={isActive('/')}
+              collapsed={collapsed}
+            />
+            <SidebarNavLink 
+              to="/students" 
+              icon={Users} 
+              label="Alunos" 
+              active={location.pathname.startsWith('/students')}
+              collapsed={collapsed}
+            />
+            <SidebarNavLink 
+              to="/model" 
+              icon={School} 
+              label="Modelo" 
+              active={location.pathname.startsWith('/model')}
+              collapsed={collapsed}
+            />
+          </SidebarNavigationGroup>
+          
+          <SidebarNavigationGroup
+            title="Monitoramento"
             collapsed={collapsed}
-          />
+          >
+            <SidebarNavLink 
+              to="/alerts" 
+              icon={BookOpen} 
+              label="Alertas" 
+              active={location.pathname.startsWith('/alerts')}
+              collapsed={collapsed}
+            />
+            <SidebarNavLink 
+              to="/reports" 
+              icon={BarChart} 
+              label="Relatórios" 
+              active={location.pathname.startsWith('/reports')}
+              collapsed={collapsed}
+            />
+            <SidebarNavLink 
+              to="/surveys" 
+              icon={Mail} 
+              label="Pesquisas" 
+              active={location.pathname.startsWith('/surveys')}
+              collapsed={collapsed}
+            />
+          </SidebarNavigationGroup>
         </>
       )}
       
-      {/* Links específicos para o produto de captação */}
       {currentProduct === 'recruitment' && (
         <>
-          <SidebarNavLink 
-            to="/recruitment" 
-            icon={BarChart2} 
-            label="Dashboard" 
+          <SidebarNavigationGroup
+            title="Captação"
             collapsed={collapsed}
-          />
-          <SidebarNavLink 
-            to="/recruitment/leads" 
-            icon={UserPlus} 
-            label="Leads" 
+          >
+            <SidebarNavLink 
+              to="/recruitment" 
+              icon={Home} 
+              label="Dashboard" 
+              active={isActive('/recruitment')}
+              collapsed={collapsed}
+            />
+            <SidebarNavLink 
+              to="/recruitment/leads" 
+              icon={Users} 
+              label="Leads" 
+              active={location.pathname.startsWith('/recruitment/leads')}
+              collapsed={collapsed}
+            />
+            <SidebarNavLink 
+              to="/recruitment/funnel" 
+              icon={Filter} 
+              label="Funil" 
+              active={location.pathname.startsWith('/recruitment/funnel')}
+              collapsed={collapsed}
+            />
+            <SidebarNavLink 
+              to="/recruitment/campaigns" 
+              icon={ListFilter} 
+              label="Campanhas" 
+              active={location.pathname.startsWith('/recruitment/campaigns')}
+              collapsed={collapsed}
+            />
+          </SidebarNavigationGroup>
+          
+          <SidebarNavigationGroup
+            title="Comunicação"
             collapsed={collapsed}
-          />
-          <SidebarNavLink 
-            to="/recruitment/funnel" 
-            icon={LineChart} 
-            label="Funil" 
-            collapsed={collapsed}
-          />
-          <SidebarNavLink 
-            to="/recruitment/campaigns" 
-            icon={CalendarCheck} 
-            label="Campanhas" 
-            collapsed={collapsed}
-          />
-          <SidebarNavLink 
-            to="/recruitment/analytics" 
-            icon={Users} 
-            label="Analíticos" 
-            collapsed={collapsed}
-          />
+          >
+            <SidebarNavLink 
+              to="/recruitment/conversation" 
+              icon={MessageSquare} 
+              label="Conversas" 
+              active={location.pathname.startsWith('/recruitment/conversation')}
+              collapsed={collapsed}
+            />
+            <SidebarNavLink 
+              to="/recruitment/predictions" 
+              icon={BarChart3} 
+              label="Previsões" 
+              active={location.pathname.startsWith('/recruitment/predictions')}
+              collapsed={collapsed}
+            />
+          </SidebarNavigationGroup>
         </>
       )}
       
-      {/* Links compartilhados por todos os produtos */}
-      <SidebarNavLink 
-        to="/upload" 
-        icon={Upload} 
-        label="Uploads" 
+      {/* Seção comum a ambos os produtos */}
+      <SidebarNavigationGroup
+        title="Utilidades"
         collapsed={collapsed}
-      />
-    </SidebarNavigationGroup>
+      >
+        <SidebarNavLink 
+          to="/upload" 
+          icon={Upload} 
+          label="Upload" 
+          active={location.pathname.startsWith('/upload')}
+          collapsed={collapsed}
+        />
+      </SidebarNavigationGroup>
+    </>
   );
 };
 

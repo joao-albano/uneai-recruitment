@@ -26,6 +26,19 @@ export type LeadData = {
   campaign?: string;       // Campanha relacionada
   location?: string;       // Localização/região
   segments?: string[];     // Segmentos de interesse
+  enrollmentScore?: number; // Escore de probabilidade de matrícula (0-100)
+  lastAiInteraction?: Date; // Data da última interação com IA
+  interactionHistory?: LeadInteraction[]; // Histórico de interações
+};
+
+export type LeadInteraction = {
+  id: string;
+  leadId: string;
+  type: 'whatsapp' | 'email' | 'call' | 'webchat';
+  content: string;
+  sentiment?: 'positive' | 'neutral' | 'negative';
+  createdAt: Date;
+  aiSuggestions?: string[];
 };
 
 export type FunnelStage = {
@@ -35,6 +48,9 @@ export type FunnelStage = {
   description?: string;
   isActive: boolean;
   leadCount?: number;      // Total de leads nessa etapa
+  conversionRate?: number; // Taxa de conversão para próxima etapa
+  averageDuration?: number; // Tempo médio na etapa (em dias)
+  actions?: string[];      // Ações recomendadas para esta etapa
 };
 
 export type Campaign = {
@@ -55,4 +71,29 @@ export type Campaign = {
     targetLeads: number;
     targetConversion: number;
   };
+};
+
+export type EnrollmentPrediction = {
+  leadId: string;
+  leadName: string;
+  score: number;  // 0-100
+  factors: {
+    interactionFrequency: number;
+    responseSpeed: number;
+    engagement: number;
+    sentiment: number;
+  };
+  courseDemand?: number;
+  lastUpdated: Date;
+  recommendation?: string;
+};
+
+export type CourseEnrollmentProjection = {
+  courseId: string;
+  courseName: string;
+  projectedEnrollments: number;
+  currentLeads: number;
+  conversionRate: number;
+  target?: number;
+  lastUpdated: Date;
 };

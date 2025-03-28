@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
   SelectContent,
@@ -18,349 +19,251 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Plus, Trash2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { ChannelType, LeadStatus } from '@/types/recruitment';
 
 interface LeadCreateDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-// Schema de validação para o formulário de lead
-const leadFormSchema = z.object({
-  parentName: z.string().min(3, {
-    message: "Nome deve conter no mínimo 3 caracteres",
-  }),
-  email: z.string().email({
-    message: "Informe um e-mail válido",
-  }),
-  phone: z.string().min(10, {
-    message: "Informe um telefone válido",
-  }),
-  channel: z.string({
-    required_error: "Selecione um canal",
-  }),
-  course: z.string({
-    required_error: "Selecione um curso",
-  }),
-  status: z.string().default("Novo"),
-  children: z.array(
-    z.object({
-      name: z.string().min(1, { message: "Nome do filho é obrigatório" }),
-      age: z.string().min(1, { message: "Idade é obrigatória" }),
-      grade: z.string().min(1, { message: "Série pretendida é obrigatória" }),
-    })
-  ).min(1, { message: "Adicione pelo menos um filho" }),
-});
-
-type LeadFormValues = z.infer<typeof leadFormSchema>;
-
-const LeadCreateDialog: React.FC<LeadCreateDialogProps> = ({ open, onOpenChange }) => {
-  // Configuração do formulário com react-hook-form
-  const form = useForm<LeadFormValues>({
-    resolver: zodResolver(leadFormSchema),
-    defaultValues: {
-      parentName: "",
-      email: "",
-      phone: "",
-      channel: "",
-      course: "",
-      status: "Novo",
-      children: [
-        { name: "", age: "", grade: "" }
-      ],
-    },
+const LeadCreateDialog: React.FC<LeadCreateDialogProps> = ({
+  open,
+  onOpenChange,
+}) => {
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState('manual');
+  
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    channel: '' as ChannelType,
+    course: '',
+    children: '',
+    location: '',
+    notes: '',
   });
-
-  // Adicionar um novo filho ao formulário
-  const addChild = () => {
-    const currentChildren = form.getValues().children;
-    form.setValue("children", [
-      ...currentChildren,
-      { name: "", age: "", grade: "" }
-    ]);
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
-
-  // Remover um filho do formulário
-  const removeChild = (index: number) => {
-    const currentChildren = form.getValues().children;
-    if (currentChildren.length > 1) {
-      form.setValue("children", currentChildren.filter((_, i) => i !== index));
+  
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validação simples
+    if (!formData.name || !formData.email || !formData.phone) {
+      toast({
+        title: "Campos obrigatórios",
+        description: "Preencha todos os campos obrigatórios",
+        variant: "destructive",
+      });
+      return;
     }
-  };
-
-  // Função chamada ao submeter o formulário
-  const onSubmit = (data: LeadFormValues) => {
-    console.log(data);
+    
+    // Aqui faria a integração com a API para criar o lead
+    console.log('Criando lead:', formData);
+    
+    toast({
+      title: "Lead criado com sucesso!",
+      description: `${formData.name} foi adicionado ao sistema.`,
+    });
+    
+    // Resetar formulário e fechar diálogo
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      channel: '' as ChannelType,
+      course: '',
+      children: '',
+      location: '',
+      notes: '',
+    });
     onOpenChange(false);
-    // Aqui você implementaria a lógica para salvar o lead
   };
-
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Cadastrar Novo Lead</DialogTitle>
+          <DialogTitle>Adicionar Novo Lead</DialogTitle>
           <DialogDescription>
-            Preencha as informações do lead para iniciar o processo de captação
+            Cadastre um novo contato interessado na instituição.
           </DialogDescription>
         </DialogHeader>
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="basic">Informações Básicas</TabsTrigger>
-                <TabsTrigger value="children">Filhos</TabsTrigger>
-                <TabsTrigger value="additional">Informações Adicionais</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="basic" className="space-y-4 py-4">
-                <FormField
-                  control={form.control}
-                  name="parentName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nome do Responsável</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Nome completo" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>E-mail</FormLabel>
-                        <FormControl>
-                          <Input type="email" placeholder="email@exemplo.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Telefone</FormLabel>
-                        <FormControl>
-                          <Input placeholder="(00) 00000-0000" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="channel"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Canal</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione o canal" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Site">Site</SelectItem>
-                            <SelectItem value="Facebook">Facebook</SelectItem>
-                            <SelectItem value="Instagram">Instagram</SelectItem>
-                            <SelectItem value="Google">Google</SelectItem>
-                            <SelectItem value="Indicação">Indicação</SelectItem>
-                            <SelectItem value="Outros">Outros</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="course"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Curso de Interesse</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione o curso" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Educação Infantil">Educação Infantil</SelectItem>
-                            <SelectItem value="Ensino Fundamental">Ensino Fundamental</SelectItem>
-                            <SelectItem value="Ensino Médio">Ensino Médio</SelectItem>
-                            <SelectItem value="Técnico">Técnico</SelectItem>
-                            <SelectItem value="Graduação">Graduação</SelectItem>
-                            <SelectItem value="Pós-Graduação">Pós-Graduação</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="children" className="py-4">
-                <div className="space-y-4">
-                  {form.watch("children").map((_, index) => (
-                    <div key={index} className="border rounded-md p-4 relative">
-                      <div className="absolute right-2 top-2">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removeChild(index)}
-                          disabled={form.watch("children").length <= 1}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      
-                      <h3 className="font-medium mb-3">Filho {index + 1}</h3>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <FormField
-                          control={form.control}
-                          name={`children.${index}.name`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Nome</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Nome do filho" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name={`children.${index}.age`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Idade</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Idade" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name={`children.${index}.grade`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Série Pretendida</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Série pretendida" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                  
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={addChild}
-                    className="w-full gap-2"
-                  >
-                    <Plus className="h-4 w-4" />
-                    <span>Adicionar Filho</span>
-                  </Button>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="additional" className="py-4">
-                <div className="space-y-4">
-                  <div>
-                    <Label>Observações</Label>
-                    <textarea 
-                      className="w-full border rounded-md p-2 mt-1 h-24 resize-y"
-                      placeholder="Informações adicionais sobre o lead..."
+        
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="manual">Cadastro Manual</TabsTrigger>
+            <TabsTrigger value="import">Importação</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="manual">
+            <form onSubmit={handleSubmit}>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Nome completo *</Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      placeholder="Nome do lead"
+                      required
                     />
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label>Intenção de Matrícula</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione a intenção" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="alta">Alta</SelectItem>
-                          <SelectItem value="media">Média</SelectItem>
-                          <SelectItem value="baixa">Baixa</SelectItem>
-                          <SelectItem value="indefinida">Indefinida</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div>
-                      <Label>Melhor Horário para Contato</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o horário" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="manha">Manhã</SelectItem>
-                          <SelectItem value="tarde">Tarde</SelectItem>
-                          <SelectItem value="noite">Noite</SelectItem>
-                          <SelectItem value="qualquer">Qualquer horário</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email *</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="email@exemplo.com"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Telefone *</Label>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      placeholder="(00) 00000-0000"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="channel">Canal de Origem *</Label>
+                    <Select 
+                      value={formData.channel} 
+                      onValueChange={(value) => handleSelectChange('channel', value)}
+                    >
+                      <SelectTrigger id="channel">
+                        <SelectValue placeholder="Selecione um canal" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="site">Site</SelectItem>
+                        <SelectItem value="facebook">Facebook</SelectItem>
+                        <SelectItem value="instagram">Instagram</SelectItem>
+                        <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                        <SelectItem value="indicacao">Indicação</SelectItem>
+                        <SelectItem value="google">Google</SelectItem>
+                        <SelectItem value="eventos">Eventos</SelectItem>
+                        <SelectItem value="presencial">Presencial</SelectItem>
+                        <SelectItem value="outros">Outros</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="course">Curso de Interesse</Label>
+                    <Select 
+                      value={formData.course} 
+                      onValueChange={(value) => handleSelectChange('course', value)}
+                    >
+                      <SelectTrigger id="course">
+                        <SelectValue placeholder="Selecione um curso" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="educacao-infantil">Educação Infantil</SelectItem>
+                        <SelectItem value="ensino-fundamental-1">Ensino Fundamental I</SelectItem>
+                        <SelectItem value="ensino-fundamental-2">Ensino Fundamental II</SelectItem>
+                        <SelectItem value="ensino-medio">Ensino Médio</SelectItem>
+                        <SelectItem value="ensino-tecnico">Ensino Técnico</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="children">Número de Filhos</Label>
+                    <Input
+                      id="children"
+                      name="children"
+                      type="number"
+                      value={formData.children}
+                      onChange={handleInputChange}
+                      placeholder="Qtd. de filhos"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="location">Localização/Região</Label>
+                    <Input
+                      id="location"
+                      name="location"
+                      value={formData.location}
+                      onChange={handleInputChange}
+                      placeholder="Ex: Zona Sul, Centro, etc."
+                    />
                   </div>
                 </div>
-              </TabsContent>
-            </Tabs>
-
+                
+                <div className="space-y-2">
+                  <Label htmlFor="notes">Observações</Label>
+                  <Input
+                    id="notes"
+                    name="notes"
+                    value={formData.notes}
+                    onChange={handleInputChange}
+                    placeholder="Informações adicionais relevantes"
+                  />
+                </div>
+              </div>
+              
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                  Cancelar
+                </Button>
+                <Button type="submit">Salvar Lead</Button>
+              </DialogFooter>
+            </form>
+          </TabsContent>
+          
+          <TabsContent value="import">
+            <div className="py-6 flex flex-col items-center justify-center text-center">
+              <div className="mx-auto w-full max-w-sm">
+                <div className="space-y-4">
+                  <div className="border-2 border-dashed border-muted rounded-lg p-6 flex flex-col items-center justify-center">
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Arraste um arquivo CSV ou Excel
+                    </p>
+                    <Button variant="outline" size="sm">Selecionar Arquivo</Button>
+                  </div>
+                  
+                  <p className="text-xs text-muted-foreground">
+                    O arquivo deve conter as colunas: nome, email, telefone e canal (obrigatórias).
+                    Outras colunas opcionais: curso, filhos, localização, observações.
+                  </p>
+                  
+                  <Button variant="outline" size="sm" className="w-full">
+                    Baixar Modelo
+                  </Button>
+                </div>
+              </div>
+            </div>
+            
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancelar
               </Button>
-              <Button type="submit">Salvar Lead</Button>
+              <Button disabled>Processar Importação</Button>
             </DialogFooter>
-          </form>
-        </Form>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );
