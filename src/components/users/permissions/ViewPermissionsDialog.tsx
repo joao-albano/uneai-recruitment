@@ -6,6 +6,7 @@ import { UserType } from '../types';
 import UserPermissionsView from './UserPermissionsView';
 import { ShieldAlert, Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { userProfileDescriptions } from './types';
 
 interface ViewPermissionsDialogProps {
   open: boolean;
@@ -21,14 +22,39 @@ const ViewPermissionsDialog: React.FC<ViewPermissionsDialogProps> = ({
   // Usando useMemo para evitar recálculos desnecessários
   const { userPermissions, profileName } = useMemo(() => {
     let permissions: string[] = [];
+    let profile = 'Usuário Básico';
     
-    if (user.role === 'admin' || user.isSuperAdmin) {
+    if (user.isSuperAdmin) {
+      permissions = userProfiles.superadmin;
+      profile = 'Super Admin';
+    } else if (user.role === 'admin') {
       permissions = userProfiles.admin;
+      profile = 'Administrador';
+    } else if (user.role === 'gestor') {
+      permissions = userProfiles.gestor;
+      profile = 'Gestor';
+    } else if (user.role === 'coordenador') {
+      permissions = userProfiles.coordenador;
+      profile = 'Coordenador';
+    } else if (user.role === 'gerente') {
+      permissions = userProfiles.gerente;
+      profile = 'Gerente';
+    } else if (user.role === 'professor') {
+      permissions = userProfiles.professor;
+      profile = 'Professor';
+    } else if (user.role === 'financeiro') {
+      permissions = userProfiles.financeiro;
+      profile = 'Financeiro';
+    } else if (user.role === 'vendedor') {
+      permissions = userProfiles.vendedor;
+      profile = 'Vendedor';
+    } else if (user.role === 'atendente') {
+      permissions = userProfiles.atendente;
+      profile = 'Atendente';
     } else {
       permissions = userProfiles.basico;
+      profile = 'Usuário Básico';
     }
-    
-    const profile = user.role === 'admin' ? 'Administrador' : 'Usuário Básico';
     
     return { 
       userPermissions: permissions,
@@ -54,7 +80,7 @@ const ViewPermissionsDialog: React.FC<ViewPermissionsDialogProps> = ({
                 className={user.isSuperAdmin ? "bg-amber-50 text-amber-700 border-amber-200" : ""}
               >
                 <Check className="mr-1 h-3 w-3" />
-                {user.isSuperAdmin ? "Super Admin" : profileName}
+                {profileName}
               </Badge>
             </div>
           </DialogDescription>

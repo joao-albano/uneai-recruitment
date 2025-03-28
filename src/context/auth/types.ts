@@ -7,11 +7,13 @@ export type LoginResult = {
   error?: any;
 };
 
+export type UserRole = 'superadmin' | 'admin' | 'gestor' | 'coordenador' | 'gerente' | 'professor' | 'financeiro' | 'vendedor' | 'atendente' | 'user';
+
 export type UserProfile = {
   id: string;
   name: string;
   email: string;
-  role: string;
+  role: UserRole;
   organizationId?: string;
   organization?: Organization | null;
   isSuperAdmin?: boolean;

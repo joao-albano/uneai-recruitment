@@ -8,13 +8,15 @@ interface UserRoleSelectorProps {
   onRoleChange: (role: string) => void;
   disabled?: boolean;
   className?: string;
+  showSuperAdmin?: boolean;
 }
 
 const UserRoleSelector: React.FC<UserRoleSelectorProps> = ({
   selectedRole,
   onRoleChange,
   disabled = false,
-  className = "grid grid-cols-4 items-center gap-4"
+  className = "grid grid-cols-4 items-center gap-4",
+  showSuperAdmin = false
 }) => {
   return (
     <div className={className}>
@@ -31,8 +33,18 @@ const UserRoleSelector: React.FC<UserRoleSelectorProps> = ({
           <SelectValue placeholder="Selecione um perfil" />
         </SelectTrigger>
         <SelectContent className="bg-popover">
-          <SelectItem value="user">Usuário</SelectItem>
+          {showSuperAdmin && (
+            <SelectItem value="superadmin">Super Admin</SelectItem>
+          )}
           <SelectItem value="admin">Administrador</SelectItem>
+          <SelectItem value="gestor">Gestor</SelectItem>
+          <SelectItem value="coordenador">Coordenador</SelectItem>
+          <SelectItem value="gerente">Gerente</SelectItem>
+          <SelectItem value="professor">Professor</SelectItem>
+          <SelectItem value="financeiro">Financeiro</SelectItem>
+          <SelectItem value="vendedor">Vendedor</SelectItem>
+          <SelectItem value="atendente">Atendente</SelectItem>
+          <SelectItem value="basico">Usuário Básico</SelectItem>
         </SelectContent>
       </Select>
     </div>

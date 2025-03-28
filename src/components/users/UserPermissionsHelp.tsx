@@ -6,8 +6,11 @@ import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "@/comp
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { HelpCircle, Users, Book, ShieldAlert, Calendar } from "lucide-react";
 import { userProfileDescriptions } from './permissions/types';
+import { useAuth } from '@/context/auth';
 
 const UserPermissionsHelp = () => {
+  const { isSuperAdmin } = useAuth();
+  
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -24,19 +27,21 @@ const UserPermissionsHelp = () => {
           </p>
         </div>
         <div className="max-h-80 overflow-y-auto">
-          {Object.entries(userProfileDescriptions).map(([key, profile]) => {
-            const Icon = profile.icon;
-            return (
-              <div key={key} className="p-4 border-b last:border-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <Icon className="h-4 w-4 text-primary" />
-                  <h4 className="font-medium text-sm">{profile.title}</h4>
+          {Object.entries(userProfileDescriptions)
+            .filter(([key]) => key !== 'superadmin' || isSuperAdmin) // Only show superadmin if user is superadmin
+            .map(([key, profile]) => {
+              const Icon = profile.icon;
+              return (
+                <div key={key} className="p-4 border-b last:border-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Icon className="h-4 w-4 text-primary" />
+                    <h4 className="font-medium text-sm">{profile.title}</h4>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {profile.description}
+                  </p>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {profile.description}
-                </p>
-              </div>
-            );
+              );
           })}
         </div>
         <div className="bg-muted/50 p-3">

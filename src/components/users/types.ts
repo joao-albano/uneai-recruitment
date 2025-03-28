@@ -1,22 +1,24 @@
 
+export type UserRole = 'superadmin' | 'admin' | 'gestor' | 'coordenador' | 'gerente' | 'professor' | 'financeiro' | 'vendedor' | 'atendente' | 'user';
+
 export type UserType = {
   id: string;
   name: string;
   email: string;
-  role: string;
+  role: UserRole;
   initials: string;
   organizationId?: string;
   organizationName?: string;
-  isSuperAdmin?: boolean; // Novo campo para identificar admin da UNE CX
+  isSuperAdmin?: boolean; // Identifies UNE CX admin
 };
 
 export type NewUserType = {
   name: string;
   email: string;
-  role: string;
+  role: UserRole;
   password: string;
   initials: string;
   organizationId?: string;
   organizationName?: string;
-  isSuperAdmin?: boolean; // Novo campo para identificar admin da UNE CX
+  isSuperAdmin?: boolean; // Identifies UNE CX admin
 };

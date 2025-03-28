@@ -1,6 +1,6 @@
 
 import { PermissionType } from './types';
-import { ShieldAlert, Users, FileText, Calendar, BarChart2, Settings, AlertTriangle, PenTool, Book, Bell, Lock } from "lucide-react";
+import { ShieldAlert, Users, FileText, Calendar, BarChart2, Settings, AlertTriangle, PenTool, Book, Bell, Lock, DollarSign, Store, HeadphonesIcon } from "lucide-react";
 
 // List of all available permissions in the system
 export const availablePermissions: PermissionType[] = [
@@ -159,7 +159,8 @@ export const availablePermissions: PermissionType[] = [
 
 // Predefined user profile permission sets
 export const userProfiles = {
-  admin: availablePermissions.map(p => p.id), // Admin tem todas as permissões
+  superadmin: availablePermissions.map(p => p.id), // Super Admin tem todas as permissões
+  admin: availablePermissions.map(p => p.id), // Admin tem todas as permissões da organização
   gestor: [
     'view_dashboard', 'view_advanced_stats', 
     'view_users', 'add_users', 'edit_users',
@@ -175,10 +176,33 @@ export const userProfiles = {
     'view_schedules', 'create_schedules', 'edit_schedules',
     'view_alerts'
   ],
+  gerente: [
+    'view_dashboard', 'view_advanced_stats',
+    'view_users', 'add_users',
+    'view_reports', 'export_reports', 'create_reports',
+    'view_schedules', 'create_schedules',
+    'view_settings',
+    'view_alerts'
+  ],
   professor: [
     'view_dashboard',
     'view_reports',
     'view_schedules', 'create_schedules', 'edit_schedules',
+    'view_alerts'
+  ],
+  financeiro: [
+    'view_dashboard',
+    'view_reports', 'export_reports', 'create_reports',
+    'view_settings'
+  ],
+  vendedor: [
+    'view_dashboard',
+    'view_reports',
+    'create_schedules'
+  ],
+  atendente: [
+    'view_dashboard',
+    'view_schedules', 'create_schedules',
     'view_alerts'
   ],
   basico: [
