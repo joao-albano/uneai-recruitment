@@ -75,14 +75,14 @@ export const fetchUserProfile = async (userId: string) => {
     });
     
     // Create user profile object with the correct UserRole type
-    const userRole: UserRole = isSuperAdmin ? 'superadmin' : (profile?.role as UserRole || 'user');
+    const userRole = (profile?.role || 'user') as UserRole;
     
     // Create user profile object
     const userProfile: UserProfile = {
       id: userId,
       name: fullName || profile?.email?.split('@')[0] || email?.split('@')[0] || '',
       email: email || profile?.email || '',
-      role: userRole,
+      role: isSuperAdmin ? 'superadmin' as UserRole : userRole,
       organizationId: profile?.organization_id,
       organization: organization,
       isSuperAdmin: isSuperAdmin

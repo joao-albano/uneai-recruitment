@@ -1,5 +1,5 @@
 
-export type UserRole = 'superadmin' | 'admin' | 'gestor' | 'coordenador' | 'gerente' | 'professor' | 'financeiro' | 'vendedor' | 'atendente' | 'user';
+export type UserRole = 'superadmin' | 'admin' | 'gestor' | 'coordenador' | 'gerente' | 'professor' | 'financeiro' | 'vendedor' | 'medico' | 'atendente' | 'user';
 
 export type UserType = {
   id: string;

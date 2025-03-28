@@ -1,6 +1,6 @@
 
 import { UserType } from '../types';
-import { ShieldAlert, Users, FileText, Calendar, BarChart2, Settings, AlertTriangle, PenTool, Book, Bell, Lock, DollarSign, Store, HeadphonesIcon } from "lucide-react";
+import { ShieldAlert, Users, FileText, Calendar, BarChart2, Settings, AlertTriangle, PenTool, Book, Bell, Lock, DollarSign, Store, HeadphonesIcon, Stethoscope } from "lucide-react";
 
 // Permission type definition
 export interface PermissionType {
@@ -52,6 +52,11 @@ export const userProfileDescriptions = {
     title: 'Vendedor',
     description: 'Cadastro de leads, acompanhamento de vendas, visualização de metas e resultados comerciais.',
     icon: Store,
+  },
+  medico: {
+    title: 'Médico',
+    description: 'Acesso a prontuários, agendamentos de consultas, histórico de pacientes e resultados de exames.',
+    icon: Stethoscope,
   },
   atendente: {
     title: 'Atendente',

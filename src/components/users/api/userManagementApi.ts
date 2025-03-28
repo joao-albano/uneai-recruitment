@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { UserType, NewUserType } from '../types';
+import { UserType, NewUserType, UserRole } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -12,28 +12,78 @@ export const fetchUsers = async () => {
     
     // Retornar dados de teste em vez de buscar do banco
     return [
+      // Super Admins (UNE CX)
       {
         id: 'user-1',
-        email: 'admin@teste.com',
+        email: 'paula.martins@une.cx',
+        role: 'admin',
+        is_admin: true,
+        is_super_admin: true,
+        organization_id: 'une-cx-org-id',
+        organizations: {
+          id: 'une-cx-org-id',
+          name: 'UNE CX'
+        }
+      },
+      {
+        id: 'user-2',
+        email: 'super.admin@une.cx',
+        role: 'admin',
+        is_admin: true,
+        is_super_admin: true,
+        organization_id: 'une-cx-org-id',
+        organizations: {
+          id: 'une-cx-org-id',
+          name: 'UNE CX'
+        }
+      },
+      // Regular organization users
+      {
+        id: 'user-3',
+        email: 'admin@escola.com',
         role: 'admin',
         is_admin: true,
         is_super_admin: false,
         organization_id: 'mock-org-id',
         organizations: {
           id: 'mock-org-id',
-          name: 'Organização Teste'
+          name: 'Escola Exemplo'
         }
       },
       {
-        id: 'user-2',
-        email: 'usuario@teste.com',
-        role: 'user',
+        id: 'user-4',
+        email: 'professor@escola.com',
+        role: 'professor',
         is_admin: false,
         is_super_admin: false,
         organization_id: 'mock-org-id',
         organizations: {
           id: 'mock-org-id',
-          name: 'Organização Teste'
+          name: 'Escola Exemplo'
+        }
+      },
+      {
+        id: 'user-5',
+        email: 'medico@clinica.com',
+        role: 'medico',
+        is_admin: false,
+        is_super_admin: false,
+        organization_id: 'clinic-org-id',
+        organizations: {
+          id: 'clinic-org-id',
+          name: 'Clínica Saúde'
+        }
+      },
+      {
+        id: 'user-6',
+        email: 'gestor@empresa.com',
+        role: 'gestor',
+        is_admin: false,
+        is_super_admin: false,
+        organization_id: 'company-org-id',
+        organizations: {
+          id: 'company-org-id',
+          name: 'Empresa ABC'
         }
       }
     ];
@@ -53,12 +103,20 @@ export const fetchOrganizations = async () => {
     // Retornar dados de teste em vez de buscar do banco
     return [
       {
-        id: 'mock-org-id',
-        name: 'Organização Teste'
-      },
-      {
         id: 'une-cx-org-id',
         name: 'UNE CX'
+      },
+      {
+        id: 'mock-org-id',
+        name: 'Escola Exemplo'
+      },
+      {
+        id: 'clinic-org-id',
+        name: 'Clínica Saúde'
+      },
+      {
+        id: 'company-org-id',
+        name: 'Empresa ABC'
       }
     ];
   } catch (error) {

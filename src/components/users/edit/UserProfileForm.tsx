@@ -54,6 +54,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
         selectedRole={selectedUser.role || 'user'}
         onRoleChange={handleRoleChange}
         disabled={isUneCxAdmin && !isSuperAdmin}
+        showSuperAdmin={isSuperAdmin}
       />
       
       <OrganizationSelector

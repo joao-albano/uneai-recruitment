@@ -1,6 +1,5 @@
-
 import { PermissionType } from './types';
-import { ShieldAlert, Users, FileText, Calendar, BarChart2, Settings, AlertTriangle, PenTool, Book, Bell, Lock, DollarSign, Store, HeadphonesIcon } from "lucide-react";
+import { ShieldAlert, Users, FileText, Calendar, BarChart2, Settings, AlertTriangle, PenTool, Book, Bell, Lock, DollarSign, Store, HeadphonesIcon, Stethoscope } from "lucide-react";
 
 // List of all available permissions in the system
 export const availablePermissions: PermissionType[] = [
@@ -199,6 +198,12 @@ export const userProfiles = {
     'view_dashboard',
     'view_reports',
     'create_schedules'
+  ],
+  medico: [
+    'view_dashboard',
+    'view_reports', 'export_reports',
+    'view_schedules', 'create_schedules', 'edit_schedules',
+    'view_alerts'
   ],
   atendente: [
     'view_dashboard',

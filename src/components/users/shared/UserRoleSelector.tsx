@@ -44,6 +44,7 @@ const UserRoleSelector: React.FC<UserRoleSelectorProps> = ({
           <SelectItem value="professor">Professor</SelectItem>
           <SelectItem value="financeiro">Financeiro</SelectItem>
           <SelectItem value="vendedor">Vendedor</SelectItem>
+          <SelectItem value="medico">Médico</SelectItem>
           <SelectItem value="atendente">Atendente</SelectItem>
           <SelectItem value="user">Usuário Básico</SelectItem>
         </SelectContent>

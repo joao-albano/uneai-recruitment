@@ -50,6 +50,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
       <UserRoleSelector
         selectedRole={newUser.role}
         onRoleChange={handleRoleChange}
+        showSuperAdmin={isSuperAdmin}
       />
       
       <OrganizationSelector
