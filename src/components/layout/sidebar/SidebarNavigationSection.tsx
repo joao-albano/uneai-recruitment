@@ -32,21 +32,21 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
               to="/" 
               icon={Home} 
               label="Dashboard" 
-              active={isActive('/')}
+              isActive={isActive('/')}
               collapsed={collapsed}
             />
             <SidebarNavLink 
               to="/students" 
               icon={Users} 
               label="Alunos" 
-              active={location.pathname.startsWith('/students')}
+              isActive={location.pathname.startsWith('/students')}
               collapsed={collapsed}
             />
             <SidebarNavLink 
               to="/model" 
               icon={School} 
               label="Modelo" 
-              active={location.pathname.startsWith('/model')}
+              isActive={location.pathname.startsWith('/model')}
               collapsed={collapsed}
             />
           </SidebarNavigationGroup>
@@ -59,21 +59,21 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
               to="/alerts" 
               icon={BookOpen} 
               label="Alertas" 
-              active={location.pathname.startsWith('/alerts')}
+              isActive={location.pathname.startsWith('/alerts')}
               collapsed={collapsed}
             />
             <SidebarNavLink 
               to="/reports" 
               icon={BarChart} 
               label="Relatórios" 
-              active={location.pathname.startsWith('/reports')}
+              isActive={location.pathname.startsWith('/reports')}
               collapsed={collapsed}
             />
             <SidebarNavLink 
               to="/surveys" 
               icon={Mail} 
               label="Pesquisas" 
-              active={location.pathname.startsWith('/surveys')}
+              isActive={location.pathname.startsWith('/surveys')}
               collapsed={collapsed}
             />
           </SidebarNavigationGroup>
@@ -90,28 +90,28 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
               to="/recruitment" 
               icon={Home} 
               label="Dashboard" 
-              active={isActive('/recruitment')}
+              isActive={isActive('/recruitment')}
               collapsed={collapsed}
             />
             <SidebarNavLink 
               to="/recruitment/leads" 
               icon={Users} 
               label="Leads" 
-              active={location.pathname.startsWith('/recruitment/leads')}
+              isActive={location.pathname.startsWith('/recruitment/leads')}
               collapsed={collapsed}
             />
             <SidebarNavLink 
               to="/recruitment/funnel" 
               icon={Filter} 
               label="Funil" 
-              active={location.pathname.startsWith('/recruitment/funnel')}
+              isActive={location.pathname.startsWith('/recruitment/funnel')}
               collapsed={collapsed}
             />
             <SidebarNavLink 
               to="/recruitment/campaigns" 
               icon={ListFilter} 
               label="Campanhas" 
-              active={location.pathname.startsWith('/recruitment/campaigns')}
+              isActive={location.pathname.startsWith('/recruitment/campaigns')}
               collapsed={collapsed}
             />
           </SidebarNavigationGroup>
@@ -124,14 +124,14 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
               to="/recruitment/conversation" 
               icon={MessageSquare} 
               label="Conversas" 
-              active={location.pathname.startsWith('/recruitment/conversation')}
+              isActive={location.pathname.startsWith('/recruitment/conversation')}
               collapsed={collapsed}
             />
             <SidebarNavLink 
               to="/recruitment/predictions" 
               icon={BarChart3} 
               label="Previsões" 
-              active={location.pathname.startsWith('/recruitment/predictions')}
+              isActive={location.pathname.startsWith('/recruitment/predictions')}
               collapsed={collapsed}
             />
           </SidebarNavigationGroup>
@@ -147,7 +147,7 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
           to="/upload" 
           icon={Upload} 
           label="Upload" 
-          active={location.pathname.startsWith('/upload')}
+          isActive={location.pathname.startsWith('/upload')}
           collapsed={collapsed}
         />
       </SidebarNavigationGroup>
