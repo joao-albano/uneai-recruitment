@@ -13,7 +13,7 @@ import { generateDemoUploadHistory } from '@/utils/upload/demoUploadData';
 const UploadHistory: React.FC = () => {
   const { uploadHistory, clearUploadHistory, addUploadRecord } = useData();
 
-  const generateDemoUploadHistory = () => {
+  const handleGenerateDemoData = () => {
     // Clear current history
     clearUploadHistory();
     
@@ -37,7 +37,7 @@ const UploadHistory: React.FC = () => {
             </CardDescription>
           </div>
           <Button 
-            onClick={generateDemoUploadHistory}
+            onClick={handleGenerateDemoData}
             variant="outline" 
             size="sm"
             className="h-8 gap-1"
@@ -61,7 +61,7 @@ const UploadHistory: React.FC = () => {
         </div>
         <div className="flex gap-2">
           <Button 
-            onClick={generateDemoUploadHistory}
+            onClick={handleGenerateDemoData}
             variant="outline" 
             size="sm"
             className="h-8 gap-1"
