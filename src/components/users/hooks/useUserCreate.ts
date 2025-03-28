@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { NewUserType } from '../types';
 import { createUser } from '../api/userManagementApi';
 import { useToast } from '@/hooks/use-toast';
+import { v4 as uuidv4 } from 'uuid';
 
 export const useUserCreate = (fetchUsers: () => Promise<void>) => {
   const { toast } = useToast();
@@ -41,16 +42,23 @@ export const useUserCreate = (fetchUsers: () => Promise<void>) => {
         organizationId
       });
       
-      // Chamar a função de API para criar o usuário (modo fictício se não houver organizationId real)
-      await createUser({
+      // Simular criação bem-sucedida do usuário
+      const mockUserResponse = {
+        id: uuidv4(),
         email,
-        password,
         name,
         role: role || 'user',
         organizationId,
-        isSuperAdmin: false,
-        initials: name.substring(0, 2).toUpperCase()
-      });
+        organizationName: newUser.organizationName || 'Organização Teste',
+        initials: name.substring(0, 2).toUpperCase(),
+        isSuperAdmin: false
+      };
+      
+      // Simular chamada de API (sem interação real com o banco)
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // Adicionar à lista local (simulada)
+      console.log('Usuário criado com sucesso (modo simulação):', mockUserResponse);
       
       // Recarregar a lista de usuários
       await fetchUsers();

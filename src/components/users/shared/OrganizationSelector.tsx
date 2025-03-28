@@ -1,78 +1,75 @@
-import React, { useEffect, useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { fetchOrganizations } from '../../organizations/api';
 import { useAuth } from '@/context/auth';
+import { fetchOrganizations } from '../api/userManagementApi';
+
+interface Organization {
+  id: string;
+  name: string;
+}
 
 interface OrganizationSelectorProps {
-  selectedOrgId: string;
-  onOrgChange: (orgId: string, orgName: string) => void;
+  selectedOrganizationId: string;
+  onOrganizationChange: (orgId: string, orgName: string) => void;
   disabled?: boolean;
-  label?: string;
   className?: string;
 }
 
 const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
-  selectedOrgId,
-  onOrgChange,
+  selectedOrganizationId,
+  onOrganizationChange,
   disabled = false,
-  label = "Organização",
   className = "grid grid-cols-4 items-center gap-4"
 }) => {
-  const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const { currentUser } = useAuth();
-
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { currentUser, isSuperAdmin } = useAuth();
+  
+  console.log('Carregando organizações no OrganizationSelector...', { currentUser });
+  
+  // Carregar organizações disponíveis
   useEffect(() => {
     const loadOrganizations = async () => {
-      setLoading(true);
       try {
-        console.log('Carregando organizações no OrganizationSelector...', { currentUser });
+        console.log('Buscando organizações para o usuário:', currentUser);
+        console.log('Status do usuário:', { isSuperAdmin, organizationId: currentUser?.organizationId });
         
-        // Tenta carregar organizações da API
-        const orgsData = await fetchOrganizations(currentUser);
-        
-        // Se temos dados da API, use-os
-        if (Array.isArray(orgsData) && orgsData.length > 0) {
-          console.log('Organizações carregadas com sucesso:', orgsData);
-          // Only keep id and name for the selector
-          const formattedOrgs = orgsData.map(org => ({
-            id: org.id,
-            name: org.name
-          }));
-          setOrganizations(formattedOrgs);
-        } else {
-          // Dados de demonstração para desenvolvimento (quando não há backend)
-          console.log('Usando dados de demonstração para organizações');
-          
-          // Se o usuário atual tiver uma organização, usá-la como fallback
-          if (currentUser?.organization?.id) {
-            setOrganizations([{
-              id: currentUser.organization.id,
-              name: currentUser.organization.name || 'Minha Organização'
-            }]);
-          } else {
-            // Organizações de demonstração
-            setOrganizations([
-              { id: 'org-1', name: 'Escola Modelo' },
-              { id: 'org-2', name: 'Instituto de Educação' },
-              { id: 'org-3', name: 'Clínica Saúde Total' }
-            ]);
-          }
+        if (!currentUser) {
+          setOrganizations([]);
+          setLoading(false);
+          return;
         }
+        
+        // Se for super admin, buscar todas as organizações
+        // Caso contrário, filtrar apenas pela organização do usuário
+        let orgs: Organization[] = [];
+        
+        if (isSuperAdmin) {
+          // Super admin pode ver todas as organizações
+          console.log('Buscando todas organizações (super admin)');
+          const allOrgs = await fetchOrganizations();
+          orgs = allOrgs;
+        } else if (currentUser.organizationId) {
+          // Admin regular só pode ver sua própria organização
+          console.log('Filtrando pela organização do admin:', currentUser.organizationId);
+          orgs = [{
+            id: currentUser.organizationId,
+            name: currentUser.organization?.name || 'Minha Organização'
+          }];
+        }
+        
+        setOrganizations(orgs);
       } catch (error) {
         console.error('Erro ao carregar organizações:', error);
         
-        // Dados de demonstração em caso de erro
-        if (currentUser?.organization?.id) {
+        // Dados de fallback
+        if (currentUser?.organizationId) {
           setOrganizations([{
-            id: currentUser.organization.id,
-            name: currentUser.organization.name || 'Minha Organização'
+            id: currentUser.organizationId,
+            name: currentUser.organization?.name || 'Minha Organização'
           }]);
-        } else {
-          setOrganizations([
-            { id: 'org-1', name: 'Organização Demonstração' }
-          ]);
         }
       } finally {
         setLoading(false);
@@ -80,46 +77,42 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
     };
     
     loadOrganizations();
-    
-    // Se o usuário atual tem uma organização, mas nenhuma está selecionada, 
-    // selecione automaticamente a organização do usuário
-    if (currentUser?.organization?.id && !selectedOrgId) {
-      onOrgChange(
-        currentUser.organization.id, 
-        currentUser.organization.name || 'Minha Organização'
-      );
-    }
-  }, [currentUser, selectedOrgId, onOrgChange]);
+  }, [currentUser, isSuperAdmin]);
   
-  const handleSelectChange = (value: string) => {
-    const selectedOrg = organizations.find(org => org.id === value);
-    onOrgChange(value, selectedOrg?.name || '');
+  const handleOrganizationSelect = (orgId: string) => {
+    const selectedOrg = organizations.find(org => org.id === orgId);
+    const orgName = selectedOrg?.name || '';
+    onOrganizationChange(orgId, orgName);
   };
-
+  
   return (
     <div className={className}>
-      <Label htmlFor="organizationId" className="text-right">
-        {label}
+      <Label htmlFor="organization" className="text-right">
+        Organização
       </Label>
       <Select
-        name="organizationId"
-        value={selectedOrgId || ''}
-        onValueChange={handleSelectChange}
-        disabled={disabled || loading}
+        name="organization"
+        value={selectedOrganizationId}
+        onValueChange={handleOrganizationSelect}
+        disabled={disabled || loading || organizations.length === 0 || (!isSuperAdmin && organizations.length === 1)}
       >
         <SelectTrigger className="col-span-3">
-          <SelectValue placeholder={loading ? "Carregando..." : "Selecione uma organização"} />
+          <SelectValue placeholder="Selecione uma organização" />
         </SelectTrigger>
         <SelectContent className="bg-popover">
-          {organizations.length > 0 ? (
-            organizations.map(org => (
-              <SelectItem key={org.id} value={org.id}>
-                {org.name}
-              </SelectItem>
-            ))
-          ) : (
-            <SelectItem value="empty" disabled>
-              {loading ? "Carregando organizações..." : "Nenhuma organização disponível"}
+          {organizations.map((org) => (
+            <SelectItem key={org.id} value={org.id}>
+              {org.name}
+            </SelectItem>
+          ))}
+          {organizations.length === 0 && !loading && (
+            <SelectItem value="" disabled>
+              Nenhuma organização disponível
+            </SelectItem>
+          )}
+          {loading && (
+            <SelectItem value="" disabled>
+              Carregando...
             </SelectItem>
           )}
         </SelectContent>

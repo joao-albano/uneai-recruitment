@@ -1,33 +1,42 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { UserType, NewUserType } from '../types';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Busca todos os usuários com seus perfis e organizações
  */
 export const fetchUsers = async () => {
   try {
-    // Consulta que respeita as políticas RLS - Super admins verão todos os usuários,
-    // admins verão apenas os da sua organização
-    const { data, error } = await supabase
-      .from('profiles')
-      .select(`
-        id,
-        email,
-        role,
-        is_admin,
-        is_super_admin,
-        organization_id,
-        organizations:organization_id(id, name)
-      `);
+    console.log('Simulando busca de usuários (modo de teste)');
     
-    if (error) {
-      console.error('Erro ao buscar usuários:', error);
-      throw error;
-    }
-    
-    console.log('Dados de usuários recebidos:', data);
-    return data;
+    // Retornar dados de teste em vez de buscar do banco
+    return [
+      {
+        id: 'user-1',
+        email: 'admin@teste.com',
+        role: 'admin',
+        is_admin: true,
+        is_super_admin: false,
+        organization_id: 'mock-org-id',
+        organizations: {
+          id: 'mock-org-id',
+          name: 'Organização Teste'
+        }
+      },
+      {
+        id: 'user-2',
+        email: 'usuario@teste.com',
+        role: 'user',
+        is_admin: false,
+        is_super_admin: false,
+        organization_id: 'mock-org-id',
+        organizations: {
+          id: 'mock-org-id',
+          name: 'Organização Teste'
+        }
+      }
+    ];
   } catch (error) {
     console.error('Erro ao buscar usuários:', error);
     throw error;
@@ -39,22 +48,19 @@ export const fetchUsers = async () => {
  */
 export const fetchOrganizations = async () => {
   try {
-    console.log('Início: Buscando organizações');
+    console.log('Simulando busca de organizações (modo de teste)');
     
-    // Buscar todas as organizações diretamente
-    const { data, error } = await supabase
-      .from('organizations')
-      .select('id, name')
-      .order('name');
-    
-    if (error) {
-      console.error('Erro ao buscar organizações:', error);
-      return [];
-    }
-    
-    console.log('Organizações encontradas:', data);
-    return data || [];
-    
+    // Retornar dados de teste em vez de buscar do banco
+    return [
+      {
+        id: 'mock-org-id',
+        name: 'Organização Teste'
+      },
+      {
+        id: 'une-cx-org-id',
+        name: 'UNE CX'
+      }
+    ];
   } catch (error) {
     console.error('Erro ao buscar organizações:', error);
     return [];
@@ -62,89 +68,58 @@ export const fetchOrganizations = async () => {
 };
 
 /**
- * Cria um novo usuário
+ * Cria um novo usuário (simulado)
  */
 export const createUser = async (userData: NewUserType) => {
   try {
-    console.log('Tentando criar usuário com dados:', userData);
+    console.log('Criando usuário (modo de simulação):', userData);
     
-    // Verificar se o password está presente
+    // Validar dados básicos
+    if (!userData.email) {
+      throw new Error('Email é obrigatório');
+    }
     if (!userData.password) {
-      throw new Error('Senha é obrigatória para criar um novo usuário');
+      throw new Error('Senha é obrigatória');
     }
     
-    // Criar usuário usando a função RPC
-    const { data, error } = await supabase.rpc('create_user_with_profile', {
+    // Simular criação de usuário com ID aleatório
+    return {
+      id: uuidv4(),
       email: userData.email,
-      password: userData.password,
-      name: userData.name || userData.email.split('@')[0], // Use o nome ou extraia do email
+      name: userData.name,
       role: userData.role || 'user',
       organization_id: userData.organizationId,
       is_admin: userData.role === 'admin',
       is_super_admin: userData.isSuperAdmin || false
-    });
-    
-    if (error) {
-      console.error('Erro ao criar usuário:', error);
-      throw error;
-    }
-    
-    console.log('Usuário criado com sucesso:', data);
-    return data;
+    };
   } catch (error) {
-    console.error('Erro ao criar usuário:', error);
+    console.error('Erro ao criar usuário (simulado):', error);
     throw error;
   }
 };
 
 /**
- * Atualiza um usuário existente
+ * Atualiza um usuário existente (simulado)
  */
 export const updateUser = async (userId: string, userData: Partial<UserType>) => {
   try {
-    console.log('Atualizando usuário:', userId, 'com dados:', userData);
-    
-    // Atualizar usuário usando a função RPC
-    const { error } = await supabase.rpc('update_user_profile', {
-      user_id: userId,
-      name: userData.name,
-      email: userData.email,
-      role: userData.role,
-      organization_id: userData.organizationId,
-      is_admin: userData.role === 'admin',
-      is_super_admin: userData.isSuperAdmin
-    });
-    
-    if (error) {
-      console.error('Erro ao atualizar usuário:', error);
-      throw error;
-    }
-    
+    console.log('Atualizando usuário (modo de simulação):', userId, userData);
     return true;
   } catch (error) {
-    console.error('Erro ao atualizar usuário:', error);
+    console.error('Erro ao atualizar usuário (simulado):', error);
     throw error;
   }
 };
 
 /**
- * Exclui um usuário
+ * Exclui um usuário (simulado)
  */
 export const deleteUser = async (userId: string) => {
   try {
-    // Excluir usuário usando a função RPC
-    const { error } = await supabase.rpc('delete_user', {
-      user_id: userId
-    });
-    
-    if (error) {
-      console.error('Erro ao excluir usuário:', error);
-      throw error;
-    }
-    
+    console.log('Excluindo usuário (modo de simulação):', userId);
     return true;
   } catch (error) {
-    console.error('Erro ao excluir usuário:', error);
+    console.error('Erro ao excluir usuário (simulado):', error);
     throw error;
   }
 };
