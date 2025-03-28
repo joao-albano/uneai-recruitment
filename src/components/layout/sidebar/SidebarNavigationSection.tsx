@@ -75,6 +75,18 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
             label="Analíticos" 
             collapsed={collapsed}
           />
+          <SidebarNavLink 
+            to="/recruitment/conversation" 
+            icon={UserPlus} 
+            label="Conversas" 
+            collapsed={collapsed}
+          />
+          <SidebarNavLink 
+            to="/recruitment/predictions" 
+            icon={LineChart} 
+            label="Previsões" 
+            collapsed={collapsed}
+          />
         </>
       )}
       
