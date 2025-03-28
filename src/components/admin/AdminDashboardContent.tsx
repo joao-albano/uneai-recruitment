@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTheme } from '@/context/ThemeContext';
 import { useData } from '@/context/DataContext';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
-import { Settings, DollarSign } from 'lucide-react';
+import { DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import OverviewTabContent from './dashboard/OverviewTabContent';
 import ActivityTabContent from './dashboard/ActivityTabContent';
@@ -64,12 +63,6 @@ const AdminDashboardContent: React.FC = () => {
             <Link to="/admin/plans">
               <DollarSign className="mr-2 h-4 w-4" />
               {language === 'pt-BR' ? 'Gerenciar Planos' : 'Manage Plans'}
-            </Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link to="/admin/settings">
-              <Settings className="mr-2 h-4 w-4" />
-              {language === 'pt-BR' ? 'Configurações Administrativas' : 'Admin Settings'}
             </Link>
           </Button>
         </div>

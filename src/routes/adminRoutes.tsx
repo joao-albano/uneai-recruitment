@@ -7,6 +7,7 @@ import AdminPaymentsPage from "@/pages/AdminPaymentsPage";
 import AdminPlansPage from "@/pages/AdminPlansPage";
 import UsersPage from "@/pages/UsersPage";
 import OrganizationsPage from "@/pages/OrganizationsPage";
+import AdminApisReportPage from "@/pages/AdminApisReportPage";
 
 interface RouteConfig {
   path: string;
@@ -16,14 +17,6 @@ interface RouteConfig {
 export const adminRoutes: RouteConfig[] = [
   // Rotas acessíveis para todos os admins (tanto super quanto escola)
   {
-    path: "/admin/dashboard",
-    element: (
-      <AdminRoute>
-        <AdminDashboardPage />
-      </AdminRoute>
-    )
-  },
-  {
     path: "/users",
     element: (
       <AdminRoute>
@@ -32,20 +25,30 @@ export const adminRoutes: RouteConfig[] = [
     )
   },
   
+  // Configurações do sistema - acessível para todos os admins
+  {
+    path: "/admin/settings",
+    element: (
+      <AdminRoute>
+        <AdminSettingsPage />
+      </AdminRoute>
+    )
+  },
+  
   // Rotas acessíveis apenas para super admins (UNE CX)
+  {
+    path: "/admin/dashboard",
+    element: (
+      <SuperAdminRoute>
+        <AdminDashboardPage />
+      </SuperAdminRoute>
+    )
+  },
   {
     path: "/admin/organizations",
     element: (
       <SuperAdminRoute>
         <OrganizationsPage />
-      </SuperAdminRoute>
-    )
-  },
-  {
-    path: "/admin/settings",
-    element: (
-      <SuperAdminRoute>
-        <AdminSettingsPage />
       </SuperAdminRoute>
     )
   },
@@ -62,6 +65,14 @@ export const adminRoutes: RouteConfig[] = [
     element: (
       <SuperAdminRoute>
         <AdminPlansPage />
+      </SuperAdminRoute>
+    )
+  },
+  {
+    path: "/admin/apis",
+    element: (
+      <SuperAdminRoute>
+        <AdminApisReportPage />
       </SuperAdminRoute>
     )
   }

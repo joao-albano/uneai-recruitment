@@ -21,32 +21,57 @@ const AdminSection: React.FC<AdminSectionProps> = ({ isAdmin, isSuperAdmin }) =>
       <p className="text-muted-foreground mb-4">
         Como administrador, você tem acesso a configurações adicionais.
       </p>
+      
       <div className="flex flex-wrap gap-3">
-        <Button 
-          variant="outline" 
-          onClick={() => navigate('/admin/dashboard')}
-        >
-          Dashboard Admin
-        </Button>
         <Button 
           variant="outline" 
           onClick={() => navigate('/users')}
         >
           Gerenciar Usuários
         </Button>
+        
+        <Button 
+          variant="outline" 
+          onClick={() => navigate('/admin/settings')}
+        >
+          Configurações do Sistema
+        </Button>
+        
         {isSuperAdmin && (
           <>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/admin/dashboard')}
+            >
+              Painel Admin
+            </Button>
+            
             <Button 
               variant="outline" 
               onClick={() => navigate('/admin/organizations')}
             >
               Gerenciar Organizações
             </Button>
+            
             <Button 
               variant="outline" 
-              onClick={() => navigate('/admin/settings')}
+              onClick={() => navigate('/admin/plans')}
             >
-              Configurações do Sistema
+              Planos
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/admin/payments')}
+            >
+              Pagamentos
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/admin/apis')}
+            >
+              Relatório de APIs
             </Button>
           </>
         )}

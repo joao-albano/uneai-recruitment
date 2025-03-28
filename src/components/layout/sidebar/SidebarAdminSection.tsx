@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BarChart2, Users, DollarSign, Building, Settings } from 'lucide-react';
+import { BarChart2, Users, DollarSign, Building, Settings, FileText, Shield } from 'lucide-react';
 import SidebarNavigationGroup from './SidebarNavigationGroup';
 import SidebarNavLink from './SidebarNavLink';
 import { useAuth } from '@/context/auth';
@@ -20,31 +20,42 @@ const SidebarAdminSection: React.FC<SidebarAdminSectionProps> = ({ collapsed }) 
   }
   
   return (
-    <SidebarNavigationGroup 
-      title="Administração" 
-      collapsed={collapsed}
-    >
-      {/* Dashboard Admin is visible to all admins */}
-      {isSuperAdmin && (
+    <>
+      {/* Menu de Admin Regular - visível para todos os admins (incluindo super admins) */}
+      <SidebarNavigationGroup 
+        title="Administração" 
+        collapsed={collapsed}
+      >
+        {/* Users page is visible to all admins to manage their organization users */}
         <SidebarNavLink 
-          to="/admin/dashboard" 
-          icon={BarChart2} 
-          label="Painel Admin" 
+          to="/users" 
+          icon={Users} 
+          label="Usuários" 
           collapsed={collapsed}
         />
-      )}
+        
+        {/* Configurações do Sistema - visível para todos os admins */}
+        <SidebarNavLink 
+          to="/admin/settings" 
+          icon={Settings} 
+          label="Config. Sistema" 
+          collapsed={collapsed}
+        />
+      </SidebarNavigationGroup>
       
-      {/* Users page is visible to all admins to manage their organization users */}
-      <SidebarNavLink 
-        to="/users" 
-        icon={Users} 
-        label="Usuários" 
-        collapsed={collapsed}
-      />
-      
-      {/* Options below are visible only to super admins (UNE CX) */}
+      {/* Menu exclusivo para Super Admin */}
       {isSuperAdmin && (
-        <>
+        <SidebarNavigationGroup 
+          title="Super Admin" 
+          collapsed={collapsed}
+        >
+          <SidebarNavLink 
+            to="/admin/dashboard" 
+            icon={BarChart2} 
+            label="Painel Admin" 
+            collapsed={collapsed}
+          />
+          
           <SidebarNavLink 
             to="/admin/organizations" 
             icon={Building} 
@@ -61,20 +72,20 @@ const SidebarAdminSection: React.FC<SidebarAdminSectionProps> = ({ collapsed }) 
           
           <SidebarNavLink 
             to="/admin/plans" 
-            icon={DollarSign} 
+            icon={Shield} 
             label="Planos" 
             collapsed={collapsed}
           />
           
           <SidebarNavLink 
-            to="/admin/settings" 
-            icon={Settings} 
-            label="Config. Sistema" 
+            to="/admin/apis" 
+            icon={FileText} 
+            label="Relatório APIs" 
             collapsed={collapsed}
           />
-        </>
+        </SidebarNavigationGroup>
       )}
-    </SidebarNavigationGroup>
+    </>
   );
 };
 
