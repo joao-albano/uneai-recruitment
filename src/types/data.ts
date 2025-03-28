@@ -19,6 +19,8 @@ export type StudentData = {
   parentName?: string;
   parentContact?: string;
   decisionPath?: string[]; // Add decision path for explainable AI;
+  importMonth?: number;    // Month when the data was imported
+  importYear?: number;     // Year when the data was imported
 };
 
 export type SurveyData = {
@@ -58,6 +60,8 @@ export type UploadRecord = {
   recordCount: number;
   status: 'success' | 'error';
   errorCount?: number;
+  updatedCount?: number; // Count of records that were updated
+  newCount?: number;     // Count of new records created
 };
 
 // Alias Student to StudentData
@@ -92,3 +96,4 @@ export type DataContextType = {
   // Nova função para processar as pesquisas com o modelo de IA
   processSurveyWithRiskModel: (survey: SurveyData) => void;
 };
+

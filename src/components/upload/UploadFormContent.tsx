@@ -7,6 +7,8 @@ import ValidationErrorsDisplay from './ValidationErrorsDisplay';
 import ColumnInfoTable from './ColumnInfoTable';
 import FileUploadHandler from './FileUploadHandler';
 import { downloadTemplate } from '@/utils/validation/templateManager';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { CheckCircle, InfoIcon } from 'lucide-react';
 
 const UploadFormContent: React.FC = () => {
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -72,12 +74,23 @@ const UploadFormContent: React.FC = () => {
           uploadProgress, 
           isProcessing, 
           validationErrors, 
+          uploadResults,
           handleFileSelect, 
           handleProcessFile, 
           resetUpload 
         }) => (
           <>
             <CardContent className="space-y-4">
+              {uploadResults && (
+                <Alert className="bg-green-50 border-green-200">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <AlertTitle className="text-green-800">Upload processado com sucesso!</AlertTitle>
+                  <AlertDescription className="text-green-700">
+                    {uploadResults.newCount} novos alunos adicionados e {uploadResults.updatedCount} registros atualizados.
+                  </AlertDescription>
+                </Alert>
+              )}
+              
               <div className="flex space-x-2">
                 <Button 
                   variant="outline" 
@@ -99,6 +112,16 @@ const UploadFormContent: React.FC = () => {
               </div>
               
               {showColumnInfo && <ColumnInfoTable columns={requiredColumns} />}
+              
+              <Alert variant="default" className="bg-blue-50 border-blue-200 my-2">
+                <InfoIcon className="h-4 w-4 text-blue-600" />
+                <AlertTitle className="text-blue-800">Controle mensal de dados</AlertTitle>
+                <AlertDescription className="text-blue-700">
+                  Os dados são mesclados com base na matrícula (RA) e no mês corrente. 
+                  Registros do mesmo aluno no mesmo mês serão atualizados, enquanto importações 
+                  em meses diferentes criarão novos registros.
+                </AlertDescription>
+              </Alert>
               
               <DragDropArea
                 file={file}

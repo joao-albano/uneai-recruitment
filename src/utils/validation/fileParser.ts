@@ -3,6 +3,7 @@ import { StudentData } from "../../context/DataContext";
 import { ValidationError } from "./types";
 import { mapHeadersToProperties, validateHeaders } from "./headerValidator";
 import { validateStudentData } from "./studentValidator";
+import { v4 as uuidv4 } from 'uuid';
 
 // Function to parse CSV files
 export const parseCSV = async (text: string): Promise<{ data: StudentData[], errors: ValidationError[] }> => {
@@ -46,7 +47,10 @@ export const parseCSV = async (text: string): Promise<{ data: StudentData[], err
     }
 
     // Map values to student data object
-    const studentData: Partial<StudentData> = {};
+    const studentData: Partial<StudentData> = {
+      importMonth: new Date().getMonth() + 1, // Add current month for merge control
+      importYear: new Date().getFullYear(),    // Add current year for merge control
+    };
     
     for (let j = 0; j < headers.length; j++) {
       const propertyName = headerMap[j];
@@ -107,4 +111,14 @@ export const parseExcel = async (file: File): Promise<{ data: StudentData[], err
       }] 
     };
   }
+};
+
+// Add month name utility function
+export const getMonthName = (monthNumber: number): string => {
+  const monthNames = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 
+    'Maio', 'Junho', 'Julho', 'Agosto', 
+    'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+  ];
+  return monthNames[monthNumber - 1] || 'Desconhecido';
 };

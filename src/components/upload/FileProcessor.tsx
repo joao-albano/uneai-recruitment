@@ -1,20 +1,22 @@
-
 import { StudentData } from '@/types/data';
 import { parseCSV, parseExcel } from '@/utils/validation';
 import { processStudentData } from '@/utils/riskCalculator';
 import { ValidationError } from '@/utils/validation/types';
-import { UploadRecord } from '@/types/upload';
+import { UploadRecord } from '@/types/data';
 import { AlertItem } from '@/types/data';
 
 interface ProcessFileResult {
   students?: StudentData[];
   errors?: ValidationError[];
   uploadRecord: UploadRecord;
+  updatedCount?: number;
+  newCount?: number;
 }
 
 export async function processFile(
   file: File,
-  addUploadRecord: (record: Omit<UploadRecord, 'id'>) => void
+  addUploadRecord: (record: Omit<UploadRecord, 'id'>) => void,
+  currentStudents: StudentData[]
 ): Promise<ProcessFileResult> {
   // Process the file based on its type
   const fileType = file.name.split('.').pop()?.toLowerCase();
@@ -53,21 +55,36 @@ export async function processFile(
     
     // Process data if valid
     if (result.data.length > 0) {
-      // Generate behavior scores randomly for the imported students
-      const dataWithBehavior = result.data.map(student => ({
-        ...student,
-        behavior: Math.floor(Math.random() * 5) + 1 // Random behavior score between 1 and 5
-      }));
+      // Implement the monthly merge control logic
+      const { mergedStudents, updatedCount, newCount } = mergeStudentsMonthly(
+        result.data, 
+        currentStudents
+      );
+      
+      // Generate behavior scores randomly for the imported students (only for new students)
+      const dataWithBehavior = mergedStudents.map(student => {
+        // If the student already has a behavior score, keep it
+        if (student.behavior !== undefined) {
+          return student;
+        }
+        // Otherwise, generate a random score
+        return {
+          ...student,
+          behavior: Math.floor(Math.random() * 5) + 1 // Random behavior score between 1 and 5
+        };
+      });
       
       // Apply risk calculation algorithm
       const processedStudents = processStudentData(dataWithBehavior);
       
-      // Create upload record
+      // Create upload record with merge information
       const successRecord = {
         filename: file.name,
         uploadDate: new Date(),
         recordCount: processedStudents.length,
-        status: 'success' as const
+        status: 'success' as const,
+        updatedCount,
+        newCount
       };
       
       addUploadRecord(successRecord);
@@ -77,7 +94,9 @@ export async function processFile(
         uploadRecord: {
           ...successRecord,
           id: `upload-${Date.now()}`
-        }
+        },
+        updatedCount,
+        newCount
       };
     }
     
@@ -117,6 +136,49 @@ export async function processFile(
       }
     };
   }
+}
+
+// Function to merge students based on registration number and import month
+function mergeStudentsMonthly(
+  newStudents: StudentData[], 
+  existingStudents: StudentData[]
+): { mergedStudents: StudentData[], updatedCount: number, newCount: number } {
+  let updatedCount = 0;
+  let newCount = 0;
+  const currentMonth = new Date().getMonth() + 1; // 1-12
+  const currentYear = new Date().getFullYear();
+  
+  const mergedStudents = [...existingStudents];
+  
+  // Process each new student
+  for (const newStudent of newStudents) {
+    // Ensure all new students have the current month and year
+    newStudent.importMonth = currentMonth;
+    newStudent.importYear = currentYear;
+    
+    // Check if this student (by registration number) already exists in the current month/year
+    const existingIndex = mergedStudents.findIndex(
+      s => s.registrationNumber === newStudent.registrationNumber && 
+           s.importMonth === currentMonth &&
+           s.importYear === currentYear
+    );
+    
+    if (existingIndex >= 0) {
+      // Update existing student data
+      mergedStudents[existingIndex] = { 
+        ...mergedStudents[existingIndex], 
+        ...newStudent,
+        id: mergedStudents[existingIndex].id // Keep the original ID
+      };
+      updatedCount++;
+    } else {
+      // Add as a new student
+      mergedStudents.push(newStudent);
+      newCount++;
+    }
+  }
+  
+  return { mergedStudents, updatedCount, newCount };
 }
 
 export function generateAlertsFromStudents(

@@ -11,6 +11,10 @@ interface FileUploadHandlerProps {
     uploadProgress: number;
     isProcessing: boolean;
     validationErrors: ValidationError[];
+    uploadResults: {
+      updatedCount?: number;
+      newCount?: number;
+    } | null;
     handleFileSelect: (file: File) => void;
     handleProcessFile: () => Promise<void>;
     resetUpload: () => void;
@@ -22,14 +26,16 @@ const FileUploadHandler: React.FC<FileUploadHandlerProps> = ({ children }) => {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [uploadResults, setUploadResults] = useState<{ updatedCount?: number; newCount?: number; } | null>(null);
   
   const { toast } = useToast();
-  const { setStudents, addAlert, addUploadRecord } = useData();
+  const { students, setStudents, addAlert, addUploadRecord } = useData();
   
   const resetUpload = () => {
     setFile(null);
     setUploadProgress(0);
     setValidationErrors([]);
+    setUploadResults(null);
     if (document.querySelector('input[type="file"]')) {
       (document.querySelector('input[type="file"]') as HTMLInputElement).value = '';
     }
@@ -49,6 +55,7 @@ const FileUploadHandler: React.FC<FileUploadHandlerProps> = ({ children }) => {
     
     setFile(selectedFile);
     setValidationErrors([]);
+    setUploadResults(null);
     
     // Simulate upload progress
     let progress = 0;
@@ -67,7 +74,7 @@ const FileUploadHandler: React.FC<FileUploadHandlerProps> = ({ children }) => {
     setIsProcessing(true);
     
     try {
-      const result = await processFile(file, addUploadRecord);
+      const result = await processFile(file, addUploadRecord, students);
       
       if (result.errors && result.errors.length > 0) {
         setValidationErrors(result.errors);
@@ -84,13 +91,16 @@ const FileUploadHandler: React.FC<FileUploadHandlerProps> = ({ children }) => {
         // Generate alerts for high and medium risk students
         generateAlertsFromStudents(result.students, addAlert);
         
-        toast({
-          title: 'Processamento concluído',
-          description: `${result.students.length} alunos processados com sucesso.`,
+        // Store the merge results
+        setUploadResults({
+          updatedCount: result.updatedCount || 0,
+          newCount: result.newCount || 0
         });
         
-        // Reset upload form
-        resetUpload();
+        toast({
+          title: 'Processamento concluído',
+          description: `${result.newCount || 0} novos alunos e ${result.updatedCount || 0} atualizações processadas com sucesso.`,
+        });
       }
     } catch (error) {
       console.error('Error in handleProcessFile:', error);
@@ -110,6 +120,7 @@ const FileUploadHandler: React.FC<FileUploadHandlerProps> = ({ children }) => {
     uploadProgress,
     isProcessing,
     validationErrors,
+    uploadResults,
     handleFileSelect,
     handleProcessFile,
     resetUpload
