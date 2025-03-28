@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   BarChart, PieChart, LineChart, ArrowUp, ArrowDown, 
-  AlertCircle, HelpCircle, Percent, TrendingUp, Users 
+  AlertCircle, HelpCircle, Percent, TrendingUp, Users,
+  MessageSquare
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
