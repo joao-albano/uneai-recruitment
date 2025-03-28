@@ -10,6 +10,7 @@ import UsersPage from "@/pages/UsersPage";
 import OrganizationsPage from "@/pages/OrganizationsPage";
 import AdminApisReportPage from "@/pages/AdminApisReportPage";
 import AdminApiIntegrationsPage from "@/pages/AdminApiIntegrationsPage";
+import AdminDocsPage from "@/pages/AdminDocsPage";
 
 interface RouteConfig {
   path: string;
@@ -91,6 +92,14 @@ export const adminRoutes: RouteConfig[] = [
     element: (
       <SuperAdminRoute>
         <AdminAiSettingsPage />
+      </SuperAdminRoute>
+    )
+  },
+  {
+    path: "/admin/docs",
+    element: (
+      <SuperAdminRoute>
+        <AdminDocsPage />
       </SuperAdminRoute>
     )
   }

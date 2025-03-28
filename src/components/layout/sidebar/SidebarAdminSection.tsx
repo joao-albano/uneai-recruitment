@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BarChart2, Users, DollarSign, Building, Settings, FileText, Shield, Brain, Webhook } from 'lucide-react';
+import { BarChart2, Users, DollarSign, Building, Settings, FileText, Shield, Brain, Webhook, BookOpen } from 'lucide-react';
 import SidebarNavigationGroup from './SidebarNavigationGroup';
 import SidebarNavLink from './SidebarNavLink';
 import { useAuth } from '@/context/auth';
@@ -95,6 +95,13 @@ const SidebarAdminSection: React.FC<SidebarAdminSectionProps> = ({ collapsed }) 
             to="/admin/ai-settings" 
             icon={Brain} 
             label="Integrações IA" 
+            collapsed={collapsed}
+          />
+          
+          <SidebarNavLink 
+            to="/admin/docs" 
+            icon={BookOpen} 
+            label="Documentação" 
             collapsed={collapsed}
           />
         </SidebarNavigationGroup>
