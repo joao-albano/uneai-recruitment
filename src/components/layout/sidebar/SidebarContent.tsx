@@ -49,6 +49,9 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
   
   console.log('SidebarContent - isAdmin:', isAdmin, 'isSuperAdmin:', isSuperAdmin);
   
+  // Check if the current product is recruitment
+  const isRecruitmentProduct = currentProduct === 'recruitment';
+  
   return (
     <div 
       className={cn(
@@ -72,15 +75,17 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
             
             {/* Monitoramento - apenas para retenção ou super admin, e não para captação */}
             {(!currentProduct || 
-              (currentProduct === 'retention' && currentProduct !== 'recruitment') || 
-              isSuperAdmin) && (
+              (currentProduct === 'retention') || 
+              isSuperAdmin) && 
+              !isRecruitmentProduct && (
               <SidebarMonitoringSection collapsed={collapsed} />
             )}
             
             {/* Faturamento - apenas para billing ou super admin, e não para captação */}
             {(!currentProduct || 
-              (currentProduct === 'billing' && currentProduct !== 'recruitment') || 
-              isSuperAdmin) && (
+              (currentProduct === 'billing') || 
+              isSuperAdmin) && 
+              !isRecruitmentProduct && (
               <SidebarBillingSection collapsed={collapsed} />
             )}
           </>
@@ -107,7 +112,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
         )}
         
         {/* Menus de administração são exibidos com base no nível de acesso e não estando no produto de captação */}
-        {(isAdmin || isSuperAdmin) && (currentProduct !== 'recruitment') && (
+        {(isAdmin || isSuperAdmin) && !isRecruitmentProduct && (
           <SidebarAdminSection collapsed={collapsed} />
         )}
       </div>
