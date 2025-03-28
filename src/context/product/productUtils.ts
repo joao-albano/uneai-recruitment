@@ -1,120 +1,96 @@
 
-import { v4 as uuidv4 } from 'uuid';
+import { ProductType, ProductSubscription } from './types';
 import { supabase } from '@/integrations/supabase/client';
-import { ProductSubscription, ProductType } from './types';
+import { v4 as uuidv4 } from 'uuid';
 
-export const fetchUserProducts = async (userId: string, isSuperAdmin: boolean): Promise<{
+/**
+ * Fetches user products from the database
+ * @param userId The user ID to fetch products for
+ * @param isSuperAdmin Whether the user is a super admin
+ * @returns An object containing subscriptions and available products
+ */
+export const fetchUserProducts = async (
+  userId: string, 
+  isSuperAdmin: boolean
+): Promise<{
   subscriptions: ProductSubscription[],
   availableProducts: ProductType[]
 }> => {
-  console.log('Fetching user products with params:', { userId, isSuperAdmin });
-
-  // Super admins have access to all products
+  // For development/demo purposes, we'll return some mock data
+  // In a real implementation, we would fetch this from the database
+  
+  // For super admins, return all products as available
   if (isSuperAdmin) {
-    const allProductTypes: ProductType[] = [
-      'retention', 
-      'sales', 
-      'scheduling', 
-      'recruitment', 
-      'secretary', 
-      'pedagogical',
-      'billing'
-    ];
+    return {
+      subscriptions: [
+        createMockSubscription('retention'),
+        createMockSubscription('billing'),
+        createMockSubscription('sales'),
+        createMockSubscription('scheduling'),
+        createMockSubscription('recruitment'),
+        createMockSubscription('secretary'),
+        createMockSubscription('pedagogical')
+      ],
+      availableProducts: [
+        'retention', 
+        'billing', 
+        'sales', 
+        'scheduling', 
+        'recruitment', 
+        'secretary', 
+        'pedagogical'
+      ]
+    };
+  }
+  
+  // For regular users, fetch their products
+  try {
+    const { data, error } = await supabase
+      .from('user_products')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('is_active', true);
     
-    console.log('User is super admin - providing access to all products:', allProductTypes);
+    if (error) {
+      console.error('Error fetching user products:', error);
+      return {
+        subscriptions: [],
+        availableProducts: []
+      };
+    }
     
-    // Create simulated subscriptions for all products
-    const subscriptions: ProductSubscription[] = allProductTypes.map(type => ({
-      id: uuidv4(),
-      productType: type,
+    // Map the data to our product types
+    const availableProducts = data.map(item => item.product_type as ProductType);
+    const subscriptions = data.map(item => ({
+      id: item.id,
+      productType: item.product_type as ProductType,
       startDate: new Date(),
-      status: 'active'
+      status: 'active' as const
     }));
     
     return {
       subscriptions,
-      availableProducts: allProductTypes
-    };
-  }
-  
-  // For regular users, fetch their subscriptions
-  try {
-    const { data: subscriptions, error } = await supabase
-      .from('subscriptions')
-      .select('id, status, trial_start_date, trial_end_date')
-      .eq('user_id', userId);
-    
-    if (error) {
-      console.error('Error fetching subscriptions:', error);
-      throw error;
-    }
-    
-    // Mock product types since we can't get them from the database yet
-    const mockProductTypes: ProductType[] = ['retention', 'billing'];
-    
-    // Check if trial is expired for each subscription
-    const now = new Date();
-    
-    const productSubscriptions: ProductSubscription[] = subscriptions?.map((sub, index) => {
-      let status = sub.status;
-      
-      // If trial, check if expired
-      if (status === 'trial' && sub.trial_end_date) {
-        const trialEndDate = new Date(sub.trial_end_date);
-        if (now > trialEndDate) {
-          status = 'inactive'; // Trial expired
-        }
-      }
-      
-      // Assign a mock product type based on the index
-      const productType = mockProductTypes[index % mockProductTypes.length];
-      
-      return {
-        id: sub.id,
-        productType: productType,
-        startDate: sub.trial_start_date ? new Date(sub.trial_start_date) : new Date(),
-        status: status as 'active' | 'inactive' | 'pending' | 'trial'
-      };
-    }) || [];
-    
-    // Set available products based on active or trial subscriptions
-    const productTypes = productSubscriptions
-      .filter(sub => sub.status === 'active' || sub.status === 'trial')
-      .map(sub => sub.productType);
-    
-    console.log('Regular user products fetched:', { 
-      subscriptions: productSubscriptions,
-      availableProducts: productTypes 
-    });
-    
-    return {
-      subscriptions: productSubscriptions,
-      availableProducts: productTypes
+      availableProducts
     };
   } catch (error) {
-    console.error('Error fetching user products:', error);
-    
-    // Create mock data if there's an error
-    const mockProducts: ProductType[] = ['retention', 'billing'];
-    const mockSubscriptions: ProductSubscription[] = mockProducts.map(type => ({
-      id: uuidv4(),
-      productType: type,
-      startDate: new Date(),
-      status: 'trial'
-    }));
-    
+    console.error('Error in fetchUserProducts:', error);
     return {
-      subscriptions: mockSubscriptions,
-      availableProducts: mockProducts
+      subscriptions: [],
+      availableProducts: []
     };
   }
 };
 
+/**
+ * Creates a mock subscription for the given product type
+ * @param productType The product type to create a subscription for
+ * @returns A mock subscription
+ */
 export const createMockSubscription = (productType: ProductType): ProductSubscription => {
   return {
     id: uuidv4(),
     productType,
     startDate: new Date(),
-    status: 'trial'
+    status: 'active'
   };
 };

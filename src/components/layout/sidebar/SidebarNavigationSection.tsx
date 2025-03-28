@@ -1,14 +1,17 @@
 
 import React from 'react';
-import { Home, BarChart2, LineChart, Upload } from 'lucide-react';
+import { Home, BarChart2, LineChart, Upload, UserPlus } from 'lucide-react';
 import SidebarNavigationGroup from './SidebarNavigationGroup';
 import SidebarNavLink from './SidebarNavLink';
+import { useProduct } from '@/context/ProductContext';
 
 interface SidebarNavigationSectionProps {
   collapsed: boolean;
 }
 
 const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ collapsed }) => {
+  const { currentProduct } = useProduct();
+  
   return (
     <SidebarNavigationGroup 
       title="Navegação" 
@@ -20,18 +23,50 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
         label="Início" 
         collapsed={collapsed}
       />
-      <SidebarNavLink 
-        to="/dashboard" 
-        icon={BarChart2} 
-        label="Dashboard" 
-        collapsed={collapsed}
-      />
-      <SidebarNavLink 
-        to="/model" 
-        icon={LineChart} 
-        label="Modelo" 
-        collapsed={collapsed}
-      />
+      
+      {/* Links específicos para o produto de retenção */}
+      {(!currentProduct || currentProduct === 'retention') && (
+        <>
+          <SidebarNavLink 
+            to="/dashboard" 
+            icon={BarChart2} 
+            label="Dashboard" 
+            collapsed={collapsed}
+          />
+          <SidebarNavLink 
+            to="/model" 
+            icon={LineChart} 
+            label="Modelo" 
+            collapsed={collapsed}
+          />
+        </>
+      )}
+      
+      {/* Links específicos para o produto de captação */}
+      {currentProduct === 'recruitment' && (
+        <>
+          <SidebarNavLink 
+            to="/recruitment" 
+            icon={BarChart2} 
+            label="Dashboard" 
+            collapsed={collapsed}
+          />
+          <SidebarNavLink 
+            to="/recruitment/leads" 
+            icon={UserPlus} 
+            label="Leads" 
+            collapsed={collapsed}
+          />
+          <SidebarNavLink 
+            to="/recruitment/funnel" 
+            icon={LineChart} 
+            label="Funil" 
+            collapsed={collapsed}
+          />
+        </>
+      )}
+      
+      {/* Links compartilhados por todos os produtos */}
       <SidebarNavLink 
         to="/upload" 
         icon={Upload} 

@@ -1,4 +1,3 @@
-
 import { ReactNode } from "react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoutes";
 import ProductHubPage from "@/pages/ProductHubPage";
@@ -14,6 +13,9 @@ import Index from "@/pages/Index";
 import ModelPage from "@/pages/ModelPage";
 import ModelStudentPage from "@/pages/ModelStudentPage";
 import UserBillingPage from "@/pages/UserBillingPage";
+import RecruitmentDashboardPage from "@/pages/RecruitmentDashboardPage";
+import RecruitmentLeadsPage from "@/pages/RecruitmentLeadsPage";
+import RecruitmentFunnelPage from "@/pages/RecruitmentFunnelPage";
 
 interface RouteConfig {
   path: string;
@@ -122,6 +124,30 @@ export const protectedRoutes: RouteConfig[] = [
     element: (
       <ProtectedRoute>
         <UserBillingPage />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment",
+    element: (
+      <ProtectedRoute>
+        <RecruitmentDashboardPage />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/leads",
+    element: (
+      <ProtectedRoute>
+        <RecruitmentLeadsPage />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/funnel",
+    element: (
+      <ProtectedRoute>
+        <RecruitmentFunnelPage />
       </ProtectedRoute>
     )
   }
