@@ -72,7 +72,7 @@ const WhatsAppConfigForm: React.FC<WhatsAppConfigFormProps> = ({ config, onSubmi
                 </p>
               </div>
               
-              <Badge variant={config.connected ? "success" : "destructive"} className="ml-2">
+              <Badge variant={config.connected ? "secondary" : "destructive"} className="ml-2">
                 {config.connected 
                   ? (language === 'pt-BR' ? 'Conectado' : 'Connected') 
                   : (language === 'pt-BR' ? 'Desconectado' : 'Disconnected')}
