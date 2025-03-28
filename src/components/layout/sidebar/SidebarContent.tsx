@@ -71,12 +71,16 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
             <SidebarNavigationSection collapsed={collapsed} />
             
             {/* Monitoramento - apenas para retenção ou super admin, e não para captação */}
-            {(!currentProduct || (currentProduct === 'retention' && currentProduct !== 'recruitment') || isSuperAdmin) && (
+            {(!currentProduct || 
+              (currentProduct === 'retention' && currentProduct !== 'recruitment') || 
+              isSuperAdmin) && (
               <SidebarMonitoringSection collapsed={collapsed} />
             )}
             
             {/* Faturamento - apenas para billing ou super admin, e não para captação */}
-            {(!currentProduct || (currentProduct === 'billing' && currentProduct !== 'recruitment') || isSuperAdmin) && (
+            {(!currentProduct || 
+              (currentProduct === 'billing' && currentProduct !== 'recruitment') || 
+              isSuperAdmin) && (
               <SidebarBillingSection collapsed={collapsed} />
             )}
           </>
