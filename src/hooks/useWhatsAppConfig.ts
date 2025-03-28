@@ -13,7 +13,8 @@ export const useWhatsAppConfig = () => {
         return {
           ...parsedConfig,
           provider: parsedConfig.provider as WhatsAppProvider,
-          enabled: parsedConfig.enabled === true
+          enabled: parsedConfig.enabled === true,
+          connected: parsedConfig.connected === true
         };
       } catch (e) {
         console.error('Error loading WhatsApp config:', e);
@@ -25,6 +26,7 @@ export const useWhatsAppConfig = () => {
       provider: 'disabled' as WhatsAppProvider,
       webhookUrl: '',
       enabled: false,
+      connected: false,
       reminderTiming: 1, // Default to 1 day before
       templateMessages: {
         introduction: 'Olá {{parentName}}, somos do Colégio XYZ.',
