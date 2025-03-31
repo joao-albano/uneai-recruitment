@@ -21,6 +21,14 @@ const ProductHub: React.FC = () => {
       try {
         setLoading(true);
         const productsData = await getProducts();
+        
+        // For super admins, mark all products as active regardless of their original state
+        if (isSuperAdmin) {
+          productsData.forEach(product => {
+            product.isActive = true;
+          });
+        }
+        
         setProducts(productsData);
       } catch (error) {
         console.error('Error loading products:', error);
@@ -30,7 +38,7 @@ const ProductHub: React.FC = () => {
     };
     
     loadProducts();
-  }, []);
+  }, [isSuperAdmin]);
   
   const handleSubscribe = async (productType: string) => {
     // Cast the string to ProductType where needed

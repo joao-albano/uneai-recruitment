@@ -42,7 +42,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           "w-12 h-12 rounded-full flex items-center justify-center",
           bgColorClass
         )}>
-          <div className={textColorClass}>
+          <div className={cn(textColorClass, "opacity-80")}>
             {icon}
           </div>
         </div>
