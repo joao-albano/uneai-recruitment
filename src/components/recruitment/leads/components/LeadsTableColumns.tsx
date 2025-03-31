@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { MoreHorizontal } from 'lucide-react';
@@ -15,10 +14,10 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface GetLeadColumnsProps {
-  onEditLead: (leadId: number) => void;
-  onChangeStage: (leadId: number) => void;
-  onViewHistory: (leadId: number) => void;
-  onDeleteLead: (leadId: number) => void;
+  onEditLead: (e: React.MouseEvent, leadId: number) => void;
+  onChangeStage: (e: React.MouseEvent, leadId: number) => void;
+  onViewHistory: (e: React.MouseEvent, leadId: number) => void;
+  onDeleteLead: (e: React.MouseEvent, leadId: number) => void;
 }
 
 export const getLeadColumns = ({
@@ -92,7 +91,6 @@ export const getLeadColumns = ({
     header: "Data de Cadastro",
     accessorKey: "createdAt",
     cell: (row: any) => {
-      // Formatando data para formato brasileiro
       try {
         const date = typeof row.createdAt === 'string' 
           ? new Date(row.createdAt) 
@@ -116,28 +114,19 @@ export const getLeadColumns = ({
           <DropdownMenuLabel>Ações</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem 
-            onClick={(e) => {
-              e.stopPropagation();
-              onEditLead(row.id);
-            }}
+            onClick={(e) => onEditLead(e, row.id)}
             className="cursor-pointer"
           >
             Editar Lead
           </DropdownMenuItem>
           <DropdownMenuItem 
-            onClick={(e) => {
-              e.stopPropagation();
-              onChangeStage(row.id);
-            }}
+            onClick={(e) => onChangeStage(e, row.id)}
             className="cursor-pointer"
           >
             Alterar Etapa
           </DropdownMenuItem>
           <DropdownMenuItem 
-            onClick={(e) => {
-              e.stopPropagation();
-              onViewHistory(row.id);
-            }}
+            onClick={(e) => onViewHistory(e, row.id)}
             className="cursor-pointer"
           >
             Ver Histórico
@@ -145,10 +134,7 @@ export const getLeadColumns = ({
           <DropdownMenuSeparator />
           <DropdownMenuItem 
             className="text-destructive cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDeleteLead(row.id);
-            }}
+            onClick={(e) => onDeleteLead(e, row.id)}
           >
             Excluir Lead
           </DropdownMenuItem>

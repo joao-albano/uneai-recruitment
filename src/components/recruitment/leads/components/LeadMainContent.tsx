@@ -5,6 +5,7 @@ import { DataTable } from '@/components/ui/data-table';
 import LeadsKanbanView from '../LeadsKanbanView';
 import LeadsToolbar from './LeadsToolbar';
 import { getLeadColumns } from './LeadsTableColumns';
+import { useToast } from '@/hooks/use-toast';
 
 interface LeadMainContentProps {
   viewMode: 'table' | 'kanban';
@@ -41,12 +42,35 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
   onDeleteLead,
   onStageChange
 }) => {
+  const { toast } = useToast();
+  
+  // Handlers com prevenção de propagação de eventos
+  const handleEditLead = (e: React.MouseEvent, leadId: number) => {
+    e.stopPropagation();
+    onEditLead(leadId);
+  };
+  
+  const handleChangeStage = (e: React.MouseEvent, leadId: number) => {
+    e.stopPropagation();
+    onChangeStage(leadId);
+  };
+  
+  const handleViewHistory = (e: React.MouseEvent, leadId: number) => {
+    e.stopPropagation();
+    onViewHistory(leadId);
+  };
+  
+  const handleDeleteLead = (e: React.MouseEvent, leadId: number) => {
+    e.stopPropagation();
+    onDeleteLead(leadId);
+  };
+  
   // Get columns configuration with handlers
   const columns = getLeadColumns({
-    onEditLead,
-    onChangeStage,
-    onViewHistory,
-    onDeleteLead
+    onEditLead: handleEditLead,
+    onChangeStage: handleChangeStage,
+    onViewHistory: handleViewHistory,
+    onDeleteLead: handleDeleteLead
   });
 
   return (
@@ -73,9 +97,9 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
           <LeadsKanbanView 
             stageGroups={stageGroups} 
             onStageChange={onStageChange}
-            onEditLead={onEditLead}
-            onViewHistory={onViewHistory}
-            onDeleteLead={onDeleteLead}
+            onEditLead={handleEditLead}
+            onViewHistory={handleViewHistory}
+            onDeleteLead={handleDeleteLead}
           />
         )}
       </CardContent>

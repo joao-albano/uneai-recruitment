@@ -6,6 +6,7 @@ import { useLeadForm } from './hooks/useLeadForm';
 import LeadCreateDialogHeader from './components/LeadCreateDialogHeader';
 import LeadFormTabs from './components/LeadFormTabs';
 import LeadFormActions from './components/LeadFormActions';
+import { useToast } from '@/hooks/use-toast';
 
 interface LeadCreateDialogProps {
   open: boolean;
@@ -14,10 +15,25 @@ interface LeadCreateDialogProps {
 
 const LeadCreateDialog: React.FC<LeadCreateDialogProps> = ({ open, onOpenChange }) => {
   const { form, onSubmit } = useLeadForm();
+  const { toast } = useToast();
   
   const handleSubmit = form.handleSubmit((data) => {
-    onSubmit(data);
-    onOpenChange(false);
+    try {
+      const result = onSubmit(data);
+      console.log('Lead salvo com sucesso:', result);
+      toast({
+        title: "Lead criado com sucesso",
+        description: "As informações do lead foram salvas"
+      });
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Erro ao salvar lead:', error);
+      toast({
+        title: "Erro ao salvar",
+        description: "Ocorreu um erro ao salvar o lead. Tente novamente.",
+        variant: "destructive"
+      });
+    }
   });
 
   return (

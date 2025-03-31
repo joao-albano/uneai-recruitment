@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -31,9 +32,9 @@ interface StageGroups {
 interface LeadsKanbanViewProps {
   stageGroups: StageGroups;
   onStageChange: (leadId: number, newStage: string, notes?: string) => void;
-  onEditLead?: (leadId: number) => void;
-  onViewHistory?: (leadId: number) => void;
-  onDeleteLead?: (leadId: number) => void;
+  onEditLead?: (e: React.MouseEvent, leadId: number) => void;
+  onViewHistory?: (e: React.MouseEvent, leadId: number) => void;
+  onDeleteLead?: (e: React.MouseEvent, leadId: number) => void;
 }
 
 const LeadsKanbanView: React.FC<LeadsKanbanViewProps> = ({ 
@@ -132,10 +133,7 @@ const LeadsKanbanView: React.FC<LeadsKanbanViewProps> = ({
                                 <DropdownMenuSeparator />
                                 {onEditLead && (
                                   <DropdownMenuItem 
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onEditLead(lead.id);
-                                    }}
+                                    onClick={(e) => onEditLead(e, lead.id)}
                                     className="cursor-pointer"
                                   >
                                     Editar Lead
@@ -152,10 +150,7 @@ const LeadsKanbanView: React.FC<LeadsKanbanViewProps> = ({
                                 </DropdownMenuItem>
                                 {onViewHistory && (
                                   <DropdownMenuItem 
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onViewHistory(lead.id);
-                                    }}
+                                    onClick={(e) => onViewHistory(e, lead.id)}
                                     className="cursor-pointer"
                                   >
                                     Ver Histórico
@@ -165,10 +160,7 @@ const LeadsKanbanView: React.FC<LeadsKanbanViewProps> = ({
                                 {onDeleteLead && (
                                   <DropdownMenuItem 
                                     className="text-destructive cursor-pointer"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onDeleteLead(lead.id);
-                                    }}
+                                    onClick={(e) => onDeleteLead(e, lead.id)}
                                   >
                                     Excluir Lead
                                   </DropdownMenuItem>
