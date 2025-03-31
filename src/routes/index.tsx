@@ -4,6 +4,7 @@ import { publicRoutes } from "./publicRoutes";
 import { protectedRoutes } from "./protectedRoutes";
 import { adminRoutes } from "./adminRoutes";
 import NotFound from "@/pages/NotFound";
+import { ProductProvider } from "@/context/product";
 
 const AppRoutes = () => {
   return (

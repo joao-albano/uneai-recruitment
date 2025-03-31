@@ -9,10 +9,11 @@ export const ProductContext = createContext<ProductContextType | null>(null);
 
 interface ProductProviderProps {
   children: React.ReactNode;
+  initialProduct?: ProductType | null;
 }
 
-export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) => {
-  const [currentProduct, setCurrentProduct] = useState<ProductType | null>(null);
+export const ProductProvider: React.FC<ProductProviderProps> = ({ children, initialProduct = null }) => {
+  const [currentProduct, setCurrentProduct] = useState<ProductType | null>(initialProduct);
   const [availableProducts, setAvailableProducts] = useState<ProductType[]>([
     'retention',
     'recruitment'
@@ -30,15 +31,24 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
     }
   ]);
   
-  const location = useLocation();
+  // Try to use location only if we're inside a Router context
+  let location;
+  try {
+    location = useLocation();
+  } catch (error) {
+    // If useLocation throws, we're not inside a Router
+    console.log('ProductProvider used outside Router context, path-based product updates disabled');
+  }
   
-  // Update current product based on URL path
+  // Update current product based on URL path when location changes
   useEffect(() => {
-    const productFromPath = determineProductFromPath(location.pathname);
-    if (productFromPath && productFromPath !== currentProduct) {
-      setCurrentProduct(productFromPath);
+    if (location) {
+      const productFromPath = determineProductFromPath(location.pathname);
+      if (productFromPath && productFromPath !== currentProduct) {
+        setCurrentProduct(productFromPath);
+      }
     }
-  }, [location.pathname, currentProduct]);
+  }, [location, currentProduct]);
 
   // Mock subscription function - in a real app, this would call an API
   const subscribeToProduct = async (product: ProductType): Promise<boolean> => {
