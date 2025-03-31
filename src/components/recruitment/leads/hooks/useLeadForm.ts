@@ -3,56 +3,61 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { leadFormSchema, LeadFormValues } from '../types/leadForm';
 import { useEffect } from 'react';
+import { mockLeadsData } from '../data/mockLeadsData';
+
+const defaultValues = {
+  parentName: "",
+  email: "",
+  phone: "",
+  channel: "",
+  course: "",
+  status: "Novo",
+  children: [
+    { name: "", age: "", grade: "" }
+  ],
+  observations: "",
+  enrollmentIntention: "",
+  contactTime: "",
+};
 
 export const useLeadForm = () => {
-  // Configuração do formulário com react-hook-form
+  // Configure form with react-hook-form
   const form = useForm<LeadFormValues>({
     resolver: zodResolver(leadFormSchema),
-    defaultValues: {
-      parentName: "",
-      email: "",
-      phone: "",
-      channel: "",
-      course: "",
-      status: "Novo",
-      children: [
-        { name: "", age: "", grade: "" }
-      ],
-      observations: "",
-      enrollmentIntention: "",
-      contactTime: "",
-    },
+    defaultValues,
   });
 
-  // Asseguramos de resetar o formulário quando for aberto
+  // Reset the form when opened
   useEffect(() => {
-    form.reset({
-      parentName: "",
-      email: "",
-      phone: "",
-      channel: "",
-      course: "",
-      status: "Novo",
-      children: [
-        { name: "", age: "", grade: "" }
-      ],
-      observations: "",
-      enrollmentIntention: "",
-      contactTime: "",
-    });
+    form.reset(defaultValues);
   }, [form.reset]);
 
-  // Função chamada ao submeter o formulário
+  // Handle form submission
   const onSubmit = (data: LeadFormValues) => {
     console.log('Dados do formulário submetidos:', data);
-    // Aqui iríamos enviar os dados para a API em uma implementação real
     
-    // Retornar os dados processados
-    return {
+    // Here we would send data to the API in a real implementation
+    
+    // Return processed data with mock ID and timestamp
+    const result = {
       ...data,
-      id: Math.floor(Math.random() * 10000), // Simula ID gerado
+      id: Math.floor(Math.random() * 10000), // Simulate generated ID
       createdAt: new Date().toISOString(),
     };
+    
+    // Update the mock data array
+    mockLeadsData.push({
+      id: result.id,
+      name: result.parentName,
+      course: result.course,
+      children: result.children.length,
+      channel: result.channel,
+      stage: "Contato Inicial",
+      status: "Novo",
+      createdAt: result.createdAt,
+    });
+    
+    return result;
   };
 
   return { form, onSubmit };
