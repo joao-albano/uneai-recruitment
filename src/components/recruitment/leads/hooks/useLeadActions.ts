@@ -1,6 +1,5 @@
 
 import { useToast } from '@/hooks/use-toast';
-import { mockLeadsData } from '../data/mockLeadsData';
 
 // Function to map stage to appropriate status - moved from useLeadsManagement.ts
 const getStatusForStage = (stage: string): string => {
@@ -29,8 +28,10 @@ export const useLeadActions = (
 ) => {
   const { toast } = useToast();
 
-  // Lead action handlers
-  const handleEditLead = (leadId: number) => {
+  // Updated lead action handlers to accept MouseEvent parameter
+  const handleEditLead = (e: React.MouseEvent, leadId: number) => {
+    if (e) e.stopPropagation();
+    
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
       setSelectedLead(lead);
@@ -38,7 +39,9 @@ export const useLeadActions = (
     }
   };
   
-  const handleChangeStage = (leadId: number) => {
+  const handleChangeStage = (e: React.MouseEvent, leadId: number) => {
+    if (e) e.stopPropagation();
+    
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
       setSelectedLead(lead);
@@ -46,7 +49,9 @@ export const useLeadActions = (
     }
   };
   
-  const handleViewHistory = (leadId: number) => {
+  const handleViewHistory = (e: React.MouseEvent, leadId: number) => {
+    if (e) e.stopPropagation();
+    
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
       setSelectedLead(lead);
@@ -54,7 +59,9 @@ export const useLeadActions = (
     }
   };
   
-  const handleDeleteLead = (leadId: number) => {
+  const handleDeleteLead = (e: React.MouseEvent, leadId: number) => {
+    if (e) e.stopPropagation();
+    
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
       setSelectedLead(lead);

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import LeadsTableView from './LeadsTableView';
@@ -35,7 +36,6 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
   filteredLeads,
   stageGroups,
   onEditLead,
-  onChangeStage,
   onViewHistory,
   onDeleteLead,
   onStageChange,
@@ -65,7 +65,6 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
             onStageChange={onStageChange}
             onViewHistory={onViewHistory}
             onDeleteLead={onDeleteLead}
-            onChangeStage={onChangeStage}
           />
         </TabsContent>
       </Tabs>
