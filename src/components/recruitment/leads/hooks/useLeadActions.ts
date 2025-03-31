@@ -39,8 +39,19 @@ export const useLeadActions = (
     }
   };
   
-  const handleChangeStage = (e: React.MouseEvent, leadId: number) => {
-    if (e) e.stopPropagation();
+  // Modified to handle both event-based and direct calls
+  const handleChangeStage = (leadIdOrEvent: React.MouseEvent | number, leadIdOrStage?: number | string) => {
+    let leadId: number;
+    
+    // Handle different calling patterns
+    if (typeof leadIdOrEvent === 'number') {
+      // Direct call pattern: handleChangeStage(leadId, stage)
+      leadId = leadIdOrEvent;
+    } else {
+      // Event-based pattern: handleChangeStage(event, leadId)
+      leadIdOrEvent.stopPropagation();
+      leadId = leadIdOrStage as number;
+    }
     
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {

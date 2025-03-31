@@ -18,7 +18,7 @@ interface LeadMainContentProps {
   filteredLeads: any[];
   stageGroups: any;
   onEditLead?: (e: React.MouseEvent, leadId: number) => void;
-  onChangeStage: (leadId: number, stage: string) => void;
+  onChangeStage: (leadIdOrEvent: React.MouseEvent | number, leadIdOrStage?: number | string) => void;
   onViewHistory?: (e: React.MouseEvent, leadId: number) => void;
   onDeleteLead?: (e: React.MouseEvent, leadId: number) => void;
   onStageChange: (leadId: number, newStage: string, notes?: string) => void;
@@ -39,6 +39,7 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
   onViewHistory,
   onDeleteLead,
   onStageChange,
+  onChangeStage,
 }) => {
   return (
     <div>
