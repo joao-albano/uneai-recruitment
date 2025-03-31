@@ -34,6 +34,12 @@ const LeadsKanbanView: React.FC<LeadsKanbanViewProps> = ({
   onViewHistory,
   onDeleteLead 
 }) => {
+  const handleChangeStage = (leadId: number, stage: string) => {
+    // Esta função é usada para abrir o diálogo de alteração de etapa
+    // A implementação real de alteração de etapa está no handleDragEnd/onStageChange
+    onStageChange(leadId, stage);
+  };
+
   return (
     <DragDropContext onDragEnd={(result) => handleDragEnd(result, onStageChange)}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pb-6 overflow-x-auto">
@@ -43,7 +49,7 @@ const LeadsKanbanView: React.FC<LeadsKanbanViewProps> = ({
             stageName={stageName}
             leads={leads}
             onEditLead={onEditLead}
-            onChangeStage={onStageChange}
+            onChangeStage={handleChangeStage}
             onViewHistory={onViewHistory}
             onDeleteLead={onDeleteLead}
           />

@@ -13,8 +13,8 @@ export const useLeadFilters = (
 
   // Apply filters to leads data
   useEffect(() => {
-    let filtered = leadsData;
-
+    let filtered = [...leadsData]; // Create a copy to avoid reference issues
+    
     // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(lead => 
