@@ -18,10 +18,11 @@ interface Lead {
 interface StageColumnProps {
   stageName: string;
   leads: Lead[];
-  onEditLead?: (e: React.MouseEvent, leadId: number) => void;
-  onChangeStage: (leadId: number, stage: string) => void;
-  onViewHistory?: (e: React.MouseEvent, leadId: number) => void;
-  onDeleteLead?: (e: React.MouseEvent, leadId: number) => void;
+  onEditLead: (e: React.MouseEvent, leadId: number) => void;
+  onChangeStage: (e: React.MouseEvent, leadId: number) => void;
+  openChangeStageDialog?: (leadId: number) => void;
+  onViewHistory: (e: React.MouseEvent, leadId: number) => void;
+  onDeleteLead: (e: React.MouseEvent, leadId: number) => void;
 }
 
 const StageColumn: React.FC<StageColumnProps> = ({ 
@@ -29,6 +30,7 @@ const StageColumn: React.FC<StageColumnProps> = ({
   leads,
   onEditLead,
   onChangeStage,
+  openChangeStageDialog,
   onViewHistory,
   onDeleteLead
 }) => {
@@ -59,6 +61,7 @@ const StageColumn: React.FC<StageColumnProps> = ({
                 index={index}
                 onEditLead={onEditLead}
                 onChangeStage={onChangeStage}
+                openChangeStageDialog={openChangeStageDialog}
                 onViewHistory={onViewHistory}
                 onDeleteLead={onDeleteLead}
               />

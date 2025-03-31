@@ -22,22 +22,22 @@ interface StageGroups {
 interface LeadsKanbanViewProps {
   stageGroups: StageGroups;
   onStageChange: (leadId: number, newStage: string, notes?: string) => void;
-  onEditLead?: (e: React.MouseEvent, leadId: number) => void;
-  onViewHistory?: (e: React.MouseEvent, leadId: number) => void;
-  onDeleteLead?: (e: React.MouseEvent, leadId: number) => void;
+  onEditLead: (e: React.MouseEvent, leadId: number) => void;
+  onChangeStage: (e: React.MouseEvent, leadId: number) => void;
+  openChangeStageDialog?: (leadId: number) => void;
+  onViewHistory: (e: React.MouseEvent, leadId: number) => void;
+  onDeleteLead: (e: React.MouseEvent, leadId: number) => void;
 }
 
 const LeadsKanbanView: React.FC<LeadsKanbanViewProps> = ({ 
   stageGroups, 
   onStageChange,
   onEditLead,
+  onChangeStage,
+  openChangeStageDialog,
   onViewHistory,
   onDeleteLead 
 }) => {
-  const handleChangeStage = (leadId: number, stage: string) => {
-    onStageChange(leadId, stage);
-  };
-  
   const handleOnDragEnd = (result: DropResult) => {
     handleDragEnd(result, onStageChange);
   };
@@ -51,7 +51,8 @@ const LeadsKanbanView: React.FC<LeadsKanbanViewProps> = ({
             stageName={stageName}
             leads={leads || []} 
             onEditLead={onEditLead}
-            onChangeStage={handleChangeStage}
+            onChangeStage={onChangeStage}
+            openChangeStageDialog={openChangeStageDialog}
             onViewHistory={onViewHistory}
             onDeleteLead={onDeleteLead}
           />

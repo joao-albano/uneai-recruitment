@@ -31,6 +31,7 @@ const LeadsManagement: React.FC = () => {
     stageGroups,
     handleEditLead,
     handleChangeStage,
+    openChangeStageDialog,
     handleViewHistory,
     handleDeleteLead,
     handleSaveLead,
@@ -67,6 +68,7 @@ const LeadsManagement: React.FC = () => {
         onViewHistory={handleViewHistory}
         onDeleteLead={handleDeleteLead}
         onStageChange={handleSaveStage}
+        openChangeStageDialog={openChangeStageDialog}
       />
       
       <LeadDialogs 

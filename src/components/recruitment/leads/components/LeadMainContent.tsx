@@ -17,10 +17,11 @@ interface LeadMainContentProps {
   exportLeads: () => void;
   filteredLeads: any[];
   stageGroups: any;
-  onEditLead?: (e: React.MouseEvent, leadId: number) => void;
-  onChangeStage: (leadIdOrEvent: React.MouseEvent | number, leadIdOrStage?: number | string) => void;
-  onViewHistory?: (e: React.MouseEvent, leadId: number) => void;
-  onDeleteLead?: (e: React.MouseEvent, leadId: number) => void;
+  onEditLead: (e: React.MouseEvent, leadId: number) => void;
+  onChangeStage: (e: React.MouseEvent, leadId: number) => void;
+  openChangeStageDialog?: (leadId: number) => void;
+  onViewHistory: (e: React.MouseEvent, leadId: number) => void;
+  onDeleteLead: (e: React.MouseEvent, leadId: number) => void;
   onStageChange: (leadId: number, newStage: string, notes?: string) => void;
 }
 
@@ -40,6 +41,7 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
   onDeleteLead,
   onStageChange,
   onChangeStage,
+  openChangeStageDialog,
 }) => {
   return (
     <div>
@@ -64,6 +66,8 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
             stageGroups={stageGroups}
             onEditLead={onEditLead}
             onStageChange={onStageChange}
+            onChangeStage={onChangeStage} 
+            openChangeStageDialog={openChangeStageDialog}
             onViewHistory={onViewHistory}
             onDeleteLead={onDeleteLead}
           />

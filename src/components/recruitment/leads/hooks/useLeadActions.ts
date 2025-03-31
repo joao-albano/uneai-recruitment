@@ -28,7 +28,7 @@ export const useLeadActions = (
 ) => {
   const { toast } = useToast();
 
-  // Updated lead action handlers to accept MouseEvent parameter
+  // Handle edit lead action (event-based)
   const handleEditLead = (e: React.MouseEvent, leadId: number) => {
     if (e) e.stopPropagation();
     
@@ -39,20 +39,19 @@ export const useLeadActions = (
     }
   };
   
-  // Modified to handle both event-based and direct calls
-  const handleChangeStage = (leadIdOrEvent: React.MouseEvent | number, leadIdOrStage?: number | string) => {
-    let leadId: number;
+  // Opens the change stage dialog (event-based)
+  const handleChangeStage = (e: React.MouseEvent, leadId: number) => {
+    if (e) e.stopPropagation();
     
-    // Handle different calling patterns
-    if (typeof leadIdOrEvent === 'number') {
-      // Direct call pattern: handleChangeStage(leadId, stage)
-      leadId = leadIdOrEvent;
-    } else {
-      // Event-based pattern: handleChangeStage(event, leadId)
-      leadIdOrEvent.stopPropagation();
-      leadId = leadIdOrStage as number;
+    const lead = leadsData.find(l => l.id === leadId);
+    if (lead) {
+      setSelectedLead(lead);
+      setStageDialogOpen(true);
     }
-    
+  };
+
+  // Direct function call (for drag-and-drop or other non-event triggers)
+  const openChangeStageDialog = (leadId: number) => {
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
       setSelectedLead(lead);
@@ -94,7 +93,7 @@ export const useLeadActions = (
   };
   
   // Save stage change
-  const handleSaveStage = (leadId: number, newStage: string, notes: string) => {
+  const handleSaveStage = (leadId: number, newStage: string, notes: string = '') => {
     // Update the lead's stage and corresponding status
     const updatedLeads = leadsData.map(lead => {
       if (lead.id === leadId) {
@@ -120,6 +119,7 @@ export const useLeadActions = (
   return {
     handleEditLead,
     handleChangeStage,
+    openChangeStageDialog,
     handleViewHistory,
     handleDeleteLead,
     handleSaveLead,
