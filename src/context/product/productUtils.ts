@@ -31,5 +31,9 @@ export const determineProductFromPath = (path: string): ProductType | null => {
     return 'scheduling';
   }
   
+  if (path.startsWith('/pedagogical')) {
+    return 'pedagogical';
+  }
+  
   return null;
 };

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, BarChart2, LineChart, Upload, UserPlus, CalendarCheck, Users, BarChart, MessageSquare } from 'lucide-react';
+import { Home, BarChart2, LineChart, Upload, UserPlus, CalendarCheck, Users, BarChart, MessageSquare, BookOpen } from 'lucide-react';
 import SidebarNavigationGroup from './SidebarNavigationGroup';
 import SidebarNavLink from './SidebarNavLink';
 import { useProduct } from '@/context/product';
@@ -161,6 +161,23 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
             to="/schedule" 
             icon={BarChart2} 
             label="Dashboard" 
+            collapsed={collapsed}
+          />
+        </>
+      )}
+      
+      {currentProduct === 'pedagogical' && (
+        <>
+          <SidebarNavLink 
+            to="/pedagogical" 
+            icon={BookOpen} 
+            label="Dashboard" 
+            collapsed={collapsed}
+          />
+          <SidebarNavLink 
+            to="/pedagogical/assessments" 
+            icon={LineChart} 
+            label="Avaliações" 
             collapsed={collapsed}
           />
         </>

@@ -6,7 +6,8 @@ export type ProductType =
   | 'secretary'
   | 'emotional'
   | 'sales'
-  | 'scheduling';
+  | 'scheduling'
+  | 'pedagogical';
 
 export interface ProductSubscription {
   productId: ProductType;
@@ -27,4 +28,5 @@ export interface ProductContextType {
   availableProducts: ProductType[];
   subscribeToProduct: (product: ProductType) => Promise<boolean>;
   hasAccessToProduct: (product: ProductType) => boolean;
+  userSubscriptions?: ProductSubscription[]; // Added missing property
 }

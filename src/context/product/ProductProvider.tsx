@@ -1,7 +1,7 @@
 
 import React, { createContext, useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { ProductType, ProductContextType } from './types';
+import { ProductType, ProductContextType, ProductSubscription } from './types';
 import { determineProductFromPath } from './productUtils';
 
 // Context creation
@@ -16,6 +16,18 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
   const [availableProducts, setAvailableProducts] = useState<ProductType[]>([
     'retention',
     'recruitment'
+  ]);
+  const [userSubscriptions, setUserSubscriptions] = useState<ProductSubscription[]>([
+    {
+      productId: 'retention',
+      status: 'active',
+      expiresAt: null
+    },
+    {
+      productId: 'recruitment',
+      status: 'active',
+      expiresAt: null
+    }
   ]);
   
   const location = useLocation();
@@ -36,6 +48,16 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
     // Add to available products if not already there
     if (!availableProducts.includes(product)) {
       setAvailableProducts(prev => [...prev, product]);
+      
+      // Add to user subscriptions
+      setUserSubscriptions(prev => [
+        ...prev,
+        {
+          productId: product,
+          status: 'active',
+          expiresAt: null
+        }
+      ]);
     }
     
     return true;
@@ -51,7 +73,8 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
     setCurrentProduct,
     availableProducts,
     subscribeToProduct,
-    hasAccessToProduct
+    hasAccessToProduct,
+    userSubscriptions
   };
   
   return (

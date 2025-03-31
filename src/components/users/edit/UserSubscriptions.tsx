@@ -34,7 +34,7 @@ const UserSubscriptions: React.FC<UserSubscriptionsProps> = ({
           {subscriptions.map((subscription, index) => (
             <div key={index} className="flex justify-between items-center py-1 border-b last:border-0">
               <div className="flex items-center">
-                <span className="font-medium text-sm">{subscription.productType}</span>
+                <span className="font-medium text-sm">{subscription.productId}</span>
               </div>
               <Badge 
                 variant={subscription.status === 'active' ? "default" : "outline"} 
