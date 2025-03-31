@@ -60,11 +60,9 @@ const StageColumn: React.FC<StageColumnProps> = ({
                 lead={lead}
                 index={index}
                 onEditLead={onEditLead}
-                onChangeStage={(leadId) => {
-                  // When called from the card dropdown, call openChangeStageDialog
-                  if (openChangeStageDialog) {
-                    openChangeStageDialog(leadId);
-                  }
+                onChangeStage={(e) => {
+                  // Fixed: Pass the event and the leadId to onChangeStage
+                  onChangeStage(e, lead.id);
                 }}
                 onViewHistory={onViewHistory}
                 onDeleteLead={onDeleteLead}
