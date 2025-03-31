@@ -1,27 +1,25 @@
-
 import React from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { DataTable } from '@/components/ui/data-table';
-import LeadsKanbanView from '../LeadsKanbanView';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
+import LeadsTableView from './LeadsTableView';
 import LeadsToolbar from './LeadsToolbar';
-import { getLeadColumns } from './LeadsTableColumns';
-import { useToast } from '@/hooks/use-toast';
+import { LeadFilterOptions } from '../types/leadFilters';
+import LeadsKanbanView from '../kanban/LeadsKanbanView';
 
 interface LeadMainContentProps {
   viewMode: 'table' | 'kanban';
-  onViewModeChange: (mode: 'table' | 'kanban') => void;
+  onViewModeChange: (viewMode: 'table' | 'kanban') => void;
   searchTerm: string;
-  setSearchTerm: (term: string) => void;
-  filters: any;
-  setFilters: (filters: any) => void;
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+  filters: LeadFilterOptions;
+  setFilters: React.Dispatch<React.SetStateAction<LeadFilterOptions>>;
   clearFilters: () => void;
   exportLeads: () => void;
   filteredLeads: any[];
   stageGroups: any;
-  onEditLead: (leadId: number) => void;
-  onChangeStage: (leadId: number) => void;
-  onViewHistory: (leadId: number) => void;
-  onDeleteLead: (leadId: number) => void;
+  onEditLead?: (e: React.MouseEvent, leadId: number) => void;
+  onChangeStage: (leadId: number, stage: string) => void;
+  onViewHistory?: (e: React.MouseEvent, leadId: number) => void;
+  onDeleteLead?: (e: React.MouseEvent, leadId: number) => void;
   onStageChange: (leadId: number, newStage: string, notes?: string) => void;
 }
 
@@ -40,70 +38,38 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
   onChangeStage,
   onViewHistory,
   onDeleteLead,
-  onStageChange
+  onStageChange,
 }) => {
-  const { toast } = useToast();
-  
-  // Handlers com prevenção de propagação de eventos
-  const handleEditLead = (e: React.MouseEvent, leadId: number) => {
-    e.stopPropagation();
-    onEditLead(leadId);
-  };
-  
-  const handleChangeStage = (e: React.MouseEvent, leadId: number) => {
-    e.stopPropagation();
-    onChangeStage(leadId);
-  };
-  
-  const handleViewHistory = (e: React.MouseEvent, leadId: number) => {
-    e.stopPropagation();
-    onViewHistory(leadId);
-  };
-  
-  const handleDeleteLead = (e: React.MouseEvent, leadId: number) => {
-    e.stopPropagation();
-    onDeleteLead(leadId);
-  };
-  
-  // Get columns configuration with handlers
-  const columns = getLeadColumns({
-    onEditLead: handleEditLead,
-    onChangeStage: handleChangeStage,
-    onViewHistory: handleViewHistory,
-    onDeleteLead: handleDeleteLead
-  });
-
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <LeadsToolbar 
-          viewMode={viewMode} 
-          onViewModeChange={onViewModeChange}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          filters={filters}
-          setFilters={setFilters}
-          clearFilters={clearFilters}
-          exportLeads={exportLeads}
-        />
-      </CardHeader>
-      <CardContent>
-        {viewMode === 'table' ? (
-          <DataTable 
-            data={filteredLeads} 
-            columns={columns} 
-          />
-        ) : (
+    <div>
+      <LeadsToolbar
+        viewMode={viewMode}
+        onViewModeChange={onViewModeChange}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        filters={filters}
+        setFilters={setFilters}
+        clearFilters={clearFilters}
+        exportLeads={exportLeads}
+      />
+      
+      <Tabs defaultValue={viewMode} className="mt-4">
+        <TabsContent value="table" hidden={viewMode !== 'table'}>
+          <LeadsTableView leads={filteredLeads} />
+        </TabsContent>
+        
+        <TabsContent value="kanban" hidden={viewMode !== 'kanban'}>
           <LeadsKanbanView 
-            stageGroups={stageGroups} 
+            stageGroups={stageGroups}
+            onEditLead={onEditLead}
             onStageChange={onStageChange}
-            onEditLead={handleEditLead}
-            onViewHistory={handleViewHistory}
-            onDeleteLead={handleDeleteLead}
+            onViewHistory={onViewHistory}
+            onDeleteLead={onDeleteLead}
+            onChangeStage={onChangeStage}
           />
-        )}
-      </CardContent>
-    </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 
