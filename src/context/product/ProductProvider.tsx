@@ -1,99 +1,61 @@
 
-import React, { createContext, useState, ReactNode, useEffect } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/context/auth';
-import { ProductType, ProductSubscription, ProductContextType } from './types';
-import { fetchUserProducts, createMockSubscription } from './productUtils';
+import React, { createContext, useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { ProductType, ProductContextType } from './types';
+import { determineProductFromPath } from './productUtils';
 
-// Create the context
-export const ProductContext = createContext<ProductContextType | undefined>(undefined);
+// Context creation
+export const ProductContext = createContext<ProductContextType | null>(null);
 
-export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+interface ProductProviderProps {
+  children: React.ReactNode;
+}
+
+export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) => {
   const [currentProduct, setCurrentProduct] = useState<ProductType | null>(null);
-  const [userSubscriptions, setUserSubscriptions] = useState<ProductSubscription[]>([]);
-  const [availableProducts, setAvailableProducts] = useState<ProductType[]>([]);
-  const { toast } = useToast();
-  const { userEmail, currentUser, isSuperAdmin } = useAuth();
+  const [availableProducts, setAvailableProducts] = useState<ProductType[]>([
+    'retention',
+    'recruitment'
+  ]);
   
-  // Simulated list of organizations for use in components
-  const organizations: any[] = [];
+  const location = useLocation();
   
-  // Load available products for the current user
+  // Update current product based on URL path
   useEffect(() => {
-    const loadUserProducts = async () => {
-      if (!currentUser?.id) return;
-      
-      try {
-        const { subscriptions, availableProducts } = await fetchUserProducts(
-          currentUser.id, 
-          Boolean(isSuperAdmin)
-        );
-        
-        setUserSubscriptions(subscriptions);
-        setAvailableProducts(availableProducts);
-      } catch (error) {
-        console.error('Error loading user products:', error);
-      }
-    };
-    
-    loadUserProducts();
-  }, [currentUser, isSuperAdmin]);
-  
-  const setProduct = (product: ProductType) => {
-    setCurrentProduct(product);
-  };
-  
-  const hasAccessToProduct = (productType: ProductType): boolean => {
-    // Super admins have access to everything
-    if (isSuperAdmin) return true;
-    
-    return userSubscriptions.some(sub => 
-      sub.productType === productType && (sub.status === 'active' || sub.status === 'trial')
-    );
-  };
-  
-  const subscribeToProduct = async (productType: ProductType) => {
-    try {
-      // Simulate an API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Update the user's subscriptions
-      const newSubscription = createMockSubscription(productType);
-      setUserSubscriptions(prev => [...prev, newSubscription]);
-      
-      // Show success toast
-      toast({
-        title: "Assinatura realizada com sucesso",
-        description: "Você já pode começar a usar o produto.",
-      });
-      
-      return true;
-    } catch (error) {
-      console.error('Erro ao assinar produto:', error);
-      
-      // Show error toast
-      toast({
-        title: "Erro ao realizar assinatura",
-        description: "Por favor, tente novamente mais tarde.",
-        variant: "destructive",
-      });
-      
-      return false;
+    const productFromPath = determineProductFromPath(location.pathname);
+    if (productFromPath && productFromPath !== currentProduct) {
+      setCurrentProduct(productFromPath);
     }
+  }, [location.pathname, currentProduct]);
+
+  // Mock subscription function - in a real app, this would call an API
+  const subscribeToProduct = async (product: ProductType): Promise<boolean> => {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Add to available products if not already there
+    if (!availableProducts.includes(product)) {
+      setAvailableProducts(prev => [...prev, product]);
+    }
+    
+    return true;
   };
   
-  const value: ProductContextType = {
-    currentProduct,
-    setCurrentProduct: setProduct,
-    userSubscriptions,
-    subscribeToProduct,
-    availableProducts,
-    hasAccessToProduct,
-    organizations
+  // Check if user has access to a product
+  const hasAccessToProduct = (product: ProductType): boolean => {
+    return availableProducts.includes(product);
   };
-
+  
+  const contextValue: ProductContextType = {
+    currentProduct,
+    setCurrentProduct,
+    availableProducts,
+    subscribeToProduct,
+    hasAccessToProduct
+  };
+  
   return (
-    <ProductContext.Provider value={value}>
+    <ProductContext.Provider value={contextValue}>
       {children}
     </ProductContext.Provider>
   );

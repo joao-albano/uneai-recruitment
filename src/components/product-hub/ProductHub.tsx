@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
-import { useProduct } from '@/context/ProductContext';
+import { useProduct } from '@/context/product';
 import ProductHeader from './ProductHeader';
 import ProductsGrid from './ProductsGrid';
 import AdminSection from './AdminSection';
@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 const ProductHub: React.FC = () => {
   const navigate = useNavigate();
   const { isAdmin, isSuperAdmin } = useAuth();
-  const { subscribeToProduct, hasAccessToProduct } = useProduct();
+  const { subscribeToProduct, setCurrentProduct } = useProduct();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -49,6 +49,9 @@ const ProductHub: React.FC = () => {
   };
   
   const navigateToProduct = (productType: string) => {
+    // Set the current product before redirecting
+    setCurrentProduct(productType as any);
+    
     // Redirect based on the product
     switch (productType) {
       case 'retention':

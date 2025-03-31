@@ -1,27 +1,30 @@
 
-import { ReactNode } from 'react';
-
-export type ProductType = 'retention' | 'sales' | 'scheduling' | 'recruitment' | 'secretary' | 'pedagogical' | 'billing';
+export type ProductType = 
+  | 'retention'
+  | 'recruitment'
+  | 'billing'
+  | 'secretary'
+  | 'emotional'
+  | 'sales'
+  | 'scheduling';
 
 export interface ProductSubscription {
-  id: string;
-  productType: ProductType;
-  startDate: Date;
-  status: 'active' | 'inactive' | 'pending' | 'trial';
+  productId: ProductType;
+  status: 'active' | 'pending' | 'expired';
+  expiresAt: Date | null;
 }
 
 export interface OrganizationProduct {
-  id: string;
-  productType: ProductType;
+  id: ProductType;
+  name: string;
+  description: string;
   isActive: boolean;
 }
 
 export interface ProductContextType {
   currentProduct: ProductType | null;
-  setCurrentProduct: (product: ProductType) => void;
-  userSubscriptions: ProductSubscription[];
-  subscribeToProduct: (productType: ProductType) => Promise<boolean>;
+  setCurrentProduct: (product: ProductType | null) => void;
   availableProducts: ProductType[];
-  hasAccessToProduct: (productType: ProductType) => boolean;
-  organizations: any[]; // For type satisfaction
+  subscribeToProduct: (product: ProductType) => Promise<boolean>;
+  hasAccessToProduct: (product: ProductType) => boolean;
 }

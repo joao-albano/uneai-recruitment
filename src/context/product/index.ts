@@ -1,5 +1,4 @@
 
-export * from './types';
-export * from './ProductProvider';
-export * from './useProduct';
-export * from './productUtils';
+export { ProductProvider } from './ProductProvider';
+export { useProduct } from './useProduct';
+export type { ProductType, ProductSubscription, OrganizationProduct } from './types';

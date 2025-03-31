@@ -27,7 +27,7 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
       />
       
       {/* Links específicos para o produto de retenção */}
-      {(!currentProduct || currentProduct === 'retention') && (
+      {(currentProduct === 'retention') && (
         <>
           <SidebarNavLink 
             to="/dashboard" 
@@ -39,6 +39,12 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
             to="/model" 
             icon={LineChart} 
             label="Modelo" 
+            collapsed={collapsed}
+          />
+          <SidebarNavLink 
+            to="/upload" 
+            icon={Upload} 
+            label="Uploads" 
             collapsed={collapsed}
           />
         </>
@@ -92,14 +98,72 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
         </>
       )}
       
-      {/* Links compartilhados por todos os produtos, mas apenas mostrados quando não estiver no produto de captação */}
-      {currentProduct !== 'recruitment' && (
-        <SidebarNavLink 
-          to="/upload" 
-          icon={Upload} 
-          label="Uploads" 
-          collapsed={collapsed}
-        />
+      {/* Links para outros produtos - adicione conforme necessário */}
+      {currentProduct === 'billing' && (
+        <>
+          <SidebarNavLink 
+            to="/billing" 
+            icon={BarChart2} 
+            label="Dashboard" 
+            collapsed={collapsed}
+          />
+          <SidebarNavLink 
+            to="/billing/invoices" 
+            icon={LineChart} 
+            label="Faturas" 
+            collapsed={collapsed}
+          />
+        </>
+      )}
+      
+      {currentProduct === 'secretary' && (
+        <>
+          <SidebarNavLink 
+            to="/secretary" 
+            icon={BarChart2} 
+            label="Dashboard" 
+            collapsed={collapsed}
+          />
+          <SidebarNavLink 
+            to="/secretary/documents" 
+            icon={LineChart} 
+            label="Documentos" 
+            collapsed={collapsed}
+          />
+        </>
+      )}
+      
+      {currentProduct === 'emotional' && (
+        <>
+          <SidebarNavLink 
+            to="/emotional" 
+            icon={BarChart2} 
+            label="Dashboard" 
+            collapsed={collapsed}
+          />
+        </>
+      )}
+      
+      {currentProduct === 'sales' && (
+        <>
+          <SidebarNavLink 
+            to="/sales" 
+            icon={BarChart2} 
+            label="Dashboard" 
+            collapsed={collapsed}
+          />
+        </>
+      )}
+      
+      {currentProduct === 'scheduling' && (
+        <>
+          <SidebarNavLink 
+            to="/schedule" 
+            icon={BarChart2} 
+            label="Dashboard" 
+            collapsed={collapsed}
+          />
+        </>
       )}
     </SidebarNavigationGroup>
   );
