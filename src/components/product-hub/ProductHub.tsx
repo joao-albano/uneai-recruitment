@@ -61,11 +61,14 @@ const ProductHub: React.FC = () => {
   
   if (loading) {
     return (
-      <div className="container mx-auto py-8">
-        <ProductHeader />
-        <div className="grid gap-8 md:grid-cols-3 sm:grid-cols-2 mt-8">
+      <div className="container max-w-screen-lg mx-auto py-12 px-4">
+        <div className="flex flex-col items-center mb-12">
+          <Skeleton className="h-8 w-64 mb-2" />
+          <Skeleton className="h-4 w-96" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Skeleton key={i} className="h-64 w-full rounded-lg" />
+            <Skeleton key={i} className="h-64 w-full rounded-xl" />
           ))}
         </div>
       </div>
@@ -73,7 +76,7 @@ const ProductHub: React.FC = () => {
   }
   
   return (
-    <div className="container mx-auto py-8">
+    <div className="container max-w-screen-lg mx-auto py-12 px-4">
       <ProductHeader />
       <ProductsGrid 
         products={products} 

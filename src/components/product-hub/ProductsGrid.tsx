@@ -4,7 +4,7 @@ import ProductCard from './ProductCard';
 import { ProductType } from '@/context/ProductContext';
 
 export interface ProductInfo {
-  id: string;  // Changed from ProductType to string to be more flexible
+  id: string;
   title: string;
   description: string;
   icon: React.ReactNode;
@@ -15,7 +15,7 @@ export interface ProductInfo {
 
 interface ProductsGridProps {
   products: ProductInfo[];
-  onNavigateToProduct: (productType: string) => void;  // Updated to match id type
+  onNavigateToProduct: (productType: string) => void;
   onSubscribeToProduct: (productType: string) => void;
 }
 
@@ -25,7 +25,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
   onSubscribeToProduct
 }) => {
   return (
-    <div className="grid gap-8 md:grid-cols-3 sm:grid-cols-2">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {products.map((product) => (
         <ProductCard
           key={product.id}

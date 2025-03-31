@@ -13,9 +13,11 @@ const ProductHubPage: React.FC = () => {
       setSidebarOpen={setSidebarOpen}
       sidebarCollapsed={sidebarCollapsed}
       setSidebarCollapsed={setSidebarCollapsed}
-      hideSidebar={true} // Ocultando a sidebar na página de hub
+      hideSidebar={true}
     >
-      <ProductHub />
+      <div className="min-h-screen bg-gray-50">
+        <ProductHub />
+      </div>
     </Layout>
   );
 };
