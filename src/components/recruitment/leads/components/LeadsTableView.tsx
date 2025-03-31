@@ -50,6 +50,22 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
     }
   };
 
+  // Função para tratar eventos com prevenção de propagação
+  const handleAction = (
+    e: React.MouseEvent, 
+    actionHandler?: (e: React.MouseEvent, leadId: number) => void, 
+    leadId?: number
+  ) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    if (actionHandler && leadId !== undefined) {
+      actionHandler(e, leadId);
+    }
+  };
+
   return (
     <div className="border rounded-md overflow-hidden">
       <Table>
@@ -87,16 +103,16 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                      <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
                       <DropdownMenuLabel>Ações</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       {onEditLead && (
                         <DropdownMenuItem 
-                          onClick={(e) => onEditLead(e, lead.id)}
+                          onClick={(e) => handleAction(e, onEditLead, lead.id)}
                           className="cursor-pointer"
                         >
                           Editar Lead
@@ -104,7 +120,7 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
                       )}
                       {onChangeStage && (
                         <DropdownMenuItem 
-                          onClick={(e) => onChangeStage(e, lead.id)}
+                          onClick={(e) => handleAction(e, onChangeStage, lead.id)}
                           className="cursor-pointer"
                         >
                           Alterar Etapa
@@ -112,7 +128,7 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
                       )}
                       {onViewHistory && (
                         <DropdownMenuItem 
-                          onClick={(e) => onViewHistory(e, lead.id)}
+                          onClick={(e) => handleAction(e, onViewHistory, lead.id)}
                           className="cursor-pointer"
                         >
                           Ver Histórico
@@ -122,7 +138,7 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
                       {onDeleteLead && (
                         <DropdownMenuItem 
                           className="text-destructive cursor-pointer"
-                          onClick={(e) => onDeleteLead(e, lead.id)}
+                          onClick={(e) => handleAction(e, onDeleteLead, lead.id)}
                         >
                           Excluir Lead
                         </DropdownMenuItem>

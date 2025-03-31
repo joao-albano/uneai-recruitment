@@ -1,35 +1,24 @@
+
 import React from 'react';
-import { Draggable } from '@hello-pangea/dnd';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { MoreHorizontal, User, Calendar, Briefcase } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+import { Card, CardContent } from '@/components/ui/card';
+import { 
+  DropdownMenu, 
+  DropdownMenuTrigger, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator 
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { getStatusColor } from './LeadCardUtils';
-
-interface Lead {
-  id: number;
-  name: string;
-  course: string;
-  children: number;
-  channel: string;
-  stage: string;
-  status: string;
-  createdAt: string;
-}
+import { Badge } from '@/components/ui/badge';
+import { Calendar, MessageSquare, MoreHorizontal } from 'lucide-react';
+import { Draggable } from '@hello-pangea/dnd';
 
 interface LeadCardProps {
-  lead: Lead;
+  lead: any;
   index: number;
   onEditLead?: (e: React.MouseEvent, leadId: number) => void;
-  onChangeStage: (leadId: number, stage: string) => void;
+  onChangeStage?: (e: React.MouseEvent, leadId: number) => void;
   onViewHistory?: (e: React.MouseEvent, leadId: number) => void;
   onDeleteLead?: (e: React.MouseEvent, leadId: number) => void;
 }
@@ -42,157 +31,116 @@ const LeadCard: React.FC<LeadCardProps> = ({
   onViewHistory,
   onDeleteLead
 }) => {
+  // Função para tratar eventos com prevenção de propagação
+  const handleAction = (
+    e: React.MouseEvent, 
+    actionHandler?: (e: React.MouseEvent, leadId: number) => void
+  ) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    if (actionHandler) {
+      actionHandler(e, lead.id);
+    }
+  };
+
   return (
-    <Draggable
-      key={`lead-${lead.id}`}
-      draggableId={`lead-${lead.id}`}
-      index={index}
-    >
-      {(provided, snapshot) => (
-        <Card
+    <Draggable draggableId={`lead-${lead.id}`} index={index}>
+      {(provided) => (
+        <div
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`${
-            snapshot.isDragging ? 'shadow-lg' : ''
-          } cursor-grab active:cursor-grabbing`}
+          className="mb-2"
         >
-          <CardHeader className="p-3 pb-0 flex flex-row items-start justify-between">
-            <div>
-              <CardTitle className="text-sm font-medium">
-                {lead.name}
-              </CardTitle>
-              <div className="text-xs text-muted-foreground mt-1">
-                {lead.course}
+          <Card className="shadow-sm hover:shadow-md transition-shadow">
+            <CardContent className="p-3">
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="font-medium text-sm line-clamp-1" title={lead.name}>
+                  {lead.name}
+                </h3>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => e.stopPropagation()}>
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                    <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {onEditLead && (
+                      <DropdownMenuItem 
+                        onClick={(e) => handleAction(e, onEditLead)}
+                        className="cursor-pointer"
+                      >
+                        Editar Lead
+                      </DropdownMenuItem>
+                    )}
+                    {onChangeStage && (
+                      <DropdownMenuItem 
+                        onClick={(e) => handleAction(e, onChangeStage)}
+                        className="cursor-pointer"
+                      >
+                        Alterar Etapa
+                      </DropdownMenuItem>
+                    )}
+                    {onViewHistory && (
+                      <DropdownMenuItem 
+                        onClick={(e) => handleAction(e, onViewHistory)}
+                        className="cursor-pointer"
+                      >
+                        Ver Histórico
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    {onDeleteLead && (
+                      <DropdownMenuItem 
+                        className="text-destructive cursor-pointer"
+                        onClick={(e) => handleAction(e, onDeleteLead)}
+                      >
+                        Excluir Lead
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
-            </div>
-            <LeadCardActions
-              leadId={lead.id}
-              stage={lead.stage}
-              onEditLead={onEditLead}
-              onChangeStage={onChangeStage}
-              onViewHistory={onViewHistory}
-              onDeleteLead={onDeleteLead}
-            />
-          </CardHeader>
-          <CardContent className="p-3 pt-2">
-            <LeadCardDetails lead={lead} />
-          </CardContent>
-        </Card>
+
+              <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-xs text-muted-foreground mb-2">
+                <div className="flex items-center gap-1" title={lead.course}>
+                  <MessageSquare className="h-3 w-3" />
+                  <span className="truncate">{lead.course}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-3 w-3" />
+                  <span>{lead.createdAt}</span>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <Badge variant="outline" className="text-xs">
+                  {lead.channel}
+                </Badge>
+                <Badge 
+                  className={`text-xs ${
+                    lead.status === 'Novo' 
+                      ? 'bg-blue-100 text-blue-800' 
+                      : lead.status === 'Em Andamento' 
+                      ? 'bg-amber-100 text-amber-800' 
+                      : lead.status === 'Aguardando' 
+                      ? 'bg-purple-100 text-purple-800' 
+                      : 'bg-green-100 text-green-800'
+                  }`}
+                >
+                  {lead.status}
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
     </Draggable>
-  );
-};
-
-interface LeadCardActionsProps {
-  leadId: number;
-  stage: string;
-  onEditLead?: (e: React.MouseEvent, leadId: number) => void;
-  onChangeStage: (leadId: number, stage: string) => void;
-  onViewHistory?: (e: React.MouseEvent, leadId: number) => void;
-  onDeleteLead?: (e: React.MouseEvent, leadId: number) => void;
-}
-
-const LeadCardActions: React.FC<LeadCardActionsProps> = ({
-  leadId,
-  stage,
-  onEditLead,
-  onChangeStage,
-  onViewHistory,
-  onDeleteLead
-}) => {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="-mt-1 h-8 w-8">
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Ações</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {onEditLead && (
-          <DropdownMenuItem 
-            onClick={(e) => {
-              e.stopPropagation();
-              onEditLead(e, leadId);
-            }}
-            className="cursor-pointer"
-          >
-            Editar Lead
-          </DropdownMenuItem>
-        )}
-        <DropdownMenuItem 
-          onClick={(e) => {
-            e.stopPropagation();
-            // For direct call via the dropdown menu, we need to call the function using stage
-            onChangeStage(leadId, stage);
-          }}
-          className="cursor-pointer"
-        >
-          Alterar Etapa
-        </DropdownMenuItem>
-        {onViewHistory && (
-          <DropdownMenuItem 
-            onClick={(e) => {
-              e.stopPropagation();
-              onViewHistory(e, leadId);
-            }}
-            className="cursor-pointer"
-          >
-            Ver Histórico
-          </DropdownMenuItem>
-        )}
-        <DropdownMenuSeparator />
-        {onDeleteLead && (
-          <DropdownMenuItem 
-            className="text-destructive cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDeleteLead(e, leadId);
-            }}
-          >
-            Excluir Lead
-          </DropdownMenuItem>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-};
-
-interface LeadCardDetailsProps {
-  lead: Lead;
-}
-
-const LeadCardDetails: React.FC<LeadCardDetailsProps> = ({ lead }) => {
-  return (
-    <>
-      <div className="grid gap-2 text-xs">
-        <div className="flex items-center">
-          <Calendar className="h-3 w-3 mr-1" />
-          <span className="text-muted-foreground">
-            Cadastrado em: {lead.createdAt}
-          </span>
-        </div>
-        <div className="flex items-center">
-          <User className="h-3 w-3 mr-1" />
-          <span className="text-muted-foreground">
-            Filhos: {lead.children}
-          </span>
-        </div>
-        <div className="flex items-center">
-          <Briefcase className="h-3 w-3 mr-1" />
-          <span className="text-muted-foreground">
-            Canal: {lead.channel}
-          </span>
-        </div>
-      </div>
-      <div className="mt-2 flex items-center justify-between">
-        <Badge className={getStatusColor(lead.status)}>
-          {lead.status}
-        </Badge>
-      </div>
-    </>
   );
 };
 

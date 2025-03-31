@@ -30,7 +30,10 @@ export const useLeadActions = (
 
   // Handle edit lead action (event-based)
   const handleEditLead = (e: React.MouseEvent, leadId: number) => {
-    if (e) e.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
@@ -41,7 +44,10 @@ export const useLeadActions = (
   
   // Opens the change stage dialog (event-based)
   const handleChangeStage = (e: React.MouseEvent, leadId: number) => {
-    if (e) e.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
@@ -60,7 +66,10 @@ export const useLeadActions = (
   };
   
   const handleViewHistory = (e: React.MouseEvent, leadId: number) => {
-    if (e) e.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
@@ -70,7 +79,10 @@ export const useLeadActions = (
   };
   
   const handleDeleteLead = (e: React.MouseEvent, leadId: number) => {
-    if (e) e.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
