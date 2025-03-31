@@ -27,6 +27,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const comingSoon = !isActive;
   
+  // Split the iconColor string to extract bg and text colors
+  const iconColorClasses = iconColor.split(' ');
+  const bgColorClass = iconColorClasses[0] || 'bg-gray-100';
+  const textColorClass = iconColorClasses[1] || 'text-gray-700';
+  
   return (
     <div className={cn(
       "bg-white rounded-xl border p-6 flex flex-col h-full transition-all duration-300",
@@ -35,9 +40,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <div className="flex items-start justify-between mb-5">
         <div className={cn(
           "w-12 h-12 rounded-full flex items-center justify-center",
-          iconColor
+          bgColorClass
         )}>
-          {icon}
+          <div className={textColorClass}>
+            {icon}
+          </div>
         </div>
         <Badge 
           variant={isActive ? "default" : "outline"} 

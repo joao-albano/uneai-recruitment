@@ -42,20 +42,32 @@ const ProductHub: React.FC = () => {
   
   const navigateToProduct = (productType: string) => {
     // Redirect based on the product
-    if (productType === 'retention') {
-      navigate('/dashboard');
-    } else if (productType === 'billing') {
-      navigate('/billing');
-    } else if (productType === 'sales') {
-      navigate('/sales');
-    } else if (productType === 'recruitment') {
-      navigate('/recruitment');
-    } else if (productType === 'scheduling') {
-      navigate('/schedule');
-    } else if (productType === 'secretary') {
-      navigate('/secretary');
-    } else if (productType === 'pedagogical') {
-      navigate('/pedagogical');
+    switch (productType) {
+      case 'retention':
+        navigate('/dashboard');
+        break;
+      case 'billing':
+        navigate('/billing');
+        break;
+      case 'sales':
+        navigate('/sales');
+        break;
+      case 'recruitment':
+        navigate('/recruitment');
+        break;
+      case 'scheduling':
+        navigate('/schedule');
+        break;
+      case 'secretary':
+        navigate('/secretary');
+        break;
+      case 'emotional':
+        navigate('/emotional');
+        break;
+      default:
+        // Default fallback route if product type doesn't match
+        navigate('/dashboard');
+        break;
     }
   };
   
@@ -67,7 +79,7 @@ const ProductHub: React.FC = () => {
           <Skeleton className="h-4 w-96" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
+          {[1, 2, 3, 4, 5, 6, 7].map((i) => (
             <Skeleton key={i} className="h-64 w-full rounded-xl" />
           ))}
         </div>
