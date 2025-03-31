@@ -116,19 +116,28 @@ export const getLeadColumns = ({
           <DropdownMenuLabel>Ações</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem 
-            onClick={() => onEditLead(row.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onEditLead(row.id);
+            }}
             className="cursor-pointer"
           >
             Editar Lead
           </DropdownMenuItem>
           <DropdownMenuItem 
-            onClick={() => onChangeStage(row.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onChangeStage(row.id);
+            }}
             className="cursor-pointer"
           >
             Alterar Etapa
           </DropdownMenuItem>
           <DropdownMenuItem 
-            onClick={() => onViewHistory(row.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onViewHistory(row.id);
+            }}
             className="cursor-pointer"
           >
             Ver Histórico
@@ -136,7 +145,10 @@ export const getLeadColumns = ({
           <DropdownMenuSeparator />
           <DropdownMenuItem 
             className="text-destructive cursor-pointer"
-            onClick={() => onDeleteLead(row.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDeleteLead(row.id);
+            }}
           >
             Excluir Lead
           </DropdownMenuItem>

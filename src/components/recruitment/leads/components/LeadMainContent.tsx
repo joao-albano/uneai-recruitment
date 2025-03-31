@@ -21,7 +21,7 @@ interface LeadMainContentProps {
   onChangeStage: (leadId: number) => void;
   onViewHistory: (leadId: number) => void;
   onDeleteLead: (leadId: number) => void;
-  onStageChange: (leadId: number, newStage: string, notes: string) => void;
+  onStageChange: (leadId: number, newStage: string, notes?: string) => void;
 }
 
 const LeadMainContent: React.FC<LeadMainContentProps> = ({
@@ -72,7 +72,10 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
         ) : (
           <LeadsKanbanView 
             stageGroups={stageGroups} 
-            onStageChange={onStageChange} 
+            onStageChange={onStageChange}
+            onEditLead={onEditLead}
+            onViewHistory={onViewHistory}
+            onDeleteLead={onDeleteLead}
           />
         )}
       </CardContent>

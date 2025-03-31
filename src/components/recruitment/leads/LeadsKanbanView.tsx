@@ -31,17 +31,23 @@ interface StageGroups {
 interface LeadsKanbanViewProps {
   stageGroups: StageGroups;
   onStageChange: (leadId: number, newStage: string, notes?: string) => void;
+  onEditLead?: (leadId: number) => void;
+  onViewHistory?: (leadId: number) => void;
+  onDeleteLead?: (leadId: number) => void;
 }
 
-const LeadsKanbanView: React.FC<LeadsKanbanViewProps> = ({ stageGroups, onStageChange }) => {
-  // Função para lidar com o fim da operação de arrastar/soltar
+const LeadsKanbanView: React.FC<LeadsKanbanViewProps> = ({ 
+  stageGroups, 
+  onStageChange,
+  onEditLead,
+  onViewHistory,
+  onDeleteLead 
+}) => {
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
 
-    // Verifica se o usuário soltou o item fora de uma área de destino válida
     if (!destination) return;
 
-    // Se soltou no mesmo lugar, não faz nada
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
@@ -49,14 +55,12 @@ const LeadsKanbanView: React.FC<LeadsKanbanViewProps> = ({ stageGroups, onStageC
       return;
     }
 
-    // Se mudou de coluna, chama o callback para atualizar o estágio
     if (destination.droppableId !== source.droppableId) {
       const leadId = parseInt(draggableId.replace('lead-', ''));
       onStageChange(leadId, destination.droppableId);
     }
   };
 
-  // Obter as cores para os diferentes status
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Novo':
@@ -126,13 +130,49 @@ const LeadsKanbanView: React.FC<LeadsKanbanViewProps> = ({ stageGroups, onStageC
                               <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Ações</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem>Editar Lead</DropdownMenuItem>
-                                <DropdownMenuItem>Alterar Etapa</DropdownMenuItem>
-                                <DropdownMenuItem>Ver Histórico</DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem className="text-destructive">
-                                  Excluir Lead
+                                {onEditLead && (
+                                  <DropdownMenuItem 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onEditLead(lead.id);
+                                    }}
+                                    className="cursor-pointer"
+                                  >
+                                    Editar Lead
+                                  </DropdownMenuItem>
+                                )}
+                                <DropdownMenuItem 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onStageChange(lead.id, lead.stage);
+                                  }}
+                                  className="cursor-pointer"
+                                >
+                                  Alterar Etapa
                                 </DropdownMenuItem>
+                                {onViewHistory && (
+                                  <DropdownMenuItem 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onViewHistory(lead.id);
+                                    }}
+                                    className="cursor-pointer"
+                                  >
+                                    Ver Histórico
+                                  </DropdownMenuItem>
+                                )}
+                                <DropdownMenuSeparator />
+                                {onDeleteLead && (
+                                  <DropdownMenuItem 
+                                    className="text-destructive cursor-pointer"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onDeleteLead(lead.id);
+                                    }}
+                                  >
+                                    Excluir Lead
+                                  </DropdownMenuItem>
+                                )}
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </CardHeader>
