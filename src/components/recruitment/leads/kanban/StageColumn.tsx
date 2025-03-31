@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Droppable, Draggable } from '@hello-pangea/dnd';
+import { Droppable } from '@hello-pangea/dnd';
 import { Badge } from '@/components/ui/badge';
 import LeadCard from './LeadCard';
 
@@ -52,24 +52,16 @@ const StageColumn: React.FC<StageColumnProps> = ({
           </div>
 
           <div className="space-y-3">
-            {leads && leads.map((lead, index) => (
-              <Draggable
+            {leads.map((lead, index) => (
+              <LeadCard
                 key={`lead-${lead.id}`}
-                draggableId={`lead-${lead.id}`}
+                lead={lead}
                 index={index}
-              >
-                {(provided, snapshot) => (
-                  <LeadCard
-                    lead={lead}
-                    provided={provided}
-                    snapshot={snapshot}
-                    onEditLead={onEditLead}
-                    onChangeStage={onChangeStage}
-                    onViewHistory={onViewHistory}
-                    onDeleteLead={onDeleteLead}
-                  />
-                )}
-              </Draggable>
+                onEditLead={onEditLead}
+                onChangeStage={onChangeStage}
+                onViewHistory={onViewHistory}
+                onDeleteLead={onDeleteLead}
+              />
             ))}
           </div>
           {provided.placeholder}

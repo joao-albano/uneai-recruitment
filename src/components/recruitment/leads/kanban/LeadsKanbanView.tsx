@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { DragDropContext } from '@hello-pangea/dnd';
+import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import StageColumn from './StageColumn';
 import { handleDragEnd } from './KanbanUtils';
 
@@ -35,14 +35,15 @@ const LeadsKanbanView: React.FC<LeadsKanbanViewProps> = ({
   onDeleteLead 
 }) => {
   const handleChangeStage = (leadId: number, stage: string) => {
-    // Esta função é usada para abrir o diálogo de alteração de etapa
     onStageChange(leadId, stage);
   };
-
-  console.log("LeadsKanbanView - stageGroups:", stageGroups);
+  
+  const handleOnDragEnd = (result: DropResult) => {
+    handleDragEnd(result, onStageChange);
+  };
 
   return (
-    <DragDropContext onDragEnd={(result) => handleDragEnd(result, onStageChange)}>
+    <DragDropContext onDragEnd={handleOnDragEnd}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pb-6 overflow-x-auto">
         {Object.entries(stageGroups).map(([stageName, leads]) => (
           <StageColumn 
