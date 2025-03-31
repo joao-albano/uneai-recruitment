@@ -79,6 +79,15 @@ const StudentsDetailsDialog: React.FC<StudentsDetailsDialogProps> = ({
       grade: parseInt(value, 10) 
     } : null);
   };
+  
+  const handleNumberInputChange = (field: string, value: number) => {
+    if (!editableStudent) return;
+    
+    setEditableStudent(prev => prev ? {
+      ...prev,
+      [field]: value
+    } : null);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -108,6 +117,7 @@ const StudentsDetailsDialog: React.FC<StudentsDetailsDialogProps> = ({
               onInputChange={handleInputChange}
               onSelectChange={handleSelectChange}
               onGradeChange={handleGradeChange}
+              onNumberInputChange={handleNumberInputChange}
             />
             <div className="flex justify-end gap-2 mt-4">
               <Button variant="outline" onClick={handleCancel}>Cancelar</Button>

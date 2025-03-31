@@ -12,7 +12,9 @@ export const useStudentForm = (onCreateSuccess: (student: Student) => void) => {
     grade: 6,
     attendance: 100,
     behavior: 100,
-    riskLevel: 'low'
+    riskLevel: 'low',
+    parentName: '',
+    parentContact: ''
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,6 +37,13 @@ export const useStudentForm = (onCreateSuccess: (student: Student) => void) => {
       grade: parseInt(value)
     }));
   };
+  
+  const handleNumberInputChange = (field: string, value: number) => {
+    setNewStudent(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +59,8 @@ export const useStudentForm = (onCreateSuccess: (student: Student) => void) => {
       attendance: newStudent.attendance || 100,
       behavior: newStudent.behavior || 100,
       riskLevel: newStudent.riskLevel as 'low' | 'medium' | 'high',
+      parentName: newStudent.parentName,
+      parentContact: newStudent.parentContact
     };
     
     onCreateSuccess(student);
@@ -63,7 +74,9 @@ export const useStudentForm = (onCreateSuccess: (student: Student) => void) => {
       grade: 6,
       attendance: 100,
       behavior: 100,
-      riskLevel: 'low'
+      riskLevel: 'low',
+      parentName: '',
+      parentContact: ''
     });
   };
 
@@ -72,6 +85,7 @@ export const useStudentForm = (onCreateSuccess: (student: Student) => void) => {
     handleInputChange,
     handleSelectChange,
     handleGradeChange,
+    handleNumberInputChange,
     handleSubmit
   };
 };

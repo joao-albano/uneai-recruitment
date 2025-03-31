@@ -22,6 +22,7 @@ const CreateStudentDialog: React.FC<CreateStudentDialogProps> = ({
     handleInputChange,
     handleSelectChange,
     handleGradeChange,
+    handleNumberInputChange,
     handleSubmit
   } = useStudentForm(onCreate);
 
@@ -46,6 +47,7 @@ const CreateStudentDialog: React.FC<CreateStudentDialogProps> = ({
             onInputChange={handleInputChange}
             onSelectChange={handleSelectChange}
             onGradeChange={handleGradeChange}
+            onNumberInputChange={handleNumberInputChange}
           />
           
           <DialogFooter>

@@ -10,13 +10,15 @@ interface StudentDialogFormProps {
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSelectChange: (field: string, value: string) => void;
   onGradeChange: (value: string) => void;
+  onNumberInputChange: (field: string, value: number) => void;
 }
 
 const StudentDialogForm: React.FC<StudentDialogFormProps> = ({
   student,
   onInputChange,
   onSelectChange,
-  onGradeChange
+  onGradeChange,
+  onNumberInputChange
 }) => {
   return (
     <div className="grid gap-4 py-4">
@@ -113,6 +115,55 @@ const StudentDialogForm: React.FC<StudentDialogFormProps> = ({
             )}
           </SelectContent>
         </Select>
+      </div>
+      
+      <div className="grid gap-2">
+        <Label htmlFor="attendance">Frequência (%)</Label>
+        <Input
+          id="attendance"
+          name="attendance"
+          type="number"
+          min="0"
+          max="100"
+          value={student.attendance || 100}
+          onChange={(e) => onNumberInputChange('attendance', Number(e.target.value))}
+          required
+        />
+      </div>
+      
+      <div className="grid gap-2">
+        <Label htmlFor="behavior">Comportamento (0-100)</Label>
+        <Input
+          id="behavior"
+          name="behavior"
+          type="number"
+          min="0"
+          max="100"
+          value={student.behavior || 100}
+          onChange={(e) => onNumberInputChange('behavior', Number(e.target.value))}
+          required
+        />
+      </div>
+      
+      <div className="grid gap-2">
+        <Label htmlFor="parentName">Nome do Responsável</Label>
+        <Input
+          id="parentName"
+          name="parentName"
+          value={student.parentName || ''}
+          onChange={onInputChange}
+        />
+      </div>
+      
+      <div className="grid gap-2">
+        <Label htmlFor="parentContact">Contato do Responsável</Label>
+        <Input
+          id="parentContact"
+          name="parentContact"
+          placeholder="(99) 99999-9999"
+          value={student.parentContact || ''}
+          onChange={onInputChange}
+        />
       </div>
     </div>
   );
