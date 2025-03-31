@@ -58,7 +58,13 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
       
       <Tabs value={viewMode} className="mt-4">
         <TabsContent value="table" hidden={viewMode !== 'table'}>
-          <LeadsTableView leads={filteredLeads} />
+          <LeadsTableView 
+            leads={filteredLeads} 
+            onEditLead={onEditLead}
+            onChangeStage={onChangeStage}
+            onViewHistory={onViewHistory}
+            onDeleteLead={onDeleteLead}
+          />
         </TabsContent>
         
         <TabsContent value="kanban" hidden={viewMode !== 'kanban'}>

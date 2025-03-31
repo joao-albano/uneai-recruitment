@@ -60,8 +60,8 @@ const StageColumn: React.FC<StageColumnProps> = ({
                 lead={lead}
                 index={index}
                 onEditLead={onEditLead}
-                onChangeStage={(leadId, stage) => {
-                  // Create a synthetic event or call the function directly
+                onChangeStage={(leadId) => {
+                  // When called from the card dropdown, call openChangeStageDialog
                   if (openChangeStageDialog) {
                     openChangeStageDialog(leadId);
                   }

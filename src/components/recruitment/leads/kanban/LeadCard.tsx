@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -126,6 +125,7 @@ const LeadCardActions: React.FC<LeadCardActionsProps> = ({
         <DropdownMenuItem 
           onClick={(e) => {
             e.stopPropagation();
+            // For direct call via the dropdown menu, we need to call the function using stage
             onChangeStage(leadId, stage);
           }}
           className="cursor-pointer"

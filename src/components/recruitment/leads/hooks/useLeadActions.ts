@@ -104,7 +104,10 @@ export const useLeadActions = (
     });
     
     setLeadsData(updatedLeads);
-    console.log(`Lead ${leadId} movido para etapa: ${newStage}. Notas: ${notes}`);
+    toast({
+      title: "Etapa atualizada",
+      description: `Lead movido para etapa: ${newStage}`
+    });
   };
   
   // Confirm lead deletion

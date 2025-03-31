@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +18,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
 import {
   Popover,
@@ -107,6 +105,12 @@ const LeadsToolbar: React.FC<LeadsToolbarProps> = ({
           <DropdownMenuContent className="w-56">
             <DropdownMenuLabel>Filtros Rápidos</DropdownMenuLabel>
             <DropdownMenuSeparator />
+            
+            {activeFilterCount === 0 && (
+              <DropdownMenuItem disabled className="text-muted-foreground">
+                Nenhum filtro ativo
+              </DropdownMenuItem>
+            )}
             
             {activeFilterCount > 0 && (
               <DropdownMenuItem onClick={clearFilters} className="justify-between text-destructive">
