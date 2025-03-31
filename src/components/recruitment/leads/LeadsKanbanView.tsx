@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -52,7 +53,7 @@ const LeadsKanbanView: React.FC<LeadsKanbanViewProps> = ({ stageGroups, onStageC
     // Se mudou de coluna, chama o callback para atualizar o estágio
     if (destination.droppableId !== source.droppableId) {
       const leadId = parseInt(draggableId.replace('lead-', ''));
-      onStageChange(leadId, destination.droppableId, '');
+      onStageChange(leadId, destination.droppableId);
     }
   };
 

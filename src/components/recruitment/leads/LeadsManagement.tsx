@@ -48,17 +48,17 @@ const LeadsManagement: React.FC = () => {
   
   // Estado para armazenar os leads e seus agrupamentos por etapa
   const [leadsData, setLeadsData] = useState(mockLeadsData);
-  const [stageGroups, setStageGroups] = useState(getLeadsByStage(mockLeadsData));
+  const [stageGroups, setStageGroups] = useState(getLeadsByStage(leadsData));
   const [filteredLeads, setFilteredLeads] = useState(leadsData);
   
   const { toast } = useToast();
   
   // Configuração das colunas da tabela com handlers para ações
   const columns = getLeadColumns({
-    onEditLead: (leadId) => handleEditLead(leadId),
-    onChangeStage: (leadId) => handleChangeStage(leadId),
-    onViewHistory: (leadId) => handleViewHistory(leadId),
-    onDeleteLead: (leadId) => handleDeleteLead(leadId)
+    onEditLead: handleEditLead,
+    onChangeStage: handleChangeStage,
+    onViewHistory: handleViewHistory,
+    onDeleteLead: handleDeleteLead
   });
   
   // Contagem de leads por status para as abas
@@ -154,37 +154,37 @@ const LeadsManagement: React.FC = () => {
   }, [leadsData, searchTerm, activeFilter, filters]);
   
   // Manipuladores para ações de leads
-  const handleEditLead = (leadId: number) => {
+  function handleEditLead(leadId: number) {
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
       setSelectedLead(lead);
       setEditDialogOpen(true);
     }
-  };
+  }
   
-  const handleChangeStage = (leadId: number) => {
+  function handleChangeStage(leadId: number) {
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
       setSelectedLead(lead);
       setStageDialogOpen(true);
     }
-  };
+  }
   
-  const handleViewHistory = (leadId: number) => {
+  function handleViewHistory(leadId: number) {
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
       setSelectedLead(lead);
       setHistoryDialogOpen(true);
     }
-  };
+  }
   
-  const handleDeleteLead = (leadId: number) => {
+  function handleDeleteLead(leadId: number) {
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
       setSelectedLead(lead);
       setDeleteDialogOpen(true);
     }
-  };
+  }
   
   // Salvar alterações em um lead
   const handleSaveLead = (updatedLead: any) => {
