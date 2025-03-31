@@ -60,8 +60,12 @@ const StageColumn: React.FC<StageColumnProps> = ({
                 lead={lead}
                 index={index}
                 onEditLead={onEditLead}
-                onChangeStage={onChangeStage}
-                openChangeStageDialog={openChangeStageDialog}
+                onChangeStage={(leadId, stage) => {
+                  // Create a synthetic event or call the function directly
+                  if (openChangeStageDialog) {
+                    openChangeStageDialog(leadId);
+                  }
+                }}
                 onViewHistory={onViewHistory}
                 onDeleteLead={onDeleteLead}
               />
