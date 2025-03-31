@@ -28,7 +28,7 @@ export const useLeadActions = (
 ) => {
   const { toast } = useToast();
 
-  // Handle edit lead action (event-based)
+  // Ensure these methods always stop propagation
   const handleEditLead = (e: React.MouseEvent, leadId: number) => {
     if (e) {
       e.preventDefault();
@@ -42,7 +42,6 @@ export const useLeadActions = (
     }
   };
   
-  // Opens the change stage dialog (event-based)
   const handleChangeStage = (e: React.MouseEvent, leadId: number) => {
     if (e) {
       e.preventDefault();

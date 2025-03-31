@@ -61,7 +61,10 @@ const StageColumn: React.FC<StageColumnProps> = ({
                 index={index}
                 onEditLead={onEditLead}
                 onChangeStage={(e) => {
-                  // Fixed: Pass the event and the leadId to onChangeStage
+                  if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }
                   onChangeStage(e, lead.id);
                 }}
                 onViewHistory={onViewHistory}

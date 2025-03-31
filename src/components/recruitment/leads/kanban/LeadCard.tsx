@@ -1,26 +1,42 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Draggable } from '@hello-pangea/dnd';
 import { 
-  DropdownMenu, 
-  DropdownMenuTrigger, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator 
+  Card, 
+  CardContent, 
+  CardFooter,
+  CardHeader,
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Calendar, MessageSquare, MoreHorizontal } from 'lucide-react';
-import { Draggable } from '@hello-pangea/dnd';
+import { MoreHorizontal } from 'lucide-react';
+
+interface Lead {
+  id: number;
+  name: string;
+  course: string;
+  children: number;
+  channel: string;
+  stage: string;
+  status: string;
+  createdAt: string;
+}
 
 interface LeadCardProps {
-  lead: any;
+  lead: Lead;
   index: number;
-  onEditLead?: (e: React.MouseEvent, leadId: number) => void;
-  onChangeStage?: (e: React.MouseEvent, leadId: number) => void;
-  onViewHistory?: (e: React.MouseEvent, leadId: number) => void;
-  onDeleteLead?: (e: React.MouseEvent, leadId: number) => void;
+  onEditLead: (e: React.MouseEvent, leadId: number) => void;
+  onChangeStage: (e: React.MouseEvent, leadId: number) => void;
+  onViewHistory: (e: React.MouseEvent, leadId: number) => void;
+  onDeleteLead: (e: React.MouseEvent, leadId: number) => void;
 }
 
 const LeadCard: React.FC<LeadCardProps> = ({ 
@@ -34,111 +50,103 @@ const LeadCard: React.FC<LeadCardProps> = ({
   // Função para tratar eventos com prevenção de propagação
   const handleAction = (
     e: React.MouseEvent, 
-    actionHandler?: (e: React.MouseEvent, leadId: number) => void
+    actionHandler: (e: React.MouseEvent, leadId: number) => void
   ) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
     }
     
-    if (actionHandler) {
-      actionHandler(e, lead.id);
-    }
+    actionHandler(e, lead.id);
   };
 
   return (
     <Draggable draggableId={`lead-${lead.id}`} index={index}>
-      {(provided) => (
-        <div
+      {(provided, snapshot) => (
+        <Card
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className="mb-2"
+          className={`${
+            snapshot.isDragging ? 'bg-accent/50 shadow-lg' : ''
+          } transition-shadow hover:shadow-md`}
         >
-          <Card className="shadow-sm hover:shadow-md transition-shadow">
-            <CardContent className="p-3">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="font-medium text-sm line-clamp-1" title={lead.name}>
-                  {lead.name}
-                </h3>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => e.stopPropagation()}>
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                    <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {onEditLead && (
-                      <DropdownMenuItem 
-                        onClick={(e) => handleAction(e, onEditLead)}
-                        className="cursor-pointer"
-                      >
-                        Editar Lead
-                      </DropdownMenuItem>
-                    )}
-                    {onChangeStage && (
-                      <DropdownMenuItem 
-                        onClick={(e) => handleAction(e, onChangeStage)}
-                        className="cursor-pointer"
-                      >
-                        Alterar Etapa
-                      </DropdownMenuItem>
-                    )}
-                    {onViewHistory && (
-                      <DropdownMenuItem 
-                        onClick={(e) => handleAction(e, onViewHistory)}
-                        className="cursor-pointer"
-                      >
-                        Ver Histórico
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuSeparator />
-                    {onDeleteLead && (
-                      <DropdownMenuItem 
-                        className="text-destructive cursor-pointer"
-                        onClick={(e) => handleAction(e, onDeleteLead)}
-                      >
-                        Excluir Lead
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+          <CardHeader className="px-3 py-2 pb-0">
+            <div className="flex justify-between items-start">
+              <div className="font-medium line-clamp-1">{lead.name}</div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                  <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="cursor-pointer"
+                    onClick={(e) => handleAction(e, onEditLead)}
+                  >
+                    Editar Lead
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="cursor-pointer"
+                    onClick={(e) => handleAction(e, onChangeStage)}
+                  >
+                    Alterar Etapa
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="cursor-pointer"
+                    onClick={(e) => handleAction(e, onViewHistory)}
+                  >
+                    Ver Histórico
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="text-destructive cursor-pointer"
+                    onClick={(e) => handleAction(e, onDeleteLead)}
+                  >
+                    Excluir Lead
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </CardHeader>
+          <CardContent className="px-3 py-2">
+            <div className="text-xs text-muted-foreground">
+              <div className="flex justify-between">
+                <span>Curso:</span>
+                <span className="font-medium">{lead.course}</span>
               </div>
-
-              <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-xs text-muted-foreground mb-2">
-                <div className="flex items-center gap-1" title={lead.course}>
-                  <MessageSquare className="h-3 w-3" />
-                  <span className="truncate">{lead.course}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  <span>{lead.createdAt}</span>
-                </div>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <Badge variant="outline" className="text-xs">
+              <div className="flex justify-between mt-1">
+                <span>Canal:</span>
+                <Badge variant="outline" className="text-xs h-5 px-1.5">
                   {lead.channel}
                 </Badge>
-                <Badge 
-                  className={`text-xs ${
-                    lead.status === 'Novo' 
-                      ? 'bg-blue-100 text-blue-800' 
-                      : lead.status === 'Em Andamento' 
-                      ? 'bg-amber-100 text-amber-800' 
-                      : lead.status === 'Aguardando' 
-                      ? 'bg-purple-100 text-purple-800' 
-                      : 'bg-green-100 text-green-800'
-                  }`}
-                >
-                  {lead.status}
-                </Badge>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+          <CardFooter className="px-3 py-2 pt-0 flex justify-between">
+            <Badge 
+              className={`
+                ${lead.status === 'Novo' ? 'bg-blue-100 text-blue-800' : 
+                lead.status === 'Em Andamento' ? 'bg-amber-100 text-amber-800' : 
+                lead.status === 'Aguardando' ? 'bg-purple-100 text-purple-800' : 
+                'bg-green-100 text-green-800'}
+              `}
+            >
+              {lead.status}
+            </Badge>
+            <div className="text-xs text-muted-foreground">
+              {lead.createdAt}
+            </div>
+          </CardFooter>
+        </Card>
       )}
     </Draggable>
   );

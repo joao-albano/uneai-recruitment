@@ -32,6 +32,8 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+    
     onSave(lead.id, stage, notes);
     toast({
       title: "Etapa atualizada",
@@ -42,12 +44,12 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px]" onClick={(e) => e.stopPropagation()}>
         <DialogHeader>
           <DialogTitle>Alterar Etapa</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 py-4">
+        <form onSubmit={handleSubmit} className="space-y-4 py-4" onClick={(e) => e.stopPropagation()}>
           <div className="space-y-2">
             <div className="flex items-center gap-2 mb-4">
               <span className="font-medium">Lead:</span>
@@ -63,7 +65,7 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
               <SelectTrigger>
                 <SelectValue placeholder="Selecione uma etapa" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent onClick={(e) => e.stopPropagation()}>
                 <SelectItem value="Contato Inicial">Contato Inicial</SelectItem>
                 <SelectItem value="Agendamento">Agendamento</SelectItem>
                 <SelectItem value="Visita">Visita</SelectItem>
@@ -87,7 +89,10 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
             <Button 
               type="button" 
               variant="outline" 
-              onClick={() => onOpenChange(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenChange(false);
+              }}
             >
               Cancelar
             </Button>
