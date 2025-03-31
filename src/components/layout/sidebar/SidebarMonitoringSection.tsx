@@ -3,23 +3,29 @@ import React from 'react';
 import { Bell, FileSpreadsheet, Calendar, Users } from 'lucide-react';
 import SidebarNavigationGroup from './SidebarNavigationGroup';
 import SidebarNavLink from './SidebarNavLink';
+import { useProduct } from '@/context/product';
 
 interface SidebarMonitoringSectionProps {
   collapsed: boolean;
 }
 
 const SidebarMonitoringSection: React.FC<SidebarMonitoringSectionProps> = ({ collapsed }) => {
+  const { currentProduct } = useProduct();
+  const isRetentionProduct = currentProduct === 'retention';
+  
   return (
     <SidebarNavigationGroup 
       title="Monitoramento" 
       collapsed={collapsed}
     >
-      <SidebarNavLink 
-        to="/alerts" 
-        icon={Bell} 
-        label="Alertas" 
-        collapsed={collapsed}
-      />
+      {isRetentionProduct && (
+        <SidebarNavLink 
+          to="/alerts" 
+          icon={Bell} 
+          label="Alertas" 
+          collapsed={collapsed}
+        />
+      )}
       <SidebarNavLink 
         to="/survey" 
         icon={FileSpreadsheet} 

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { DataProvider } from '@/context/DataContext';
 import Header from '@/components/layout/Header';
@@ -10,13 +9,13 @@ import { AlertTriangle, ArrowLeft, Calendar, Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useData } from '@/context/DataContext';
+import { useProduct } from '@/context/product';
+import { Navigate } from 'react-router-dom';
 
-// Create a component for alert details
 const AlertDetails = ({ alertId }: { alertId: string }) => {
   const { alerts, markAlertActionTaken, addSchedule, generateDemoData } = useData();
   const navigate = useNavigate();
   
-  // Verificar se há alertas, se não, carregar dados de demonstração
   useEffect(() => {
     if (alerts.length === 0) {
       generateDemoData();
@@ -83,7 +82,6 @@ const AlertDetails = ({ alertId }: { alertId: string }) => {
   };
   
   const handleScheduleMeeting = () => {
-    // Schedule for tomorrow
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(10, 0, 0, 0);
@@ -231,7 +229,6 @@ const AlertDetails = ({ alertId }: { alertId: string }) => {
   );
 };
 
-// Main AlertsPage component
 const AlertsPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -239,8 +236,12 @@ const AlertsPage: React.FC = () => {
   const alertId = searchParams.get('id');
   const { alerts, generateDemoData } = useData();
   const location = useLocation();
+  const { currentProduct } = useProduct();
   
-  // Verificar se não há alertas, e se deve carregar dados de demonstração
+  if (currentProduct !== 'retention') {
+    return <Navigate to="/hub" replace />;
+  }
+  
   useEffect(() => {
     if (alerts.length === 0) {
       console.log("Gerando dados de demonstração para alertas");
@@ -276,7 +277,6 @@ const AlertsPage: React.FC = () => {
   );
 };
 
-// Componente wrapper para garantir que DataProvider esteja disponível
 const AlertsPageWithProvider: React.FC = () => {
   return (
     <DataProvider>

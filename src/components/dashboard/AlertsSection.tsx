@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useProduct } from '@/context/product';
 
 interface AlertsSectionProps {
   alerts: Alert[];
@@ -13,6 +14,13 @@ interface AlertsSectionProps {
 }
 
 const AlertsSection: React.FC<AlertsSectionProps> = ({ alerts, onViewAlertDetails }) => {
+  const { currentProduct } = useProduct();
+  
+  // Não renderizar o componente se não estiver no produto de retenção
+  if (currentProduct !== 'retention') {
+    return null;
+  }
+
   return (
     <Card className="shadow-md transition-all duration-300 hover:shadow-lg card-glow">
       <CardHeader>

@@ -19,6 +19,7 @@ import RecruitmentLeadsPage from "@/pages/RecruitmentLeadsPage";
 import RecruitmentFunnelPage from "@/pages/RecruitmentFunnelPage";
 import RecruitmentCampaignsPage from "@/pages/RecruitmentCampaignsPage";
 import RecruitmentAnalyticsPage from "@/pages/RecruitmentAnalyticsPage";
+import { ProductGuard } from "@/components/auth/ProductGuard";
 
 interface RouteConfig {
   path: string;
@@ -78,7 +79,9 @@ export const protectedRoutes: RouteConfig[] = [
     path: "/alerts",
     element: (
       <ProtectedRoute>
-        <AlertsPage />
+        <ProductGuard allowedProduct="retention" redirectTo="/hub">
+          <AlertsPage />
+        </ProductGuard>
       </ProtectedRoute>
     )
   },

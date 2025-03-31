@@ -4,12 +4,20 @@ import { Link } from 'react-router-dom';
 import { Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useProduct } from '@/context/product';
 
 interface NotificationBellProps {
   unreadCount: number;
 }
 
 const NotificationBell: React.FC<NotificationBellProps> = ({ unreadCount }) => {
+  const { currentProduct } = useProduct();
+  
+  // Somente mostrar o componente se estiver no produto de retenção
+  if (currentProduct !== 'retention') {
+    return null;
+  }
+
   return (
     <Link to="/alerts" className="relative">
       <Button variant="ghost" size="icon" className="relative">
