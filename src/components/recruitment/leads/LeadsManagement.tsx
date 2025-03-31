@@ -48,7 +48,8 @@ const LeadsManagement: React.FC = () => {
   
   // Estado para armazenar os leads e seus agrupamentos por etapa
   const [leadsData, setLeadsData] = useState(mockLeadsData);
-  const [stageGroups, setStageGroups] = useState(getLeadsByStage(leadsData));
+  // Fix: Remove the argument from getLeadsByStage() since it's defined to take no arguments
+  const [stageGroups, setStageGroups] = useState(getLeadsByStage());
   const [filteredLeads, setFilteredLeads] = useState(leadsData);
   
   const { toast } = useToast();
