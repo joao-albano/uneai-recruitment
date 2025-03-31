@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { 
   UserPlus, Search, Filter, Download, ChevronDown, 
-  Plus, ListFilter, Trash2, MoreHorizontal 
+  Plus, ListFilter, Trash2, MoreHorizontal, LayoutGrid, List
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
@@ -19,9 +19,11 @@ import {
 import { DataTable } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
 import LeadCreateDialog from './LeadCreateDialog';
+import LeadsKanbanView from './LeadsKanbanView';
 
 const LeadsManagement: React.FC = () => {
   const [openDialog, setOpenDialog] = useState(false);
+  const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
   
   // Colunas para a tabela de leads
   const columns = [
@@ -123,6 +125,19 @@ const LeadsManagement: React.FC = () => {
     { id: 4, name: "Ana Rodrigues", course: "Ensino Fundamental", children: 2, channel: "Instagram", stage: "Matrícula", status: "Finalizado", createdAt: "19/11/2023" },
     { id: 5, name: "Lucas Martins", course: "Ensino Médio", children: 1, channel: "Google", stage: "Contato Inicial", status: "Novo", createdAt: "18/11/2023" },
   ];
+
+  // Dados agrupados por etapa para o Kanban
+  const stageGroups = {
+    "Contato Inicial": mockData.filter(lead => lead.stage === "Contato Inicial"),
+    "Agendamento": mockData.filter(lead => lead.stage === "Agendamento"),
+    "Visita": mockData.filter(lead => lead.stage === "Visita"),
+    "Matrícula": mockData.filter(lead => lead.stage === "Matrícula"),
+  };
+
+  const handleStageChange = (leadId: number, newStage: string) => {
+    console.log(`Lead ${leadId} movido para etapa: ${newStage}`);
+    // Aqui você implementaria a lógica para atualizar o estágio do lead no backend
+  };
   
   return (
     <div className="container mx-auto py-6">
@@ -170,6 +185,27 @@ const LeadsManagement: React.FC = () => {
             </div>
             
             <div className="flex gap-2 ml-auto">
+              <div className="flex items-center border rounded-md overflow-hidden">
+                <Button 
+                  variant={viewMode === 'table' ? 'default' : 'ghost'} 
+                  size="sm" 
+                  className="rounded-none px-3"
+                  onClick={() => setViewMode('table')}
+                >
+                  <List className="h-4 w-4 mr-1" />
+                  Lista
+                </Button>
+                <Button 
+                  variant={viewMode === 'kanban' ? 'default' : 'ghost'} 
+                  size="sm" 
+                  className="rounded-none px-3"
+                  onClick={() => setViewMode('kanban')}
+                >
+                  <LayoutGrid className="h-4 w-4 mr-1" />
+                  Kanban
+                </Button>
+              </div>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="gap-2">
@@ -197,10 +233,17 @@ const LeadsManagement: React.FC = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <DataTable 
-            data={mockData} 
-            columns={columns} 
-          />
+          {viewMode === 'table' ? (
+            <DataTable 
+              data={mockData} 
+              columns={columns} 
+            />
+          ) : (
+            <LeadsKanbanView 
+              stageGroups={stageGroups} 
+              onStageChange={handleStageChange} 
+            />
+          )}
         </CardContent>
       </Card>
       
