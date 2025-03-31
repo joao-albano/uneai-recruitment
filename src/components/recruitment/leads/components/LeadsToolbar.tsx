@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -190,61 +191,77 @@ const LeadsToolbar: React.FC<LeadsToolbarProps> = ({
             
             <DropdownMenuLabel className="text-xs font-normal">Canal</DropdownMenuLabel>
             {channels.map(channel => (
-              <DropdownMenuCheckboxItem
+              <DropdownMenuItem
                 key={channel}
-                checked={filters.channel === channel}
-                onCheckedChange={() => setFilters({
+                onClick={() => setFilters({
                   ...filters,
                   channel: filters.channel === channel ? '' : channel
                 })}
               >
-                {channel}
-              </DropdownMenuCheckboxItem>
+                <div className="flex items-center w-full">
+                  <div className="mr-2 h-4 w-4 flex items-center justify-center">
+                    {filters.channel === channel && "✓"}
+                  </div>
+                  {channel}
+                </div>
+              </DropdownMenuItem>
             ))}
             
             <DropdownMenuSeparator />
             <DropdownMenuLabel className="text-xs font-normal">Curso</DropdownMenuLabel>
             {courses.map(course => (
-              <DropdownMenuCheckboxItem
+              <DropdownMenuItem
                 key={course}
-                checked={filters.course === course}
-                onCheckedChange={() => setFilters({
+                onClick={() => setFilters({
                   ...filters,
                   course: filters.course === course ? '' : course
                 })}
               >
-                {course}
-              </DropdownMenuCheckboxItem>
+                <div className="flex items-center w-full">
+                  <div className="mr-2 h-4 w-4 flex items-center justify-center">
+                    {filters.course === course && "✓"}
+                  </div>
+                  {course}
+                </div>
+              </DropdownMenuItem>
             ))}
             
             <DropdownMenuSeparator />
             <DropdownMenuLabel className="text-xs font-normal">Etapa</DropdownMenuLabel>
             {stages.map(stage => (
-              <DropdownMenuCheckboxItem
+              <DropdownMenuItem
                 key={stage}
-                checked={filters.stage === stage}
-                onCheckedChange={() => setFilters({
+                onClick={() => setFilters({
                   ...filters,
                   stage: filters.stage === stage ? '' : stage
                 })}
               >
-                {stage}
-              </DropdownMenuCheckboxItem>
+                <div className="flex items-center w-full">
+                  <div className="mr-2 h-4 w-4 flex items-center justify-center">
+                    {filters.stage === stage && "✓"}
+                  </div>
+                  {stage}
+                </div>
+              </DropdownMenuItem>
             ))}
             
             <DropdownMenuSeparator />
             <DropdownMenuLabel className="text-xs font-normal">Status</DropdownMenuLabel>
             {statuses.map(status => (
-              <DropdownMenuCheckboxItem
+              <DropdownMenuItem
                 key={status}
-                checked={filters.status === status}
-                onCheckedChange={() => setFilters({
+                onClick={() => setFilters({
                   ...filters,
                   status: filters.status === status ? '' : status
                 })}
               >
-                {status}
-              </DropdownMenuCheckboxItem>
+                <div className="flex items-center w-full">
+                  <div className="mr-2 h-4 w-4 flex items-center justify-center">
+                    {filters.status === status && "✓"}
+                  </div>
+                  {status}
+                </div>
+              </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
