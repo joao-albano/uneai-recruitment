@@ -14,10 +14,37 @@ const LeadsManagement: React.FC = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
   
+  // Estado para armazenar os leads e seus agrupamentos por etapa
+  const [leadsData, setLeadsData] = useState(mockLeadsData);
+  const [stageGroups, setStageGroups] = useState(getLeadsByStage());
+  
   const columns = getLeadColumns();
-  const stageGroups = getLeadsByStage();
 
+  // Função atualizada para mudar o estágio do lead e atualizar os dados
   const handleStageChange = (leadId: number, newStage: string) => {
+    // Encontrar o lead nos dados
+    const updatedLeads = leadsData.map(lead => {
+      if (lead.id === leadId) {
+        // Atualizar o estágio do lead
+        return { ...lead, stage: newStage };
+      }
+      return lead;
+    });
+    
+    // Atualizar os leads
+    setLeadsData(updatedLeads);
+    
+    // Reconstruir os agrupamentos por etapa
+    const updatedGroups = {
+      "Contato Inicial": updatedLeads.filter(lead => lead.stage === "Contato Inicial"),
+      "Agendamento": updatedLeads.filter(lead => lead.stage === "Agendamento"),
+      "Visita": updatedLeads.filter(lead => lead.stage === "Visita"),
+      "Matrícula": updatedLeads.filter(lead => lead.stage === "Matrícula"),
+    };
+    
+    // Atualizar os grupos de estágio
+    setStageGroups(updatedGroups);
+    
     console.log(`Lead ${leadId} movido para etapa: ${newStage}`);
     // Aqui você implementaria a lógica para atualizar o estágio do lead no backend
   };
@@ -37,7 +64,7 @@ const LeadsManagement: React.FC = () => {
         <CardContent>
           {viewMode === 'table' ? (
             <DataTable 
-              data={mockLeadsData} 
+              data={leadsData} 
               columns={columns} 
             />
           ) : (

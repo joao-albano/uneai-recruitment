@@ -3,7 +3,7 @@ import React from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MoreHorizontal, User, Calendar, Briefcase, Hash } from 'lucide-react';
+import { MoreHorizontal, User, Calendar, Briefcase } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
