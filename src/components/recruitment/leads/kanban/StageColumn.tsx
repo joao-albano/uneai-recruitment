@@ -52,7 +52,7 @@ const StageColumn: React.FC<StageColumnProps> = ({
           </div>
 
           <div className="space-y-3">
-            {leads.map((lead, index) => (
+            {leads && leads.map((lead, index) => (
               <Draggable
                 key={`lead-${lead.id}`}
                 draggableId={`lead-${lead.id}`}

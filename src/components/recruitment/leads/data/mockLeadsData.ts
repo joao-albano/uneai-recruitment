@@ -1,6 +1,4 @@
 
-// Making sure getLeadsByStage doesn't require an argument anymore
-
 import { format } from 'date-fns';
 
 // Generate mock lead data
@@ -55,10 +53,39 @@ export const mockLeadsData = [
     status: 'Novo',
     createdAt: format(new Date('2023-12-19'), 'yyyy-MM-dd'),
   },
-  // Add more mock leads as needed...
+  {
+    id: 6,
+    name: 'Juliana Lima',
+    course: 'Ensino Médio',
+    children: 2,
+    channel: 'Site',
+    stage: 'Agendamento',
+    status: 'Em Andamento',
+    createdAt: format(new Date('2023-12-20'), 'yyyy-MM-dd'),
+  },
+  {
+    id: 7,
+    name: 'Rodrigo Souza',
+    course: 'Educação Infantil',
+    children: 1,
+    channel: 'WhatsApp',
+    stage: 'Visita',
+    status: 'Aguardando',
+    createdAt: format(new Date('2023-12-21'), 'yyyy-MM-dd'),
+  },
+  {
+    id: 8,
+    name: 'Mariana Torres',
+    course: 'Ensino Fundamental',
+    children: 3,
+    channel: 'Facebook',
+    stage: 'Matrícula',
+    status: 'Finalizado',
+    createdAt: format(new Date('2023-12-22'), 'yyyy-MM-dd'),
+  },
 ];
 
-// Function to group leads by stage - now doesn't take any parameters and uses the mockLeadsData directly
+// Function to group leads by stage
 export const getLeadsByStage = () => {
   return {
     "Contato Inicial": mockLeadsData.filter(lead => lead.stage === "Contato Inicial"),

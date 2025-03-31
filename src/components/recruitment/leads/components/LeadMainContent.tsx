@@ -54,7 +54,7 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
         exportLeads={exportLeads}
       />
       
-      <Tabs defaultValue={viewMode} className="mt-4">
+      <Tabs value={viewMode} className="mt-4">
         <TabsContent value="table" hidden={viewMode !== 'table'}>
           <LeadsTableView leads={filteredLeads} />
         </TabsContent>

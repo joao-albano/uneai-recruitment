@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { mockLeadsData, getLeadsByStage } from '../data/mockLeadsData';
 import { useLeadActions } from './useLeadActions';
 import { useLeadDialogs } from './useLeadDialogs';
@@ -35,6 +35,18 @@ export const useLeadsManagement = () => {
   );
   
   const exportActions = useLeadExport();
+
+  // Ensure stageGroups are updated when the leads data changes
+  useEffect(() => {
+    const updatedGroups = {
+      "Contato Inicial": leadsData.filter(lead => lead.stage === "Contato Inicial"),
+      "Agendamento": leadsData.filter(lead => lead.stage === "Agendamento"),
+      "Visita": leadsData.filter(lead => lead.stage === "Visita"),
+      "Matrícula": leadsData.filter(lead => lead.stage === "Matrícula"),
+    };
+    
+    setStageGroups(updatedGroups);
+  }, [leadsData]);
 
   return {
     // View mode

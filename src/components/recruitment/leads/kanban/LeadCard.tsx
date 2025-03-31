@@ -49,6 +49,8 @@ const LeadCard: React.FC<LeadCardProps> = ({
         return 'bg-blue-500';
       case 'Aguardando':
         return 'bg-amber-500';
+      case 'Finalizado':
+        return 'bg-purple-500';
       default:
         return 'bg-gray-500';
     }
