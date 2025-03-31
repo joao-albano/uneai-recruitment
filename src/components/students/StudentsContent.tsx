@@ -15,10 +15,9 @@ import { Student } from '@/types/data';
 import { useAuth } from '@/context/auth';
 import StudentDetail from './StudentDetail';
 import { v4 as uuidv4 } from 'uuid';
+import { Plus } from 'lucide-react';
 
 const StudentsContent: React.FC = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [studentDetailsOpen, setStudentDetailsOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [createStudentOpen, setCreateStudentOpen] = useState(false);
@@ -33,10 +32,6 @@ const StudentsContent: React.FC = () => {
       generateDemoData();
     }
   }, [students.length, generateDemoData]);
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
 
   const handleOpenDetails = (student: Student) => {
     setSelectedStudent(student);
@@ -60,7 +55,7 @@ const StudentsContent: React.FC = () => {
 
   const handleUpdateStudent = (updatedStudent: Student) => {
     updateStudent(updatedStudent);
-    handleCloseDetails();
+    setStudentDetailsOpen(false);
     toast({
       title: 'Aluno atualizado',
       description: `${updatedStudent.name} foi atualizado com sucesso.`,
@@ -120,11 +115,20 @@ const StudentsContent: React.FC = () => {
         
         <TabsContent value="list">
           <Card>
-            <CardHeader>
-              <CardTitle>Alunos</CardTitle>
-              <CardDescription>
-                Gerencie a lista de alunos
-              </CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Alunos</CardTitle>
+                <CardDescription>
+                  Gerencie a lista de alunos
+                </CardDescription>
+              </div>
+              <Button 
+                onClick={() => setCreateStudentOpen(true)}
+                className="flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Adicionar Aluno
+              </Button>
             </CardHeader>
             <CardContent className="pl-2 pb-4">
               <StudentsList
@@ -132,9 +136,6 @@ const StudentsContent: React.FC = () => {
                 onOpenDetails={handleOpenDetails}
                 isMobile={isMobile}
               />
-              <Button onClick={() => setCreateStudentOpen(true)}>
-                Adicionar Aluno
-              </Button>
             </CardContent>
           </Card>
         </TabsContent>
