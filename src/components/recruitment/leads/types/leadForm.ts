@@ -26,6 +26,10 @@ export const leadFormSchema = z.object({
       grade: z.string().min(1, { message: "Série pretendida é obrigatória" }),
     })
   ).min(1, { message: "Adicione pelo menos um filho" }),
+  // Campos adicionais
+  observations: z.string().optional(),
+  enrollmentIntention: z.string().optional(),
+  contactTime: z.string().optional(),
 });
 
 export type LeadFormValues = z.infer<typeof leadFormSchema>;

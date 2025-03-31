@@ -29,7 +29,7 @@ const LeadFormTabs: React.FC<LeadFormTabsProps> = ({ form }) => {
       </TabsContent>
 
       <TabsContent value="additional" className="py-4">
-        <AdditionalInfoForm />
+        <AdditionalInfoForm form={form} />
       </TabsContent>
     </Tabs>
   );

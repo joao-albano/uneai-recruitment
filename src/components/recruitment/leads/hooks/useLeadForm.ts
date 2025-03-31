@@ -17,6 +17,9 @@ export const useLeadForm = () => {
       children: [
         { name: "", age: "", grade: "" }
       ],
+      observations: "",
+      enrollmentIntention: "",
+      contactTime: "",
     },
   });
 
