@@ -10,6 +10,22 @@ import LeadsToolbar from './components/LeadsToolbar';
 import { getLeadColumns } from './components/LeadsTableColumns';
 import { mockLeadsData, getLeadsByStage } from './data/mockLeadsData';
 
+// Function to map stage to appropriate status
+const getStatusForStage = (stage: string): string => {
+  switch (stage) {
+    case 'Contato Inicial':
+      return 'Novo';
+    case 'Agendamento':
+      return 'Em Andamento';
+    case 'Visita':
+      return 'Aguardando';
+    case 'Matrícula':
+      return 'Finalizado';
+    default:
+      return 'Novo';
+  }
+};
+
 const LeadsManagement: React.FC = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
@@ -25,8 +41,9 @@ const LeadsManagement: React.FC = () => {
     // Encontrar o lead nos dados
     const updatedLeads = leadsData.map(lead => {
       if (lead.id === leadId) {
-        // Atualizar o estágio do lead
-        return { ...lead, stage: newStage };
+        // Atualizar o estágio do lead e também o status correspondente
+        const newStatus = getStatusForStage(newStage);
+        return { ...lead, stage: newStage, status: newStatus };
       }
       return lead;
     });
