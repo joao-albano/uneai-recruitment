@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -50,7 +49,8 @@ const PlanCard: React.FC<PlanCardProps> = ({
       recruitment: isPtBR ? 'Captação' : 'Recruitment',
       secretary: isPtBR ? 'Secretaria' : 'Secretary',
       pedagogical: isPtBR ? 'Pedagógico' : 'Pedagogical',
-      billing: isPtBR ? 'Cobrança' : 'Billing'
+      billing: isPtBR ? 'Cobrança' : 'Billing',
+      emotional: isPtBR ? 'Escuta Emocional' : 'Emotional Support'
     };
     
     return productNameMap[productType] || productType;
@@ -69,7 +69,6 @@ const PlanCard: React.FC<PlanCardProps> = ({
     });
   };
 
-  // Format the price with correct thousand separators and currency for Brazilian format
   const formatPrice = (value: number): string => {
     if (isPtBR) {
       return `R$ ${value.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
@@ -77,7 +76,6 @@ const PlanCard: React.FC<PlanCardProps> = ({
     return `$${value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
   };
 
-  // Get the yearly price based on plan ID
   const getYearlyPrice = () => {
     if (id === 'basic') return 249;
     if (id === 'premium') return 499;
@@ -85,7 +83,6 @@ const PlanCard: React.FC<PlanCardProps> = ({
     return priceYearly;
   };
   
-  // Format the yearly price text 
   const getYearlyPriceText = () => {
     if (isPtBR) {
       if (id === 'basic') return 'R$ 249,00 cobrados anualmente';
