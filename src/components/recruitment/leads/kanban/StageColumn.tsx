@@ -43,6 +43,7 @@ const StageColumn: React.FC<StageColumnProps> = ({
           className={`border rounded-md p-3 min-h-[400px] ${
             snapshot.isDraggingOver ? 'bg-accent/50' : 'bg-card'
           }`}
+          onClick={(e) => e.stopPropagation()}
         >
           <div className="font-semibold text-sm mb-4 flex items-center justify-between">
             <div className="flex items-center">
@@ -59,7 +60,11 @@ const StageColumn: React.FC<StageColumnProps> = ({
                 key={`lead-${lead.id}`}
                 lead={lead}
                 index={index}
-                onEditLead={onEditLead}
+                onEditLead={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onEditLead(e, lead.id);
+                }}
                 onChangeStage={(e) => {
                   if (e) {
                     e.preventDefault();
@@ -67,8 +72,16 @@ const StageColumn: React.FC<StageColumnProps> = ({
                   }
                   onChangeStage(e, lead.id);
                 }}
-                onViewHistory={onViewHistory}
-                onDeleteLead={onDeleteLead}
+                onViewHistory={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onViewHistory(e, lead.id);
+                }}
+                onDeleteLead={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onDeleteLead(e, lead.id);
+                }}
               />
             ))}
           </div>

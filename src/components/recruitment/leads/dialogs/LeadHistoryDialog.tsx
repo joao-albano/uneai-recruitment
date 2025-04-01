@@ -1,14 +1,8 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from '@/components/ui/tabs';
-import { Calendar, MessageCircle, Mail, Phone, ArrowRight } from 'lucide-react';
+import { getLeadHistory } from '../data/mockLeadsData';
 
 interface LeadHistoryDialogProps {
   open: boolean;
@@ -16,211 +10,58 @@ interface LeadHistoryDialogProps {
   lead: any;
 }
 
-// Gera um histórico fictício para demonstração
-const generateMockHistory = (lead: any) => {
-  if (!lead) return [];
-  
-  // Data atual
-  const now = new Date();
-  
-  // Histórico de ações baseado no estágio atual
-  const history = [
-    {
-      id: 1,
-      type: 'creation',
-      description: 'Lead cadastrado no sistema',
-      date: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 10),
-      user: 'Sistema',
-      icon: <Mail className="h-4 w-4 text-blue-500" />
-    },
-    {
-      id: 2,
-      type: 'contact',
-      description: 'Primeiro contato realizado por telefone',
-      date: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 8),
-      user: 'João Silva',
-      icon: <Phone className="h-4 w-4 text-green-500" />
-    }
-  ];
-  
-  // Adiciona histórico baseado na etapa atual
-  if (lead.stage === 'Agendamento' || lead.stage === 'Visita' || lead.stage === 'Matrícula') {
-    history.push({
-      id: 3,
-      type: 'stage',
-      description: 'Alteração de etapa: Contato Inicial → Agendamento',
-      date: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 5),
-      user: 'Maria Oliveira',
-      icon: <ArrowRight className="h-4 w-4 text-amber-500" />
-    });
-    
-    history.push({
-      id: 4,
-      type: 'schedule',
-      description: 'Visita agendada para 22/11/2023',
-      date: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 5),
-      user: 'Maria Oliveira',
-      icon: <Calendar className="h-4 w-4 text-purple-500" />
-    });
-  }
-  
-  if (lead.stage === 'Visita' || lead.stage === 'Matrícula') {
-    history.push({
-      id: 5,
-      type: 'stage',
-      description: 'Alteração de etapa: Agendamento → Visita',
-      date: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 2),
-      user: 'Pedro Santos',
-      icon: <ArrowRight className="h-4 w-4 text-amber-500" />
-    });
-    
-    history.push({
-      id: 6,
-      type: 'note',
-      description: 'Visita realizada. Família demonstrou muito interesse.',
-      date: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 2),
-      user: 'Pedro Santos',
-      icon: <MessageCircle className="h-4 w-4 text-indigo-500" />
-    });
-  }
-  
-  if (lead.stage === 'Matrícula') {
-    history.push({
-      id: 7,
-      type: 'stage',
-      description: 'Alteração de etapa: Visita → Matrícula',
-      date: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 1),
-      user: 'Ana Costa',
-      icon: <ArrowRight className="h-4 w-4 text-amber-500" />
-    });
-    
-    history.push({
-      id: 8,
-      type: 'note',
-      description: 'Matrícula finalizada com sucesso. Início previsto para o próximo semestre.',
-      date: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 1),
-      user: 'Ana Costa',
-      icon: <MessageCircle className="h-4 w-4 text-indigo-500" />
-    });
-  }
-  
-  return history.sort((a, b) => b.date.getTime() - a.date.getTime());
-};
-
-const LeadHistoryDialog: React.FC<LeadHistoryDialogProps> = ({ 
-  open, 
+const LeadHistoryDialog: React.FC<LeadHistoryDialogProps> = ({
+  open,
   onOpenChange,
-  lead
+  lead,
 }) => {
-  const [activeTab, setActiveTab] = useState('history');
-  const historyData = generateMockHistory(lead);
-  
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-  
+  // Buscar histórico do lead
+  const history = lead ? getLeadHistory(lead.id) : [];
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] max-h-[80vh]">
+      <DialogContent className="sm:max-w-[600px] max-h-[80vh]" onClick={(e) => e.stopPropagation()}>
         <DialogHeader>
-          <DialogTitle>Histórico do Lead - {lead?.name}</DialogTitle>
+          <DialogTitle className="text-xl">Histórico do Lead</DialogTitle>
+          {lead && (
+            <div className="mt-2 text-sm text-muted-foreground">
+              <div className="font-medium text-foreground">{lead.name}</div>
+              <div>{lead.email} • {lead.phone}</div>
+            </div>
+          )}
         </DialogHeader>
-        
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-          <TabsList className="w-full">
-            <TabsTrigger value="history" className="flex-1">Histórico de Ações</TabsTrigger>
-            <TabsTrigger value="changes" className="flex-1">Alterações de Etapa</TabsTrigger>
-            <TabsTrigger value="notes" className="flex-1">Observações</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="history" className="mt-4">
-            <ScrollArea className="h-[400px] rounded border p-4">
-              <div className="space-y-4">
-                {historyData.map((item) => (
-                  <div key={item.id} className="flex gap-4 pb-4 border-b">
-                    <div className="mt-1">{item.icon}</div>
-                    <div className="flex-1">
-                      <p className="font-medium">{item.description}</p>
-                      <div className="flex flex-wrap gap-2 mt-1 text-sm text-muted-foreground">
-                        <span>Por: {item.user}</span>
-                        <span>•</span>
-                        <span>{formatDate(item.date)}</span>
+
+        {history.length === 0 ? (
+          <div className="py-12 text-center text-muted-foreground">
+            Nenhum histórico encontrado para este lead.
+          </div>
+        ) : (
+          <ScrollArea className="h-[400px] pr-4">
+            <div className="space-y-6 relative pl-6">
+              {/* Linha vertical do timeline */}
+              <div className="absolute left-2 top-2 bottom-0 w-0.5 bg-border"></div>
+
+              {history.map((item: any) => (
+                <div key={item.id} className="relative">
+                  {/* Círculo do timeline */}
+                  <div className="absolute -left-6 w-4 h-4 rounded-full bg-primary mt-1.5"></div>
+
+                  <div className="pb-2 mb-2">
+                    <div className="flex justify-between items-start mb-1">
+                      <div>
+                        <span className="font-medium">{item.action}</span>
+                        <span className="text-sm text-muted-foreground ml-2">por {item.user}</span>
                       </div>
+                      <span className="text-sm text-muted-foreground">{item.date}</span>
                     </div>
+
+                    <p className="text-sm">{item.notes}</p>
                   </div>
-                ))}
-                
-                {historyData.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    Nenhum registro encontrado.
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
-          </TabsContent>
-          
-          <TabsContent value="changes" className="mt-4">
-            <ScrollArea className="h-[400px] rounded border p-4">
-              <div className="space-y-4">
-                {historyData
-                  .filter(item => item.type === 'stage')
-                  .map((item) => (
-                    <div key={item.id} className="flex gap-4 pb-4 border-b">
-                      <div className="mt-1">{item.icon}</div>
-                      <div className="flex-1">
-                        <p className="font-medium">{item.description}</p>
-                        <div className="flex flex-wrap gap-2 mt-1 text-sm text-muted-foreground">
-                          <span>Por: {item.user}</span>
-                          <span>•</span>
-                          <span>{formatDate(item.date)}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  
-                {historyData.filter(item => item.type === 'stage').length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    Nenhuma alteração de etapa registrada.
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
-          </TabsContent>
-          
-          <TabsContent value="notes" className="mt-4">
-            <ScrollArea className="h-[400px] rounded border p-4">
-              <div className="space-y-4">
-                {historyData
-                  .filter(item => item.type === 'note')
-                  .map((item) => (
-                    <div key={item.id} className="flex gap-4 pb-4 border-b">
-                      <div className="mt-1">{item.icon}</div>
-                      <div className="flex-1">
-                        <p className="font-medium">{item.description}</p>
-                        <div className="flex flex-wrap gap-2 mt-1 text-sm text-muted-foreground">
-                          <span>Por: {item.user}</span>
-                          <span>•</span>
-                          <span>{formatDate(item.date)}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  
-                {historyData.filter(item => item.type === 'note').length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    Nenhuma observação registrada.
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
-          </TabsContent>
-        </Tabs>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        )}
       </DialogContent>
     </Dialog>
   );

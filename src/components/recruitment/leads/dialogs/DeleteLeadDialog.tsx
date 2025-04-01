@@ -29,7 +29,7 @@ const DeleteLeadDialog: React.FC<DeleteLeadDialogProps> = ({
       e.preventDefault();
       e.stopPropagation();
     }
-    onConfirm(lead.id);
+    onConfirm(lead?.id);
     onOpenChange(false);
   };
 

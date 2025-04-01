@@ -34,13 +34,22 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
     e.preventDefault();
     e.stopPropagation();
     
-    onSave(lead.id, stage, notes);
-    toast({
-      title: "Etapa atualizada",
-      description: `O lead foi movido para a etapa: ${stage}`
-    });
-    onOpenChange(false);
+    if (lead?.id) {
+      onSave(lead.id, stage, notes);
+      toast({
+        title: "Etapa atualizada",
+        description: `O lead foi movido para a etapa: ${stage}`
+      });
+      onOpenChange(false);
+    }
   };
+
+  // Atualizar o estado quando o lead mudar
+  React.useEffect(() => {
+    if (lead?.stage) {
+      setStage(lead.stage);
+    }
+  }, [lead]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -82,6 +91,7 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={4}
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
 

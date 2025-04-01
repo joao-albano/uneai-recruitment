@@ -73,10 +73,10 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
           <TableRow>
             <TableHead>Nome</TableHead>
             <TableHead>Curso</TableHead>
-            <TableHead>Canal</TableHead>
+            <TableHead className="hidden sm:table-cell">Canal</TableHead>
             <TableHead>Etapa</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Data</TableHead>
+            <TableHead className="hidden md:table-cell">Data</TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -89,17 +89,17 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
             </TableRow>
           ) : (
             leads.map((lead) => (
-              <TableRow key={lead.id}>
+              <TableRow key={lead.id} onClick={(e) => e.stopPropagation()}>
                 <TableCell className="font-medium">{lead.name}</TableCell>
                 <TableCell>{lead.course}</TableCell>
-                <TableCell>{lead.channel}</TableCell>
+                <TableCell className="hidden sm:table-cell">{lead.channel}</TableCell>
                 <TableCell>{lead.stage}</TableCell>
                 <TableCell>
                   <Badge className={getStatusColor(lead.status)}>
                     {lead.status}
                   </Badge>
                 </TableCell>
-                <TableCell>{lead.createdAt}</TableCell>
+                <TableCell className="hidden md:table-cell">{lead.createdAt}</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
