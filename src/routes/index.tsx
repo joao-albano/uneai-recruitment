@@ -1,27 +1,17 @@
 
 import { createBrowserRouter } from "react-router-dom";
-import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
-import SignupPage from "@/pages/SignupPage";
 import DashboardPage from "@/pages/DashboardPage";
 import ModelPage from "@/pages/ModelPage";
-import ModelDetailPage from "@/pages/ModelDetailPage";
 import ModelStudentPage from "@/pages/ModelStudentPage";
 import UploadPage from "@/pages/UploadPage";
-import BillingPage from "@/pages/BillingPage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
-import AdminUsersPage from "@/pages/AdminUsersPage";
 import AdminPaymentsPage from "@/pages/AdminPaymentsPage";
 import AdminPlansPage from "@/pages/AdminPlansPage";
-import AdminApisPage from "@/pages/AdminApisPage";
 import AdminDocsPage from "@/pages/AdminDocsPage";
 import SettingsPage from "@/pages/SettingsPage";
 import ProfilePage from "@/pages/ProfilePage";
-import NotificationsPage from "@/pages/NotificationsPage";
-import NotFoundPage from "@/pages/NotFoundPage";
 import OrganizationsPage from "@/pages/OrganizationsPage";
-import OrganizationDetailsPage from "@/pages/OrganizationDetailsPage";
-import LandingPage from "@/pages/LandingPage";
 import RecruitmentDashboardPage from "@/pages/RecruitmentDashboardPage";
 import RecruitmentLeadsPage from "@/pages/RecruitmentLeadsPage";
 import RecruitmentFunnelPage from "@/pages/RecruitmentFunnelPage";
@@ -29,17 +19,22 @@ import RecruitmentAnalyticsPage from "@/pages/RecruitmentAnalyticsPage";
 import RecruitmentCampaignsPage from "@/pages/RecruitmentCampaignsPage";
 import EnrollmentPredictionsPage from "@/pages/recruitment/EnrollmentPredictionsPage";
 import ConversationalAIPage from "@/pages/recruitment/ConversationalAIPage";
-
-import { ProtectedRoutes } from "@/components/auth/ProtectedRoutes";
+import { ProtectedRoute as ProtectedRoutes } from "@/components/auth/ProtectedRoutes";
+import Index from "@/pages/Index";
+import ComingSoonPage from "@/pages/ComingSoonPage";
+import UsersPage from "@/pages/UsersPage";
+import ProductHubPage from "@/pages/ProductHubPage";
+import PricingPage from "@/pages/PricingPage";
+import NotFound from "@/pages/NotFound";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <LandingPage />,
+    element: <Index />,
   },
   {
     path: "/signup",
-    element: <SignupPage />,
+    element: <LoginPage />, // Using LoginPage as it has signup functionality
   },
   {
     path: "/login",
@@ -47,106 +42,114 @@ export const router = createBrowserRouter([
   },
   {
     path: "/home",
-    element: <ProtectedRoutes element={<HomePage />} />,
+    element: <ProtectedRoutes><Index /></ProtectedRoutes>,
   },
   {
     path: "/dashboard",
-    element: <ProtectedRoutes element={<DashboardPage />} />,
+    element: <ProtectedRoutes><DashboardPage /></ProtectedRoutes>,
   },
   {
     path: "/model",
-    element: <ProtectedRoutes element={<ModelPage />} />,
+    element: <ProtectedRoutes><ModelPage /></ProtectedRoutes>,
   },
   {
     path: "/model/:id",
-    element: <ProtectedRoutes element={<ModelDetailPage />} />,
+    element: <ProtectedRoutes><ComingSoonPage /></ProtectedRoutes>,
   },
   {
     path: "/model/student/:id",
-    element: <ProtectedRoutes element={<ModelStudentPage />} />,
+    element: <ProtectedRoutes><ModelStudentPage /></ProtectedRoutes>,
   },
   {
     path: "/upload",
-    element: <ProtectedRoutes element={<UploadPage />} />,
+    element: <ProtectedRoutes><UploadPage /></ProtectedRoutes>,
   },
   {
     path: "/billing",
-    element: <ProtectedRoutes element={<BillingPage />} />,
+    element: <ProtectedRoutes><ComingSoonPage /></ProtectedRoutes>,
   },
   {
     path: "/admin",
-    element: <ProtectedRoutes element={<AdminDashboardPage />} requireAdmin />,
+    element: <ProtectedRoutes requireAdmin><AdminDashboardPage /></ProtectedRoutes>,
   },
   {
     path: "/admin/users",
-    element: <ProtectedRoutes element={<AdminUsersPage />} requireAdmin />,
+    element: <ProtectedRoutes requireAdmin><UsersPage /></ProtectedRoutes>,
   },
   {
     path: "/admin/payments",
-    element: <ProtectedRoutes element={<AdminPaymentsPage />} requireAdmin />,
+    element: <ProtectedRoutes requireAdmin><AdminPaymentsPage /></ProtectedRoutes>,
   },
   {
     path: "/admin/plans",
-    element: <ProtectedRoutes element={<AdminPlansPage />} requireAdmin />,
+    element: <ProtectedRoutes requireAdmin><AdminPlansPage /></ProtectedRoutes>,
   },
   {
     path: "/admin/apis",
-    element: <ProtectedRoutes element={<AdminApisPage />} requireAdmin />,
+    element: <ProtectedRoutes requireAdmin><ComingSoonPage /></ProtectedRoutes>,
   },
   {
     path: "/admin/docs",
-    element: <ProtectedRoutes element={<AdminDocsPage />} requireAdmin />,
+    element: <ProtectedRoutes requireAdmin><AdminDocsPage /></ProtectedRoutes>,
   },
   {
     path: "/settings",
-    element: <ProtectedRoutes element={<SettingsPage />} />,
+    element: <ProtectedRoutes><SettingsPage /></ProtectedRoutes>,
   },
   {
     path: "/profile",
-    element: <ProtectedRoutes element={<ProfilePage />} />,
+    element: <ProtectedRoutes><ProfilePage /></ProtectedRoutes>,
   },
   {
     path: "/notifications",
-    element: <ProtectedRoutes element={<NotificationsPage />} />,
+    element: <ProtectedRoutes><ComingSoonPage /></ProtectedRoutes>,
   },
   {
     path: "/organizations",
-    element: <ProtectedRoutes element={<OrganizationsPage />} />,
+    element: <ProtectedRoutes><OrganizationsPage /></ProtectedRoutes>,
   },
   {
     path: "/organizations/:id",
-    element: <ProtectedRoutes element={<OrganizationDetailsPage />} />,
+    element: <ProtectedRoutes><ComingSoonPage /></ProtectedRoutes>,
+  },
+  {
+    path: "/hub",
+    element: <ProtectedRoutes><ProductHubPage /></ProtectedRoutes>,
+  },
+  {
+    path: "/pricing",
+    element: <PricingPage />,
   },
   {
     path: "/recruitment",
-    element: <ProtectedRoutes element={<RecruitmentDashboardPage />} />,
+    element: <ProtectedRoutes><RecruitmentDashboardPage /></ProtectedRoutes>,
   },
   {
     path: "/recruitment/leads",
-    element: <ProtectedRoutes element={<RecruitmentLeadsPage />} />,
+    element: <ProtectedRoutes><RecruitmentLeadsPage /></ProtectedRoutes>,
   },
   {
     path: "/recruitment/funnel",
-    element: <ProtectedRoutes element={<RecruitmentFunnelPage />} />,
+    element: <ProtectedRoutes><RecruitmentFunnelPage /></ProtectedRoutes>,
   },
   {
     path: "/recruitment/analytics",
-    element: <ProtectedRoutes element={<RecruitmentAnalyticsPage />} />,
+    element: <ProtectedRoutes><RecruitmentAnalyticsPage /></ProtectedRoutes>,
   },
   {
     path: "/recruitment/campaigns",
-    element: <ProtectedRoutes element={<RecruitmentCampaignsPage />} />,
+    element: <ProtectedRoutes><RecruitmentCampaignsPage /></ProtectedRoutes>,
   },
   {
     path: "/recruitment/predictions",
-    element: <ProtectedRoutes element={<EnrollmentPredictionsPage />} />,
+    element: <ProtectedRoutes><EnrollmentPredictionsPage /></ProtectedRoutes>,
   },
   {
     path: "/recruitment/conversation",
-    element: <ProtectedRoutes element={<ConversationalAIPage />} />,
+    element: <ProtectedRoutes><ConversationalAIPage /></ProtectedRoutes>,
   },
   {
     path: "*",
-    element: <NotFoundPage />,
+    element: <NotFound />,
   },
 ]);
