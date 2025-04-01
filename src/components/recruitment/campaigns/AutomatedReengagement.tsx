@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Zap, MessageSquare, Mail, Clock, AlertCircle, CheckCircle, Edit2, Plus } from 'lucide-react';
+import { Zap, MessageSquare, Mail, Clock, AlertCircle, CheckCircle, Edit2, PlusIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 
@@ -205,7 +205,7 @@ const AutomatedReengagement: React.FC = () => {
         
         <CardFooter>
           <Button variant="outline" className="w-full">
-            <Plus className="h-4 w-4 mr-2" />
+            <PlusIcon className="h-4 w-4 mr-2" />
             Adicionar Nova Regra de Reengajamento
           </Button>
         </CardFooter>
@@ -304,20 +304,3 @@ const AutomatedReengagement: React.FC = () => {
 };
 
 export default AutomatedReengagement;
-
-function Plus(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M5 12h14m-7-7v14" />
-    </svg>
-  );
-}
