@@ -3,7 +3,7 @@
 
 export type LeadStatus = 'novo' | 'contatado' | 'interessado' | 'nao_interessado' | 'agendado' | 'matriculado' | 'desistente';
 
-export type ChannelType = 'site' | 'facebook' | 'instagram' | 'whatsapp' | 'indicacao' | 'google' | 'eventos' | 'presencial' | 'outros';
+export type ChannelType = 'site' | 'facebook' | 'instagram' | 'whatsapp' | 'indicacao' | 'google' | 'eventos' | 'presencial' | 'mail' | 'sms' | 'outros';
 
 export type EmotionType = 'neutro' | 'positivo' | 'negativo' | 'confuso' | 'interessado' | 'hesitante' | 'entusiasmado';
 
@@ -97,6 +97,12 @@ export type Campaign = {
     targetLeads: number;
     targetConversion: number;
   };
+  target?: {
+    audience?: string;
+    location?: string;
+    interests?: string[];
+  };
+  isAutomated?: boolean;
 };
 
 export type Conversation = {
@@ -142,4 +148,37 @@ export type EnrollmentPrediction = {
     count: number;
     convertionProbability: number;
   }[];
+};
+
+// Tipos para as regras de reengajamento automático
+export type ReengagementRule = {
+  id: string;
+  name: string;
+  days: number;
+  enabled: boolean;
+  channels: ChannelType[];
+  message: string;
+  emotionalTone: 'neutral' | 'urgent' | 'friendly' | 'formal';
+  lastTriggered?: Date;
+  status: 'active' | 'paused';
+  segmentation?: {
+    courseInterest?: string[];
+    location?: string[];
+    ageRange?: [number, number];
+    leadSource?: ChannelType[];
+  };
+};
+
+// Tipo para as oportunidades acadêmicas
+export type AcademicOpportunity = {
+  id: string;
+  name: string;
+  type: 'course' | 'interest' | 'location' | 'financial';
+  count: number;
+  urgency: 'high' | 'medium' | 'low';
+  trend: 'up' | 'down' | 'stable';
+  trendPercentage: number;
+  description: string;
+  suggestedAction?: string;
+  leadIds?: string[]; // IDs dos leads relacionados a esta oportunidade
 };
