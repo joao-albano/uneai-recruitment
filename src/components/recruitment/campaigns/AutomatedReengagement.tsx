@@ -111,7 +111,7 @@ const AutomatedReengagement: React.FC = () => {
       case 'urgent':
         return <Badge variant="destructive">Urgente</Badge>;
       case 'friendly':
-        return <Badge variant="success" className="bg-green-500">Amigável</Badge>;
+        return <Badge variant="secondary" className="bg-green-500 text-white">Amigável</Badge>;
       case 'formal':
         return <Badge variant="outline" className="border-blue-500 text-blue-500">Formal</Badge>;
       default:
