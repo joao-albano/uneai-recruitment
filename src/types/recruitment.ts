@@ -1,3 +1,4 @@
+
 // Tipos de dados para o módulo de captação (recrutamento)
 
 export type LeadStatus = 'novo' | 'contatado' | 'interessado' | 'nao_interessado' | 'agendado' | 'matriculado' | 'desistente';

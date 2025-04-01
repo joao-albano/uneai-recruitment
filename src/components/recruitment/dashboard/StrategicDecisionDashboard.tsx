@@ -1,277 +1,408 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { 
-  TrendingUp, TrendingDown, AlertTriangle, PieChart, 
-  BarChart3, Users, Filter, Plus, ArrowRight, HelpCircle
-} from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { 
+  BarChart, PieChart, CheckCircle, AlertTriangle, 
+  AlertCircle, Clock, Download, ChevronRight, 
+  Target, ArrowUp, ArrowDown, TrendingUp, TrendingDown
+} from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+// Dados fictícios de demonstração
+const coursePredictions = [
+  { 
+    name: 'Administração', 
+    target: 180, 
+    predicted: 162, 
+    confidence: 'alta',
+    risk: 'médio',
+    trend: 'estável',
+    actions: [
+      'Reforçar campanha no Google Ads',
+      'Aumentar desconto para matrículas antecipadas'
+    ],
+    metrics: {
+      conversionRate: 16.2,
+      leadCount: 520,
+      costPerLead: 45.8
+    }
+  },
+  { 
+    name: 'Direito', 
+    target: 220, 
+    predicted: 245, 
+    confidence: 'alta',
+    risk: 'baixo',
+    trend: 'aumento',
+    actions: [
+      'Manter estratégia atual',
+      'Considerar expansão de turma'
+    ],
+    metrics: {
+      conversionRate: 22.5,
+      leadCount: 680,
+      costPerLead: 38.2
+    }
+  },
+  { 
+    name: 'Engenharia Civil', 
+    target: 120, 
+    predicted: 78, 
+    confidence: 'média',
+    risk: 'alto',
+    trend: 'queda',
+    actions: [
+      'Criar campanha específica para o curso',
+      'Revisar processo de qualificação de leads',
+      'Oferecer bônus de matrícula'
+    ],
+    metrics: {
+      conversionRate: 9.8,
+      leadCount: 320,
+      costPerLead: 52.6
+    }
+  },
+  { 
+    name: 'Medicina', 
+    target: 100, 
+    predicted: 95, 
+    confidence: 'alta',
+    risk: 'baixo',
+    trend: 'estável',
+    actions: [
+      'Manter estratégia atual',
+      'Destacar diferencial dos laboratórios'
+    ],
+    metrics: {
+      conversionRate: 25.4,
+      leadCount: 230,
+      costPerLead: 85.3
+    }
+  },
+  { 
+    name: 'Psicologia', 
+    target: 160, 
+    predicted: 142, 
+    confidence: 'média',
+    risk: 'médio',
+    trend: 'estável',
+    actions: [
+      'Reforçar campanhas nas redes sociais',
+      'Promover depoimentos de alunos'
+    ],
+    metrics: {
+      conversionRate: 18.1,
+      leadCount: 470,
+      costPerLead: 40.2
+    }
+  },
+];
+
+// Estatísticas gerais
+const overallStats = {
+  totalTarget: coursePredictions.reduce((acc, course) => acc + course.target, 0),
+  totalPredicted: coursePredictions.reduce((acc, course) => acc + course.predicted, 0),
+  totalLeads: coursePredictions.reduce((acc, course) => acc + course.metrics.leadCount, 0),
+  averageConversion: coursePredictions.reduce((acc, course) => acc + course.metrics.conversionRate, 0) / coursePredictions.length,
+  daysUntilEnd: 45,
+  confidence: 'alta',
+  riskDistribution: {
+    high: coursePredictions.filter(c => c.risk === 'alto').length,
+    medium: coursePredictions.filter(c => c.risk === 'médio').length,
+    low: coursePredictions.filter(c => c.risk === 'baixo').length
+  }
+};
 
 const StrategicDecisionDashboard: React.FC = () => {
+  const [selectedPeriod, setSelectedPeriod] = React.useState('2024.2');
+  
+  const getProgressColor = (percent: number) => {
+    if (percent >= 95) return 'bg-green-500';
+    if (percent >= 85) return 'bg-green-400';
+    if (percent >= 70) return 'bg-amber-500';
+    return 'bg-red-500';
+  };
+  
+  const getRiskBadge = (risk: string) => {
+    switch(risk) {
+      case 'baixo': 
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Baixo risco</Badge>;
+      case 'médio': 
+        return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200">Médio risco</Badge>;
+      case 'alto': 
+        return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Alto risco</Badge>;
+      default:
+        return <Badge variant="outline">Desconhecido</Badge>;
+    }
+  };
+  
+  const getTrendBadge = (trend: string) => {
+    switch(trend) {
+      case 'aumento': 
+        return (
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-200 gap-1">
+            <TrendingUp className="h-3 w-3" />
+            Em alta
+          </Badge>
+        );
+      case 'queda': 
+        return (
+          <Badge className="bg-red-100 text-red-800 hover:bg-red-200 gap-1">
+            <TrendingDown className="h-3 w-3" />
+            Em queda
+          </Badge>
+        );
+      case 'estável': 
+        return (
+          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
+            Estável
+          </Badge>
+        );
+      default:
+        return <Badge variant="outline">Desconhecido</Badge>;
+    }
+  };
+  
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Painel de Decisão Estratégica</h1>
+          <h1 className="text-2xl font-bold">Dashboard Estratégico</h1>
           <p className="text-muted-foreground">
-            Acompanhe as metas, previsões e tendências para tomada de decisão
+            Visualização estratégica para tomada de decisões
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex items-center gap-3">
+          <Tabs value={selectedPeriod} onValueChange={setSelectedPeriod}>
+            <TabsList>
+              <TabsTrigger value="2023.2">2023.2</TabsTrigger>
+              <TabsTrigger value="2024.1">2024.1</TabsTrigger>
+              <TabsTrigger value="2024.2">2024.2</TabsTrigger>
+            </TabsList>
+          </Tabs>
           <Button variant="outline" className="gap-2">
-            <Filter className="h-4 w-4" />
-            Filtrar
-          </Button>
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            Nova Campanha
+            <Download className="h-4 w-4" />
+            Exportar
           </Button>
         </div>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-        <Card className="md:col-span-4">
+
+      {/* Visão Geral */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Confiança do Modelo</CardTitle>
-            <CardDescription>
-              Grau de confiança nas projeções de matrícula
-            </CardDescription>
+            <CardTitle className="text-sm text-muted-foreground">Previsão do Período</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center">
-                <HelpCircle className="h-8 w-8 text-amber-600" />
-              </div>
+            <div className="flex items-end justify-between">
               <div>
-                <div className="text-2xl font-bold">Média</div>
-                <div className="text-sm text-muted-foreground">±6.3% variação</div>
+                <div className="text-3xl font-bold">{overallStats.totalPredicted}</div>
+                <div className="text-xs text-muted-foreground">
+                  de {overallStats.totalTarget} matrículas previstas
+                </div>
+              </div>
+              <div className="text-right">
+                <div className={`text-lg font-medium ${
+                  (overallStats.totalPredicted / overallStats.totalTarget) >= 0.9 
+                    ? 'text-green-600' 
+                    : (overallStats.totalPredicted / overallStats.totalTarget) >= 0.7
+                    ? 'text-amber-600'
+                    : 'text-red-600'
+                }`}>
+                  {((overallStats.totalPredicted / overallStats.totalTarget) * 100).toFixed(1)}%
+                </div>
+                <div className="text-xs text-muted-foreground">da meta total</div>
               </div>
             </div>
-            
-            <div className="mt-4 space-y-2">
-              <div className="grid grid-cols-3 gap-2">
-                <div className="text-center p-2 rounded bg-muted">
-                  <div className="text-sm font-medium">Alta</div>
-                  <div className="font-bold">2</div>
-                  <div className="text-xs text-muted-foreground">cursos</div>
-                </div>
-                <div className="text-center p-2 rounded bg-amber-100">
-                  <div className="text-sm font-medium text-amber-800">Média</div>
-                  <div className="font-bold text-amber-800">2</div>
-                  <div className="text-xs text-amber-800">cursos</div>
-                </div>
-                <div className="text-center p-2 rounded bg-muted">
-                  <div className="text-sm font-medium">Baixa</div>
-                  <div className="font-bold">0</div>
-                  <div className="text-xs text-muted-foreground">cursos</div>
-                </div>
-              </div>
-              
-              <div className="text-sm text-muted-foreground mt-2">
-                O modelo está em fase de treinamento com dados recentes. A confiança tende a aumentar nas próximas semanas.
+            <Progress 
+              value={(overallStats.totalPredicted / overallStats.totalTarget) * 100} 
+              className={`h-2 mt-2 ${getProgressColor((overallStats.totalPredicted / overallStats.totalTarget) * 100)}`} 
+            />
+            <div className="mt-2 flex items-center gap-2">
+              <Badge className="bg-blue-100 text-blue-800">
+                {overallStats.confidence === 'alta' ? 'Alta confiança' : 
+                 overallStats.confidence === 'média' ? 'Média confiança' : 'Baixa confiança'}
+              </Badge>
+              <div className="text-xs text-muted-foreground ml-auto flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                <span>{overallStats.daysUntilEnd} dias restantes</span>
               </div>
             </div>
           </CardContent>
         </Card>
         
-        <Card className="md:col-span-8">
+        <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Progresso da Meta Geral</CardTitle>
-            <CardDescription>
-              Período 2024.1 - Consolidado de todos os cursos
-            </CardDescription>
+            <CardTitle className="text-sm text-muted-foreground">Distribuição de Risco</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <div className="text-3xl font-bold">316 / 360</div>
-                <div className="text-sm text-muted-foreground">Previsão / Meta de matrículas</div>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="text-center p-2 rounded-md bg-red-50">
+                <div className="text-2xl font-bold text-red-700">{overallStats.riskDistribution.high}</div>
+                <div className="text-xs text-red-600">Alto Risco</div>
               </div>
-              <div>
-                <Badge className="bg-amber-500">
-                  <TrendingDown className="h-3 w-3 mr-1" />
-                  12.2% abaixo
-                </Badge>
+              <div className="text-center p-2 rounded-md bg-amber-50">
+                <div className="text-2xl font-bold text-amber-700">{overallStats.riskDistribution.medium}</div>
+                <div className="text-xs text-amber-600">Médio Risco</div>
               </div>
-            </div>
-            
-            <div className="space-y-1">
-              <div className="flex justify-between text-sm">
-                <span>Progresso</span>
-                <span>87.8%</span>
-              </div>
-              <Progress value={87.8} className="h-2" />
-              <div className="grid grid-cols-5 text-xs mt-1">
-                <div className="text-muted-foreground">0%</div>
-                <div className="text-muted-foreground text-center">25%</div>
-                <div className="text-muted-foreground text-center">50%</div>
-                <div className="text-muted-foreground text-center">75%</div>
-                <div className="text-muted-foreground text-right">100%</div>
+              <div className="text-center p-2 rounded-md bg-green-50">
+                <div className="text-2xl font-bold text-green-700">{overallStats.riskDistribution.low}</div>
+                <div className="text-xs text-green-600">Baixo Risco</div>
               </div>
             </div>
             
-            <div className="mt-4 grid grid-cols-2 gap-4">
-              <div className="border rounded-md p-3">
-                <div className="text-sm font-medium mb-2">Matrículas Confirmadas</div>
-                <div className="flex justify-between items-center">
-                  <div className="text-2xl font-bold">235</div>
-                  <Badge variant="outline" className="gap-1">
-                    <TrendingUp className="h-3 w-3" />
-                    65.3%
-                  </Badge>
-                </div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  Do total previsto de 316
-                </div>
+            <div className="mt-4 flex items-center justify-between">
+              <div className="text-sm">Taxa Média de Conversão</div>
+              <div className="font-medium">{overallStats.averageConversion.toFixed(1)}%</div>
+            </div>
+            <div className="mt-2 flex items-center justify-between">
+              <div className="text-sm">Total de Leads</div>
+              <div className="font-medium">{overallStats.totalLeads}</div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm text-muted-foreground">Ações Sugeridas</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-start gap-2">
+              <div className="mt-0.5 text-red-500">
+                <AlertCircle className="h-5 w-5" />
               </div>
-              
-              <div className="border rounded-md p-3">
-                <div className="text-sm font-medium mb-2">Tempo Restante</div>
-                <div className="flex justify-between items-center">
-                  <div className="text-2xl font-bold">43 dias</div>
-                  <Badge variant="destructive" className="gap-1">
-                    Crítico
-                  </Badge>
-                </div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  Para atingir 100% da meta
-                </div>
+              <div>
+                <div className="text-sm font-medium">Revisar campanhas para Engenharia Civil</div>
+                <p className="text-xs text-muted-foreground">Curso com maior desvio negativo da meta</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2">
+              <div className="mt-0.5 text-amber-500">
+                <AlertTriangle className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="text-sm font-medium">Reforçar qualificação de leads</div>
+                <p className="text-xs text-muted-foreground">Taxa de conversão abaixo da média em 2 cursos</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2">
+              <div className="mt-0.5 text-green-500">
+                <CheckCircle className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="text-sm font-medium">Expandir vagas para Direito</div>
+                <p className="text-xs text-muted-foreground">Previsão acima da meta com alta confiança</p>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
       
+      {/* Tabela de Cursos */}
       <Card>
         <CardHeader className="pb-2">
-          <div className="flex justify-between items-center">
-            <div>
-              <CardTitle>Cursos em Alerta</CardTitle>
-              <CardDescription>
-                Cursos com risco de não atingir a meta
-              </CardDescription>
-            </div>
-            <Button variant="outline" size="sm" className="gap-1">
-              <span>Ver todos</span>
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
+          <CardTitle>Previsões por Curso</CardTitle>
+          <CardDescription>
+            Análise de probabilidade de matrícula por curso
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="rounded-md border p-4 bg-red-50">
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-red-200 flex items-center justify-center mr-3">
-                    <AlertTriangle className="h-4 w-4 text-red-700" />
-                  </div>
+          <div className="border rounded-md divide-y">
+            {coursePredictions.map((course, index) => (
+              <div key={index} className="p-4 hover:bg-muted/50 transition-colors">
+                <div className="flex items-start justify-between mb-2">
                   <div>
-                    <div className="font-medium flex items-center">
-                      Pedagogia
-                      <Badge className="ml-2 bg-red-500">Alto Risco</Badge>
+                    <div className="font-medium flex items-center gap-2">
+                      {course.name}
+                      <div className="flex items-center gap-1">
+                        {getRiskBadge(course.risk)}
+                        {getTrendBadge(course.trend)}
+                      </div>
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      72 / 120 matrículas previstas • Confiança: Alta
-                    </div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="font-bold text-red-700">60%</div>
-                  <div className="text-xs text-muted-foreground">da meta</div>
-                </div>
-              </div>
-              
-              <Progress value={60} className="h-2" />
-              
-              <div className="mt-3">
-                <div className="text-sm font-medium mb-1">Ações recomendadas:</div>
-                <div className="flex flex-wrap gap-2">
-                  <Button variant="secondary" size="sm" className="h-7 gap-1">
-                    <Plus className="h-3 w-3" />
-                    Campanha específica
-                  </Button>
-                  <Button variant="outline" size="sm" className="h-7 gap-1">
-                    <Plus className="h-3 w-3" />
-                    Aumentar incentivos
-                  </Button>
-                  <Button variant="outline" size="sm" className="h-7 gap-1">
-                    <Plus className="h-3 w-3" />
-                    Revisar captação
-                  </Button>
-                </div>
-              </div>
-            </div>
-            
-            <div className="rounded-md border p-4 bg-amber-50">
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-amber-200 flex items-center justify-center mr-3">
-                    <AlertTriangle className="h-4 w-4 text-amber-700" />
-                  </div>
-                  <div>
-                    <div className="font-medium flex items-center">
-                      Administração
-                      <Badge className="ml-2 bg-amber-500">Médio Risco</Badge>
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      85 / 100 matrículas previstas • Confiança: Alta
+                    <div className="text-sm text-muted-foreground mt-1">
+                      {course.predicted} de {course.target} matrículas previstas ({((course.predicted / course.target) * 100).toFixed(1)}%)
                     </div>
                   </div>
-                </div>
-                <div className="text-right">
-                  <div className="font-bold text-amber-700">85%</div>
-                  <div className="text-xs text-muted-foreground">da meta</div>
-                </div>
-              </div>
-              
-              <Progress value={85} className="h-2" />
-              
-              <div className="mt-3">
-                <div className="text-sm font-medium mb-1">Ações recomendadas:</div>
-                <div className="flex flex-wrap gap-2">
-                  <Button variant="secondary" size="sm" className="h-7 gap-1">
-                    <Plus className="h-3 w-3" />
-                    Reforçar WhatsApp
-                  </Button>
-                  <Button variant="outline" size="sm" className="h-7 gap-1">
-                    <Plus className="h-3 w-3" />
-                    Desconto antecipado
+                  <Button variant="outline" size="sm" className="gap-1">
+                    <span>Detalhes</span>
+                    <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
+                
+                <div className="mt-2">
+                  <Progress 
+                    value={(course.predicted / course.target) * 100}
+                    className={`h-2 ${getProgressColor((course.predicted / course.target) * 100)}`}
+                  />
+                </div>
+                
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-y-2 gap-x-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Conversão:</span>
+                    <span className="font-medium">{course.metrics.conversionRate}%</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Leads:</span>
+                    <span className="font-medium">{course.metrics.leadCount}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Custo por lead:</span>
+                    <span className="font-medium">R$ {course.metrics.costPerLead}</span>
+                  </div>
+                </div>
+                
+                <div className="mt-4 space-y-2">
+                  <div className="text-sm font-medium">Ações sugeridas:</div>
+                  <ul className="space-y-1">
+                    {course.actions.map((action, idx) => (
+                      <li key={idx} className="text-sm flex items-start gap-2">
+                        <Target className="h-4 w-4 mt-0.5 shrink-0" />
+                        <span>{action}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </CardContent>
       </Card>
       
+      {/* Gráficos e Métricas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
-          <CardHeader>
-            <CardTitle>Projeção por Curso</CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Conversão por Canal</CardTitle>
             <CardDescription>
-              Progresso de cada curso em relação à meta
+              Taxa de conversão segmentada por canal de captação
             </CardDescription>
           </CardHeader>
-          <CardContent className="h-80">
-            <div className="h-full flex items-center justify-center border rounded">
-              <p className="text-muted-foreground">Gráfico de barras com projeção por curso será implementado aqui</p>
+          <CardContent className="h-[300px] flex items-center justify-center border rounded-md">
+            <div className="text-center">
+              <BarChart className="h-16 w-16 mx-auto text-muted-foreground" />
+              <p className="text-muted-foreground mt-2">
+                Visualização de gráfico em desenvolvimento
+              </p>
             </div>
           </CardContent>
         </Card>
         
         <Card>
-          <CardHeader>
-            <CardTitle>Efetividade de Canais</CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Distribuição de Leads</CardTitle>
             <CardDescription>
-              Taxa de conversão e volume por canal
+              Distribuição de leads por curso e estágio no funil
             </CardDescription>
           </CardHeader>
-          <CardContent className="h-80">
-            <div className="h-full flex items-center justify-center border rounded">
-              <p className="text-muted-foreground">Gráfico de efetividade por canal será implementado aqui</p>
+          <CardContent className="h-[300px] flex items-center justify-center border rounded-md">
+            <div className="text-center">
+              <PieChart className="h-16 w-16 mx-auto text-muted-foreground" />
+              <p className="text-muted-foreground mt-2">
+                Visualização de gráfico em desenvolvimento
+              </p>
             </div>
           </CardContent>
         </Card>

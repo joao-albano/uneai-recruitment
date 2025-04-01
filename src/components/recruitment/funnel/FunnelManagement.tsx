@@ -1,321 +1,235 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { 
-  Plus, Settings, Save, ArrowLeft, ArrowRight, 
-  UserPlus, Calendar, School, Check, MoreHorizontal,
-  Pencil, Trash2
-} from 'lucide-react';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import FunnelStageDialog from './FunnelStageDialog';
+import { Plus, ArrowRight, Users, ArrowDown, Settings, Filter } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
 
-// Tipo para as etapas do funil
-interface FunnelStage {
-  id: string;
-  name: string;
-  color: string;
-  icon: React.ReactNode;
-  actions: string[];
-  order: number;
-}
+// Dados fictícios para demonstração
+const funnelStages = [
+  { 
+    id: '1', 
+    name: 'Lead Gerado', 
+    order: 1, 
+    isActive: true, 
+    leadCount: 520, 
+    conversionRate: 75,
+    expectedDuration: 2,
+    description: 'Lead captado através de diversos canais'
+  },
+  { 
+    id: '2', 
+    name: 'Primeiro Contato', 
+    order: 2, 
+    isActive: true, 
+    leadCount: 390, 
+    conversionRate: 64,
+    expectedDuration: 3,
+    description: 'Primeiro contato realizado com o lead'
+  },
+  { 
+    id: '3', 
+    name: 'Apresentação', 
+    order: 3, 
+    isActive: true, 
+    leadCount: 250, 
+    conversionRate: 68,
+    expectedDuration: 5,
+    description: 'Apresentação da instituição e cursos'
+  },
+  { 
+    id: '4', 
+    name: 'Visita', 
+    order: 4, 
+    isActive: true, 
+    leadCount: 170, 
+    conversionRate: 65,
+    expectedDuration: 7,
+    description: 'Visita agendada à instituição'
+  },
+  { 
+    id: '5', 
+    name: 'Matrícula', 
+    order: 5, 
+    isActive: true, 
+    leadCount: 110, 
+    conversionRate: 100,
+    expectedDuration: 2,
+    description: 'Processo de matrícula concluído'
+  }
+];
 
 const FunnelManagement: React.FC = () => {
-  const [openStageDialog, setOpenStageDialog] = useState(false);
-  const [editingStage, setEditingStage] = useState<FunnelStage | null>(null);
-  
-  // Etapas do funil de exemplo
-  const [stages, setStages] = useState<FunnelStage[]>([
-    {
-      id: '1',
-      name: 'Contato Inicial',
-      color: 'bg-blue-500',
-      icon: <UserPlus className="h-5 w-5" />,
-      actions: ['Telefonema', 'E-mail', 'WhatsApp'],
-      order: 1
-    },
-    {
-      id: '2',
-      name: 'Agendamento',
-      color: 'bg-amber-500',
-      icon: <Calendar className="h-5 w-5" />,
-      actions: ['Agendar Visita', 'Confirmar Horário', 'Lembrete'],
-      order: 2
-    },
-    {
-      id: '3',
-      name: 'Visita',
-      color: 'bg-purple-500',
-      icon: <School className="h-5 w-5" />,
-      actions: ['Tour pela escola', 'Apresentação', 'Material informativo'],
-      order: 3
-    },
-    {
-      id: '4',
-      name: 'Matrícula',
-      color: 'bg-green-500',
-      icon: <Check className="h-5 w-5" />,
-      actions: ['Contrato', 'Documentação', 'Pagamento'],
-      order: 4
-    }
-  ]);
-  
-  // Manipuladores de edição de etapas
-  const handleEditStage = (stage: FunnelStage) => {
-    setEditingStage(stage);
-    setOpenStageDialog(true);
-  };
-  
-  const handleAddStage = () => {
-    setEditingStage(null);
-    setOpenStageDialog(true);
-  };
-  
-  const handleSaveStage = (stage: FunnelStage) => {
-    if (editingStage) {
-      // Atualizar etapa existente
-      setStages(prev => prev.map(s => s.id === stage.id ? stage : s));
-    } else {
-      // Adicionar nova etapa
-      const newStage = {
-        ...stage,
-        id: `${Date.now()}`,
-        order: stages.length + 1
-      };
-      setStages(prev => [...prev, newStage]);
-    }
-    setOpenStageDialog(false);
-  };
-  
-  const handleMoveStage = (id: string, direction: 'left' | 'right') => {
-    const currentStages = [...stages];
-    const index = currentStages.findIndex(s => s.id === id);
-    
-    if (direction === 'left' && index > 0) {
-      // Trocar com a etapa anterior
-      [currentStages[index - 1], currentStages[index]] = [currentStages[index], currentStages[index - 1]];
-      // Atualizar ordem
-      currentStages[index - 1].order = index;
-      currentStages[index].order = index + 1;
-    } else if (direction === 'right' && index < currentStages.length - 1) {
-      // Trocar com a etapa seguinte
-      [currentStages[index], currentStages[index + 1]] = [currentStages[index + 1], currentStages[index]];
-      // Atualizar ordem
-      currentStages[index].order = index + 1;
-      currentStages[index + 1].order = index + 2;
-    }
-    
-    setStages(currentStages);
-  };
-  
-  const handleDeleteStage = (id: string) => {
-    const confirmed = window.confirm("Tem certeza que deseja excluir esta etapa?");
-    if (confirmed) {
-      setStages(prev => prev.filter(s => s.id !== id));
-    }
-  };
-  
   return (
-    <div className="container mx-auto py-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Funil de Captação</h1>
           <p className="text-muted-foreground">
-            Configure as etapas do funil de captação para seu processo
+            Configure e monitore as etapas do processo de captação
           </p>
         </div>
         <div className="flex gap-3">
-          <Button 
-            variant="outline" 
-            className="gap-2"
-          >
+          <Button variant="outline" className="gap-2">
             <Settings className="h-4 w-4" />
-            <span>Configurações</span>
+            Configurar
           </Button>
-          <Button 
-            className="gap-2"
-            onClick={handleAddStage}
-          >
+          <Button className="gap-2">
             <Plus className="h-4 w-4" />
-            <span>Nova Etapa</span>
+            Nova Etapa
           </Button>
         </div>
       </div>
-      
-      <Tabs defaultValue="edit" className="mb-6">
-        <TabsList>
-          <TabsTrigger value="edit">Editor de Funil</TabsTrigger>
-          <TabsTrigger value="preview">Visualização</TabsTrigger>
-          <TabsTrigger value="templates">Modelos</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="edit" className="pt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Configuração do Funil</CardTitle>
-              <CardDescription>
-                Adicione, edite ou reordene as etapas do seu funil de captação
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {stages.map((stage, index) => (
-                  <Card key={stage.id} className="border-t-4" style={{ borderTopColor: stage.color.replace('bg-', '') }}>
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between items-start">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white ${stage.color}`}>
-                            {stage.icon}
-                          </div>
-                          <CardTitle className="text-lg font-medium">{stage.name}</CardTitle>
-                        </div>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => handleEditStage(stage)}>
-                              <Pencil className="h-4 w-4 mr-2" />
-                              Editar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleMoveStage(stage.id, 'left')} disabled={index === 0}>
-                              <ArrowLeft className="h-4 w-4 mr-2" />
-                              Mover para Esquerda
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleMoveStage(stage.id, 'right')} disabled={index === stages.length - 1}>
-                              <ArrowRight className="h-4 w-4 mr-2" />
-                              Mover para Direita
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => handleDeleteStage(stage.id)}
-                              className="text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Excluir
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+
+      {/* Visualização do Funil */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle>Visualização do Funil</CardTitle>
+          <CardDescription>
+            Fluxo de conversão e desempenho por etapa
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="space-y-8">
+            {funnelStages.map((stage, index) => (
+              <div key={stage.id} className="relative">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
+                    <span className="font-bold text-primary">{stage.order}</span>
+                  </div>
+                  
+                  <div className="flex-grow">
+                    <div className="flex items-center justify-between mb-1">
+                      <div>
+                        <h3 className="font-medium text-lg">{stage.name}</h3>
+                        <p className="text-sm text-muted-foreground">{stage.description}</p>
                       </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-2">Ações nesta etapa:</p>
-                      <ul className="text-sm space-y-1 list-disc pl-5">
-                        {stage.actions.map((action, idx) => (
-                          <li key={idx}>{action}</li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              
-              <div className="mt-6 flex justify-end">
-                <Button className="gap-2">
-                  <Save className="h-4 w-4" />
-                  <span>Salvar Funil</span>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="preview" className="pt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Visualização do Funil</CardTitle>
-              <CardDescription>
-                Veja como o funil ficará em produção
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-96 flex items-center justify-center border rounded">
-                <p className="text-muted-foreground">Visualização do funil em desenvolvimento</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="templates" className="pt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Modelos de Funil</CardTitle>
-              <CardDescription>
-                Selecione um modelo pré-configurado para seu tipo de instituição
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Card className="hover:border-primary cursor-pointer">
-                  <CardHeader>
-                    <CardTitle className="text-lg">Escola Básica</CardTitle>
-                    <CardDescription>
-                      Para escolas de educação infantil e ensino fundamental
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      4 etapas personalizadas para o processo de captação escolar
-                    </p>
-                  </CardContent>
-                </Card>
+                      <Button variant="outline" size="sm">Editar</Button>
+                    </div>
+                    
+                    <div className="bg-muted p-4 rounded-lg mt-2">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <div className="text-sm text-muted-foreground mb-1">Leads nesta etapa</div>
+                          <div className="text-2xl font-bold flex items-center gap-2">
+                            <Users className="h-5 w-5 text-primary" />
+                            {stage.leadCount}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-muted-foreground mb-1">Taxa de conversão</div>
+                          <div className="text-2xl font-bold flex items-center gap-2">
+                            {stage.conversionRate}%
+                            {index < funnelStages.length - 1 && (
+                              <Badge className="bg-amber-100 text-amber-800">
+                                {Math.round(stage.leadCount * (stage.conversionRate / 100))} leads
+                              </Badge>
+                            )}
+                          </div>
+                          <Progress 
+                            value={stage.conversionRate} 
+                            className="h-1.5 mt-1" 
+                          />
+                        </div>
+                        <div>
+                          <div className="text-sm text-muted-foreground mb-1">Duração esperada</div>
+                          <div className="text-2xl font-bold flex items-center gap-1">
+                            {stage.expectedDuration}
+                            <span className="text-base font-normal text-muted-foreground">dias</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 
-                <Card className="hover:border-primary cursor-pointer">
-                  <CardHeader>
-                    <CardTitle className="text-lg">Ensino Superior</CardTitle>
-                    <CardDescription>
-                      Para faculdades e universidades
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      6 etapas focadas em processo seletivo e matrícula
-                    </p>
-                  </CardContent>
-                </Card>
-                
-                <Card className="hover:border-primary cursor-pointer">
-                  <CardHeader>
-                    <CardTitle className="text-lg">Cursos Livres</CardTitle>
-                    <CardDescription>
-                      Para escolas de idiomas e cursos profissionalizantes
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      5 etapas com ênfase em demonstração e conversão rápida
-                    </p>
-                  </CardContent>
-                </Card>
+                {/* Setas conectando as etapas */}
+                {index < funnelStages.length - 1 && (
+                  <div className="absolute left-6 top-full h-8 flex items-center justify-center">
+                    <ArrowDown className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                )}
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
       
-      <FunnelStageDialog 
-        open={openStageDialog} 
-        onOpenChange={setOpenStageDialog}
-        stage={editingStage}
-        onSave={handleSaveStage}
-      />
+      {/* Análise de Conversão */}
+      <Card>
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Análise de Conversão</CardTitle>
+              <CardDescription>
+                Dados de conversão entre etapas do funil
+              </CardDescription>
+            </div>
+            <Button variant="outline" size="sm" className="gap-1">
+              <Filter className="h-4 w-4" />
+              <span>Filtrar</span>
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="border rounded-md divide-y">
+            {funnelStages.slice(0, -1).map((stage, index) => {
+              const nextStage = funnelStages[index + 1];
+              const conversionCount = Math.round(stage.leadCount * (stage.conversionRate / 100));
+              const conversionPercent = ((conversionCount / stage.leadCount) * 100).toFixed(1);
+              
+              return (
+                <div key={`conversion-${stage.id}`} className="p-4 hover:bg-muted/50 transition-colors">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="font-medium">{stage.name}</div>
+                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                      <div className="font-medium">{nextStage.name}</div>
+                    </div>
+                    <Badge className={
+                      parseFloat(conversionPercent) > 70 ? "bg-green-100 text-green-800" :
+                      parseFloat(conversionPercent) > 50 ? "bg-amber-100 text-amber-800" :
+                      "bg-red-100 text-red-800"
+                    }>
+                      {conversionPercent}%
+                    </Badge>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div>{stage.leadCount} leads</div>
+                    <ArrowRight className="h-3 w-3" />
+                    <div>{conversionCount} conversões</div>
+                  </div>
+                  
+                  <div className="mt-2">
+                    <Progress 
+                      value={parseFloat(conversionPercent)} 
+                      className={`h-1.5 ${
+                        parseFloat(conversionPercent) > 70 ? "bg-green-500" :
+                        parseFloat(conversionPercent) > 50 ? "bg-amber-500" :
+                        "bg-red-500"
+                      }`}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          
+          <div className="mt-4 p-4 border rounded-md bg-muted/30">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-medium">Conversão global (Lead → Matrícula)</div>
+              <Badge className="bg-blue-100 text-blue-800">
+                {((funnelStages[funnelStages.length - 1].leadCount / funnelStages[0].leadCount) * 100).toFixed(1)}%
+              </Badge>
+            </div>
+            <div className="mt-1 text-xs text-muted-foreground">
+              {funnelStages[0].leadCount} leads iniciais → {funnelStages[funnelStages.length - 1].leadCount} matrículas
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
