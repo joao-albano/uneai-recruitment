@@ -50,17 +50,6 @@ export function useChannels() {
       responseRate: 65,
       averageTime: '30min',
       status: 'online'
-    },
-    {
-      id: 'webchat',
-      name: 'Web Chat',
-      enabled: true,
-      priority: 5,
-      icon: MessageCircle,
-      fallbackTo: 'email',
-      responseRate: 88,
-      averageTime: '5min',
-      status: 'online'
     }
   ]);
 

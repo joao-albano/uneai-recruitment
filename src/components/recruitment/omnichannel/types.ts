@@ -1,5 +1,5 @@
 
-export type ChannelType = 'whatsapp' | 'email' | 'voice' | 'sms' | 'webchat';
+export type ChannelType = 'whatsapp' | 'email' | 'voice' | 'sms';
 export type ChannelStatus = 'online' | 'limited' | 'offline';
 
 export interface ChannelConfig {
