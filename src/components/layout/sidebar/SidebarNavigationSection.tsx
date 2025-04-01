@@ -94,6 +94,7 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
             icon={LineChart} 
             label="Previsões" 
             collapsed={collapsed}
+            isActive={window.location.pathname === '/recruitment/predictions'}
           />
         </>
       )}

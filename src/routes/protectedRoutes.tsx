@@ -20,6 +20,7 @@ import RecruitmentFunnelPage from "@/pages/RecruitmentFunnelPage";
 import RecruitmentCampaignsPage from "@/pages/RecruitmentCampaignsPage";
 import RecruitmentAnalyticsPage from "@/pages/RecruitmentAnalyticsPage";
 import ConversationPage from "@/pages/recruitment/ConversationPage";
+import EnrollmentPredictionsPage from "@/pages/recruitment/EnrollmentPredictionsPage";
 import { ProductGuard } from "@/components/auth/ProductGuard";
 
 interface RouteConfig {
@@ -179,6 +180,14 @@ export const protectedRoutes: RouteConfig[] = [
     element: (
       <ProtectedRoute>
         <ConversationPage />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/predictions",
+    element: (
+      <ProtectedRoute>
+        <EnrollmentPredictionsPage />
       </ProtectedRoute>
     )
   }
