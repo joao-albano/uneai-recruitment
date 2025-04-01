@@ -19,6 +19,7 @@ import RecruitmentLeadsPage from "@/pages/RecruitmentLeadsPage";
 import RecruitmentFunnelPage from "@/pages/RecruitmentFunnelPage";
 import RecruitmentCampaignsPage from "@/pages/RecruitmentCampaignsPage";
 import RecruitmentAnalyticsPage from "@/pages/RecruitmentAnalyticsPage";
+import ConversationPage from "@/pages/recruitment/ConversationPage";
 import { ProductGuard } from "@/components/auth/ProductGuard";
 
 interface RouteConfig {
@@ -170,6 +171,14 @@ export const protectedRoutes: RouteConfig[] = [
     element: (
       <ProtectedRoute>
         <RecruitmentAnalyticsPage />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/conversation",
+    element: (
+      <ProtectedRoute>
+        <ConversationPage />
       </ProtectedRoute>
     )
   }

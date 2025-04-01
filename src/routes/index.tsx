@@ -8,6 +8,8 @@ import { adminRoutes } from './adminRoutes';
 
 // Import new routes for recruitment geographic targeting
 import GeographicTargetingPage from '@/pages/recruitment/GeographicTargetingPage';
+import ConversationPage from '@/pages/recruitment/ConversationPage';
+import NotFound from '@/pages/NotFound';
 
 // Combine all routes
 const allRoutes = [
@@ -17,6 +19,14 @@ const allRoutes = [
   {
     path: '/recruitment/geographic-targeting',
     element: <GeographicTargetingPage />
+  },
+  {
+    path: '/recruitment/conversation',
+    element: <ConversationPage />
+  },
+  {
+    path: '*',
+    element: <NotFound />
   }
 ];
 
