@@ -45,16 +45,19 @@ export const useLeadForm = () => {
       createdAt: new Date().toISOString(),
     };
     
-    // Update the mock data array
+    // Update the mock data array - fixing by adding the missing required properties
     mockLeadsData.push({
       id: result.id,
       name: result.parentName,
+      email: result.email,       // Add the email field
+      phone: result.phone,       // Add the phone field
       course: result.course,
       children: result.children.length,
       channel: result.channel,
       stage: "Contato Inicial",
       status: "Novo",
       createdAt: result.createdAt,
+      notes: result.observations || "" // Add the notes field using observations or empty string
     });
     
     return result;
