@@ -285,7 +285,7 @@ const AutomatedReengagement: React.FC = () => {
                 className={getToneColor(editingRule.emotionalTone)}
               />
               <p className="text-xs text-muted-foreground">
-                Variáveis disponíveis: {{'{{'}}nome{{'}}'}}, {{'{{'}}curso{{'}}'}}, {{'{{'}}instituicao{{'}}'}}, {{'{{'}}data_limite{{'}}'}}
+                Variáveis disponíveis: {"{{nome}}"}, {"{{curso}}"}, {"{{instituicao}}"}, {"{{data_limite}}"}
               </p>
             </div>
             

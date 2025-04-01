@@ -1,590 +1,605 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { 
-  Check, 
-  MessageSquare, 
+  Calendar as CalendarIcon,
+  Check,
   Mail, 
-  Smartphone, 
-  BarChart2, 
-  Target, 
-  CalendarRange, 
+  MessageSquare, 
+  Phone, 
+  Facebook, 
+  Instagram,
+  Target,
+  Users,
+  Sparkles,
   AlertCircle,
-  Zap,
-  CheckCircle,
-  Search
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+  Card,
+  CardContent,
+} from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { toast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { useCampaigns } from '@/hooks/recruitment/useCampaigns';
+import { Campaign, ChannelType } from '@/types/recruitment';
+import { toast } from '@/hooks/use-toast';
 
 interface CampaignCreationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({ open, onOpenChange }) => {
-  const [currentTab, setCurrentTab] = useState('basic');
-  const [generateAI, setGenerateAI] = useState(true);
+const channelOptions: { value: ChannelType; label: string; icon: React.ReactNode }[] = [
+  { value: 'mail', label: 'Email', icon: <Mail className="h-4 w-4" /> },
+  { value: 'whatsapp', label: 'WhatsApp', icon: <MessageSquare className="h-4 w-4" /> },
+  { value: 'sms', label: 'SMS', icon: <Phone className="h-4 w-4" /> },
+  { value: 'facebook', label: 'Facebook', icon: <Facebook className="h-4 w-4" /> },
+  { value: 'instagram', label: 'Instagram', icon: <Instagram className="h-4 w-4" /> },
+];
+
+const audienceOptions = [
+  { id: 'ensino-medio', label: 'Ensino Médio' },
+  { id: 'graduacao', label: 'Graduação' },
+  { id: 'pos-graduacao', label: 'Pós-Graduação' },
+  { id: 'leads-mornos', label: 'Leads Mornos (30+ dias)' },
+  { id: 'leads-inativos', label: 'Leads Inativos (90+ dias)' },
+];
+
+const locationOptions = [
+  { id: 'zona-norte', label: 'Zona Norte' },
+  { id: 'zona-sul', label: 'Zona Sul' },
+  { id: 'zona-leste', label: 'Zona Leste' },
+  { id: 'zona-oeste', label: 'Zona Oeste' },
+  { id: 'centro', label: 'Centro' },
+  { id: 'regiao-metropolitana', label: 'Região Metropolitana' },
+];
+
+const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({ 
+  open, 
+  onOpenChange 
+}) => {
+  const [activeTab, setActiveTab] = useState('basic');
   const { createCampaign } = useCampaigns();
   
-  const [campaignData, setCampaignData] = useState({
+  const [campaignData, setCampaignData] = useState<Omit<Campaign, 'id'>>({
     name: '',
     description: '',
-    startDate: new Date().toISOString().split('T')[0],
-    endDate: '',
-    status: 'draft' as 'draft' | 'active' | 'paused' | 'completed',
-    budget: 0,
-    channel: ['mail', 'whatsapp'] as string[],
+    startDate: new Date(),
+    status: 'draft',
+    channel: [],
+    performance: {
+      leadsGenerated: 0,
+      conversion: 0,
+      cost: 0,
+    },
     target: {
       audience: '',
-      location: ''
-    },
-    message: {
-      subject: '',
-      content: '',
-      emotionalTone: 'neutral' as 'neutral' | 'urgent' | 'friendly' | 'formal',
-      callToAction: 'Agendar Visita'
-    },
-    isAutomated: false,
-    triggers: {
-      onInactivity: false,
-      inactivityDays: 7
     }
   });
+
+  const [formErrors, setFormErrors] = useState({
+    name: false,
+    channel: false,
+  });
   
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+  const [useAiAssistance, setUseAiAssistance] = useState(false);
+  
+  const handleInputChange = (field: string, value: any) => {
+    setCampaignData(prev => ({ ...prev, [field]: value }));
     
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.');
-      setCampaignData(prev => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent as keyof typeof prev],
-          [child]: value
-        }
-      }));
-    } else {
-      setCampaignData(prev => ({
-        ...prev,
-        [name]: value
-      }));
+    // Clear error for the field if it exists
+    if (formErrors[field as keyof typeof formErrors]) {
+      setFormErrors(prev => ({ ...prev, [field]: false }));
     }
   };
   
-  const handleChannelToggle = (channel: string) => {
-    setCampaignData(prev => {
-      const channels = prev.channel.includes(channel) 
-        ? prev.channel.filter(c => c !== channel)
-        : [...prev.channel, channel];
-      
-      return {
-        ...prev,
-        channel: channels
-      };
-    });
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
   };
   
-  const generateMessageWithAI = () => {
-    // Simulação de geração de mensagem com IA
-    const aiMessages = [
-      "Oi {{nome}}! Estamos oferecendo condições especiais para o curso de {{curso}} na nossa instituição. Aproveite a oportunidade de transformar seu futuro com uma educação de qualidade. Agende uma visita ao nosso campus!",
-      "Olá {{nome}}, tudo bem? Vi que você tem interesse em {{curso}}. Nossa instituição está com matrículas abertas e oferecendo desconto especial para novos alunos. Gostaria de conhecer mais sobre nossos diferenciais?",
-      "{{nome}}, percebemos seu interesse em {{curso}}. Que tal conversarmos sobre como nosso programa pode atender suas expectativas de carreira? Estamos à disposição para esclarecer suas dúvidas!"
-    ];
+  const handleChannelToggle = (channel: ChannelType) => {
+    const updatedChannels = campaignData.channel.includes(channel)
+      ? campaignData.channel.filter(c => c !== channel)
+      : [...campaignData.channel, channel];
     
-    const randomMessage = aiMessages[Math.floor(Math.random() * aiMessages.length)];
-    
-    setCampaignData(prev => ({
-      ...prev,
-      message: {
-        ...prev.message,
-        subject: `Oportunidade especial para ${campaignData.target.audience || 'você'}!`,
-        content: randomMessage
-      }
+    setCampaignData(prev => ({ 
+      ...prev, 
+      channel: updatedChannels 
     }));
     
-    toast({
-      title: "Mensagem gerada com IA",
-      description: "A IA criou uma mensagem baseada no público-alvo e tom emocional selecionados.",
-    });
+    if (updatedChannels.length > 0 && formErrors.channel) {
+      setFormErrors(prev => ({ ...prev, channel: false }));
+    }
   };
   
-  const handleSubmit = () => {
-    // Validação básica
-    if (!campaignData.name.trim()) {
-      toast({
-        title: "Erro de validação",
-        description: "Por favor, informe o nome da campanha.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    // Criar campanha
-    createCampaign({
-      name: campaignData.name,
-      description: campaignData.description,
-      startDate: new Date(campaignData.startDate),
-      endDate: campaignData.endDate ? new Date(campaignData.endDate) : undefined,
-      status: campaignData.isAutomated ? 'active' : 'draft',
-      budget: campaignData.budget,
-      channel: campaignData.channel as any,
-      target: campaignData.target,
-      isAutomated: campaignData.isAutomated
-    });
-    
-    toast({
-      title: "Campanha criada com sucesso!",
-      description: `A campanha "${campaignData.name}" foi ${campaignData.isAutomated ? 'ativada' : 'salva como rascunho'}.`
-    });
-    
-    onOpenChange(false);
-    
-    // Reset form
+  const handleAudienceSelect = (audienceId: string) => {
+    const label = audienceOptions.find(option => option.id === audienceId)?.label || '';
+    setCampaignData(prev => ({ 
+      ...prev, 
+      target: { 
+        ...prev.target,
+        audience: label
+      } 
+    }));
+  };
+  
+  const handleLocationSelect = (locationId: string) => {
+    const label = locationOptions.find(option => option.id === locationId)?.label || '';
+    setCampaignData(prev => ({ 
+      ...prev, 
+      target: { 
+        ...prev.target,
+        location: label
+      } 
+    }));
+  };
+  
+  const resetForm = () => {
     setCampaignData({
       name: '',
       description: '',
-      startDate: new Date().toISOString().split('T')[0],
-      endDate: '',
+      startDate: new Date(),
       status: 'draft',
-      budget: 0,
-      channel: ['mail', 'whatsapp'],
+      channel: [],
+      performance: {
+        leadsGenerated: 0,
+        conversion: 0,
+        cost: 0,
+      },
       target: {
         audience: '',
-        location: ''
-      },
-      message: {
-        subject: '',
-        content: '',
-        emotionalTone: 'neutral',
-        callToAction: 'Agendar Visita'
-      },
-      isAutomated: false,
-      triggers: {
-        onInactivity: false,
-        inactivityDays: 7
       }
     });
+    setFormErrors({ name: false, channel: false });
+    setActiveTab('basic');
+    setUseAiAssistance(false);
+  };
+  
+  const validateForm = (): boolean => {
+    const errors = {
+      name: !campaignData.name.trim(),
+      channel: campaignData.channel.length === 0,
+    };
+    
+    setFormErrors(errors);
+    return !Object.values(errors).some(Boolean);
+  };
+  
+  const handleSubmit = () => {
+    if (!validateForm()) {
+      setActiveTab(formErrors.name ? 'basic' : 'channels');
+      return;
+    }
+    
+    try {
+      const newCampaign = createCampaign(campaignData);
+      
+      toast({
+        title: 'Campanha criada com sucesso',
+        description: `A campanha "${newCampaign.name}" foi criada e está como rascunho.`,
+      });
+      
+      resetForm();
+      onOpenChange(false);
+    } catch (error) {
+      toast({
+        title: 'Erro ao criar campanha',
+        description: 'Houve um erro ao criar a campanha. Tente novamente.',
+        variant: 'destructive',
+      });
+    }
+  };
+  
+  const generateAiDescription = () => {
+    // Simular a geração de descrição por IA
+    setTimeout(() => {
+      const audienceText = campaignData.target?.audience || 'público alvo específico';
+      const aiGenerated = `Campanha estratégica para captação de leads de ${audienceText} com foco em conversão através de ${
+        campaignData.channel.length > 0 
+          ? campaignData.channel.map((c: string) => c.charAt(0).toUpperCase() + c.slice(1)).join(', ') 
+          : 'múltiplos canais'
+      }.`;
+      
+      setCampaignData(prev => ({
+        ...prev,
+        description: aiGenerated
+      }));
+      
+      toast({
+        title: 'Descrição gerada com sucesso',
+        description: 'A IA gerou uma descrição baseada nos dados da campanha.',
+      });
+    }, 1500);
   };
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Criar Nova Campanha</DialogTitle>
           <DialogDescription>
-            Configure todos os detalhes da sua campanha para alcançar os melhores resultados
+            Configure os detalhes da sua nova campanha de captação
           </DialogDescription>
         </DialogHeader>
         
-        <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
+        <Tabs 
+          value={activeTab} 
+          onValueChange={handleTabChange} 
+          className="w-full"
+        >
           <TabsList className="grid grid-cols-4 mb-4">
             <TabsTrigger value="basic">
-              <div className="flex items-center gap-2">
-                <BarChart2 className="h-4 w-4" />
-                <span>Informações Básicas</span>
-              </div>
+              Informações Básicas
             </TabsTrigger>
-            <TabsTrigger value="target">
-              <div className="flex items-center gap-2">
-                <Target className="h-4 w-4" />
-                <span>Público-alvo</span>
-              </div>
+            <TabsTrigger value="channels">
+              Canais
             </TabsTrigger>
-            <TabsTrigger value="message">
-              <div className="flex items-center gap-2">
-                <MessageSquare className="h-4 w-4" />
-                <span>Mensagem</span>
-              </div>
+            <TabsTrigger value="targeting">
+              Segmentação
             </TabsTrigger>
-            <TabsTrigger value="automation">
-              <div className="flex items-center gap-2">
-                <Zap className="h-4 w-4" />
-                <span>Automação</span>
-              </div>
+            <TabsTrigger value="content">
+              Conteúdo
             </TabsTrigger>
           </TabsList>
           
           <TabsContent value="basic" className="space-y-4">
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Nome da Campanha</Label>
-                <Input 
-                  id="name"
-                  name="name"
-                  placeholder="Ex: Campanha de Matrículas 2024.2" 
-                  value={campaignData.name}
-                  onChange={handleInputChange}
-                />
-              </div>
-              
-              <div className="grid gap-2">
+            <div className="space-y-2">
+              <Label htmlFor="name" className={formErrors.name ? 'text-destructive' : ''}>
+                Nome da Campanha {formErrors.name && '*'}
+              </Label>
+              <Input 
+                id="name"
+                value={campaignData.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
+                placeholder="Ex: Captação Vestibular 2024"
+                className={formErrors.name ? 'border-destructive' : ''}
+              />
+              {formErrors.name && (
+                <p className="text-xs text-destructive">
+                  O nome da campanha é obrigatório
+                </p>
+              )}
+            </div>
+            
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
                 <Label htmlFor="description">Descrição</Label>
+                <div className="flex items-center">
+                  <Switch
+                    id="ai-assistance"
+                    checked={useAiAssistance}
+                    onCheckedChange={setUseAiAssistance}
+                    className="mr-2"
+                  />
+                  <Label htmlFor="ai-assistance" className="text-sm cursor-pointer flex items-center">
+                    <Sparkles className="h-3.5 w-3.5 mr-1 text-amber-500" />
+                    Assistência IA
+                  </Label>
+                </div>
+              </div>
+              <div className="relative">
                 <Textarea 
                   id="description"
-                  name="description"
-                  placeholder="Descreva o objetivo e abordagem da campanha" 
-                  rows={3}
                   value={campaignData.description}
-                  onChange={handleInputChange}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  placeholder="Descreva o objetivo e detalhes da campanha"
+                  rows={3}
                 />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="startDate">Data de Início</Label>
-                  <Input 
-                    id="startDate"
-                    name="startDate"
-                    type="date" 
-                    value={campaignData.startDate}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="endDate">Data de Término (Opcional)</Label>
-                  <Input 
-                    id="endDate"
-                    name="endDate"
-                    type="date" 
-                    value={campaignData.endDate}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="budget">Orçamento (R$)</Label>
-                  <Input 
-                    id="budget"
-                    name="budget"
-                    type="number" 
-                    placeholder="0.00" 
-                    value={campaignData.budget || ''}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-              
-              <div className="grid gap-2">
-                <Label>Canais de comunicação</Label>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    { id: 'whatsapp', label: 'WhatsApp', icon: MessageSquare },
-                    { id: 'mail', label: 'E-mail', icon: Mail },
-                    { id: 'sms', label: 'SMS', icon: Smartphone },
-                    { id: 'facebook', label: 'Facebook', icon: () => <Badge>FB</Badge> },
-                    { id: 'instagram', label: 'Instagram', icon: () => <Badge>IG</Badge> }
-                  ].map(channel => (
-                    <Button
-                      key={channel.id}
-                      type="button"
-                      size="sm"
-                      variant={campaignData.channel.includes(channel.id) ? "default" : "outline"}
-                      className="gap-1"
-                      onClick={() => handleChannelToggle(channel.id)}
-                    >
-                      <channel.icon className={typeof channel.icon === 'function' ? '' : "h-4 w-4"} />
-                      <span>{channel.label}</span>
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex justify-end">
-              <Button onClick={() => setCurrentTab('target')}>
-                Próximo: Público-alvo
-                <Check className="h-4 w-4 ml-2" />
-              </Button>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="target" className="space-y-4">
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="targetAudience">Público-alvo</Label>
-                <Input 
-                  id="targetAudience"
-                  name="target.audience"
-                  placeholder="Ex: Alunos do Ensino Médio, Profissionais de TI" 
-                  value={campaignData.target.audience}
-                  onChange={handleInputChange}
-                />
-              </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="targetLocation">Localização</Label>
-                <Input 
-                  id="targetLocation"
-                  name="target.location"
-                  placeholder="Ex: Zona Sul, Região Central" 
-                  value={campaignData.target.location}
-                  onChange={handleInputChange}
-                />
-              </div>
-              
-              <div className="grid gap-2">
-                <Label>Segmentação avançada</Label>
-                <div className="border rounded-lg p-4 bg-muted/50">
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Crie regras mais específicas para segmentar seu público-alvo.
-                  </p>
-                  
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <Search className="h-3.5 w-3.5" />
-                    <span>Segmentação Avançada</span>
-                  </Button>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex justify-between">
-              <Button variant="outline" onClick={() => setCurrentTab('basic')}>
-                Voltar
-              </Button>
-              <Button onClick={() => setCurrentTab('message')}>
-                Próximo: Mensagem
-                <Check className="h-4 w-4 ml-2" />
-              </Button>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="message" className="space-y-4">
-            <div className="grid gap-4">
-              <div className="border rounded-lg p-4 bg-muted/50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-5 w-5 text-primary" />
-                    <h3 className="font-medium">Geração de mensagem com IA</h3>
-                  </div>
-                  <Switch 
-                    checked={generateAI} 
-                    onCheckedChange={setGenerateAI} 
-                  />
-                </div>
-                
-                <p className="text-sm text-muted-foreground mt-2">
-                  Permita que nossa IA gere mensagens personalizadas com base no seu público-alvo e tom emocional.
-                </p>
-                
-                {generateAI && (
-                  <div className="mt-4 grid gap-2">
-                    <Label htmlFor="emotionalTone">Tom da Mensagem</Label>
-                    <select 
-                      id="emotionalTone"
-                      name="message.emotionalTone"
-                      className="w-full h-10 px-3 rounded-md border border-input bg-background"
-                      value={campaignData.message.emotionalTone}
-                      onChange={handleInputChange}
-                    >
-                      <option value="neutral">Neutro</option>
-                      <option value="urgent">Urgente/Senso de urgência</option>
-                      <option value="friendly">Amigável/Casual</option>
-                      <option value="formal">Formal/Profissional</option>
-                    </select>
-                  </div>
-                )}
-                
-                {generateAI && (
-                  <Button 
-                    variant="secondary" 
-                    className="mt-4 w-full gap-2"
-                    onClick={generateMessageWithAI}
+                {useAiAssistance && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="absolute bottom-2 right-2"
+                    onClick={generateAiDescription}
                   >
-                    <Zap className="h-4 w-4" />
-                    <span>Gerar Mensagem com IA</span>
+                    <Sparkles className="h-3.5 w-3.5 mr-1 text-amber-500" />
+                    Gerar descrição
                   </Button>
                 )}
               </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="subject">Assunto (para e-mail)</Label>
-                <Input 
-                  id="subject"
-                  name="message.subject"
-                  placeholder="Ex: Garanta seu futuro com nossos cursos!" 
-                  value={campaignData.message.subject}
-                  onChange={handleInputChange}
-                />
-              </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="content">Conteúdo da Mensagem</Label>
-                <Textarea 
-                  id="content"
-                  name="message.content"
-                  placeholder="Digite o conteúdo da mensagem ou utilize a geração por IA" 
-                  rows={6}
-                  value={campaignData.message.content}
-                  onChange={handleInputChange}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Variáveis disponíveis: {{'{{'}}nome{{'}}'}}, {{'{{'}}curso{{'}}'}}, {{'{{'}}instituicao{{'}}'}}, {{'{{'}}prazo{{'}}'}}
-                </p>
-              </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="callToAction">Chamada para Ação</Label>
-                <Input 
-                  id="callToAction"
-                  name="message.callToAction"
-                  placeholder="Ex: Agendar Visita, Fazer Inscrição" 
-                  value={campaignData.message.callToAction}
-                  onChange={handleInputChange}
-                />
-              </div>
             </div>
             
-            <div className="flex justify-between">
-              <Button variant="outline" onClick={() => setCurrentTab('target')}>
-                Voltar
-              </Button>
-              <Button onClick={() => setCurrentTab('automation')}>
-                Próximo: Automação
-                <Check className="h-4 w-4 ml-2" />
-              </Button>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="startDate">Data de Início</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {campaignData.startDate ? (
+                        format(campaignData.startDate, "dd/MM/yyyy", { locale: ptBR })
+                      ) : (
+                        <span>Selecione uma data</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={campaignData.startDate}
+                      onSelect={(date) => handleInputChange('startDate', date || new Date())}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="endDate">Data de Término (opcional)</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {campaignData.endDate ? (
+                        format(campaignData.endDate, "dd/MM/yyyy", { locale: ptBR })
+                      ) : (
+                        <span>Selecione uma data</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={campaignData.endDate}
+                      onSelect={(date) => handleInputChange('endDate', date)}
+                      fromDate={campaignData.startDate}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
           </TabsContent>
           
-          <TabsContent value="automation" className="space-y-4">
-            <div className="grid gap-4">
-              <div className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="font-medium">Ativação Automática</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Configure gatilhos automáticos para envio da campanha
-                    </p>
-                  </div>
-                  <Switch 
-                    checked={campaignData.isAutomated} 
-                    onCheckedChange={(checked) => setCampaignData(prev => ({ ...prev, isAutomated: checked }))} 
-                  />
-                </div>
-                
-                {campaignData.isAutomated && (
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-2">
-                      <Switch 
-                        id="onInactivity"
-                        checked={campaignData.triggers.onInactivity} 
-                        onCheckedChange={(checked) => setCampaignData(prev => ({ 
-                          ...prev, 
-                          triggers: { ...prev.triggers, onInactivity: checked } 
-                        }))} 
-                      />
-                      <Label htmlFor="onInactivity">Inatividade do Lead</Label>
+          <TabsContent value="channels" className="space-y-4">
+            <div className="space-y-2">
+              <Label className={formErrors.channel ? 'text-destructive' : ''}>
+                Canais de Comunicação {formErrors.channel && '*'}
+              </Label>
+              {formErrors.channel && (
+                <p className="text-xs text-destructive">
+                  Selecione pelo menos um canal
+                </p>
+              )}
+              <div className="grid grid-cols-2 gap-3">
+                {channelOptions.map(({ value, label, icon }) => (
+                  <div 
+                    key={value} 
+                    className={`
+                      flex items-center p-3 border rounded-lg cursor-pointer transition-colors
+                      ${campaignData.channel.includes(value) 
+                        ? 'border-primary bg-primary/5' 
+                        : 'border-border hover:bg-accent'}
+                    `}
+                    onClick={() => handleChannelToggle(value)}
+                  >
+                    <div className="mr-3">
+                      {icon}
                     </div>
-                    
-                    {campaignData.triggers.onInactivity && (
-                      <div className="pl-8 grid grid-cols-2 gap-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="inactivityDays">Dias sem interação</Label>
-                          <Input 
-                            id="inactivityDays"
-                            type="number" 
-                            min="1" 
-                            value={campaignData.triggers.inactivityDays} 
-                            onChange={(e) => setCampaignData(prev => ({ 
-                              ...prev, 
-                              triggers: { ...prev.triggers, inactivityDays: parseInt(e.target.value) || 0 } 
-                            }))} 
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-              
-              <div className="border rounded-lg p-4">
-                <h3 className="font-medium">Resumo da Campanha</h3>
-                
-                <div className="mt-3 space-y-3">
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <p className="text-muted-foreground">Nome:</p>
-                      <p className="font-medium">{campaignData.name || 'Não definido'}</p>
+                    <div className="flex-1">
+                      <p className="font-medium">{label}</p>
                     </div>
-                    <div>
-                      <p className="text-muted-foreground">Período:</p>
-                      <p className="font-medium">
-                        {campaignData.startDate ? new Date(campaignData.startDate).toLocaleDateString('pt-BR') : 'Não definido'}
-                        {campaignData.endDate && ` até ${new Date(campaignData.endDate).toLocaleDateString('pt-BR')}`}
-                      </p>
+                    <div className="flex items-center justify-center rounded-full w-5 h-5 border">
+                      {campaignData.channel.includes(value) && (
+                        <Check className="h-3 w-3" />
+                      )}
                     </div>
                   </div>
-                  
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <p className="text-muted-foreground">Público-alvo:</p>
-                      <p className="font-medium">{campaignData.target.audience || 'Geral'}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Canais:</p>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {campaignData.channel.map(channel => (
-                          <Badge key={channel} variant="outline" className="text-xs">
-                            {channel}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <p className="text-muted-foreground">Automação:</p>
-                      <div className="flex items-center gap-1 mt-1">
-                        {campaignData.isAutomated ? (
-                          <>
-                            <CheckCircle className="h-4 w-4 text-green-500" />
-                            <span className="text-green-600">Ativada</span>
-                          </>
-                        ) : (
-                          <>
-                            <AlertCircle className="h-4 w-4 text-amber-500" />
-                            <span className="text-amber-600">Desativada</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Tom emocional:</p>
-                      <p className="font-medium capitalize">
-                        {campaignData.message.emotionalTone === 'urgent' && 'Urgente'}
-                        {campaignData.message.emotionalTone === 'friendly' && 'Amigável'}
-                        {campaignData.message.emotionalTone === 'formal' && 'Formal'}
-                        {campaignData.message.emotionalTone === 'neutral' && 'Neutro'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
             
-            <div className="flex justify-between">
-              <Button variant="outline" onClick={() => setCurrentTab('message')}>
-                Voltar
-              </Button>
-              <Button onClick={handleSubmit}>
-                {campaignData.isAutomated ? 'Ativar Campanha' : 'Criar Rascunho'}
-                <Check className="h-4 w-4 ml-2" />
-              </Button>
+            <div className="space-y-2">
+              <Label htmlFor="budget">Orçamento (R$)</Label>
+              <Input 
+                id="budget"
+                type="number"
+                min="0"
+                step="100"
+                value={campaignData.budget || ''}
+                onChange={(e) => handleInputChange('budget', Number(e.target.value))}
+                placeholder="Ex: 5000"
+              />
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="targeting" className="space-y-4">
+            <div className="space-y-2">
+              <Label>Público-alvo</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {audienceOptions.map(option => (
+                  <div 
+                    key={option.id} 
+                    className="flex items-center space-x-2"
+                  >
+                    <Checkbox 
+                      id={`audience-${option.id}`} 
+                      checked={campaignData.target?.audience === option.label}
+                      onCheckedChange={() => handleAudienceSelect(option.id)}
+                    />
+                    <Label 
+                      htmlFor={`audience-${option.id}`}
+                      className="cursor-pointer text-sm"
+                    >
+                      {option.label}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Localização</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {locationOptions.map(option => (
+                  <div 
+                    key={option.id} 
+                    className="flex items-center space-x-2"
+                  >
+                    <Checkbox 
+                      id={`location-${option.id}`} 
+                      checked={campaignData.target?.location === option.label}
+                      onCheckedChange={() => handleLocationSelect(option.id)}
+                    />
+                    <Label 
+                      htmlFor={`location-${option.id}`}
+                      className="cursor-pointer text-sm"
+                    >
+                      {option.label}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <Card className="border-dashed border-muted-foreground/20 bg-muted/50">
+              <CardContent className="py-4 flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-full">
+                  <Target className="h-5 w-5 text-primary" />
+                </div>
+                <div className="text-sm">
+                  <p className="font-medium">Segmentação Inteligente</p>
+                  <p className="text-muted-foreground">
+                    Utilizar dados de comportamento para refinar o público-alvo.
+                  </p>
+                </div>
+                <div className="ml-auto">
+                  <Badge variant="outline" className="bg-muted">
+                    Em breve
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="content" className="space-y-4">
+            <div>
+              <p className="text-muted-foreground mb-6">
+                O conteúdo da campanha será configurado após a criação da campanha.
+              </p>
+              <div className="grid gap-4">
+                <Card className="border-dashed border-primary/30 bg-primary/5">
+                  <CardContent className="py-4 flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 rounded-full">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="text-sm">
+                      <p className="font-medium">Geração de Conteúdo por IA</p>
+                      <p className="text-muted-foreground">
+                        Sistema inteligente para criação de mensagens personalizadas
+                      </p>
+                    </div>
+                    <div className="ml-auto">
+                      <Badge>Recomendado</Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="border-dashed border-muted-foreground/20">
+                  <CardContent className="py-4 flex items-center gap-3">
+                    <div className="p-2 bg-muted rounded-full">
+                      <Users className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <div className="text-sm">
+                      <p className="font-medium">Segmentação Avançada</p>
+                      <p className="text-muted-foreground">
+                        Mensagens específicas para diferentes segmentos do público
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+            
+            <div className="rounded-md border p-4 bg-amber-50/50">
+              <div className="flex gap-3">
+                <AlertCircle className="h-5 w-5 text-amber-500 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-medium text-amber-800">Dica de conteúdo</p>
+                  <p className="text-amber-800/80">
+                    As mensagens mais eficazes focam em benefícios tangíveis e incluem um chamado à ação claro.
+                  </p>
+                </div>
+              </div>
             </div>
           </TabsContent>
         </Tabs>
+        
+        <DialogFooter className="gap-2 sm:gap-0 mt-4">
+          <div className="flex-1 flex items-center">
+            {activeTab !== "basic" && (
+              <Button 
+                type="button" 
+                variant="ghost"
+                onClick={() => {
+                  const tabs = ["basic", "channels", "targeting", "content"];
+                  const currentIndex = tabs.indexOf(activeTab);
+                  setActiveTab(tabs[currentIndex - 1]);
+                }}
+              >
+                Voltar
+              </Button>
+            )}
+          </div>
+          
+          <div className="space-x-2 flex">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => {
+                resetForm();
+                onOpenChange(false);
+              }}
+            >
+              Cancelar
+            </Button>
+            
+            {activeTab !== "content" ? (
+              <Button 
+                type="button" 
+                onClick={() => {
+                  const tabs = ["basic", "channels", "targeting", "content"];
+                  const currentIndex = tabs.indexOf(activeTab);
+                  setActiveTab(tabs[currentIndex + 1]);
+                }}
+              >
+                Continuar
+              </Button>
+            ) : (
+              <Button type="button" onClick={handleSubmit}>
+                Criar Campanha
+              </Button>
+            )}
+          </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
