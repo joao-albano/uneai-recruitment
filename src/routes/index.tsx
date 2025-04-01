@@ -19,7 +19,7 @@ import RecruitmentAnalyticsPage from "@/pages/RecruitmentAnalyticsPage";
 import RecruitmentCampaignsPage from "@/pages/RecruitmentCampaignsPage";
 import EnrollmentPredictionsPage from "@/pages/recruitment/EnrollmentPredictionsPage";
 import ConversationalAIPage from "@/pages/recruitment/ConversationalAIPage";
-import { ProtectedRoute as ProtectedRoutes } from "@/components/auth/ProtectedRoutes";
+import { ProtectedRoute, AdminRoute } from "@/components/auth/ProtectedRoutes";
 import Index from "@/pages/Index";
 import ComingSoonPage from "@/pages/ComingSoonPage";
 import UsersPage from "@/pages/UsersPage";
@@ -42,79 +42,79 @@ export const router = createBrowserRouter([
   },
   {
     path: "/home",
-    element: <ProtectedRoutes><Index /></ProtectedRoutes>,
+    element: <ProtectedRoute><Index /></ProtectedRoute>,
   },
   {
     path: "/dashboard",
-    element: <ProtectedRoutes><DashboardPage /></ProtectedRoutes>,
+    element: <ProtectedRoute><DashboardPage /></ProtectedRoute>,
   },
   {
     path: "/model",
-    element: <ProtectedRoutes><ModelPage /></ProtectedRoutes>,
+    element: <ProtectedRoute><ModelPage /></ProtectedRoute>,
   },
   {
     path: "/model/:id",
-    element: <ProtectedRoutes><ComingSoonPage /></ProtectedRoutes>,
+    element: <ProtectedRoute><ComingSoonPage /></ProtectedRoute>,
   },
   {
     path: "/model/student/:id",
-    element: <ProtectedRoutes><ModelStudentPage /></ProtectedRoutes>,
+    element: <ProtectedRoute><ModelStudentPage /></ProtectedRoute>,
   },
   {
     path: "/upload",
-    element: <ProtectedRoutes><UploadPage /></ProtectedRoutes>,
+    element: <ProtectedRoute><UploadPage /></ProtectedRoute>,
   },
   {
     path: "/billing",
-    element: <ProtectedRoutes><ComingSoonPage /></ProtectedRoutes>,
+    element: <ProtectedRoute><ComingSoonPage /></ProtectedRoute>,
   },
   {
     path: "/admin",
-    element: <ProtectedRoutes requireAdmin><AdminDashboardPage /></ProtectedRoutes>,
+    element: <AdminRoute><AdminDashboardPage /></AdminRoute>,
   },
   {
     path: "/admin/users",
-    element: <ProtectedRoutes requireAdmin><UsersPage /></ProtectedRoutes>,
+    element: <AdminRoute><UsersPage /></AdminRoute>,
   },
   {
     path: "/admin/payments",
-    element: <ProtectedRoutes requireAdmin><AdminPaymentsPage /></ProtectedRoutes>,
+    element: <AdminRoute><AdminPaymentsPage /></AdminRoute>,
   },
   {
     path: "/admin/plans",
-    element: <ProtectedRoutes requireAdmin><AdminPlansPage /></ProtectedRoutes>,
+    element: <AdminRoute><AdminPlansPage /></AdminRoute>,
   },
   {
     path: "/admin/apis",
-    element: <ProtectedRoutes requireAdmin><ComingSoonPage /></ProtectedRoutes>,
+    element: <AdminRoute><ComingSoonPage /></AdminRoute>,
   },
   {
     path: "/admin/docs",
-    element: <ProtectedRoutes requireAdmin><AdminDocsPage /></ProtectedRoutes>,
+    element: <AdminRoute><AdminDocsPage /></AdminRoute>,
   },
   {
     path: "/settings",
-    element: <ProtectedRoutes><SettingsPage /></ProtectedRoutes>,
+    element: <ProtectedRoute><SettingsPage /></ProtectedRoute>,
   },
   {
     path: "/profile",
-    element: <ProtectedRoutes><ProfilePage /></ProtectedRoutes>,
+    element: <ProtectedRoute><ProfilePage /></ProtectedRoute>,
   },
   {
     path: "/notifications",
-    element: <ProtectedRoutes><ComingSoonPage /></ProtectedRoutes>,
+    element: <ProtectedRoute><ComingSoonPage /></ProtectedRoute>,
   },
   {
     path: "/organizations",
-    element: <ProtectedRoutes><OrganizationsPage /></ProtectedRoutes>,
+    element: <ProtectedRoute><OrganizationsPage /></ProtectedRoute>,
   },
   {
     path: "/organizations/:id",
-    element: <ProtectedRoutes><ComingSoonPage /></ProtectedRoutes>,
+    element: <ProtectedRoute><ComingSoonPage /></ProtectedRoute>,
   },
   {
     path: "/hub",
-    element: <ProtectedRoutes><ProductHubPage /></ProtectedRoutes>,
+    element: <ProtectedRoute><ProductHubPage /></ProtectedRoute>,
   },
   {
     path: "/pricing",
@@ -122,31 +122,31 @@ export const router = createBrowserRouter([
   },
   {
     path: "/recruitment",
-    element: <ProtectedRoutes><RecruitmentDashboardPage /></ProtectedRoutes>,
+    element: <ProtectedRoute><RecruitmentDashboardPage /></ProtectedRoute>,
   },
   {
     path: "/recruitment/leads",
-    element: <ProtectedRoutes><RecruitmentLeadsPage /></ProtectedRoutes>,
+    element: <ProtectedRoute><RecruitmentLeadsPage /></ProtectedRoute>,
   },
   {
     path: "/recruitment/funnel",
-    element: <ProtectedRoutes><RecruitmentFunnelPage /></ProtectedRoutes>,
+    element: <ProtectedRoute><RecruitmentFunnelPage /></ProtectedRoute>,
   },
   {
     path: "/recruitment/analytics",
-    element: <ProtectedRoutes><RecruitmentAnalyticsPage /></ProtectedRoutes>,
+    element: <ProtectedRoute><RecruitmentAnalyticsPage /></ProtectedRoute>,
   },
   {
     path: "/recruitment/campaigns",
-    element: <ProtectedRoutes><RecruitmentCampaignsPage /></ProtectedRoutes>,
+    element: <ProtectedRoute><RecruitmentCampaignsPage /></ProtectedRoute>,
   },
   {
     path: "/recruitment/predictions",
-    element: <ProtectedRoutes><EnrollmentPredictionsPage /></ProtectedRoutes>,
+    element: <ProtectedRoute><EnrollmentPredictionsPage /></ProtectedRoute>,
   },
   {
     path: "/recruitment/conversation",
-    element: <ProtectedRoutes><ConversationalAIPage /></ProtectedRoutes>,
+    element: <ProtectedRoute><ConversationalAIPage /></ProtectedRoute>,
   },
   {
     path: "*",
