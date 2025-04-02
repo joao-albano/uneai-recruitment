@@ -6,7 +6,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { ModelMetricsChart } from './charts/ModelMetricsChart';
 import { ModelHistoryChart } from './charts/ModelHistoryChart';
-import { InfoCircle, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Info, CheckCircle, AlertTriangle } from 'lucide-react';
 
 // Mock model metrics data
 const modelMetrics = {
@@ -71,7 +71,7 @@ const ModelPerformanceMetrics: React.FC<ModelPerformanceMetricsProps> = ({ selec
       default:
         return (
           <Badge variant="outline" className="flex items-center gap-1">
-            <InfoCircle className="h-3 w-3" />
+            <Info className="h-3 w-3" />
             {modelMetrics.overall.status}
           </Badge>
         );
