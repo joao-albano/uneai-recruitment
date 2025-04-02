@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { LeadFilterOptions } from '../types/leadFilters';
 import SearchInput from './toolbar/SearchInput';
 import QuickFiltersMenu from './toolbar/QuickFiltersMenu';
@@ -42,6 +42,10 @@ const LeadsToolbar: React.FC<LeadsToolbarProps> = ({
 
   const activeFilterCount = getActiveFilterCount();
 
+  const handleQuickFiltersClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-muted/30 p-3 rounded-lg border border-muted/50">
       <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -51,10 +55,11 @@ const LeadsToolbar: React.FC<LeadsToolbarProps> = ({
           setFilters={setFilters} 
           clearFilters={clearFilters}
           activeFilterCount={activeFilterCount}
+          onClick={handleQuickFiltersClick}
         />
       </div>
       
-      <div className="flex gap-2 ml-auto">
+      <div className="flex gap-2 ml-auto" onClick={(e) => e.stopPropagation()}>
         <ViewToggle viewMode={viewMode} onViewModeChange={onViewModeChange} />
         <Separator orientation="vertical" className="h-8" />
         <DetailedFiltersMenu filters={filters} setFilters={setFilters} />
@@ -65,4 +70,5 @@ const LeadsToolbar: React.FC<LeadsToolbarProps> = ({
   );
 };
 
-export default LeadsToolbar;
+// Memoize the component to prevent unnecessary re-renders
+export default memo(LeadsToolbar);

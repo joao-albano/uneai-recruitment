@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/popover';
 import { DatePicker } from '@/components/ui/date-picker';
 import { LeadFilterOptions } from '../../types/leadFilters';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 interface DateFilterPopoverProps {
   filters: LeadFilterOptions;
@@ -19,6 +19,7 @@ interface DateFilterPopoverProps {
 const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({ filters, setFilters }) => {
   const [startDate, setStartDate] = useState<Date | undefined>(filters.startDate);
   const [endDate, setEndDate] = useState<Date | undefined>(filters.endDate);
+  const [open, setOpen] = useState(false);
   const { toast } = useToast();
   
   // Sync component state with prop filters
@@ -27,7 +28,13 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({ filters, setFilte
     setEndDate(filters.endDate);
   }, [filters.startDate, filters.endDate]);
 
-  const handleDateChange = () => {
+  const handleDateChange = (e: React.MouseEvent) => {
+    // Prevent event propagation
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     setFilters({
       ...filters,
       startDate,
@@ -46,9 +53,18 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({ filters, setFilte
             : "Período limpo",
       duration: 2000,
     });
+    
+    // Close the popover
+    setOpen(false);
   };
   
-  const handleClearDates = () => {
+  const handleClearDates = (e: React.MouseEvent) => {
+    // Prevent event propagation
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     setStartDate(undefined);
     setEndDate(undefined);
     
@@ -65,14 +81,17 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({ filters, setFilte
         duration: 2000,
       });
     }
+    
+    // Close the popover
+    setOpen(false);
   };
   
   // Check if date filter is active
   const isDateFilterActive = Boolean(filters.startDate || filters.endDate);
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
         <Button 
           variant="outline" 
           className={`gap-2 ${isDateFilterActive ? 'bg-primary/10 border-primary/30 text-primary' : ''}`}
@@ -86,7 +105,7 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({ filters, setFilte
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-4" align="end">
+      <PopoverContent className="w-auto p-4" align="end" onClick={(e) => e.stopPropagation()}>
         <div className="space-y-4">
           <div className="space-y-2">
             <h4 className="font-medium text-sm">Data Inicial</h4>

@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 interface FiltersBadgeProps {
   activeFilterCount: number;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const FiltersBadge: React.FC<FiltersBadgeProps> = ({ activeFilterCount, onClick }) => {
@@ -21,13 +21,23 @@ const FiltersBadge: React.FC<FiltersBadgeProps> = ({ activeFilterCount, onClick 
     return activeFilterCount > 0 ? "text-primary" : "text-teal-600";
   };
 
+  // Prevent event propagation when clicking the filter button
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (onClick) {
+      onClick(e);
+    }
+  };
+
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <Button 
           variant="outline" 
           size="icon" 
-          onClick={onClick}
+          onClick={handleClick}
           className={`relative ${getBgColor()} transition-colors`}
         >
           <Filter className={`h-4 w-4 ${getTextColor()}`} />

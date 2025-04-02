@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import LeadsTableView from './LeadsTableView';
 import LeadsToolbar from './LeadsToolbar';
@@ -43,8 +43,31 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
   onChangeStage,
   openChangeStageDialog,
 }) => {
+  // Use the React.memo pattern for improved performance
+  const MemoizedLeadsTableView = React.useMemo(() => (
+    <LeadsTableView 
+      leads={filteredLeads} 
+      onEditLead={onEditLead}
+      onChangeStage={onChangeStage}
+      onViewHistory={onViewHistory}
+      onDeleteLead={onDeleteLead}
+    />
+  ), [filteredLeads, onEditLead, onChangeStage, onViewHistory, onDeleteLead]);
+
+  const MemoizedKanbanView = React.useMemo(() => (
+    <LeadsKanbanView 
+      stageGroups={stageGroups}
+      onEditLead={onEditLead}
+      onStageChange={onStageChange}
+      onChangeStage={onChangeStage} 
+      openChangeStageDialog={openChangeStageDialog}
+      onViewHistory={onViewHistory}
+      onDeleteLead={onDeleteLead}
+    />
+  ), [stageGroups, onEditLead, onStageChange, onChangeStage, openChangeStageDialog, onViewHistory, onDeleteLead]);
+
   return (
-    <div>
+    <div onClick={(e) => e.stopPropagation()}>
       <LeadsToolbar
         viewMode={viewMode}
         onViewModeChange={onViewModeChange}
@@ -58,29 +81,16 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
       
       <Tabs value={viewMode} className="mt-4">
         <TabsContent value="table" hidden={viewMode !== 'table'}>
-          <LeadsTableView 
-            leads={filteredLeads} 
-            onEditLead={onEditLead}
-            onChangeStage={onChangeStage}
-            onViewHistory={onViewHistory}
-            onDeleteLead={onDeleteLead}
-          />
+          {MemoizedLeadsTableView}
         </TabsContent>
         
         <TabsContent value="kanban" hidden={viewMode !== 'kanban'}>
-          <LeadsKanbanView 
-            stageGroups={stageGroups}
-            onEditLead={onEditLead}
-            onStageChange={onStageChange}
-            onChangeStage={onChangeStage} 
-            openChangeStageDialog={openChangeStageDialog}
-            onViewHistory={onViewHistory}
-            onDeleteLead={onDeleteLead}
-          />
+          {MemoizedKanbanView}
         </TabsContent>
       </Tabs>
     </div>
   );
 };
 
-export default LeadMainContent;
+// Memoize the component to prevent unnecessary re-renders
+export default memo(LeadMainContent);
