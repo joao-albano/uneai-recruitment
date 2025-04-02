@@ -42,7 +42,9 @@ export const protectedRoutes: RouteConfig[] = [
     path: "/home",
     element: (
       <ProtectedRoute>
-        <Index />
+        <ProductGuard allowedProduct="retention" redirectTo="/hub">
+          <Index />
+        </ProductGuard>
       </ProtectedRoute>
     )
   },
@@ -140,7 +142,9 @@ export const protectedRoutes: RouteConfig[] = [
     path: "/recruitment/home",
     element: (
       <ProtectedRoute>
-        <RecruitmentHomePage />
+        <ProductGuard allowedProduct="recruitment" redirectTo="/hub">
+          <RecruitmentHomePage />
+        </ProductGuard>
       </ProtectedRoute>
     )
   },

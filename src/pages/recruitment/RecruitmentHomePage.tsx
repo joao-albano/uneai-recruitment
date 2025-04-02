@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, FileUp, BarChart3, UserPlus, LineChart, CalendarCheck, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { useProduct } from '@/context/ProductContext';
+import { useProduct } from '@/context/product';
 import Layout from '@/components/layout/Layout';
 import FeatureCard from '@/components/recruitment/home/FeatureCard';
 
@@ -26,9 +26,9 @@ const RecruitmentHomePage: React.FC = () => {
       sidebarCollapsed={sidebarCollapsed}
       setSidebarCollapsed={setSidebarCollapsed}
     >
-      <div className="container mx-auto px-4 py-10">
-        <section className="relative w-full bg-gradient-to-b from-primary/10 to-background py-16 rounded-xl overflow-hidden mb-16">
-          <div className="max-w-4xl mx-auto px-4 md:px-6 relative z-10">
+      <div className="w-full">
+        <section className="relative w-full bg-gradient-to-b from-primary/10 to-background py-16 px-4 md:px-6 overflow-hidden mb-16">
+          <div className="max-w-4xl mx-auto relative z-10">
             <div className="flex flex-col items-center text-center">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
                 Une.AI <span className="text-primary">Captação</span>
@@ -66,7 +66,7 @@ const RecruitmentHomePage: React.FC = () => {
             </p>
           </div>
           
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">
             <FeatureCard 
               icon={FileUp}
               title="Upload de Dados"
@@ -123,7 +123,7 @@ const RecruitmentHomePage: React.FC = () => {
           </div>
         </section>
         
-        <section className="py-16 px-4 md:px-6 bg-gradient-to-tr from-primary/5 to-accent/5 rounded-xl mt-10">
+        <section className="py-16 px-4 md:px-6 bg-gradient-to-tr from-primary/5 to-accent/5 rounded-xl mx-4 md:mx-6 mt-10 mb-10">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-4">Comece agora mesmo</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
