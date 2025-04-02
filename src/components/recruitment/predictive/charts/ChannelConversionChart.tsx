@@ -2,16 +2,27 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { channelData } from '../channel-performance/channelPerformanceData';
 
-// Mock data for channel conversion rates
-const data = [
-  { name: 'WhatsApp', conversionRate: 20.2, color: '#25D366' },
-  { name: 'Facebook', conversionRate: 14.9, color: '#1877F2' },
-  { name: 'Google', conversionRate: 25.0, color: '#4285F4' },
-  { name: 'Email', conversionRate: 12.2, color: '#DB4437' },
-  { name: 'SMS', conversionRate: 12.6, color: '#7E8A97' },
-  { name: 'Eventos', conversionRate: 29.2, color: '#8B5CF6' },
-];
+// Prepare data with colors for the conversion chart
+const chartData = channelData.map((channel) => ({
+  name: channel.name,
+  conversionRate: channel.conversionRate,
+  color: getChannelColor(channel.name)
+}));
+
+// Function to get consistent colors for channels
+function getChannelColor(channelName: string): string {
+  switch (channelName) {
+    case 'WhatsApp': return '#25D366';
+    case 'Facebook': return '#1877F2';
+    case 'Google': return '#4285F4';
+    case 'Email': return '#DB4437';
+    case 'SMS': return '#7E8A97';
+    case 'Eventos': return '#8B5CF6';
+    default: return '#6B7280';
+  }
+}
 
 export const ChannelConversionChart = () => {
   return (
@@ -25,7 +36,7 @@ export const ChannelConversionChart = () => {
         <BarChart
           width={500}
           height={300}
-          data={data}
+          data={chartData}
           margin={{
             top: 20,
             right: 30,
@@ -45,11 +56,7 @@ export const ChannelConversionChart = () => {
             }
           />
           <Legend formatter={() => 'Taxa de Conversão'} />
-          <Bar dataKey="conversionRate" name="conversionRate">
-            {data.map((entry, index) => (
-              <Bar key={`cell-${index}`} dataKey="conversionRate" fill={entry.color} />
-            ))}
-          </Bar>
+          <Bar dataKey="conversionRate" fill="#8b5cf6" />
         </BarChart>
       </ResponsiveContainer>
     </ChartContainer>
