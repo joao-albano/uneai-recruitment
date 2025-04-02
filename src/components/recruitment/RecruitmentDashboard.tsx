@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -10,51 +9,42 @@ import FunnelChartComponent from './dashboard/FunnelChart';
 import ChannelsTabContent from './dashboard/tabs/ChannelsTabContent';
 import CoursesTabContent from './dashboard/tabs/CoursesTabContent';
 import LocationsTabContent from './dashboard/tabs/LocationsTabContent';
-
 const RecruitmentDashboard: React.FC = () => {
   const navigate = useNavigate();
-  
+
   // Dados de leads recentes
-  const recentLeads = [
-    {
-      id: 1,
-      name: 'Maria Oliveira',
-      course: 'Ensino Fundamental I',
-      channel: 'Site',
-      time: '2h'
-    },
-    {
-      id: 2,
-      name: 'Carlos Santos',
-      course: 'Ensino Médio',
-      channel: 'WhatsApp',
-      time: '3h'
-    },
-    {
-      id: 3,
-      name: 'Ana Paula Silva',
-      course: 'Educação Infantil',
-      channel: 'Facebook',
-      time: '5h'
-    },
-    {
-      id: 4,
-      name: 'Roberto Almeida',
-      course: 'Ensino Fundamental II',
-      channel: 'Instagram',
-      time: '8h'
-    },
-    {
-      id: 5,
-      name: 'Juliana Costa',
-      course: 'Período Integral',
-      channel: 'Indicação',
-      time: '12h'
-    },
-  ];
-  
-  return (
-    <div className="container mx-auto py-6">
+  const recentLeads = [{
+    id: 1,
+    name: 'Maria Oliveira',
+    course: 'Ensino Fundamental I',
+    channel: 'Site',
+    time: '2h'
+  }, {
+    id: 2,
+    name: 'Carlos Santos',
+    course: 'Ensino Médio',
+    channel: 'WhatsApp',
+    time: '3h'
+  }, {
+    id: 3,
+    name: 'Ana Paula Silva',
+    course: 'Educação Infantil',
+    channel: 'Facebook',
+    time: '5h'
+  }, {
+    id: 4,
+    name: 'Roberto Almeida',
+    course: 'Ensino Fundamental II',
+    channel: 'Instagram',
+    time: '8h'
+  }, {
+    id: 5,
+    name: 'Juliana Costa',
+    course: 'Período Integral',
+    channel: 'Indicação',
+    time: '12h'
+  }];
+  return <div className="container mx-auto py-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold">Captação de Alunos</h1>
@@ -63,18 +53,11 @@ const RecruitmentDashboard: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button 
-            variant="outline" 
-            className="gap-2"
-            onClick={() => navigate('/recruitment/leads')}
-          >
+          <Button variant="outline" className="gap-2" onClick={() => navigate('/recruitment/leads')}>
             <UserPlus className="h-4 w-4" />
             <span>Gerenciar Leads</span>
           </Button>
-          <Button 
-            className="gap-2"
-            onClick={() => navigate('/recruitment/funnel')}
-          >
+          <Button className="gap-2" onClick={() => navigate('/recruitment/funnel')}>
             <Filter className="h-4 w-4" />
             <span>Funil de Captação</span>
           </Button>
@@ -100,7 +83,7 @@ const RecruitmentDashboard: React.FC = () => {
                   Visão geral do processo de captação
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-[2px] my-[5px] py-[8px] mx-0">
                 <div className="h-80">
                   <FunnelChartComponent />
                 </div>
@@ -115,16 +98,14 @@ const RecruitmentDashboard: React.FC = () => {
                     Últimos contatos cadastrados
                   </CardDescription>
                 </div>
-                <Button variant="ghost" size="sm" className="gap-1"
-                  onClick={() => navigate('/recruitment/leads')}>
+                <Button variant="ghost" size="sm" className="gap-1" onClick={() => navigate('/recruitment/leads')}>
                   <span>Ver Todos</span>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {recentLeads.map((lead) => (
-                    <div key={lead.id} className="flex items-center gap-4 p-2 rounded-md hover:bg-muted">
+                  {recentLeads.map(lead => <div key={lead.id} className="flex items-center gap-4 p-2 rounded-md hover:bg-muted">
                       <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                         <UserPlus className="h-5 w-5 text-primary" />
                       </div>
@@ -135,8 +116,7 @@ const RecruitmentDashboard: React.FC = () => {
                         </p>
                       </div>
                       <p className="text-sm text-muted-foreground">Há {lead.time}</p>
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
               </CardContent>
             </Card>
@@ -222,8 +202,6 @@ const RecruitmentDashboard: React.FC = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
-
 export default RecruitmentDashboard;
