@@ -1,6 +1,6 @@
 
-import React, { useCallback } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
+import React from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getLeadHistory } from '../data/mockLeadsData';
 import { Button } from '@/components/ui/button';
@@ -19,26 +19,20 @@ const LeadHistoryDialog: React.FC<LeadHistoryDialogProps> = ({
   // Buscar histórico do lead
   const history = lead ? getLeadHistory(lead.id) : [];
 
-  // Handler para fechar o diálogo com controle de propagação de eventos
-  const handleClose = useCallback((e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
+  // Handler para fechar o diálogo simplificado
+  const handleClose = () => {
     onOpenChange(false);
-  }, [onOpenChange]);
-
-  // Handler para impedir propagação de eventos dentro do diálogo
-  const handleDialogClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-  }, []);
+  };
 
   return (
     <Dialog 
       open={open} 
       onOpenChange={onOpenChange}
     >
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh]" onClick={handleDialogClick}>
+      <DialogContent 
+        className="sm:max-w-[600px] max-h-[80vh]" 
+        onClick={(e) => e.stopPropagation()}
+      >
         <DialogHeader>
           <DialogTitle className="text-xl">Histórico do Lead</DialogTitle>
           <DialogDescription>Visualize o histórico completo deste lead.</DialogDescription>
@@ -86,7 +80,10 @@ const LeadHistoryDialog: React.FC<LeadHistoryDialogProps> = ({
         <div className="flex justify-end mt-4">
           <Button 
             variant="outline" 
-            onClick={handleClose} 
+            onClick={(e) => {
+              e.preventDefault();
+              handleClose();
+            }}
             type="button"
           >
             Fechar

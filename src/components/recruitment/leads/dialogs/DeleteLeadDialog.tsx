@@ -27,12 +27,8 @@ const DeleteLeadDialog: React.FC<DeleteLeadDialogProps> = ({
 }) => {
   const { toast } = useToast();
   
-  const handleDelete = useCallback((e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    
+  // Manipulador de exclusão isolado para evitar loops de estado
+  const handleDelete = useCallback(() => {
     if (lead?.id) {
       try {
         onConfirm(lead.id);
@@ -50,19 +46,14 @@ const DeleteLeadDialog: React.FC<DeleteLeadDialogProps> = ({
         });
       }
     }
-  }, [lead, onConfirm, onOpenChange, toast]);
-
-  // Desabilitar propagação de eventos que podem causar travamentos
-  const handleDialogInteraction = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-  }, []);
+  }, [lead?.id, onConfirm, onOpenChange, toast]);
 
   return (
     <AlertDialog 
       open={open} 
       onOpenChange={onOpenChange}
     >
-      <AlertDialogContent onClick={handleDialogInteraction}>
+      <AlertDialogContent onClick={(e) => e.stopPropagation()}>
         <AlertDialogHeader>
           <AlertDialogTitle>Excluir Lead</AlertDialogTitle>
           <AlertDialogDescription>
@@ -72,14 +63,17 @@ const DeleteLeadDialog: React.FC<DeleteLeadDialogProps> = ({
         <AlertDialogFooter>
           <AlertDialogCancel 
             onClick={(e) => {
-              e.stopPropagation();
+              e.preventDefault();
               onOpenChange(false);
             }}
           >
             Cancelar
           </AlertDialogCancel>
           <AlertDialogAction 
-            onClick={handleDelete}
+            onClick={(e) => {
+              e.preventDefault();
+              handleDelete();
+            }}
             className="bg-destructive hover:bg-destructive/90"
           >
             Excluir

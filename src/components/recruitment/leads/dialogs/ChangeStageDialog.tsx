@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -39,22 +39,15 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
     }
   }, [lead, open]);
 
-  // Impedir propagação de eventos dentro do diálogo
-  const handleDialogClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-  }, []);
-
   // Cancelar e fechar o diálogo
-  const handleCancel = useCallback((e: React.MouseEvent) => {
+  const handleCancel = (e: React.MouseEvent) => {
     e.preventDefault();
-    e.stopPropagation();
     onOpenChange(false);
-  }, [onOpenChange]);
+  };
 
-  // Processar o envio do formulário
-  const handleSubmit = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+  // Processar o envio do formulário com prevenção de múltiplos cliques
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    e.stopPropagation();
     
     if (!stage) {
       toast({
@@ -66,6 +59,9 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
     }
     
     if (lead?.id) {
+      // Impedir múltiplos envios
+      if (isSubmitting) return;
+      
       setIsSubmitting(true);
       
       try {
@@ -83,20 +79,24 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
           variant: "destructive",
         });
       } finally {
+        // Garantir que o estado de submissão seja sempre restaurado
         setIsSubmitting(false);
       }
     }
-  }, [lead, stage, notes, onSave, toast, onOpenChange]);
+  };
 
   return (
     <Dialog 
       open={open} 
-      onOpenChange={onOpenChange}
+      onOpenChange={(isOpen) => {
+        // Resetar estado de submissão ao fechar o diálogo
+        if (!isOpen) setIsSubmitting(false);
+        onOpenChange(isOpen);
+      }}
     >
       <DialogContent 
         className="sm:max-w-[500px]" 
-        onClick={handleDialogClick}
-        onPointerDownOutside={(e) => e.preventDefault()}
+        onClick={(e) => e.stopPropagation()}
       >
         <DialogHeader>
           <DialogTitle>Alterar Etapa</DialogTitle>
@@ -114,6 +114,7 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
             <Select
               value={stage}
               onValueChange={setStage}
+              disabled={isSubmitting}
               required
             >
               <SelectTrigger id="stage">
@@ -135,6 +136,7 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
               placeholder="Adicione informações sobre essa mudança de etapa"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
+              disabled={isSubmitting}
               rows={4}
             />
           </div>

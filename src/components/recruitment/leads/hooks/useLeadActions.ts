@@ -29,7 +29,7 @@ export const useLeadActions = (
 ) => {
   const { toast } = useToast();
 
-  // Ensure these methods always stop propagation
+  // Ensure these methods always stop propagation and properly clone objects
   const handleEditLead = useCallback((e: React.MouseEvent, leadId: number) => {
     if (e) {
       e.preventDefault();
@@ -38,7 +38,9 @@ export const useLeadActions = (
     
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
-      setSelectedLead({...lead}); // Clone para evitar referências mutáveis
+      // Deep clone para garantir que não haja referências mutáveis
+      const leadClone = JSON.parse(JSON.stringify(lead));
+      setSelectedLead(leadClone);
       setEditDialogOpen(true);
     }
   }, [leadsData, setSelectedLead, setEditDialogOpen]);
@@ -51,7 +53,9 @@ export const useLeadActions = (
     
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
-      setSelectedLead({...lead}); // Clone para evitar referências mutáveis
+      // Deep clone para garantir que não haja referências mutáveis
+      const leadClone = JSON.parse(JSON.stringify(lead));
+      setSelectedLead(leadClone);
       setStageDialogOpen(true);
     }
   }, [leadsData, setSelectedLead, setStageDialogOpen]);
@@ -60,7 +64,9 @@ export const useLeadActions = (
   const openChangeStageDialog = useCallback((leadId: number) => {
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
-      setSelectedLead({...lead}); // Clone para evitar referências mutáveis
+      // Deep clone para garantir que não haja referências mutáveis
+      const leadClone = JSON.parse(JSON.stringify(lead));
+      setSelectedLead(leadClone);
       setStageDialogOpen(true);
     }
   }, [leadsData, setSelectedLead, setStageDialogOpen]);
@@ -73,7 +79,9 @@ export const useLeadActions = (
     
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
-      setSelectedLead({...lead}); // Clone para evitar referências mutáveis
+      // Deep clone para garantir que não haja referências mutáveis
+      const leadClone = JSON.parse(JSON.stringify(lead));
+      setSelectedLead(leadClone);
       setHistoryDialogOpen(true);
     }
   }, [leadsData, setSelectedLead, setHistoryDialogOpen]);
@@ -86,13 +94,24 @@ export const useLeadActions = (
     
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
-      setSelectedLead({...lead}); // Clone para evitar referências mutáveis
+      // Deep clone para garantir que não haja referências mutáveis
+      const leadClone = JSON.parse(JSON.stringify(lead));
+      setSelectedLead(leadClone);
       setDeleteDialogOpen(true);
     }
   }, [leadsData, setSelectedLead, setDeleteDialogOpen]);
   
-  // Save changes to a lead - com tratamento de erro
+  // Save changes to a lead - com tratamento de erro aprimorado
   const handleSaveLead = useCallback((updatedLead: any) => {
+    if (!updatedLead || !updatedLead.id) {
+      toast({
+        title: "Erro ao atualizar",
+        description: "Dados do lead inválidos ou incompletos.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
     try {
       setLeadsData(prevData => 
         prevData.map(lead => 
@@ -117,8 +136,17 @@ export const useLeadActions = (
     }
   }, [setLeadsData, toast]);
   
-  // Save stage change - com tratamento de erro
+  // Save stage change - com tratamento de erro aprimorado
   const handleSaveStage = useCallback((leadId: number, newStage: string, notes: string = '') => {
+    if (!leadId || !newStage) {
+      toast({
+        title: "Erro ao atualizar etapa",
+        description: "Dados da etapa inválidos ou incompletos.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
     try {
       // Update the lead's stage and corresponding status
       setLeadsData(prevData => 
@@ -148,8 +176,17 @@ export const useLeadActions = (
     }
   }, [setLeadsData, toast]);
   
-  // Confirm lead deletion - com tratamento de erro
+  // Confirm lead deletion - com tratamento de erro aprimorado
   const handleConfirmDelete = useCallback((leadId: number) => {
+    if (!leadId) {
+      toast({
+        title: "Erro ao excluir",
+        description: "ID do lead inválido ou não fornecido.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
     try {
       setLeadsData(prevData => prevData.filter(lead => lead.id !== leadId));
       
