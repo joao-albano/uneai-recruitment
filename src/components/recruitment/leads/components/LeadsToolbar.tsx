@@ -7,6 +7,7 @@ import ViewToggle from './toolbar/ViewToggle';
 import DetailedFiltersMenu from './toolbar/DetailedFiltersMenu';
 import DateFilterPopover from './toolbar/DateFilterPopover';
 import ExportButton from './toolbar/ExportButton';
+import { Separator } from '@/components/ui/separator';
 
 interface LeadsToolbarProps {
   viewMode: 'table' | 'kanban';
@@ -42,7 +43,7 @@ const LeadsToolbar: React.FC<LeadsToolbarProps> = ({
   const activeFilterCount = getActiveFilterCount();
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-muted/30 p-2 rounded-lg">
       <div className="flex items-center gap-2 w-full sm:w-auto">
         <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         <QuickFiltersMenu 
@@ -55,6 +56,7 @@ const LeadsToolbar: React.FC<LeadsToolbarProps> = ({
       
       <div className="flex gap-2 ml-auto">
         <ViewToggle viewMode={viewMode} onViewModeChange={onViewModeChange} />
+        <Separator orientation="vertical" className="h-8" />
         <DetailedFiltersMenu filters={filters} setFilters={setFilters} />
         <DateFilterPopover filters={filters} setFilters={setFilters} />
         <ExportButton exportLeads={exportLeads} />
