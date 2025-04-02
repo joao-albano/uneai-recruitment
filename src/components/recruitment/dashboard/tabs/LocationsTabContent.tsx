@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Map, ArrowUpRight } from 'lucide-react';
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
 
 // Dados mock para localidades
 const regionsData = [
@@ -121,24 +122,24 @@ const LocationsTabContent: React.FC = () => {
           </Badge>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-muted">
-                <tr className="[&_th]:p-3 [&_th]:text-left [&_th]:font-medium [&_th]:text-muted-foreground">
-                  <th>Distância</th>
-                  <th className="text-right">Leads</th>
-                  <th className="text-right">Matrículas</th>
-                  <th className="text-right">Taxa de Conversão</th>
-                  <th className="text-right">% do Total</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader className="bg-muted">
+                <TableRow>
+                  <TableHead>Distância</TableHead>
+                  <TableHead className="text-right">Leads</TableHead>
+                  <TableHead className="text-right">Matrículas</TableHead>
+                  <TableHead className="text-right">Taxa de Conversão</TableHead>
+                  <TableHead className="text-right">% do Total</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {distanceData.map((item, index) => (
-                  <tr key={index} className={index % 2 === 0 ? "" : "bg-muted/50"}>
-                    <td className="p-3 font-medium">{item.range}</td>
-                    <td className="p-3 text-right">{item.leads}</td>
-                    <td className="p-3 text-right">{item.matriculas}</td>
-                    <td className="p-3 text-right">
+                  <TableRow key={index} className={index % 2 === 0 ? "" : "bg-muted/50"}>
+                    <TableCell className="font-medium">{item.range}</TableCell>
+                    <TableCell className="text-right">{item.leads}</TableCell>
+                    <TableCell className="text-right">{item.matriculas}</TableCell>
+                    <TableCell className="text-right">
                       <span className={
                         item.conversao > 30 ? "text-green-600" : 
                         item.conversao > 15 ? "text-amber-600" : 
@@ -146,21 +147,21 @@ const LocationsTabContent: React.FC = () => {
                       }>
                         {item.conversao.toFixed(1)}%
                       </span>
-                    </td>
-                    <td className="p-3 text-right">
+                    </TableCell>
+                    <TableCell className="text-right">
                       {((item.leads / 559) * 100).toFixed(1)}%
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-                <tr className="bg-muted/20 font-semibold">
-                  <td className="p-3">Total</td>
-                  <td className="p-3 text-right">559</td>
-                  <td className="p-3 text-right">117</td>
-                  <td className="p-3 text-right">20.9%</td>
-                  <td className="p-3 text-right">100.0%</td>
-                </tr>
-              </tbody>
-            </table>
+                <TableRow className="bg-muted/20 font-semibold">
+                  <TableCell>Total</TableCell>
+                  <TableCell className="text-right">559</TableCell>
+                  <TableCell className="text-right">117</TableCell>
+                  <TableCell className="text-right">20.9%</TableCell>
+                  <TableCell className="text-right">100.0%</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
           </div>
         </CardContent>
       </Card>
