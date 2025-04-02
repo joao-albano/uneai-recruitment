@@ -83,7 +83,7 @@ const RecruitmentDashboard: React.FC = () => {
                   Visão geral do processo de captação
                 </CardDescription>
               </CardHeader>
-              <CardContent className="px-[2px] my-[5px] py-[8px] mx-0">
+              <CardContent className="my-[14px] py-[27px] mx-0 px-[12px]">
                 <div className="h-80">
                   <FunnelChartComponent />
                 </div>
