@@ -1,10 +1,8 @@
 
 import React, { memo, useCallback } from 'react';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
-import LeadsTableView from './LeadsTableView';
 import LeadsToolbar from './LeadsToolbar';
 import { LeadFilterOptions } from '../types/leadFilters';
-import LeadsKanbanView from '../kanban/LeadsKanbanView';
+import LeadsTabsContent from './content/LeadsTabsContent';
 
 interface LeadMainContentProps {
   viewMode: 'table' | 'kanban';
@@ -77,29 +75,17 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
         exportLeads={exportLeads}
       />
       
-      <Tabs value={viewMode} className="mt-4">
-        <TabsContent value="table">
-          <LeadsTableView 
-            leads={filteredLeads} 
-            onEditLead={handleEditLead}
-            onChangeStage={handleChangeStage}
-            onViewHistory={handleViewHistory}
-            onDeleteLead={handleDeleteLead}
-          />
-        </TabsContent>
-        
-        <TabsContent value="kanban">
-          <LeadsKanbanView 
-            stageGroups={stageGroups}
-            onEditLead={handleEditLead}
-            onStageChange={handleStageChange}
-            onChangeStage={handleChangeStage} 
-            openChangeStageDialog={openChangeStageDialog}
-            onViewHistory={handleViewHistory}
-            onDeleteLead={handleDeleteLead}
-          />
-        </TabsContent>
-      </Tabs>
+      <LeadsTabsContent 
+        viewMode={viewMode}
+        filteredLeads={filteredLeads}
+        stageGroups={stageGroups}
+        onEditLead={handleEditLead}
+        onChangeStage={handleChangeStage}
+        onViewHistory={handleViewHistory}
+        onDeleteLead={handleDeleteLead}
+        onStageChange={handleStageChange}
+        openChangeStageDialog={openChangeStageDialog}
+      />
     </div>
   );
 };
