@@ -50,14 +50,16 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
     }
   };
 
-  // Function to handle actions with proper event handling
+  // Enhanced action handler with proper event propagation control
   const handleAction = useCallback(
     (e: React.MouseEvent, actionHandler?: (e: React.MouseEvent, leadId: number) => void, leadId?: number) => {
+      // Always stop propagation and prevent default
       if (e) {
         e.preventDefault();
         e.stopPropagation();
       }
       
+      // Call the handler if provided
       if (actionHandler && leadId !== undefined) {
         actionHandler(e, leadId);
       }
@@ -65,15 +67,33 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
     []
   );
 
-  // Handler para evitar propagação em clicks na tabela
+  // Handler to prevent propagation on row clicks
   const handleRowClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
   }, []);
 
-  // Handler para controlar dropdown
+  // Enhanced dropdown click handler
   const handleDropdownClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+  }, []);
+
+  // Menu item click handler to ensure proper event control
+  const handleMenuItemClick = useCallback((
+    e: React.MouseEvent, 
+    handler?: (e: React.MouseEvent, leadId: number) => void, 
+    leadId?: number
+  ) => {
+    // Stop all event propagation
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (handler && leadId !== undefined) {
+      // Execute the action after a tiny delay to ensure UI responsiveness
+      setTimeout(() => {
+        handler(e, leadId);
+      }, 10);
+    }
   }, []);
 
   return (
@@ -126,14 +146,16 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
                       align="end" 
                       className="bg-white z-50"
                       onClick={handleDropdownClick}
-                      onPointerDownOutside={(e) => e.preventDefault()}
+                      onPointerDownOutside={(e) => {
+                        e.preventDefault();
+                      }}
                     >
                       <DropdownMenuLabel>Ações</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       {onEditLead && (
                         <DropdownMenuItem 
                           className="cursor-pointer"
-                          onClick={(e) => handleAction(e, onEditLead, lead.id)}
+                          onClick={(e) => handleMenuItemClick(e, onEditLead, lead.id)}
                           onSelect={(e) => e.preventDefault()}
                         >
                           Editar Lead
@@ -142,7 +164,7 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
                       {onChangeStage && (
                         <DropdownMenuItem 
                           className="cursor-pointer"
-                          onClick={(e) => handleAction(e, onChangeStage, lead.id)}
+                          onClick={(e) => handleMenuItemClick(e, onChangeStage, lead.id)}
                           onSelect={(e) => e.preventDefault()}
                         >
                           Alterar Etapa
@@ -151,7 +173,7 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
                       {onViewHistory && (
                         <DropdownMenuItem 
                           className="cursor-pointer"
-                          onClick={(e) => handleAction(e, onViewHistory, lead.id)}
+                          onClick={(e) => handleMenuItemClick(e, onViewHistory, lead.id)}
                           onSelect={(e) => e.preventDefault()}
                         >
                           Ver Histórico
@@ -161,7 +183,7 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
                       {onDeleteLead && (
                         <DropdownMenuItem 
                           className="text-destructive cursor-pointer"
-                          onClick={(e) => handleAction(e, onDeleteLead, lead.id)}
+                          onClick={(e) => handleMenuItemClick(e, onDeleteLead, lead.id)}
                           onSelect={(e) => e.preventDefault()}
                         >
                           Excluir Lead

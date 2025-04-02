@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getLeadHistory } from '../data/mockLeadsData';
@@ -19,18 +19,27 @@ const LeadHistoryDialog: React.FC<LeadHistoryDialogProps> = ({
   // Buscar histórico do lead
   const history = lead ? getLeadHistory(lead.id) : [];
 
-  // Handler para fechar o diálogo simplificado
-  const handleClose = () => {
+  // Improved close handler with proper event prevention
+  const handleClose = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     onOpenChange(false);
-  };
+  }, [onOpenChange]);
+
+  if (!lead) return null;
 
   return (
     <Dialog 
       open={open} 
-      onOpenChange={onOpenChange}
+      onOpenChange={(isOpen) => {
+        // Prevent unnecessary re-renders
+        if (open !== isOpen) {
+          onOpenChange(isOpen);
+        }
+      }}
     >
       <DialogContent 
-        className="sm:max-w-[600px] max-h-[80vh]" 
+        className="sm:max-w-[600px] max-h-[80vh] z-50" 
         onClick={(e) => e.stopPropagation()}
       >
         <DialogHeader>
@@ -80,10 +89,7 @@ const LeadHistoryDialog: React.FC<LeadHistoryDialogProps> = ({
         <div className="flex justify-end mt-4">
           <Button 
             variant="outline" 
-            onClick={(e) => {
-              e.preventDefault();
-              handleClose();
-            }}
+            onClick={handleClose}
             type="button"
           >
             Fechar

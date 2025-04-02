@@ -27,33 +27,58 @@ const DeleteLeadDialog: React.FC<DeleteLeadDialogProps> = ({
 }) => {
   const { toast } = useToast();
   
-  // Manipulador de exclusão isolado para evitar loops de estado
-  const handleDelete = useCallback(() => {
-    if (lead?.id) {
-      try {
-        onConfirm(lead.id);
-        toast({
-          title: "Lead excluído",
-          description: "O lead foi excluído com sucesso."
-        });
-        onOpenChange(false);
-      } catch (error) {
-        console.error("Erro ao excluir lead:", error);
-        toast({
-          title: "Erro ao excluir",
-          description: "Não foi possível excluir o lead. Tente novamente.",
-          variant: "destructive",
-        });
-      }
+  // Improved delete handler with proper state management
+  const handleDelete = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!lead?.id) return;
+    
+    try {
+      // Call confirm action first
+      onConfirm(lead.id);
+      
+      // Show success toast
+      toast({
+        title: "Lead excluído",
+        description: "O lead foi excluído com sucesso."
+      });
+      
+      // Close the dialog after successful deletion
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Erro ao excluir lead:", error);
+      toast({
+        title: "Erro ao excluir",
+        description: "Não foi possível excluir o lead. Tente novamente.",
+        variant: "destructive",
+      });
     }
   }, [lead?.id, onConfirm, onOpenChange, toast]);
+
+  // Handle cancel with proper event prevention
+  const handleCancel = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onOpenChange(false);
+  }, [onOpenChange]);
+
+  if (!lead) return null;
 
   return (
     <AlertDialog 
       open={open} 
-      onOpenChange={onOpenChange}
+      onOpenChange={(isOpen) => {
+        // Prevent unnecessary re-renders
+        if (open !== isOpen) {
+          onOpenChange(isOpen);
+        }
+      }}
     >
-      <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+      <AlertDialogContent 
+        className="z-50"
+        onClick={(e) => e.stopPropagation()}
+      >
         <AlertDialogHeader>
           <AlertDialogTitle>Excluir Lead</AlertDialogTitle>
           <AlertDialogDescription>
@@ -62,18 +87,14 @@ const DeleteLeadDialog: React.FC<DeleteLeadDialogProps> = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel 
-            onClick={(e) => {
-              e.preventDefault();
-              onOpenChange(false);
-            }}
+            type="button"
+            onClick={handleCancel}
           >
             Cancelar
           </AlertDialogCancel>
           <AlertDialogAction 
-            onClick={(e) => {
-              e.preventDefault();
-              handleDelete();
-            }}
+            type="button"
+            onClick={handleDelete}
             className="bg-destructive hover:bg-destructive/90"
           >
             Excluir

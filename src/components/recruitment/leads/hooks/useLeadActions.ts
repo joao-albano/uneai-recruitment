@@ -29,79 +29,142 @@ export const useLeadActions = (
 ) => {
   const { toast } = useToast();
 
-  // Ensure these methods always stop propagation and properly clone objects
+  // Handler for edit lead - improved with proper event handling and error capture
   const handleEditLead = useCallback((e: React.MouseEvent, leadId: number) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
     }
     
-    const lead = leadsData.find(l => l.id === leadId);
-    if (lead) {
-      // Deep clone para garantir que não haja referências mutáveis
+    try {
+      const lead = leadsData.find(l => l.id === leadId);
+      if (!lead) {
+        console.error("Lead not found:", leadId);
+        return;
+      }
+      
+      // Deep clone to ensure no mutable references
       const leadClone = JSON.parse(JSON.stringify(lead));
       setSelectedLead(leadClone);
       setEditDialogOpen(true);
+    } catch (error) {
+      console.error("Error opening edit dialog:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível abrir o diálogo de edição.",
+        variant: "destructive",
+      });
     }
-  }, [leadsData, setSelectedLead, setEditDialogOpen]);
+  }, [leadsData, setSelectedLead, setEditDialogOpen, toast]);
   
+  // Handler for change stage - improved with proper event handling and error capture
   const handleChangeStage = useCallback((e: React.MouseEvent, leadId: number) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
     }
     
-    const lead = leadsData.find(l => l.id === leadId);
-    if (lead) {
-      // Deep clone para garantir que não haja referências mutáveis
+    try {
+      const lead = leadsData.find(l => l.id === leadId);
+      if (!lead) {
+        console.error("Lead not found:", leadId);
+        return;
+      }
+      
+      // Deep clone to ensure no mutable references
       const leadClone = JSON.parse(JSON.stringify(lead));
       setSelectedLead(leadClone);
       setStageDialogOpen(true);
+    } catch (error) {
+      console.error("Error opening stage dialog:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível abrir o diálogo de mudança de etapa.",
+        variant: "destructive",
+      });
     }
-  }, [leadsData, setSelectedLead, setStageDialogOpen]);
+  }, [leadsData, setSelectedLead, setStageDialogOpen, toast]);
 
-  // Direct function call (for drag-and-drop or other non-event triggers)
+  // Direct function call for change stage dialog (for Kanban drag-and-drop)
   const openChangeStageDialog = useCallback((leadId: number) => {
-    const lead = leadsData.find(l => l.id === leadId);
-    if (lead) {
-      // Deep clone para garantir que não haja referências mutáveis
+    try {
+      const lead = leadsData.find(l => l.id === leadId);
+      if (!lead) {
+        console.error("Lead not found:", leadId);
+        return;
+      }
+      
+      // Deep clone to ensure no mutable references
       const leadClone = JSON.parse(JSON.stringify(lead));
       setSelectedLead(leadClone);
       setStageDialogOpen(true);
+    } catch (error) {
+      console.error("Error opening stage dialog:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível abrir o diálogo de mudança de etapa.",
+        variant: "destructive",
+      });
     }
-  }, [leadsData, setSelectedLead, setStageDialogOpen]);
+  }, [leadsData, setSelectedLead, setStageDialogOpen, toast]);
   
+  // Handler for view history - improved with proper event handling and error capture
   const handleViewHistory = useCallback((e: React.MouseEvent, leadId: number) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
     }
     
-    const lead = leadsData.find(l => l.id === leadId);
-    if (lead) {
-      // Deep clone para garantir que não haja referências mutáveis
+    try {
+      const lead = leadsData.find(l => l.id === leadId);
+      if (!lead) {
+        console.error("Lead not found:", leadId);
+        return;
+      }
+      
+      // Deep clone to ensure no mutable references
       const leadClone = JSON.parse(JSON.stringify(lead));
       setSelectedLead(leadClone);
       setHistoryDialogOpen(true);
+    } catch (error) {
+      console.error("Error opening history dialog:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível abrir o histórico do lead.",
+        variant: "destructive",
+      });
     }
-  }, [leadsData, setSelectedLead, setHistoryDialogOpen]);
+  }, [leadsData, setSelectedLead, setHistoryDialogOpen, toast]);
   
+  // Handler for delete lead - improved with proper event handling and error capture
   const handleDeleteLead = useCallback((e: React.MouseEvent, leadId: number) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
     }
     
-    const lead = leadsData.find(l => l.id === leadId);
-    if (lead) {
-      // Deep clone para garantir que não haja referências mutáveis
+    try {
+      const lead = leadsData.find(l => l.id === leadId);
+      if (!lead) {
+        console.error("Lead not found:", leadId);
+        return;
+      }
+      
+      // Deep clone to ensure no mutable references
       const leadClone = JSON.parse(JSON.stringify(lead));
       setSelectedLead(leadClone);
       setDeleteDialogOpen(true);
+    } catch (error) {
+      console.error("Error opening delete dialog:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível abrir o diálogo de exclusão.",
+        variant: "destructive",
+      });
     }
-  }, [leadsData, setSelectedLead, setDeleteDialogOpen]);
+  }, [leadsData, setSelectedLead, setDeleteDialogOpen, toast]);
   
-  // Save changes to a lead - com tratamento de erro aprimorado
+  // Save changes to a lead - improved with better error handling
   const handleSaveLead = useCallback((updatedLead: any) => {
     if (!updatedLead || !updatedLead.id) {
       toast({
@@ -113,6 +176,7 @@ export const useLeadActions = (
     }
 
     try {
+      // Update data with shallow copies to avoid state mutation issues
       setLeadsData(prevData => 
         prevData.map(lead => 
           lead.id === updatedLead.id ? {...updatedLead} : lead
@@ -124,7 +188,7 @@ export const useLeadActions = (
         description: "As informações do lead foram atualizadas com sucesso"
       });
       
-      return true; // Indica sucesso para o componente chamador
+      return true; // Indicate success to the component
     } catch (error) {
       console.error("Erro ao salvar lead:", error);
       toast({
@@ -136,7 +200,7 @@ export const useLeadActions = (
     }
   }, [setLeadsData, toast]);
   
-  // Save stage change - com tratamento de erro aprimorado
+  // Save stage change - improved with better error handling
   const handleSaveStage = useCallback((leadId: number, newStage: string, notes: string = '') => {
     if (!leadId || !newStage) {
       toast({
@@ -148,7 +212,7 @@ export const useLeadActions = (
     }
 
     try {
-      // Update the lead's stage and corresponding status
+      // Update the lead's stage and corresponding status with shallow copies
       setLeadsData(prevData => 
         prevData.map(lead => {
           if (lead.id === leadId) {
@@ -176,7 +240,7 @@ export const useLeadActions = (
     }
   }, [setLeadsData, toast]);
   
-  // Confirm lead deletion - com tratamento de erro aprimorado
+  // Confirm lead deletion - improved with better error handling
   const handleConfirmDelete = useCallback((leadId: number) => {
     if (!leadId) {
       toast({
@@ -188,6 +252,7 @@ export const useLeadActions = (
     }
 
     try {
+      // Remove lead with shallow copy to avoid state mutation issues
       setLeadsData(prevData => prevData.filter(lead => lead.id !== leadId));
       
       toast({

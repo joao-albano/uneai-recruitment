@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -31,23 +31,26 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  // Atualizar o estado quando o lead mudar ou o diálogo abrir
+  // Reset form state when dialog opens with a new lead
   useEffect(() => {
     if (open && lead?.stage) {
       setStage(lead.stage);
-      setNotes(''); // Limpar notas ao abrir diálogo para novo lead
+      setNotes(''); // Clear notes when opening dialog for a new lead
+      setIsSubmitting(false); // Reset submission state
     }
   }, [lead, open]);
 
-  // Cancelar e fechar o diálogo
-  const handleCancel = (e: React.MouseEvent) => {
+  // Improved cancel handler with proper event prevention
+  const handleCancel = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     onOpenChange(false);
-  };
+  }, [onOpenChange]);
 
-  // Processar o envio do formulário com prevenção de múltiplos cliques
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+  // Improved submit handler with proper state management
+  const handleSubmit = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     if (!stage) {
       toast({
@@ -58,44 +61,54 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
       return;
     }
     
-    if (lead?.id) {
-      // Impedir múltiplos envios
-      if (isSubmitting) return;
+    if (!lead?.id) return;
+    
+    // Prevent multiple submissions
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Call save action
+      onSave(lead.id, stage, notes);
       
-      setIsSubmitting(true);
+      // Show success toast
+      toast({
+        title: "Etapa atualizada",
+        description: `O lead foi movido para a etapa: ${stage}`
+      });
       
-      try {
-        onSave(lead.id, stage, notes);
-        toast({
-          title: "Etapa atualizada",
-          description: `O lead foi movido para a etapa: ${stage}`
-        });
-        onOpenChange(false);
-      } catch (error) {
-        console.error("Erro ao atualizar etapa:", error);
-        toast({
-          title: "Erro ao atualizar",
-          description: "Não foi possível atualizar a etapa. Tente novamente.",
-          variant: "destructive",
-        });
-      } finally {
-        // Garantir que o estado de submissão seja sempre restaurado
-        setIsSubmitting(false);
-      }
+      // Close the dialog after successful update
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Erro ao atualizar etapa:", error);
+      toast({
+        title: "Erro ao atualizar",
+        description: "Não foi possível atualizar a etapa. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      // Always reset submission state
+      setIsSubmitting(false);
     }
-  };
+  }, [stage, notes, lead?.id, isSubmitting, onSave, onOpenChange, toast]);
+
+  if (!lead) return null;
 
   return (
     <Dialog 
       open={open} 
       onOpenChange={(isOpen) => {
-        // Resetar estado de submissão ao fechar o diálogo
-        if (!isOpen) setIsSubmitting(false);
-        onOpenChange(isOpen);
+        // Don't allow closing during submission and prevent unnecessary re-renders
+        if (isSubmitting) return;
+        
+        if (open !== isOpen) {
+          onOpenChange(isOpen);
+        }
       }}
     >
       <DialogContent 
-        className="sm:max-w-[500px]" 
+        className="sm:max-w-[500px] z-50" 
         onClick={(e) => e.stopPropagation()}
       >
         <DialogHeader>
@@ -151,7 +164,7 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
               Cancelar
             </Button>
             <Button 
-              type="submit"
+              type="button"
               onClick={handleSubmit}
               disabled={isSubmitting}
             >
