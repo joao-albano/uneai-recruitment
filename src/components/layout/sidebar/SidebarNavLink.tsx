@@ -20,10 +20,13 @@ const SidebarNavLink: React.FC<SidebarNavLinkProps> = ({
   isActive: propIsActive
 }) => {
   const location = useLocation();
-  // Use o valor de isActive passado como prop, se fornecido, ou calcule com base no caminho atual
-  const isActive = propIsActive !== undefined ? propIsActive : location.pathname === to;
   
-  console.log(`SidebarNavLink - path: ${to}, label: ${label}, active: ${isActive}`);
+  // Determina se o link está ativo
+  const isActive = propIsActive !== undefined 
+    ? propIsActive 
+    : location.pathname === to || 
+      // Adicionar verificação para a rota inicial do produto de captação
+      (to === "/recruitment" && location.pathname === "/recruitment");
   
   return (
     <Link 
