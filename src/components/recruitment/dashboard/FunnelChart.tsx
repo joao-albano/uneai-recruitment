@@ -21,7 +21,7 @@ const FunnelChartComponent: React.FC = () => {
           data={funnelData}
           isAnimationActive
         >
-          {/* Label de nome - posicionado dentro do funil, mais visível */}
+          {/* Label de nome - posicionado acima do valor */}
           <LabelList 
             position="inside"
             fill="#fff"
@@ -29,17 +29,18 @@ const FunnelChartComponent: React.FC = () => {
             dataKey="name"
             fontSize={12}
             fontWeight="bold"
-            offset={10}
+            offset={-10}
           />
           
-          {/* Label de valor - mantido ao centro */}
+          {/* Label de valor - posicionado abaixo do nome */}
           <LabelList
-            position="center"
+            position="inside"
             fill="#fff"
             stroke="none"
             dataKey="value"
             fontSize={16}
             fontWeight="bold"
+            offset={10}
           />
         </Funnel>
       </FunnelChart>
