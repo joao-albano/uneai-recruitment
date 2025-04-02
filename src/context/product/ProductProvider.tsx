@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ProductType, ProductContextType, ProductSubscription } from './types';
@@ -16,7 +15,8 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children, init
   const [currentProduct, setCurrentProduct] = useState<ProductType | null>(initialProduct);
   const [availableProducts, setAvailableProducts] = useState<ProductType[]>([
     'retention',
-    'recruitment'
+    'recruitment',
+    'finance'
   ]);
   const [userSubscriptions, setUserSubscriptions] = useState<ProductSubscription[]>([
     {
@@ -26,6 +26,11 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children, init
     },
     {
       productId: 'recruitment',
+      status: 'active',
+      expiresAt: null
+    },
+    {
+      productId: 'finance',
       status: 'active',
       expiresAt: null
     }

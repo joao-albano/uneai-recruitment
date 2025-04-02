@@ -35,5 +35,9 @@ export const determineProductFromPath = (path: string): ProductType | null => {
     return 'pedagogical';
   }
   
+  if (path.startsWith('/finance')) {
+    return 'finance';
+  }
+  
   return null;
 };
