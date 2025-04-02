@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import {
@@ -30,7 +30,15 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
   const [notes, setNotes] = useState('');
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Atualizar o estado quando o lead mudar ou o diálogo abrir
+  useEffect(() => {
+    if (open && lead?.stage) {
+      setStage(lead.stage);
+      setNotes(''); // Limpar notas ao abrir diálogo para novo lead
+    }
+  }, [lead, open]);
+
+  const handleSubmit = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     
     if (lead?.id) {
@@ -41,15 +49,7 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
       });
       onOpenChange(false);
     }
-  };
-
-  // Atualizar o estado quando o lead mudar
-  useEffect(() => {
-    if (lead?.stage) {
-      setStage(lead.stage);
-    }
-    setNotes(''); // Limpar notas ao abrir diálogo para novo lead
-  }, [lead, open]);
+  }, [lead, stage, notes, onSave, toast, onOpenChange]);
 
   return (
     <Dialog 
@@ -59,9 +59,10 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Alterar Etapa</DialogTitle>
+          <DialogDescription>Altere a etapa do funil para este lead.</DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 py-4">
+        <div className="space-y-4 py-4">
           <div className="space-y-2">
             <div className="flex items-center gap-2 mb-4">
               <span className="font-medium">Lead:</span>
@@ -105,9 +106,14 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
             >
               Cancelar
             </Button>
-            <Button type="submit">Salvar</Button>
+            <Button 
+              type="button"
+              onClick={handleSubmit}
+            >
+              Salvar
+            </Button>
           </div>
-        </form>
+        </div>
       </DialogContent>
     </Dialog>
   );

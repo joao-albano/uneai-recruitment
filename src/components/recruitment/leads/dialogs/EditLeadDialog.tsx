@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -31,10 +31,10 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
 
   // Update the form when the lead changes
   useEffect(() => {
-    if (lead) {
+    if (lead && open) {
       setEditedLead(lead);
     }
-  }, [lead]);
+  }, [lead, open]);
 
   // Prevent issues with null lead
   if (!lead && open) {
@@ -42,24 +42,23 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
     return null;
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setEditedLead(prev => ({
       ...prev,
       [name]: value
     }));
-  };
+  }, []);
 
-  const handleSelectChange = (name: string, value: string) => {
+  const handleSelectChange = useCallback((name: string, value: string) => {
     setEditedLead(prev => ({
       ...prev,
       [name]: value
     }));
-  };
+  }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    e.stopPropagation();
     
     if (!editedLead) return;
     
@@ -69,38 +68,21 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
       description: "As informações foram atualizadas com sucesso"
     });
     onOpenChange(false);
-  };
-
-  const handleClose = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onOpenChange(false);
-  };
-
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
+  }, [editedLead, onSave, toast, onOpenChange]);
 
   return (
     <Dialog 
       open={open} 
-      onOpenChange={(value) => {
-        // Handle onOpenChange directly to prevent propagation issues
-        onOpenChange(value);
-      }}
+      onOpenChange={onOpenChange}
     >
-      <DialogContent 
-        className="sm:max-w-[500px]" 
-        onClick={handleClick}
-        onPointerDownOutside={(e) => e.preventDefault()}
-      >
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Editar Lead</DialogTitle>
+          <DialogDescription>Edite as informações do lead abaixo.</DialogDescription>
         </DialogHeader>
 
         {lead && (
-          <form onSubmit={handleSubmit} className="space-y-4 py-4">
+          <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Nome</Label>
@@ -109,7 +91,6 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
                   name="name"
                   value={editedLead.name || ''}
                   onChange={handleInputChange}
-                  onClick={handleClick}
                   required
                 />
               </div>
@@ -122,7 +103,6 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
                   type="number"
                   value={editedLead.children || 0}
                   onChange={handleInputChange}
-                  onClick={handleClick}
                   required
                 />
               </div>
@@ -133,10 +113,10 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
                   value={editedLead.course || ''}
                   onValueChange={(value) => handleSelectChange('course', value)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="course">
                     <SelectValue placeholder="Selecione um curso" />
                   </SelectTrigger>
-                  <SelectContent onClick={handleClick}>
+                  <SelectContent>
                     <SelectItem value="Ensino Fundamental">Ensino Fundamental</SelectItem>
                     <SelectItem value="Ensino Médio">Ensino Médio</SelectItem>
                     <SelectItem value="Educação Infantil">Educação Infantil</SelectItem>
@@ -150,10 +130,10 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
                   value={editedLead.channel || ''}
                   onValueChange={(value) => handleSelectChange('channel', value)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="channel">
                     <SelectValue placeholder="Selecione um canal" />
                   </SelectTrigger>
-                  <SelectContent onClick={handleClick}>
+                  <SelectContent>
                     <SelectItem value="Site">Site</SelectItem>
                     <SelectItem value="Facebook">Facebook</SelectItem>
                     <SelectItem value="Instagram">Instagram</SelectItem>
@@ -169,13 +149,18 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
               <Button 
                 type="button" 
                 variant="outline" 
-                onClick={handleClose}
+                onClick={() => onOpenChange(false)}
               >
                 Cancelar
               </Button>
-              <Button type="submit">Salvar Alterações</Button>
+              <Button 
+                type="button"
+                onClick={handleSubmit}
+              >
+                Salvar Alterações
+              </Button>
             </div>
-          </form>
+          </div>
         )}
       </DialogContent>
     </Dialog>

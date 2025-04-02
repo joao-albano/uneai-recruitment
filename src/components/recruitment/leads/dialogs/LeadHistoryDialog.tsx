@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getLeadHistory } from '../data/mockLeadsData';
 
@@ -26,6 +26,8 @@ const LeadHistoryDialog: React.FC<LeadHistoryDialogProps> = ({
       <DialogContent className="sm:max-w-[600px] max-h-[80vh]">
         <DialogHeader>
           <DialogTitle className="text-xl">Histórico do Lead</DialogTitle>
+          <DialogDescription>Visualize o histórico completo deste lead.</DialogDescription>
+          
           {lead && (
             <div className="mt-2 text-sm text-muted-foreground">
               <div className="font-medium text-foreground">{lead.name}</div>

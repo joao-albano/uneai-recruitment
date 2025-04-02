@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,6 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
 
 interface DeleteLeadDialogProps {
   open: boolean;
@@ -24,12 +25,18 @@ const DeleteLeadDialog: React.FC<DeleteLeadDialogProps> = ({
   lead,
   onConfirm,
 }) => {
-  const handleDelete = () => {
+  const { toast } = useToast();
+  
+  const handleDelete = useCallback(() => {
     if (lead?.id) {
       onConfirm(lead.id);
+      toast({
+        title: "Lead excluído",
+        description: "O lead foi excluído com sucesso."
+      });
       onOpenChange(false);
     }
-  };
+  }, [lead, onConfirm, onOpenChange, toast]);
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
