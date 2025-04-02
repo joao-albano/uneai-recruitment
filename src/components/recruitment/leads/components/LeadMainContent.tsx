@@ -1,5 +1,5 @@
 
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import LeadsTableView from './LeadsTableView';
 import LeadsToolbar from './LeadsToolbar';
@@ -43,31 +43,65 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
   onChangeStage,
   openChangeStageDialog,
 }) => {
+  // Memoize event handlers to prevent unnecessary re-renders
+  const handleEditLead = useCallback((e: React.MouseEvent, leadId: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onEditLead(e, leadId);
+  }, [onEditLead]);
+
+  const handleChangeStage = useCallback((e: React.MouseEvent, leadId: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onChangeStage(e, leadId);
+  }, [onChangeStage]);
+
+  const handleViewHistory = useCallback((e: React.MouseEvent, leadId: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onViewHistory(e, leadId);
+  }, [onViewHistory]);
+
+  const handleDeleteLead = useCallback((e: React.MouseEvent, leadId: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onDeleteLead(e, leadId);
+  }, [onDeleteLead]);
+
+  const handleStageChange = useCallback((leadId: number, newStage: string, notes?: string) => {
+    onStageChange(leadId, newStage, notes);
+  }, [onStageChange]);
+
   // Use the React.memo pattern for improved performance
   const MemoizedLeadsTableView = React.useMemo(() => (
     <LeadsTableView 
       leads={filteredLeads} 
-      onEditLead={onEditLead}
-      onChangeStage={onChangeStage}
-      onViewHistory={onViewHistory}
-      onDeleteLead={onDeleteLead}
+      onEditLead={handleEditLead}
+      onChangeStage={handleChangeStage}
+      onViewHistory={handleViewHistory}
+      onDeleteLead={handleDeleteLead}
     />
-  ), [filteredLeads, onEditLead, onChangeStage, onViewHistory, onDeleteLead]);
+  ), [filteredLeads, handleEditLead, handleChangeStage, handleViewHistory, handleDeleteLead]);
 
   const MemoizedKanbanView = React.useMemo(() => (
     <LeadsKanbanView 
       stageGroups={stageGroups}
-      onEditLead={onEditLead}
-      onStageChange={onStageChange}
-      onChangeStage={onChangeStage} 
+      onEditLead={handleEditLead}
+      onStageChange={handleStageChange}
+      onChangeStage={handleChangeStage} 
       openChangeStageDialog={openChangeStageDialog}
-      onViewHistory={onViewHistory}
-      onDeleteLead={onDeleteLead}
+      onViewHistory={handleViewHistory}
+      onDeleteLead={handleDeleteLead}
     />
-  ), [stageGroups, onEditLead, onStageChange, onChangeStage, openChangeStageDialog, onViewHistory, onDeleteLead]);
+  ), [stageGroups, handleEditLead, handleStageChange, handleChangeStage, openChangeStageDialog, handleViewHistory, handleDeleteLead]);
+
+  // Controle de propagação de eventos no componente principal
+  const handleMainClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
 
   return (
-    <div onClick={(e) => e.stopPropagation()}>
+    <div onClick={handleMainClick}>
       <LeadsToolbar
         viewMode={viewMode}
         onViewModeChange={onViewModeChange}

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   DropdownMenu,
@@ -30,7 +31,8 @@ const QuickFiltersMenu: React.FC<QuickFiltersMenuProps> = ({
 }) => {
   const { toast } = useToast();
 
-  const handleClearFilter = (filterType: keyof LeadFilterOptions, value: string) => {
+  const handleClearFilter = (e: React.MouseEvent, filterType: keyof LeadFilterOptions, value: string) => {
+    e.stopPropagation(); // Impedir propagação do evento
     setFilters({...filters, [filterType]: ''});
     
     toast({
@@ -40,7 +42,8 @@ const QuickFiltersMenu: React.FC<QuickFiltersMenuProps> = ({
     });
   };
 
-  const handleClearAllFilters = () => {
+  const handleClearAllFilters = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Impedir propagação do evento
     clearFilters();
     
     toast({
@@ -63,6 +66,9 @@ const QuickFiltersMenu: React.FC<QuickFiltersMenuProps> = ({
   };
 
   const handleClick = (e: React.MouseEvent) => {
+    // Prevenindo a propagação do evento para evitar conflitos
+    e.stopPropagation();
+    
     if (onClick) {
       onClick(e);
     }
@@ -98,7 +104,7 @@ const QuickFiltersMenu: React.FC<QuickFiltersMenuProps> = ({
         <DropdownMenuGroup>
           {filters.channel && (
             <DropdownMenuItem 
-              onClick={() => handleClearFilter('channel', filters.channel)}
+              onClick={(e) => handleClearFilter(e, 'channel', filters.channel)}
               className="flex items-center justify-between group"
             >
               <div className="flex items-center gap-2">
@@ -111,7 +117,7 @@ const QuickFiltersMenu: React.FC<QuickFiltersMenuProps> = ({
           
           {filters.course && (
             <DropdownMenuItem 
-              onClick={() => handleClearFilter('course', filters.course)}
+              onClick={(e) => handleClearFilter(e, 'course', filters.course)}
               className="flex items-center justify-between group"
             >
               <div className="flex items-center gap-2">
@@ -124,7 +130,7 @@ const QuickFiltersMenu: React.FC<QuickFiltersMenuProps> = ({
           
           {filters.stage && (
             <DropdownMenuItem 
-              onClick={() => handleClearFilter('stage', filters.stage)}
+              onClick={(e) => handleClearFilter(e, 'stage', filters.stage)}
               className="flex items-center justify-between group"
             >
               <div className="flex items-center gap-2">
@@ -137,7 +143,7 @@ const QuickFiltersMenu: React.FC<QuickFiltersMenuProps> = ({
           
           {filters.status && (
             <DropdownMenuItem 
-              onClick={() => handleClearFilter('status', filters.status)}
+              onClick={(e) => handleClearFilter(e, 'status', filters.status)}
               className="flex items-center justify-between group"
             >
               <div className="flex items-center gap-2">
@@ -150,7 +156,10 @@ const QuickFiltersMenu: React.FC<QuickFiltersMenuProps> = ({
           
           {(filters.startDate || filters.endDate) && (
             <DropdownMenuItem 
-              onClick={() => setFilters({...filters, startDate: undefined, endDate: undefined})}
+              onClick={(e) => {
+                e.stopPropagation();
+                setFilters({...filters, startDate: undefined, endDate: undefined});
+              }}
               className="flex items-center justify-between group"
             >
               <div className="flex items-center gap-2">
@@ -168,7 +177,7 @@ const QuickFiltersMenu: React.FC<QuickFiltersMenuProps> = ({
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem 
-              onClick={handleClearAllFilters} 
+              onClick={(e) => handleClearAllFilters(e)} 
               className="flex items-center justify-center text-destructive font-medium hover:bg-destructive/10"
             >
               <FilterX className="h-4 w-4 mr-2" />

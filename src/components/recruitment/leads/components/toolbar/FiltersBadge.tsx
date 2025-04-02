@@ -39,6 +39,7 @@ const FiltersBadge: React.FC<FiltersBadgeProps> = ({ activeFilterCount, onClick 
           size="icon" 
           onClick={handleClick}
           className={`relative ${getBgColor()} transition-colors`}
+          type="button" // Especificar explicitamente tipo para evitar comportamentos inesperados
         >
           <Filter className={`h-4 w-4 ${getTextColor()}`} />
           {activeFilterCount > 0 && (
