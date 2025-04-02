@@ -1,5 +1,5 @@
 
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import LeadsTableView from './LeadsTableView';
 import LeadsToolbar from './LeadsToolbar';
@@ -45,34 +45,18 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
 }) => {
   // Memoize event handlers to prevent unnecessary re-renders
   const handleEditLead = useCallback((e: React.MouseEvent, leadId: number) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
     onEditLead(e, leadId);
   }, [onEditLead]);
 
   const handleChangeStage = useCallback((e: React.MouseEvent, leadId: number) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
     onChangeStage(e, leadId);
   }, [onChangeStage]);
 
   const handleViewHistory = useCallback((e: React.MouseEvent, leadId: number) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
     onViewHistory(e, leadId);
   }, [onViewHistory]);
 
   const handleDeleteLead = useCallback((e: React.MouseEvent, leadId: number) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
     onDeleteLead(e, leadId);
   }, [onDeleteLead]);
 
@@ -80,31 +64,8 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
     onStageChange(leadId, newStage, notes);
   }, [onStageChange]);
 
-  // Use memoization pattern for improved performance
-  const MemoizedLeadsTableView = useMemo(() => (
-    <LeadsTableView 
-      leads={filteredLeads} 
-      onEditLead={handleEditLead}
-      onChangeStage={handleChangeStage}
-      onViewHistory={handleViewHistory}
-      onDeleteLead={handleDeleteLead}
-    />
-  ), [filteredLeads, handleEditLead, handleChangeStage, handleViewHistory, handleDeleteLead]);
-
-  const MemoizedKanbanView = useMemo(() => (
-    <LeadsKanbanView 
-      stageGroups={stageGroups}
-      onEditLead={handleEditLead}
-      onStageChange={handleStageChange}
-      onChangeStage={handleChangeStage} 
-      openChangeStageDialog={openChangeStageDialog}
-      onViewHistory={handleViewHistory}
-      onDeleteLead={handleDeleteLead}
-    />
-  ), [stageGroups, handleEditLead, handleStageChange, handleChangeStage, openChangeStageDialog, handleViewHistory, handleDeleteLead]);
-
   return (
-    <div onClick={(e) => e.stopPropagation()}>
+    <div>
       <LeadsToolbar
         viewMode={viewMode}
         onViewModeChange={onViewModeChange}
@@ -117,12 +78,26 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
       />
       
       <Tabs value={viewMode} className="mt-4">
-        <TabsContent value="table" hidden={viewMode !== 'table'}>
-          {MemoizedLeadsTableView}
+        <TabsContent value="table">
+          <LeadsTableView 
+            leads={filteredLeads} 
+            onEditLead={handleEditLead}
+            onChangeStage={handleChangeStage}
+            onViewHistory={handleViewHistory}
+            onDeleteLead={handleDeleteLead}
+          />
         </TabsContent>
         
-        <TabsContent value="kanban" hidden={viewMode !== 'kanban'}>
-          {MemoizedKanbanView}
+        <TabsContent value="kanban">
+          <LeadsKanbanView 
+            stageGroups={stageGroups}
+            onEditLead={handleEditLead}
+            onStageChange={handleStageChange}
+            onChangeStage={handleChangeStage} 
+            openChangeStageDialog={openChangeStageDialog}
+            onViewHistory={handleViewHistory}
+            onDeleteLead={handleDeleteLead}
+          />
         </TabsContent>
       </Tabs>
     </div>

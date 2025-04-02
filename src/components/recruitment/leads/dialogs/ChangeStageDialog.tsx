@@ -32,7 +32,6 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    e.stopPropagation();
     
     if (lead?.id) {
       onSave(lead.id, stage, notes);
@@ -44,37 +43,20 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
     }
   };
 
-  const handleCancel = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onOpenChange(false);
-  };
-
   // Atualizar o estado quando o lead mudar
   useEffect(() => {
     if (lead?.stage) {
       setStage(lead.stage);
     }
-  }, [lead]);
-
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
+    setNotes(''); // Limpar notas ao abrir diálogo para novo lead
+  }, [lead, open]);
 
   return (
     <Dialog 
       open={open} 
-      onOpenChange={(value) => {
-        // Handle onOpenChange directly to prevent propagation issues
-        onOpenChange(value);
-      }}
+      onOpenChange={onOpenChange}
     >
-      <DialogContent 
-        className="sm:max-w-[500px]" 
-        onClick={handleClick}
-        onPointerDownOutside={(e) => e.preventDefault()}
-      >
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Alterar Etapa</DialogTitle>
         </DialogHeader>
@@ -92,10 +74,10 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
               onValueChange={setStage}
               required
             >
-              <SelectTrigger>
+              <SelectTrigger id="stage">
                 <SelectValue placeholder="Selecione uma etapa" />
               </SelectTrigger>
-              <SelectContent onClick={handleClick}>
+              <SelectContent>
                 <SelectItem value="Contato Inicial">Contato Inicial</SelectItem>
                 <SelectItem value="Agendamento">Agendamento</SelectItem>
                 <SelectItem value="Visita">Visita</SelectItem>
@@ -112,7 +94,6 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={4}
-              onClick={handleClick}
             />
           </div>
 
@@ -120,7 +101,7 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
             <Button 
               type="button" 
               variant="outline" 
-              onClick={handleCancel}
+              onClick={() => onOpenChange(false)}
             >
               Cancelar
             </Button>
