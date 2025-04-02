@@ -13,6 +13,7 @@ import EmotionalNavLinks from './navigation/EmotionalNavLinks';
 import SalesNavLinks from './navigation/SalesNavLinks';
 import SchedulingNavLinks from './navigation/SchedulingNavLinks';
 import PedagogicalNavLinks from './navigation/PedagogicalNavLinks';
+import FinanceNavLinks from './navigation/FinanceNavLinks';
 
 interface SidebarNavigationSectionProps {
   collapsed: boolean;
@@ -38,6 +39,11 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
       {/* Links específicos para o produto de captação */}
       {currentProduct === 'recruitment' && (
         <RecruitmentNavLinks collapsed={collapsed} />
+      )}
+      
+      {/* Links específicos para o produto de finanças */}
+      {currentProduct === 'finance' && (
+        <FinanceNavLinks collapsed={collapsed} />
       )}
       
       {/* Links para outros produtos - adicione conforme necessário */}

@@ -49,8 +49,9 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
   
   console.log('SidebarContent - currentProduct:', currentProduct, 'isAdmin:', isAdmin, 'isSuperAdmin:', isSuperAdmin);
   
-  // Check if the current product is recruitment
+  // Check if the current product is recruitment or finance
   const isRecruitmentProduct = currentProduct === 'recruitment';
+  const isFinanceProduct = currentProduct === 'finance';
   // Check if the current product is retention
   const isRetentionProduct = currentProduct === 'retention';
   
@@ -76,12 +77,12 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
             <SidebarNavigationSection collapsed={collapsed} />
             
             {/* Monitoramento - mostrar para retenção ou quando não houver produto selecionado */}
-            {(isRetentionProduct || !currentProduct || isSuperAdmin) && !isRecruitmentProduct && (
+            {(isRetentionProduct || !currentProduct || isSuperAdmin) && !isRecruitmentProduct && !isFinanceProduct && (
               <SidebarMonitoringSection collapsed={collapsed} />
             )}
             
             {/* Faturamento - mostrar para billing ou quando não houver produto selecionado */}
-            {(currentProduct === 'billing' || !currentProduct || isSuperAdmin) && !isRecruitmentProduct && (
+            {(currentProduct === 'billing' || !currentProduct || isSuperAdmin) && !isRecruitmentProduct && !isFinanceProduct && (
               <SidebarBillingSection collapsed={collapsed} />
             )}
           </>
@@ -99,6 +100,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
                     case 'retention': return 'Retenção';
                     case 'billing': return 'Cobrança';
                     case 'recruitment': return 'Recrutamento';
+                    case 'finance': return 'Finanças';
                     default: return p;
                   }
                 }).join(', ')}
@@ -107,8 +109,8 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
           </div>
         )}
         
-        {/* Menus de administração são exibidos com base no nível de acesso e não estando no produto de captação */}
-        {(isAdmin || isSuperAdmin) && !isRecruitmentProduct && (
+        {/* Menus de administração são exibidos com base no nível de acesso */}
+        {(isAdmin || isSuperAdmin) && !isRecruitmentProduct && !isFinanceProduct && (
           <SidebarAdminSection collapsed={collapsed} />
         )}
       </div>
