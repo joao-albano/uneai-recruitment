@@ -43,7 +43,7 @@ export const ModelHistoryChart = () => {
           <ChartTooltip
             content={
               <ChartTooltipContent 
-                formatter={(value) => [`${value}%`]} 
+                formatter={(value) => [`${value}%`, 'Valor']} 
                 labelFormatter={(value) => `Data: ${value}`}
               />
             }

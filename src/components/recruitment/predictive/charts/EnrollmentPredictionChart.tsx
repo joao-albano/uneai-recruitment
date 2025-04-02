@@ -38,7 +38,9 @@ export const EnrollmentPredictionChart = () => {
           <YAxis />
           <ChartTooltip
             content={
-              <ChartTooltipContent labelKey="name" formatter={(value, name) => [`${value}`, name === 'target' ? 'Meta' : 'Previsto']} />
+              <ChartTooltipContent 
+                formatter={(value, name) => [`${value}`, name === 'target' ? 'Meta' : 'Previsto']} 
+              />
             }
           />
           <Legend formatter={(value) => (value === 'target' ? 'Meta' : 'Previsto')} />

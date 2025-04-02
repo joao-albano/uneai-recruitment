@@ -20,7 +20,6 @@ const FunnelChartComponent: React.FC = () => {
           dataKey="value"
           data={funnelData}
           isAnimationActive
-          label
         >
           <LabelList 
             position="right"
