@@ -1,5 +1,5 @@
 
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 import { 
   Card, 
@@ -48,7 +48,7 @@ const LeadCard: React.FC<LeadCardProps> = ({
   onDeleteLead
 }) => {
   // Function to handle actions with proper event handling
-  const handleAction = (
+  const handleAction = useCallback((
     e: React.MouseEvent, 
     actionHandler: (e: React.MouseEvent, leadId: number) => void
   ) => {
@@ -58,7 +58,28 @@ const LeadCard: React.FC<LeadCardProps> = ({
     }
     
     actionHandler(e, lead.id);
-  };
+  }, [lead.id]);
+
+  // Get status color based on status value
+  const getStatusColor = useCallback((status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'novo':
+        return 'bg-blue-100 text-blue-800';
+      case 'em andamento':
+        return 'bg-amber-100 text-amber-800';
+      case 'aguardando':
+        return 'bg-purple-100 text-purple-800';
+      case 'finalizado':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  }, []);
+
+  // Stop propagation on all card clicks
+  const handleCardClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+  }, []);
 
   return (
     <Draggable draggableId={`lead-${lead.id}`} index={index}>
@@ -70,6 +91,7 @@ const LeadCard: React.FC<LeadCardProps> = ({
           className={`${
             snapshot.isDragging ? 'bg-accent/50 shadow-lg' : ''
           } transition-shadow hover:shadow-md`}
+          onClick={handleCardClick}
         >
           <CardHeader className="px-3 py-2 pb-0">
             <div className="flex justify-between items-start">
@@ -84,37 +106,37 @@ const LeadCard: React.FC<LeadCardProps> = ({
                     onClick={(e) => e.stopPropagation()}
                   >
                     <MoreHorizontal className="h-4 w-4" />
+                    <span className="sr-only">Open menu</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 
                   align="end" 
-                  className="bg-white z-50"
+                  className="bg-white z-50 shadow-md"
                   onClick={(e) => e.stopPropagation()}
-                  onPointerDownOutside={(e) => e.preventDefault()}
                 >
                   <DropdownMenuLabel>Ações</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
-                    className="cursor-pointer"
+                    className="cursor-pointer hover:bg-muted"
                     onClick={(e) => handleAction(e, onEditLead)}
                   >
                     Editar Lead
                   </DropdownMenuItem>
                   <DropdownMenuItem 
-                    className="cursor-pointer"
+                    className="cursor-pointer hover:bg-muted"
                     onClick={(e) => handleAction(e, onChangeStage)}
                   >
                     Alterar Etapa
                   </DropdownMenuItem>
                   <DropdownMenuItem 
-                    className="cursor-pointer"
+                    className="cursor-pointer hover:bg-muted"
                     onClick={(e) => handleAction(e, onViewHistory)}
                   >
                     Ver Histórico
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
-                    className="text-destructive cursor-pointer"
+                    className="text-destructive cursor-pointer hover:bg-muted"
                     onClick={(e) => handleAction(e, onDeleteLead)}
                   >
                     Excluir Lead
@@ -138,14 +160,7 @@ const LeadCard: React.FC<LeadCardProps> = ({
             </div>
           </CardContent>
           <CardFooter className="px-3 py-2 pt-0 flex justify-between">
-            <Badge 
-              className={`
-                ${lead.status === 'Novo' ? 'bg-blue-100 text-blue-800' : 
-                lead.status === 'Em Andamento' ? 'bg-amber-100 text-amber-800' : 
-                lead.status === 'Aguardando' ? 'bg-purple-100 text-purple-800' : 
-                'bg-green-100 text-green-800'}
-              `}
-            >
+            <Badge className={getStatusColor(lead.status)}>
               {lead.status}
             </Badge>
             <div className="text-xs text-muted-foreground">

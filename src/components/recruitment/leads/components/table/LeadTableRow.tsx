@@ -25,14 +25,14 @@ const LeadTableRow: React.FC<LeadTableRowProps> = ({
 }) => {
   // Status color utility
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Novo':
+    switch (status?.toLowerCase()) {
+      case 'novo':
         return 'bg-blue-100 text-blue-800 hover:bg-blue-100/80';
-      case 'Em Andamento':
+      case 'em andamento':
         return 'bg-amber-100 text-amber-800 hover:bg-amber-100/80';
-      case 'Aguardando':
+      case 'aguardando':
         return 'bg-purple-100 text-purple-800 hover:bg-purple-100/80';
-      case 'Finalizado':
+      case 'finalizado':
         return 'bg-green-100 text-green-800 hover:bg-green-100/80';
       default:
         return 'bg-gray-100 text-gray-800 hover:bg-gray-100/80';
@@ -56,8 +56,13 @@ const LeadTableRow: React.FC<LeadTableRowProps> = ({
     }
   };
 
+  // Prevent row clicks from interfering with action menu
+  const handleCellClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
-    <TableRow key={lead.id} onClick={handleRowClick}>
+    <TableRow key={lead.id} onClick={handleRowClick} className="hover:bg-muted/40 transition-colors">
       <TableCell className="font-medium">{lead.name}</TableCell>
       <TableCell>{lead.course}</TableCell>
       <TableCell className="hidden sm:table-cell">{lead.channel}</TableCell>
@@ -70,7 +75,7 @@ const LeadTableRow: React.FC<LeadTableRowProps> = ({
       <TableCell className="hidden md:table-cell">
         {typeof lead.createdAt !== 'undefined' ? formatDate(lead.createdAt) : "Data inválida"}
       </TableCell>
-      <TableCell className="text-right">
+      <TableCell className="text-right" onClick={handleCellClick}>
         <LeadActionMenu
           leadId={lead.id}
           onEditLead={onEditLead}

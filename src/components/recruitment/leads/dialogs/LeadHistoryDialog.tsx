@@ -16,7 +16,7 @@ const LeadHistoryDialog: React.FC<LeadHistoryDialogProps> = ({
   onOpenChange,
   lead,
 }) => {
-  // Buscar histórico do lead
+  // Fetch history safely
   const history = lead ? getLeadHistory(lead.id) : [];
 
   // Improved close handler with proper event prevention
@@ -26,21 +26,21 @@ const LeadHistoryDialog: React.FC<LeadHistoryDialogProps> = ({
     onOpenChange(false);
   }, [onOpenChange]);
 
+  // Handle dialog click to prevent propagation
+  const handleDialogClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+  }, []);
+
   if (!lead) return null;
 
   return (
     <Dialog 
       open={open} 
-      onOpenChange={(isOpen) => {
-        // Prevent unnecessary re-renders
-        if (open !== isOpen) {
-          onOpenChange(isOpen);
-        }
-      }}
+      onOpenChange={onOpenChange}
     >
       <DialogContent 
         className="sm:max-w-[600px] max-h-[80vh] z-50" 
-        onClick={(e) => e.stopPropagation()}
+        onClick={handleDialogClick}
       >
         <DialogHeader>
           <DialogTitle className="text-xl">Histórico do Lead</DialogTitle>

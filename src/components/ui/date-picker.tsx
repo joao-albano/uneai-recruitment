@@ -17,33 +17,63 @@ interface DatePickerProps {
   setDate: (date: Date | undefined) => void;
   fromDate?: Date; // Optional - minimum selectable date
   toDate?: Date;   // Optional - maximum selectable date
+  placeholder?: string; // Optional - custom placeholder
+  className?: string; // Optional - additional classes for the button
 }
 
-export function DatePicker({ date, setDate, fromDate, toDate }: DatePickerProps) {
+export function DatePicker({ 
+  date, 
+  setDate, 
+  fromDate, 
+  toDate, 
+  placeholder = "Selecionar data",
+  className
+}: DatePickerProps) {
+  const [open, setOpen] = React.useState(false);
+
+  // Handler for date selection to ensure proper creation of date objects
+  const handleSelect = React.useCallback((selectedDate: Date | undefined) => {
+    if (selectedDate) {
+      // Create a new Date object to prevent reference issues
+      const newDate = new Date(selectedDate);
+      setDate(newDate);
+    } else {
+      setDate(undefined);
+    }
+    setOpen(false);
+  }, [setDate]);
+  
+  // Handler to prevent event propagation when clicking on the date picker
+  const handleClick = React.useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+  }, []);
+
   return (
-    <Popover>
-      <PopoverTrigger asChild>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild onClick={handleClick}>
         <Button
           variant={"outline"}
           className={cn(
-            "w-full justify-start text-left font-normal",
-            !date && "text-muted-foreground"
+            "w-full justify-start text-left font-normal bg-white",
+            !date && "text-muted-foreground",
+            className
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "dd/MM/yyyy", { locale: pt }) : <span>Selecionar data</span>}
+          {date ? format(date, "dd/MM/yyyy", { locale: pt }) : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
+      <PopoverContent className="w-auto p-0 bg-white z-50 shadow-md" onClick={handleClick}>
         <Calendar
           mode="single"
           selected={date}
-          onSelect={setDate}
+          onSelect={handleSelect}
           initialFocus
           locale={pt}
           disabled={(date) => {
-            if (fromDate && date < fromDate) return true;
-            if (toDate && date > toDate) return true;
+            // Ensure proper validation for disabled dates
+            if (fromDate && date < new Date(fromDate.setHours(0, 0, 0, 0))) return true;
+            if (toDate && date > new Date(toDate.setHours(23, 59, 59, 999))) return true;
             return false;
           }}
           className="pointer-events-auto"

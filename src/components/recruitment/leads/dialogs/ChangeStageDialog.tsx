@@ -35,19 +35,17 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
   useEffect(() => {
     if (open && lead?.stage) {
       setStage(lead.stage);
-      setNotes(''); // Clear notes when opening dialog for a new lead
-      setIsSubmitting(false); // Reset submission state
+      setNotes('');
+      setIsSubmitting(false);
     }
   }, [lead, open]);
 
-  // Improved cancel handler with proper event prevention
-  const handleCancel = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
+  // Stop propagation on all dialog clicks
+  const handleDialogClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    onOpenChange(false);
-  }, [onOpenChange]);
+  }, []);
 
-  // Improved submit handler with proper state management
+  // Handle form submission
   const handleSubmit = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -69,16 +67,14 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
     setIsSubmitting(true);
     
     try {
-      // Call save action
-      onSave(lead.id, stage, notes);
+      // Call save action with a copy of the data, not direct references
+      onSave(Number(lead.id), String(stage), String(notes));
       
-      // Show success toast
       toast({
         title: "Etapa atualizada",
         description: `O lead foi movido para a etapa: ${stage}`
       });
       
-      // Close the dialog after successful update
       onOpenChange(false);
     } catch (error) {
       console.error("Erro ao atualizar etapa:", error);
@@ -88,10 +84,16 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
         variant: "destructive",
       });
     } finally {
-      // Always reset submission state
       setIsSubmitting(false);
     }
   }, [stage, notes, lead?.id, isSubmitting, onSave, onOpenChange, toast]);
+
+  // Improved cancel handler with proper event prevention
+  const handleCancel = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onOpenChange(false);
+  }, [onOpenChange]);
 
   if (!lead) return null;
 
@@ -99,17 +101,13 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
     <Dialog 
       open={open} 
       onOpenChange={(isOpen) => {
-        // Don't allow closing during submission and prevent unnecessary re-renders
         if (isSubmitting) return;
-        
-        if (open !== isOpen) {
-          onOpenChange(isOpen);
-        }
+        onOpenChange(isOpen);
       }}
     >
       <DialogContent 
         className="sm:max-w-[500px] z-50" 
-        onClick={(e) => e.stopPropagation()}
+        onClick={handleDialogClick}
       >
         <DialogHeader>
           <DialogTitle>Alterar Etapa</DialogTitle>
@@ -130,10 +128,10 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
               disabled={isSubmitting}
               required
             >
-              <SelectTrigger id="stage">
+              <SelectTrigger id="stage" className="bg-white">
                 <SelectValue placeholder="Selecione uma etapa" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent position="popper" className="bg-white">
                 <SelectItem value="Contato Inicial">Contato Inicial</SelectItem>
                 <SelectItem value="Agendamento">Agendamento</SelectItem>
                 <SelectItem value="Visita">Visita</SelectItem>
@@ -151,6 +149,7 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
               onChange={(e) => setNotes(e.target.value)}
               disabled={isSubmitting}
               rows={4}
+              className="resize-none bg-white"
             />
           </div>
 
@@ -167,6 +166,7 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
               type="button"
               onClick={handleSubmit}
               disabled={isSubmitting}
+              className="bg-primary hover:bg-primary/90"
             >
               {isSubmitting ? "Salvando..." : "Salvar"}
             </Button>

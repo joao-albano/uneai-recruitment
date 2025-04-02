@@ -26,21 +26,23 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
   lead,
   onSave
 }) => {
-  const [editedLead, setEditedLead] = useState(lead || {});
+  const [editedLead, setEditedLead] = useState<any>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   // Update the form when the lead changes
   useEffect(() => {
     if (lead && open) {
-      setEditedLead(lead);
+      // Create a deep copy to prevent accidental mutations
+      setEditedLead(JSON.parse(JSON.stringify(lead)));
+      setIsSubmitting(false);
     }
   }, [lead, open]);
 
-  // Prevent issues with null lead
-  if (!lead && open) {
-    onOpenChange(false);
-    return null;
-  }
+  // Handle dialog clicks to prevent bubbling
+  const handleDialogClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+  }, []);
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -59,23 +61,53 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
 
   const handleSubmit = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    e.stopPropagation();
     
-    if (!editedLead) return;
+    if (!editedLead || isSubmitting) return;
     
-    onSave(editedLead);
-    toast({
-      title: "Lead atualizado",
-      description: "As informações foram atualizadas com sucesso"
-    });
+    setIsSubmitting(true);
+    
+    try {
+      // Create a deep copy for the save operation
+      const leadToSave = JSON.parse(JSON.stringify(editedLead));
+      onSave(leadToSave);
+      
+      toast({
+        title: "Lead atualizado",
+        description: "As informações foram atualizadas com sucesso"
+      });
+      
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Erro ao salvar lead:", error);
+      toast({
+        title: "Erro ao atualizar",
+        description: "Não foi possível salvar as alterações. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [editedLead, isSubmitting, onSave, toast, onOpenChange]);
+
+  // Prevent issues with null lead
+  if (!lead && open) {
     onOpenChange(false);
-  }, [editedLead, onSave, toast, onOpenChange]);
+    return null;
+  }
 
   return (
     <Dialog 
       open={open} 
-      onOpenChange={onOpenChange}
+      onOpenChange={(isOpen) => {
+        if (isSubmitting) return;
+        onOpenChange(isOpen);
+      }}
     >
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent 
+        className="sm:max-w-[500px] z-50" 
+        onClick={handleDialogClick}
+      >
         <DialogHeader>
           <DialogTitle>Editar Lead</DialogTitle>
           <DialogDescription>Edite as informações do lead abaixo.</DialogDescription>
@@ -91,6 +123,7 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
                   name="name"
                   value={editedLead.name || ''}
                   onChange={handleInputChange}
+                  className="bg-white"
                   required
                 />
               </div>
@@ -103,6 +136,7 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
                   type="number"
                   value={editedLead.children || 0}
                   onChange={handleInputChange}
+                  className="bg-white"
                   required
                 />
               </div>
@@ -113,10 +147,10 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
                   value={editedLead.course || ''}
                   onValueChange={(value) => handleSelectChange('course', value)}
                 >
-                  <SelectTrigger id="course">
+                  <SelectTrigger id="course" className="bg-white">
                     <SelectValue placeholder="Selecione um curso" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent position="popper" className="bg-white">
                     <SelectItem value="Ensino Fundamental">Ensino Fundamental</SelectItem>
                     <SelectItem value="Ensino Médio">Ensino Médio</SelectItem>
                     <SelectItem value="Educação Infantil">Educação Infantil</SelectItem>
@@ -135,10 +169,10 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
                   value={editedLead.channel || ''}
                   onValueChange={(value) => handleSelectChange('channel', value)}
                 >
-                  <SelectTrigger id="channel">
+                  <SelectTrigger id="channel" className="bg-white">
                     <SelectValue placeholder="Selecione um canal" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent position="popper" className="bg-white">
                     <SelectItem value="Site">Site</SelectItem>
                     <SelectItem value="Facebook">Facebook</SelectItem>
                     <SelectItem value="Instagram">Instagram</SelectItem>
@@ -155,14 +189,17 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
                 type="button" 
                 variant="outline" 
                 onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
               >
                 Cancelar
               </Button>
               <Button 
                 type="button"
                 onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="bg-primary hover:bg-primary/90"
               >
-                Salvar Alterações
+                {isSubmitting ? "Salvando..." : "Salvar Alterações"}
               </Button>
             </div>
           </div>
