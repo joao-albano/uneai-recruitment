@@ -44,7 +44,9 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children, init
   useEffect(() => {
     if (location) {
       const productFromPath = determineProductFromPath(location.pathname);
+      console.log('ProductProvider - path:', location.pathname, 'product:', productFromPath);
       if (productFromPath && productFromPath !== currentProduct) {
+        console.log('ProductProvider - setting product:', productFromPath);
         setCurrentProduct(productFromPath);
       }
     }

@@ -21,6 +21,7 @@ import RecruitmentCampaignsPage from "@/pages/RecruitmentCampaignsPage";
 import RecruitmentAnalyticsPage from "@/pages/RecruitmentAnalyticsPage";
 import ConversationPage from "@/pages/recruitment/ConversationPage";
 import EnrollmentPredictionsPage from "@/pages/recruitment/EnrollmentPredictionsPage";
+import PredictiveReportingPage from "@/pages/recruitment/PredictiveReportingPage";
 import { ProductGuard } from "@/components/auth/ProductGuard";
 
 interface RouteConfig {
@@ -188,6 +189,14 @@ export const protectedRoutes: RouteConfig[] = [
     element: (
       <ProtectedRoute>
         <EnrollmentPredictionsPage />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/predictive-reporting",
+    element: (
+      <ProtectedRoute>
+        <PredictiveReportingPage />
       </ProtectedRoute>
     )
   }

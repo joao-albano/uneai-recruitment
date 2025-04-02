@@ -9,7 +9,7 @@ interface SidebarNavLinkProps {
   icon: LucideIcon;
   label: string;
   collapsed: boolean;
-  isActive?: boolean; // Changed 'active' to 'isActive'
+  isActive?: boolean;
 }
 
 const SidebarNavLink: React.FC<SidebarNavLinkProps> = ({ 
@@ -20,7 +20,10 @@ const SidebarNavLink: React.FC<SidebarNavLinkProps> = ({
   isActive: propIsActive
 }) => {
   const location = useLocation();
+  // Use o valor de isActive passado como prop, se fornecido, ou calcule com base no caminho atual
   const isActive = propIsActive !== undefined ? propIsActive : location.pathname === to;
+  
+  console.log(`SidebarNavLink - path: ${to}, label: ${label}, active: ${isActive}`);
   
   return (
     <Link 

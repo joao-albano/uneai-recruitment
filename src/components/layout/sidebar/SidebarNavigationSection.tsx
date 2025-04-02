@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Home, BarChart2, LineChart, Upload, UserPlus, CalendarCheck, Users, BarChart, MessageSquare, BookOpen, MapPin, PieChart } from 'lucide-react';
 import SidebarNavigationGroup from './SidebarNavigationGroup';
@@ -88,7 +87,6 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
             icon={MapPin} 
             label="Direcionamento Geo" 
             collapsed={collapsed}
-            isActive={window.location.pathname === '/recruitment/geographic-targeting'}
           />
           <SidebarNavLink 
             to="/recruitment/conversation" 
@@ -101,14 +99,12 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
             icon={LineChart} 
             label="Previsões" 
             collapsed={collapsed}
-            isActive={window.location.pathname === '/recruitment/predictions'}
           />
           <SidebarNavLink 
             to="/recruitment/predictive-reporting" 
             icon={PieChart} 
             label="Relatórios Preditivos" 
             collapsed={collapsed}
-            isActive={window.location.pathname === '/recruitment/predictive-reporting'}
           />
         </>
       )}
