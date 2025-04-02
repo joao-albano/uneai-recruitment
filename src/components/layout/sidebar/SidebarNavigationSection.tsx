@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, BarChart2, LineChart, Upload, UserPlus, CalendarCheck, Users, BarChart, MessageSquare, BookOpen, MapPin } from 'lucide-react';
+import { Home, BarChart2, LineChart, Upload, UserPlus, CalendarCheck, Users, BarChart, MessageSquare, BookOpen, MapPin, PieChart } from 'lucide-react';
 import SidebarNavigationGroup from './SidebarNavigationGroup';
 import SidebarNavLink from './SidebarNavLink';
 import { useProduct } from '@/context/product';
@@ -102,6 +102,13 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
             label="Previsões" 
             collapsed={collapsed}
             isActive={window.location.pathname === '/recruitment/predictions'}
+          />
+          <SidebarNavLink 
+            to="/recruitment/predictive-reporting" 
+            icon={PieChart} 
+            label="Relatórios Preditivos" 
+            collapsed={collapsed}
+            isActive={window.location.pathname === '/recruitment/predictive-reporting'}
           />
         </>
       )}
