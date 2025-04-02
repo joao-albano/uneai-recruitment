@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { MoreHorizontal } from 'lucide-react';
@@ -10,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface GetLeadColumnsProps {
@@ -93,11 +94,12 @@ export const getLeadColumns = ({
     cell: (row: any) => {
       try {
         const date = typeof row.createdAt === 'string' 
-          ? new Date(row.createdAt) 
+          ? parseISO(row.createdAt) 
           : row.createdAt;
-        return format(date, 'dd/MM/yyyy', { locale: ptBR });
+        return format(date, 'yyyy-MM-dd', { locale: ptBR });
       } catch (e) {
-        return row.createdAt;
+        console.error("Erro ao formatar data:", e);
+        return "Data inválida";
       }
     }
   },

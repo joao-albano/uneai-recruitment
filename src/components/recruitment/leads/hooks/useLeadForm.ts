@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { leadFormSchema, LeadFormValues } from '../types/leadForm';
 import { useEffect } from 'react';
 import { mockLeadsData } from '../data/mockLeadsData';
+import { format } from 'date-fns';
 
 const defaultValues = {
   parentName: "",
@@ -37,11 +38,15 @@ export const useLeadForm = () => {
     
     // Here we would send data to the API in a real implementation
     
+    // Create current date in ISO format but formatted properly for display
+    const now = new Date();
+    const createdAt = now.toISOString();
+    
     // Return processed data with mock ID and timestamp
     const result = {
       ...data,
       id: Math.floor(Math.random() * 10000), // Simulate generated ID
-      createdAt: new Date().toISOString(),
+      createdAt: createdAt,
     };
     
     // Update the mock data array - fixing by adding the missing required properties
@@ -55,10 +60,11 @@ export const useLeadForm = () => {
       channel: result.channel,
       stage: "Contato Inicial",
       status: "Novo",
-      createdAt: result.createdAt,
+      createdAt: createdAt, // Use consistent ISO format for dates
       notes: result.observations || ""
     });
     
+    console.log('Lead salvo com sucesso:', result);
     return result;
   };
 

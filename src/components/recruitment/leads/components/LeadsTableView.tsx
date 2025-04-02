@@ -19,6 +19,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { MoreHorizontal } from 'lucide-react';
+import { format, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface LeadsTableViewProps {
   leads: any[];
@@ -47,6 +49,17 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
         return 'bg-green-100 text-green-800 hover:bg-green-100/80';
       default:
         return 'bg-gray-100 text-gray-800 hover:bg-gray-100/80';
+    }
+  };
+
+  // Format date consistently
+  const formatDate = (dateString: string) => {
+    try {
+      const date = parseISO(dateString);
+      return format(date, 'yyyy-MM-dd', { locale: ptBR });
+    } catch (e) {
+      console.error("Error formatting date:", e);
+      return "Data inválida";
     }
   };
 
@@ -129,7 +142,9 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
                     {lead.status}
                   </Badge>
                 </TableCell>
-                <TableCell className="hidden md:table-cell">{lead.createdAt}</TableCell>
+                <TableCell className="hidden md:table-cell">
+                  {typeof lead.createdAt === 'string' ? formatDate(lead.createdAt) : "Data inválida"}
+                </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
