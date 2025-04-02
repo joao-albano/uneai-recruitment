@@ -1,8 +1,18 @@
+
 import React from 'react';
-import { Home, BarChart2, LineChart, Upload, UserPlus, CalendarCheck, Users, BarChart, MessageSquare, BookOpen, MapPin, PieChart } from 'lucide-react';
 import SidebarNavigationGroup from './SidebarNavigationGroup';
-import SidebarNavLink from './SidebarNavLink';
 import { useProduct } from '@/context/product';
+
+// Import the individual navigation link components
+import CommonNavLinks from './navigation/CommonNavLinks';
+import RetentionNavLinks from './navigation/RetentionNavLinks';
+import RecruitmentNavLinks from './navigation/RecruitmentNavLinks';
+import BillingNavLinks from './navigation/BillingNavLinks';
+import SecretaryNavLinks from './navigation/SecretaryNavLinks';
+import EmotionalNavLinks from './navigation/EmotionalNavLinks';
+import SalesNavLinks from './navigation/SalesNavLinks';
+import SchedulingNavLinks from './navigation/SchedulingNavLinks';
+import PedagogicalNavLinks from './navigation/PedagogicalNavLinks';
 
 interface SidebarNavigationSectionProps {
   collapsed: boolean;
@@ -18,180 +28,41 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
       title="Navegação" 
       collapsed={collapsed}
     >
-      <SidebarNavLink 
-        to="/home" 
-        icon={Home} 
-        label="Início" 
-        collapsed={collapsed}
-      />
+      <CommonNavLinks collapsed={collapsed} />
       
       {/* Links específicos para o produto de retenção */}
       {(currentProduct === 'retention') && (
-        <>
-          <SidebarNavLink 
-            to="/dashboard" 
-            icon={BarChart2} 
-            label="Dashboard" 
-            collapsed={collapsed}
-          />
-          <SidebarNavLink 
-            to="/model" 
-            icon={LineChart} 
-            label="Modelo" 
-            collapsed={collapsed}
-          />
-          <SidebarNavLink 
-            to="/upload" 
-            icon={Upload} 
-            label="Uploads" 
-            collapsed={collapsed}
-          />
-        </>
+        <RetentionNavLinks collapsed={collapsed} />
       )}
       
       {/* Links específicos para o produto de captação */}
       {currentProduct === 'recruitment' && (
-        <>
-          <SidebarNavLink 
-            to="/recruitment" 
-            icon={BarChart} 
-            label="Dashboard" 
-            collapsed={collapsed}
-          />
-          <SidebarNavLink 
-            to="/recruitment/leads" 
-            icon={UserPlus} 
-            label="Leads" 
-            collapsed={collapsed}
-          />
-          <SidebarNavLink 
-            to="/recruitment/funnel" 
-            icon={LineChart} 
-            label="Funil" 
-            collapsed={collapsed}
-          />
-          <SidebarNavLink 
-            to="/recruitment/campaigns" 
-            icon={CalendarCheck} 
-            label="Campanhas" 
-            collapsed={collapsed}
-          />
-          <SidebarNavLink 
-            to="/recruitment/analytics" 
-            icon={Users} 
-            label="Analíticos" 
-            collapsed={collapsed}
-          />
-          <SidebarNavLink 
-            to="/recruitment/geographic-targeting" 
-            icon={MapPin} 
-            label="Direcionamento Geo" 
-            collapsed={collapsed}
-          />
-          <SidebarNavLink 
-            to="/recruitment/conversation" 
-            icon={MessageSquare} 
-            label="Conversas" 
-            collapsed={collapsed}
-          />
-          <SidebarNavLink 
-            to="/recruitment/predictions" 
-            icon={LineChart} 
-            label="Previsões" 
-            collapsed={collapsed}
-          />
-          <SidebarNavLink 
-            to="/recruitment/predictive-reporting" 
-            icon={PieChart} 
-            label="Relatórios Preditivos" 
-            collapsed={collapsed}
-          />
-        </>
+        <RecruitmentNavLinks collapsed={collapsed} />
       )}
       
       {/* Links para outros produtos - adicione conforme necessário */}
       {currentProduct === 'billing' && (
-        <>
-          <SidebarNavLink 
-            to="/billing" 
-            icon={BarChart2} 
-            label="Dashboard" 
-            collapsed={collapsed}
-          />
-          <SidebarNavLink 
-            to="/billing/invoices" 
-            icon={LineChart} 
-            label="Faturas" 
-            collapsed={collapsed}
-          />
-        </>
+        <BillingNavLinks collapsed={collapsed} />
       )}
       
       {currentProduct === 'secretary' && (
-        <>
-          <SidebarNavLink 
-            to="/secretary" 
-            icon={BarChart2} 
-            label="Dashboard" 
-            collapsed={collapsed}
-          />
-          <SidebarNavLink 
-            to="/secretary/documents" 
-            icon={LineChart} 
-            label="Documentos" 
-            collapsed={collapsed}
-          />
-        </>
+        <SecretaryNavLinks collapsed={collapsed} />
       )}
       
       {currentProduct === 'emotional' && (
-        <>
-          <SidebarNavLink 
-            to="/emotional" 
-            icon={BarChart2} 
-            label="Dashboard" 
-            collapsed={collapsed}
-          />
-        </>
+        <EmotionalNavLinks collapsed={collapsed} />
       )}
       
       {currentProduct === 'sales' && (
-        <>
-          <SidebarNavLink 
-            to="/sales" 
-            icon={BarChart2} 
-            label="Dashboard" 
-            collapsed={collapsed}
-          />
-        </>
+        <SalesNavLinks collapsed={collapsed} />
       )}
       
       {currentProduct === 'scheduling' && (
-        <>
-          <SidebarNavLink 
-            to="/schedule" 
-            icon={BarChart2} 
-            label="Dashboard" 
-            collapsed={collapsed}
-          />
-        </>
+        <SchedulingNavLinks collapsed={collapsed} />
       )}
       
       {currentProduct === 'pedagogical' && (
-        <>
-          <SidebarNavLink 
-            to="/pedagogical" 
-            icon={BookOpen} 
-            label="Dashboard" 
-            collapsed={collapsed}
-          />
-          <SidebarNavLink 
-            to="/pedagogical/assessments" 
-            icon={LineChart} 
-            label="Avaliações" 
-            collapsed={collapsed}
-          />
-        </>
+        <PedagogicalNavLinks collapsed={collapsed} />
       )}
     </SidebarNavigationGroup>
   );
