@@ -120,6 +120,11 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
                     <SelectItem value="Ensino Fundamental">Ensino Fundamental</SelectItem>
                     <SelectItem value="Ensino Médio">Ensino Médio</SelectItem>
                     <SelectItem value="Educação Infantil">Educação Infantil</SelectItem>
+                    <SelectItem value="Graduação">Graduação</SelectItem>
+                    <SelectItem value="Pós-Graduação">Pós-Graduação</SelectItem>
+                    <SelectItem value="MBA">MBA</SelectItem>
+                    <SelectItem value="Mestrado">Mestrado</SelectItem>
+                    <SelectItem value="Doutorado">Doutorado</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
