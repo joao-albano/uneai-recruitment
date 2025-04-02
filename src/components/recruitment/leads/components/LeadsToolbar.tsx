@@ -43,8 +43,8 @@ const LeadsToolbar: React.FC<LeadsToolbarProps> = ({
   const activeFilterCount = getActiveFilterCount();
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-muted/30 p-2 rounded-lg">
-      <div className="flex items-center gap-2 w-full sm:w-auto">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-muted/30 p-3 rounded-lg border border-muted/50">
+      <div className="flex items-center gap-3 w-full sm:w-auto">
         <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         <QuickFiltersMenu 
           filters={filters} 

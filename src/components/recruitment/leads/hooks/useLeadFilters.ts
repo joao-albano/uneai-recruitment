@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { defaultFilters, LeadFilterOptions } from '../types/leadFilters';
+import { useToast } from '@/components/ui/use-toast';
 
 export const useLeadFilters = (
   leadsData: any[],
@@ -10,10 +11,12 @@ export const useLeadFilters = (
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<LeadFilterOptions>(defaultFilters);
+  const { toast } = useToast();
 
   // Apply filters to leads data
   useEffect(() => {
     let filtered = [...leadsData]; // Create a copy to avoid reference issues
+    let appliedFiltersCount = 0;
     
     // Filter by search term
     if (searchTerm) {
@@ -22,6 +25,7 @@ export const useLeadFilters = (
         lead.course.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.channel.toLowerCase().includes(searchTerm.toLowerCase())
       );
+      appliedFiltersCount++;
     }
     
     // Filter by tab (status)
@@ -34,23 +38,28 @@ export const useLeadFilters = (
       };
       
       filtered = filtered.filter(lead => lead.status === statusMap[activeFilter]);
+      appliedFiltersCount++;
     }
     
     // Apply additional filters
     if (filters.channel) {
       filtered = filtered.filter(lead => lead.channel === filters.channel);
+      appliedFiltersCount++;
     }
     
     if (filters.course) {
       filtered = filtered.filter(lead => lead.course === filters.course);
+      appliedFiltersCount++;
     }
     
     if (filters.stage) {
       filtered = filtered.filter(lead => lead.stage === filters.stage);
+      appliedFiltersCount++;
     }
     
     if (filters.status) {
       filtered = filtered.filter(lead => lead.status === filters.status);
+      appliedFiltersCount++;
     }
     
     if (filters.startDate && filters.endDate) {
@@ -61,16 +70,19 @@ export const useLeadFilters = (
           leadDate <= filters.endDate!
         );
       });
+      appliedFiltersCount++;
     } else if (filters.startDate) {
       filtered = filtered.filter(lead => {
         const leadDate = new Date(lead.createdAt);
         return leadDate >= filters.startDate!;
       });
+      appliedFiltersCount++;
     } else if (filters.endDate) {
       filtered = filtered.filter(lead => {
         const leadDate = new Date(lead.createdAt);
         return leadDate <= filters.endDate!;
       });
+      appliedFiltersCount++;
     }
     
     setFilteredLeads(filtered);
@@ -84,6 +96,11 @@ export const useLeadFilters = (
     };
     
     setStageGroups(updatedGroups);
+
+    // Show toast when filters are significantly changed
+    if (appliedFiltersCount > 0) {
+      console.log(`Filtros aplicados: ${appliedFiltersCount}`);
+    }
   }, [leadsData, searchTerm, activeFilter, filters, setFilteredLeads, setStageGroups]);
 
   // Clear all filters

@@ -11,7 +11,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { LeadFilterOptions } from '../../types/leadFilters';
 import FiltersBadge from './FiltersBadge';
-import { FilterX, Check } from 'lucide-react';
+import { FilterX, Check, Filter } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 interface QuickFiltersMenuProps {
   filters: LeadFilterOptions;
@@ -26,15 +27,58 @@ const QuickFiltersMenu: React.FC<QuickFiltersMenuProps> = ({
   clearFilters,
   activeFilterCount 
 }) => {
+  const { toast } = useToast();
+
+  const handleClearFilter = (filterType: keyof LeadFilterOptions, value: string) => {
+    setFilters({...filters, [filterType]: ''});
+    
+    toast({
+      title: "Filtro removido",
+      description: `Filtro de ${getFilterLabel(filterType)}: "${value}" foi removido.`,
+      duration: 2000,
+    });
+  };
+
+  const handleClearAllFilters = () => {
+    clearFilters();
+    
+    toast({
+      title: "Todos os filtros removidos",
+      description: "Todos os filtros foram limpos com sucesso.",
+      duration: 2000,
+    });
+  };
+
+  const getFilterLabel = (filterType: string): string => {
+    const labels: {[key: string]: string} = {
+      'channel': 'Canal',
+      'course': 'Curso',
+      'stage': 'Etapa',
+      'status': 'Status',
+      'startDate': 'Data inicial',
+      'endDate': 'Data final'
+    };
+    return labels[filterType] || filterType;
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <FiltersBadge activeFilterCount={activeFilterCount} />
+        <div>
+          <FiltersBadge activeFilterCount={activeFilterCount} />
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-64">
         <DropdownMenuLabel className="flex items-center justify-between">
-          <span>Filtros Ativos</span>
-          <span className="text-xs bg-muted px-2 py-1 rounded-full">{activeFilterCount} filtros</span>
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <span>Filtros Ativos</span>
+          </div>
+          {activeFilterCount > 0 && (
+            <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">
+              {activeFilterCount} {activeFilterCount === 1 ? 'filtro' : 'filtros'}
+            </span>
+          )}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         
@@ -47,60 +91,60 @@ const QuickFiltersMenu: React.FC<QuickFiltersMenuProps> = ({
         <DropdownMenuGroup>
           {filters.channel && (
             <DropdownMenuItem 
-              onClick={() => setFilters({...filters, channel: ''})}
-              className="flex items-center justify-between"
+              onClick={() => handleClearFilter('channel', filters.channel)}
+              className="flex items-center justify-between group"
             >
               <div className="flex items-center gap-2">
                 <Check className="h-3.5 w-3.5 text-primary" />
                 <span>Canal: <span className="font-semibold">{filters.channel}</span></span>
               </div>
-              <FilterX className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+              <FilterX className="h-4 w-4 text-muted-foreground group-hover:text-destructive transition-colors" />
             </DropdownMenuItem>
           )}
           
           {filters.course && (
             <DropdownMenuItem 
-              onClick={() => setFilters({...filters, course: ''})}
-              className="flex items-center justify-between"
+              onClick={() => handleClearFilter('course', filters.course)}
+              className="flex items-center justify-between group"
             >
               <div className="flex items-center gap-2">
                 <Check className="h-3.5 w-3.5 text-primary" />
                 <span>Curso: <span className="font-semibold">{filters.course}</span></span>
               </div>
-              <FilterX className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+              <FilterX className="h-4 w-4 text-muted-foreground group-hover:text-destructive transition-colors" />
             </DropdownMenuItem>
           )}
           
           {filters.stage && (
             <DropdownMenuItem 
-              onClick={() => setFilters({...filters, stage: ''})}
-              className="flex items-center justify-between"
+              onClick={() => handleClearFilter('stage', filters.stage)}
+              className="flex items-center justify-between group"
             >
               <div className="flex items-center gap-2">
                 <Check className="h-3.5 w-3.5 text-primary" />
                 <span>Etapa: <span className="font-semibold">{filters.stage}</span></span>
               </div>
-              <FilterX className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+              <FilterX className="h-4 w-4 text-muted-foreground group-hover:text-destructive transition-colors" />
             </DropdownMenuItem>
           )}
           
           {filters.status && (
             <DropdownMenuItem 
-              onClick={() => setFilters({...filters, status: ''})}
-              className="flex items-center justify-between"
+              onClick={() => handleClearFilter('status', filters.status)}
+              className="flex items-center justify-between group"
             >
               <div className="flex items-center gap-2">
                 <Check className="h-3.5 w-3.5 text-primary" />
                 <span>Status: <span className="font-semibold">{filters.status}</span></span>
               </div>
-              <FilterX className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+              <FilterX className="h-4 w-4 text-muted-foreground group-hover:text-destructive transition-colors" />
             </DropdownMenuItem>
           )}
           
           {(filters.startDate || filters.endDate) && (
             <DropdownMenuItem 
               onClick={() => setFilters({...filters, startDate: undefined, endDate: undefined})}
-              className="flex items-center justify-between"
+              className="flex items-center justify-between group"
             >
               <div className="flex items-center gap-2">
                 <Check className="h-3.5 w-3.5 text-primary" />
@@ -108,7 +152,7 @@ const QuickFiltersMenu: React.FC<QuickFiltersMenuProps> = ({
                   {filters.startDate?.toLocaleDateString('pt-BR') || '∞'} - {filters.endDate?.toLocaleDateString('pt-BR') || '∞'}
                 </span></span>
               </div>
-              <FilterX className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+              <FilterX className="h-4 w-4 text-muted-foreground group-hover:text-destructive transition-colors" />
             </DropdownMenuItem>
           )}
         </DropdownMenuGroup>
@@ -116,7 +160,10 @@ const QuickFiltersMenu: React.FC<QuickFiltersMenuProps> = ({
         {activeFilterCount > 0 && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={clearFilters} className="flex items-center justify-center text-destructive font-medium">
+            <DropdownMenuItem 
+              onClick={handleClearAllFilters} 
+              className="flex items-center justify-center text-destructive font-medium hover:bg-destructive/10"
+            >
               <FilterX className="h-4 w-4 mr-2" />
               Limpar todos os filtros
             </DropdownMenuItem>
