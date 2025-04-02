@@ -14,7 +14,7 @@ const CommonNavLinks: React.FC<CommonNavLinksProps> = ({ collapsed }) => {
   // Determinar o destino com base no produto atual
   const getHomeRoute = () => {
     if (currentProduct === 'recruitment') {
-      return "/recruitment";
+      return "/recruitment/home";
     }
     return "/home"; // Rota padrão para outros produtos (retenção, etc)
   };
