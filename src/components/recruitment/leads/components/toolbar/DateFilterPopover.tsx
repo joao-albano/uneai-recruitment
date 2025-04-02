@@ -10,6 +10,8 @@ import {
 import { DatePicker } from '@/components/ui/date-picker';
 import { LeadFilterOptions } from '../../types/leadFilters';
 import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface DateFilterPopoverProps {
   filters: LeadFilterOptions;
@@ -28,11 +30,27 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({ filters, setFilte
     setEndDate(filters.endDate);
   }, [filters.startDate, filters.endDate]);
 
+  // Format date for display
+  const formatDateDisplay = (date: Date | undefined) => {
+    if (!date) return '';
+    return format(date, 'dd/MM/yyyy', { locale: ptBR });
+  };
+
   const handleDateChange = (e: React.MouseEvent) => {
     // Prevent event propagation
     if (e) {
       e.preventDefault();
       e.stopPropagation();
+    }
+    
+    // Validate that end date is not before start date
+    if (startDate && endDate && startDate > endDate) {
+      toast({
+        title: "Erro no filtro de data",
+        description: "A data final não pode ser anterior à data inicial",
+        variant: "destructive",
+      });
+      return;
     }
     
     setFilters({
@@ -45,11 +63,11 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({ filters, setFilte
     toast({
       title: "Filtro de período aplicado",
       description: startDate && endDate 
-        ? `Período: ${startDate.toLocaleDateString('pt-BR')} até ${endDate.toLocaleDateString('pt-BR')}`
+        ? `Período: ${formatDateDisplay(startDate)} até ${formatDateDisplay(endDate)}`
         : startDate 
-          ? `A partir de: ${startDate.toLocaleDateString('pt-BR')}` 
+          ? `A partir de: ${formatDateDisplay(startDate)}` 
           : endDate 
-            ? `Até: ${endDate.toLocaleDateString('pt-BR')}` 
+            ? `Até: ${formatDateDisplay(endDate)}` 
             : "Período limpo",
       duration: 2000,
     });
@@ -119,6 +137,7 @@ const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({ filters, setFilte
             <DatePicker
               date={endDate}
               setDate={setEndDate}
+              fromDate={startDate} // Prevent selecting dates before start date
             />
           </div>
           <div className="flex gap-2">

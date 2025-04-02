@@ -93,12 +93,25 @@ export const getLeadColumns = ({
     accessorKey: "createdAt",
     cell: (row: any) => {
       try {
-        const date = typeof row.createdAt === 'string' 
-          ? parseISO(row.createdAt) 
-          : row.createdAt;
-        return format(date, 'yyyy-MM-dd', { locale: ptBR });
+        // Handle different possible date formats
+        const dateValue = row.createdAt;
+        let date: Date;
+        
+        if (typeof dateValue === 'string') {
+          // Try to parse as ISO format first
+          if (dateValue.includes('T')) {
+            date = parseISO(dateValue);
+          } else {
+            // Try simple date format (YYYY-MM-DD)
+            date = new Date(dateValue);
+          }
+        } else {
+          date = new Date(dateValue);
+        }
+        
+        return format(date, 'dd/MM/yyyy', { locale: ptBR });
       } catch (e) {
-        console.error("Erro ao formatar data:", e);
+        console.error("Erro ao formatar data:", e, row.createdAt);
         return "Data inválida";
       }
     }

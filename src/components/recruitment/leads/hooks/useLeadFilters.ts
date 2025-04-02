@@ -62,26 +62,44 @@ export const useLeadFilters = (
       appliedFiltersCount++;
     }
     
-    if (filters.startDate && filters.endDate) {
+    // Date filtering - fix date comparison by standardizing the date formats
+    if (filters.startDate || filters.endDate) {
       filtered = filtered.filter(lead => {
-        const leadDate = new Date(lead.createdAt);
-        return (
-          leadDate >= filters.startDate! && 
-          leadDate <= filters.endDate!
-        );
+        // Ensure we're working with date objects
+        const leadDate = typeof lead.createdAt === 'string' ? new Date(lead.createdAt) : lead.createdAt;
+        
+        // Reset time parts to compare only dates
+        const leadDateOnly = new Date(leadDate);
+        leadDateOnly.setHours(0, 0, 0, 0);
+        
+        // Both start and end dates are set
+        if (filters.startDate && filters.endDate) {
+          const startDateOnly = new Date(filters.startDate);
+          startDateOnly.setHours(0, 0, 0, 0);
+          
+          const endDateOnly = new Date(filters.endDate);
+          endDateOnly.setHours(23, 59, 59, 999); // End of day
+          
+          return leadDateOnly >= startDateOnly && leadDateOnly <= endDateOnly;
+        } 
+        // Only start date is set
+        else if (filters.startDate) {
+          const startDateOnly = new Date(filters.startDate);
+          startDateOnly.setHours(0, 0, 0, 0);
+          
+          return leadDateOnly >= startDateOnly;
+        } 
+        // Only end date is set
+        else if (filters.endDate) {
+          const endDateOnly = new Date(filters.endDate);
+          endDateOnly.setHours(23, 59, 59, 999); // End of day
+          
+          return leadDateOnly <= endDateOnly;
+        }
+        
+        return true;
       });
-      appliedFiltersCount++;
-    } else if (filters.startDate) {
-      filtered = filtered.filter(lead => {
-        const leadDate = new Date(lead.createdAt);
-        return leadDate >= filters.startDate!;
-      });
-      appliedFiltersCount++;
-    } else if (filters.endDate) {
-      filtered = filtered.filter(lead => {
-        const leadDate = new Date(lead.createdAt);
-        return leadDate <= filters.endDate!;
-      });
+      
       appliedFiltersCount++;
     }
     

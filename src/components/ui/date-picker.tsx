@@ -1,23 +1,25 @@
 
-import * as React from "react"
-import { format } from "date-fns"
-import { Calendar as CalendarIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
+import * as React from "react";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 import { pt } from 'date-fns/locale';
 
 interface DatePickerProps {
-  date?: Date
-  setDate: (date: Date | undefined) => void
+  date?: Date;
+  setDate: (date: Date | undefined) => void;
+  fromDate?: Date; // Optional - minimum selectable date
+  toDate?: Date;   // Optional - maximum selectable date
 }
 
-export function DatePicker({ date, setDate }: DatePickerProps) {
+export function DatePicker({ date, setDate, fromDate, toDate }: DatePickerProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -39,6 +41,12 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
           onSelect={setDate}
           initialFocus
           locale={pt}
+          disabled={(date) => {
+            if (fromDate && date < fromDate) return true;
+            if (toDate && date > toDate) return true;
+            return false;
+          }}
+          className="pointer-events-auto"
         />
       </PopoverContent>
     </Popover>
