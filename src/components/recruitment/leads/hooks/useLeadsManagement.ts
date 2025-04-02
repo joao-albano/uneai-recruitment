@@ -1,32 +1,30 @@
 
-import { useState, useEffect } from 'react';
-import { mockLeadsData, getLeadsByStage } from '../data/mockLeadsData';
-import { useLeadActions } from './useLeadActions';
+import { useLeadViewMode } from './useLeadViewMode';
+import { useLeadData } from './useLeadData';
 import { useLeadDialogs } from './useLeadDialogs';
 import { useLeadFilters } from './useLeadFilters';
+import { useLeadActions } from './useLeadActions';
 import { useLeadExport } from './useLeadExport';
 
 export const useLeadsManagement = () => {
-  // View mode state
-  const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
+  // Use specialized hooks
+  const viewModeState = useLeadViewMode();
+  const dataState = useLeadData();
   
-  // Leads data state
-  const [leadsData, setLeadsData] = useState(mockLeadsData);
-  const [stageGroups, setStageGroups] = useState(getLeadsByStage());
-  const [filteredLeads, setFilteredLeads] = useState(leadsData);
-  
-  // Import hooks
+  // Dialogs state
   const dialogState = useLeadDialogs();
   
+  // Filters
   const filterState = useLeadFilters(
-    leadsData, 
-    setFilteredLeads, 
-    setStageGroups
+    dataState.leadsData, 
+    dataState.setFilteredLeads, 
+    dataState.setStageGroups
   );
   
+  // Actions
   const leadActions = useLeadActions(
-    leadsData,
-    setLeadsData,
+    dataState.leadsData,
+    dataState.setLeadsData,
     dialogState.setSelectedLead,
     dialogState.setEditDialogOpen,
     dialogState.setStageDialogOpen,
@@ -34,39 +32,30 @@ export const useLeadsManagement = () => {
     dialogState.setDeleteDialogOpen
   );
   
+  // Export functionality
   const exportActions = useLeadExport();
-
-  // Ensure stageGroups are updated when the leads data changes
-  useEffect(() => {
-    const updatedGroups = {
-      "Contato Inicial": leadsData.filter(lead => lead.stage === "Contato Inicial"),
-      "Agendamento": leadsData.filter(lead => lead.stage === "Agendamento"),
-      "Visita": leadsData.filter(lead => lead.stage === "Visita"),
-      "Matrícula": leadsData.filter(lead => lead.stage === "Matrícula"),
-    };
-    
-    setStageGroups(updatedGroups);
-  }, [leadsData]);
 
   return {
     // View mode
-    viewMode,
-    setViewMode,
+    ...viewModeState,
+    
+    // Data
+    filteredLeads: dataState.filteredLeads,
+    stageGroups: dataState.stageGroups,
     
     // From useLeadDialogs
     ...dialogState,
     
     // From useLeadFilters
     ...filterState,
-
-    // Data
-    filteredLeads,
-    stageGroups,
     
     // From useLeadActions
     ...leadActions,
     
     // From useLeadExport
-    handleExportLeads: () => exportActions.handleExportLeads(filteredLeads)
+    handleExportLeads: () => exportActions.handleExportLeads(dataState.filteredLeads)
   };
 };
+
+// Re-exportar a função utilitária de getStatusForStage do arquivo de utils
+export { getStatusForStage } from './utils/leadStatusUtils';
