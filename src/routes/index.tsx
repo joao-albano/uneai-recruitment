@@ -11,9 +11,14 @@ import GeographicTargetingPage from '@/pages/recruitment/GeographicTargetingPage
 import ConversationPage from '@/pages/recruitment/ConversationPage';
 import EnrollmentPredictionsPage from '@/pages/recruitment/EnrollmentPredictionsPage';
 import NotFound from '@/pages/NotFound';
+import Index from '@/pages/Index';
 
 // Combine all routes
 const allRoutes = [
+  {
+    path: '/',
+    element: <Index />
+  },
   ...publicRoutes,
   ...protectedRoutes,
   ...adminRoutes,
