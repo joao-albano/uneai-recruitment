@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   DropdownMenu,
@@ -19,13 +18,15 @@ interface QuickFiltersMenuProps {
   setFilters: (filters: LeadFilterOptions) => void;
   clearFilters: () => void;
   activeFilterCount: number;
+  onClick?: (e: React.MouseEvent) => void;
 }
 
 const QuickFiltersMenu: React.FC<QuickFiltersMenuProps> = ({ 
   filters, 
   setFilters, 
   clearFilters,
-  activeFilterCount 
+  activeFilterCount,
+  onClick 
 }) => {
   const { toast } = useToast();
 
@@ -61,10 +62,16 @@ const QuickFiltersMenu: React.FC<QuickFiltersMenuProps> = ({
     return labels[filterType] || filterType;
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      onClick(e);
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div>
+        <div onClick={handleClick}>
           <FiltersBadge activeFilterCount={activeFilterCount} />
         </div>
       </DropdownMenuTrigger>
