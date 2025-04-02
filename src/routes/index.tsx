@@ -10,6 +10,7 @@ import { adminRoutes } from './adminRoutes';
 import GeographicTargetingPage from '@/pages/recruitment/GeographicTargetingPage';
 import ConversationPage from '@/pages/recruitment/ConversationPage';
 import EnrollmentPredictionsPage from '@/pages/recruitment/EnrollmentPredictionsPage';
+import PredictiveReportingPage from '@/pages/recruitment/PredictiveReportingPage';
 import NotFound from '@/pages/NotFound';
 import Index from '@/pages/Index';
 
@@ -33,6 +34,10 @@ const allRoutes = [
   {
     path: '/recruitment/predictions',
     element: <EnrollmentPredictionsPage />
+  },
+  {
+    path: '/recruitment/predictive-reporting',
+    element: <PredictiveReportingPage />
   },
   {
     path: '*',
