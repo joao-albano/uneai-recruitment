@@ -1,5 +1,5 @@
 
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import {
   Table,
   TableBody,
@@ -51,20 +51,30 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
   };
 
   // Function to handle actions with proper event handling
-  const handleAction = (
-    e: React.MouseEvent, 
-    actionHandler?: (e: React.MouseEvent, leadId: number) => void, 
-    leadId?: number
-  ) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    
-    if (actionHandler && leadId !== undefined) {
-      actionHandler(e, leadId);
-    }
-  };
+  const handleAction = useCallback(
+    (e: React.MouseEvent, actionHandler?: (e: React.MouseEvent, leadId: number) => void, leadId?: number) => {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      
+      if (actionHandler && leadId !== undefined) {
+        actionHandler(e, leadId);
+      }
+    }, 
+    []
+  );
+
+  // Handler para evitar propagação em clicks na tabela
+  const handleRowClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+  }, []);
+
+  // Handler para controlar dropdown
+  const handleDropdownClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
 
   return (
     <div className="border rounded-md overflow-hidden">
@@ -89,7 +99,7 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
             </TableRow>
           ) : (
             leads.map((lead) => (
-              <TableRow key={lead.id}>
+              <TableRow key={lead.id} onClick={handleRowClick}>
                 <TableCell className="font-medium">{lead.name}</TableCell>
                 <TableCell>{lead.course}</TableCell>
                 <TableCell className="hidden sm:table-cell">{lead.channel}</TableCell>
@@ -107,7 +117,7 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
                         variant="ghost" 
                         size="icon"
                         type="button"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={handleDropdownClick}
                       >
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
@@ -115,7 +125,7 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
                     <DropdownMenuContent 
                       align="end" 
                       className="bg-white z-50"
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={handleDropdownClick}
                       onPointerDownOutside={(e) => e.preventDefault()}
                     >
                       <DropdownMenuLabel>Ações</DropdownMenuLabel>
@@ -124,6 +134,7 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
                         <DropdownMenuItem 
                           className="cursor-pointer"
                           onClick={(e) => handleAction(e, onEditLead, lead.id)}
+                          onSelect={(e) => e.preventDefault()}
                         >
                           Editar Lead
                         </DropdownMenuItem>
@@ -132,6 +143,7 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
                         <DropdownMenuItem 
                           className="cursor-pointer"
                           onClick={(e) => handleAction(e, onChangeStage, lead.id)}
+                          onSelect={(e) => e.preventDefault()}
                         >
                           Alterar Etapa
                         </DropdownMenuItem>
@@ -140,6 +152,7 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
                         <DropdownMenuItem 
                           className="cursor-pointer"
                           onClick={(e) => handleAction(e, onViewHistory, lead.id)}
+                          onSelect={(e) => e.preventDefault()}
                         >
                           Ver Histórico
                         </DropdownMenuItem>
@@ -149,6 +162,7 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
                         <DropdownMenuItem 
                           className="text-destructive cursor-pointer"
                           onClick={(e) => handleAction(e, onDeleteLead, lead.id)}
+                          onSelect={(e) => e.preventDefault()}
                         >
                           Excluir Lead
                         </DropdownMenuItem>

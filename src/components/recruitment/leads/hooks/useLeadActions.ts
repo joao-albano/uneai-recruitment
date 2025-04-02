@@ -38,7 +38,7 @@ export const useLeadActions = (
     
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
-      setSelectedLead(lead);
+      setSelectedLead({...lead}); // Clone para evitar referências mutáveis
       setEditDialogOpen(true);
     }
   }, [leadsData, setSelectedLead, setEditDialogOpen]);
@@ -51,7 +51,7 @@ export const useLeadActions = (
     
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
-      setSelectedLead(lead);
+      setSelectedLead({...lead}); // Clone para evitar referências mutáveis
       setStageDialogOpen(true);
     }
   }, [leadsData, setSelectedLead, setStageDialogOpen]);
@@ -60,7 +60,7 @@ export const useLeadActions = (
   const openChangeStageDialog = useCallback((leadId: number) => {
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
-      setSelectedLead(lead);
+      setSelectedLead({...lead}); // Clone para evitar referências mutáveis
       setStageDialogOpen(true);
     }
   }, [leadsData, setSelectedLead, setStageDialogOpen]);
@@ -73,7 +73,7 @@ export const useLeadActions = (
     
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
-      setSelectedLead(lead);
+      setSelectedLead({...lead}); // Clone para evitar referências mutáveis
       setHistoryDialogOpen(true);
     }
   }, [leadsData, setSelectedLead, setHistoryDialogOpen]);
@@ -86,52 +86,88 @@ export const useLeadActions = (
     
     const lead = leadsData.find(l => l.id === leadId);
     if (lead) {
-      setSelectedLead(lead);
+      setSelectedLead({...lead}); // Clone para evitar referências mutáveis
       setDeleteDialogOpen(true);
     }
   }, [leadsData, setSelectedLead, setDeleteDialogOpen]);
   
-  // Save changes to a lead
+  // Save changes to a lead - com tratamento de erro
   const handleSaveLead = useCallback((updatedLead: any) => {
-    setLeadsData(prevData => 
-      prevData.map(lead => 
-        lead.id === updatedLead.id ? updatedLead : lead
-      )
-    );
-    
-    toast({
-      title: "Lead atualizado",
-      description: "As informações do lead foram atualizadas com sucesso"
-    });
+    try {
+      setLeadsData(prevData => 
+        prevData.map(lead => 
+          lead.id === updatedLead.id ? {...updatedLead} : lead
+        )
+      );
+      
+      toast({
+        title: "Lead atualizado",
+        description: "As informações do lead foram atualizadas com sucesso"
+      });
+      
+      return true; // Indica sucesso para o componente chamador
+    } catch (error) {
+      console.error("Erro ao salvar lead:", error);
+      toast({
+        title: "Erro ao atualizar",
+        description: "Não foi possível atualizar o lead. Tente novamente.",
+        variant: "destructive",
+      });
+      return false;
+    }
   }, [setLeadsData, toast]);
   
-  // Save stage change
+  // Save stage change - com tratamento de erro
   const handleSaveStage = useCallback((leadId: number, newStage: string, notes: string = '') => {
-    // Update the lead's stage and corresponding status
-    setLeadsData(prevData => 
-      prevData.map(lead => {
-        if (lead.id === leadId) {
-          const newStatus = getStatusForStage(newStage);
-          return { ...lead, stage: newStage, status: newStatus };
-        }
-        return lead;
-      })
-    );
-    
-    toast({
-      title: "Etapa atualizada",
-      description: `Lead movido para etapa: ${newStage}`
-    });
+    try {
+      // Update the lead's stage and corresponding status
+      setLeadsData(prevData => 
+        prevData.map(lead => {
+          if (lead.id === leadId) {
+            const newStatus = getStatusForStage(newStage);
+            return { ...lead, stage: newStage, status: newStatus };
+          }
+          return lead;
+        })
+      );
+      
+      toast({
+        title: "Etapa atualizada",
+        description: `Lead movido para etapa: ${newStage}`
+      });
+      
+      return true;
+    } catch (error) {
+      console.error("Erro ao atualizar etapa:", error);
+      toast({
+        title: "Erro ao atualizar etapa",
+        description: "Não foi possível mover o lead para a nova etapa.",
+        variant: "destructive",
+      });
+      return false;
+    }
   }, [setLeadsData, toast]);
   
-  // Confirm lead deletion
+  // Confirm lead deletion - com tratamento de erro
   const handleConfirmDelete = useCallback((leadId: number) => {
-    setLeadsData(prevData => prevData.filter(lead => lead.id !== leadId));
-    
-    toast({
-      title: "Lead excluído",
-      description: "O lead foi excluído com sucesso"
-    });
+    try {
+      setLeadsData(prevData => prevData.filter(lead => lead.id !== leadId));
+      
+      toast({
+        title: "Lead excluído",
+        description: "O lead foi excluído com sucesso"
+      });
+      
+      return true;
+    } catch (error) {
+      console.error("Erro ao excluir lead:", error);
+      toast({
+        title: "Erro ao excluir",
+        description: "Não foi possível excluir o lead. Tente novamente.",
+        variant: "destructive",
+      });
+      return false;
+    }
   }, [setLeadsData, toast]);
 
   return {

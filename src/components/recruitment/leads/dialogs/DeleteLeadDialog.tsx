@@ -27,20 +27,42 @@ const DeleteLeadDialog: React.FC<DeleteLeadDialogProps> = ({
 }) => {
   const { toast } = useToast();
   
-  const handleDelete = useCallback(() => {
+  const handleDelete = useCallback((e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     if (lead?.id) {
-      onConfirm(lead.id);
-      toast({
-        title: "Lead excluído",
-        description: "O lead foi excluído com sucesso."
-      });
-      onOpenChange(false);
+      try {
+        onConfirm(lead.id);
+        toast({
+          title: "Lead excluído",
+          description: "O lead foi excluído com sucesso."
+        });
+        onOpenChange(false);
+      } catch (error) {
+        console.error("Erro ao excluir lead:", error);
+        toast({
+          title: "Erro ao excluir",
+          description: "Não foi possível excluir o lead. Tente novamente.",
+          variant: "destructive",
+        });
+      }
     }
   }, [lead, onConfirm, onOpenChange, toast]);
 
+  // Desabilitar propagação de eventos que podem causar travamentos
+  const handleDialogInteraction = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+  }, []);
+
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+    <AlertDialog 
+      open={open} 
+      onOpenChange={onOpenChange}
+    >
+      <AlertDialogContent onClick={handleDialogInteraction}>
         <AlertDialogHeader>
           <AlertDialogTitle>Excluir Lead</AlertDialogTitle>
           <AlertDialogDescription>
@@ -48,7 +70,14 @@ const DeleteLeadDialog: React.FC<DeleteLeadDialogProps> = ({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel 
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenChange(false);
+            }}
+          >
+            Cancelar
+          </AlertDialogCancel>
           <AlertDialogAction 
             onClick={handleDelete}
             className="bg-destructive hover:bg-destructive/90"

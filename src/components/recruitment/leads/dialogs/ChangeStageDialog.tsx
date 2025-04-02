@@ -26,8 +26,9 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
   lead,
   onSave
 }) => {
-  const [stage, setStage] = useState(lead?.stage || '');
+  const [stage, setStage] = useState('');
   const [notes, setNotes] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   // Atualizar o estado quando o lead mudar ou o diálogo abrir
@@ -38,16 +39,52 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
     }
   }, [lead, open]);
 
+  // Impedir propagação de eventos dentro do diálogo
+  const handleDialogClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+  }, []);
+
+  // Cancelar e fechar o diálogo
+  const handleCancel = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onOpenChange(false);
+  }, [onOpenChange]);
+
+  // Processar o envio do formulário
   const handleSubmit = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    e.stopPropagation();
+    
+    if (!stage) {
+      toast({
+        title: "Campo obrigatório",
+        description: "Por favor, selecione uma etapa",
+        variant: "destructive",
+      });
+      return;
+    }
     
     if (lead?.id) {
-      onSave(lead.id, stage, notes);
-      toast({
-        title: "Etapa atualizada",
-        description: `O lead foi movido para a etapa: ${stage}`
-      });
-      onOpenChange(false);
+      setIsSubmitting(true);
+      
+      try {
+        onSave(lead.id, stage, notes);
+        toast({
+          title: "Etapa atualizada",
+          description: `O lead foi movido para a etapa: ${stage}`
+        });
+        onOpenChange(false);
+      } catch (error) {
+        console.error("Erro ao atualizar etapa:", error);
+        toast({
+          title: "Erro ao atualizar",
+          description: "Não foi possível atualizar a etapa. Tente novamente.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   }, [lead, stage, notes, onSave, toast, onOpenChange]);
 
@@ -56,7 +93,11 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
       open={open} 
       onOpenChange={onOpenChange}
     >
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent 
+        className="sm:max-w-[500px]" 
+        onClick={handleDialogClick}
+        onPointerDownOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>Alterar Etapa</DialogTitle>
           <DialogDescription>Altere a etapa do funil para este lead.</DialogDescription>
@@ -102,15 +143,17 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
             <Button 
               type="button" 
               variant="outline" 
-              onClick={() => onOpenChange(false)}
+              onClick={handleCancel}
+              disabled={isSubmitting}
             >
               Cancelar
             </Button>
             <Button 
-              type="button"
+              type="submit"
               onClick={handleSubmit}
+              disabled={isSubmitting}
             >
-              Salvar
+              {isSubmitting ? "Salvando..." : "Salvar"}
             </Button>
           </div>
         </div>
