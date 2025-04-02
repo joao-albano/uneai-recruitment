@@ -12,12 +12,11 @@ const defaultValues = {
   channel: "",
   course: "",
   status: "Novo",
-  children: [
-    { name: "", age: "", grade: "" }
-  ],
+  children: [],
   observations: "",
   enrollmentIntention: "",
   contactTime: "",
+  requiresChildrenInfo: false,
 };
 
 export const useLeadForm = () => {
@@ -49,15 +48,15 @@ export const useLeadForm = () => {
     mockLeadsData.push({
       id: result.id,
       name: result.parentName,
-      email: result.email,       // Add the email field
-      phone: result.phone,       // Add the phone field
+      email: result.email,
+      phone: result.phone,
       course: result.course,
-      children: result.children.length,
+      children: result.children?.length || 0,
       channel: result.channel,
       stage: "Contato Inicial",
       status: "Novo",
       createdAt: result.createdAt,
-      notes: result.observations || "" // Add the notes field using observations or empty string
+      notes: result.observations || ""
     });
     
     return result;
