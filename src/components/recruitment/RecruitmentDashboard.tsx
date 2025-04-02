@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,6 +10,15 @@ import FunnelChartComponent from './dashboard/FunnelChart';
 import ChannelsTabContent from './dashboard/tabs/ChannelsTabContent';
 import CoursesTabContent from './dashboard/tabs/CoursesTabContent';
 import LocationsTabContent from './dashboard/tabs/LocationsTabContent';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table';
+
 const RecruitmentDashboard: React.FC = () => {
   const navigate = useNavigate();
 
@@ -150,56 +160,54 @@ const RecruitmentDashboard: React.FC = () => {
           </Button>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-muted">
-                <tr className="[&_th]:p-3 [&_th]:text-left [&_th]:font-medium [&_th]:text-muted-foreground">
-                  <th>Etapa</th>
-                  <th className="text-right">Leads</th>
-                  <th className="text-right">% do Total</th>
-                  <th className="text-right">Conversão p/ Próx. Etapa</th>
-                  <th className="text-right">Tempo Médio</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                <tr>
-                  <td className="p-3 font-medium">Leads Gerados</td>
-                  <td className="p-3 text-right">539</td>
-                  <td className="p-3 text-right">100%</td>
-                  <td className="p-3 text-right">78.9%</td>
-                  <td className="p-3 text-right">-</td>
-                </tr>
-                <tr className="bg-muted/50">
-                  <td className="p-3 font-medium">Contatos Realizados</td>
-                  <td className="p-3 text-right">425</td>
-                  <td className="p-3 text-right">78.9%</td>
-                  <td className="p-3 text-right">67.1%</td>
-                  <td className="p-3 text-right">2 dias</td>
-                </tr>
-                <tr>
-                  <td className="p-3 font-medium">Agendamento</td>
-                  <td className="p-3 text-right">285</td>
-                  <td className="p-3 text-right">52.9%</td>
-                  <td className="p-3 text-right">63.9%</td>
-                  <td className="p-3 text-right">5 dias</td>
-                </tr>
-                <tr className="bg-muted/50">
-                  <td className="p-3 font-medium">Visita</td>
-                  <td className="p-3 text-right">182</td>
-                  <td className="p-3 text-right">33.8%</td>
-                  <td className="p-3 text-right">64.3%</td>
-                  <td className="p-3 text-right">3 dias</td>
-                </tr>
-                <tr>
-                  <td className="p-3 font-medium">Matrícula</td>
-                  <td className="p-3 text-right">117</td>
-                  <td className="p-3 text-right">21.7%</td>
-                  <td className="p-3 text-right">-</td>
-                  <td className="p-3 text-right">2 dias</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[200px]">Etapa</TableHead>
+                <TableHead className="text-right w-[100px]">Leads</TableHead>
+                <TableHead className="text-right w-[120px]">% do Total</TableHead>
+                <TableHead className="text-right w-[200px]">Conversão p/ Próx. Etapa</TableHead>
+                <TableHead className="text-right w-[120px]">Tempo Médio</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell className="font-medium">Leads Gerados</TableCell>
+                <TableCell className="text-right">539</TableCell>
+                <TableCell className="text-right">100%</TableCell>
+                <TableCell className="text-right">78.9%</TableCell>
+                <TableCell className="text-right">-</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-medium">Contatos Realizados</TableCell>
+                <TableCell className="text-right">425</TableCell>
+                <TableCell className="text-right">78.9%</TableCell>
+                <TableCell className="text-right">67.1%</TableCell>
+                <TableCell className="text-right">2 dias</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-medium">Agendamento</TableCell>
+                <TableCell className="text-right">285</TableCell>
+                <TableCell className="text-right">52.9%</TableCell>
+                <TableCell className="text-right">63.9%</TableCell>
+                <TableCell className="text-right">5 dias</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-medium">Visita</TableCell>
+                <TableCell className="text-right">182</TableCell>
+                <TableCell className="text-right">33.8%</TableCell>
+                <TableCell className="text-right">64.3%</TableCell>
+                <TableCell className="text-right">3 dias</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-medium">Matrícula</TableCell>
+                <TableCell className="text-right">117</TableCell>
+                <TableCell className="text-right">21.7%</TableCell>
+                <TableCell className="text-right">-</TableCell>
+                <TableCell className="text-right">2 dias</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>;
