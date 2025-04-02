@@ -3,12 +3,55 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { UserPlus, ChevronRight, BarChart, Filter, Download } from 'lucide-react';
+import { UserPlus, ChevronRight, Filter, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import RecruitmentStats from './dashboard/RecruitmentStats';
+import FunnelChartComponent from './dashboard/FunnelChart';
+import ChannelsTabContent from './dashboard/tabs/ChannelsTabContent';
+import CoursesTabContent from './dashboard/tabs/CoursesTabContent';
+import LocationsTabContent from './dashboard/tabs/LocationsTabContent';
 
 const RecruitmentDashboard: React.FC = () => {
   const navigate = useNavigate();
+  
+  // Dados de leads recentes
+  const recentLeads = [
+    {
+      id: 1,
+      name: 'Maria Oliveira',
+      course: 'Ensino Fundamental I',
+      channel: 'Site',
+      time: '2h'
+    },
+    {
+      id: 2,
+      name: 'Carlos Santos',
+      course: 'Ensino Médio',
+      channel: 'WhatsApp',
+      time: '3h'
+    },
+    {
+      id: 3,
+      name: 'Ana Paula Silva',
+      course: 'Educação Infantil',
+      channel: 'Facebook',
+      time: '5h'
+    },
+    {
+      id: 4,
+      name: 'Roberto Almeida',
+      course: 'Ensino Fundamental II',
+      channel: 'Instagram',
+      time: '8h'
+    },
+    {
+      id: 5,
+      name: 'Juliana Costa',
+      course: 'Período Integral',
+      channel: 'Indicação',
+      time: '12h'
+    },
+  ];
   
   return (
     <div className="container mx-auto py-6">
@@ -58,8 +101,8 @@ const RecruitmentDashboard: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-80 flex items-center justify-center border rounded">
-                  <p className="text-muted-foreground">Gráfico de funil em desenvolvimento</p>
+                <div className="h-80">
+                  <FunnelChartComponent />
                 </div>
               </CardContent>
             </Card>
@@ -72,25 +115,26 @@ const RecruitmentDashboard: React.FC = () => {
                     Últimos contatos cadastrados
                   </CardDescription>
                 </div>
-                <Button variant="ghost" size="sm" className="gap-1">
+                <Button variant="ghost" size="sm" className="gap-1"
+                  onClick={() => navigate('/recruitment/leads')}>
                   <span>Ver Todos</span>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <div key={i} className="flex items-center gap-4 p-2 rounded-md hover:bg-muted">
+                  {recentLeads.map((lead) => (
+                    <div key={lead.id} className="flex items-center gap-4 p-2 rounded-md hover:bg-muted">
                       <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                         <UserPlus className="h-5 w-5 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium">Lead Exemplo #{i}</p>
+                        <p className="font-medium">{lead.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          Curso de exemplo • Canal: Site
+                          {lead.course} • Canal: {lead.channel}
                         </p>
                       </div>
-                      <p className="text-sm text-muted-foreground">Há 2h</p>
+                      <p className="text-sm text-muted-foreground">Há {lead.time}</p>
                     </div>
                   ))}
                 </div>
@@ -100,51 +144,15 @@ const RecruitmentDashboard: React.FC = () => {
         </TabsContent>
         
         <TabsContent value="channels" className="pt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Distribuição por Canais</CardTitle>
-              <CardDescription>
-                Análise de leads por canal de captação
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80 flex items-center justify-center border rounded">
-                <p className="text-muted-foreground">Estatísticas por canal em desenvolvimento</p>
-              </div>
-            </CardContent>
-          </Card>
+          <ChannelsTabContent />
         </TabsContent>
         
         <TabsContent value="courses" className="pt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Distribuição por Cursos</CardTitle>
-              <CardDescription>
-                Análise de leads por curso de interesse
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80 flex items-center justify-center border rounded">
-                <p className="text-muted-foreground">Estatísticas por curso em desenvolvimento</p>
-              </div>
-            </CardContent>
-          </Card>
+          <CoursesTabContent />
         </TabsContent>
         
         <TabsContent value="locations" className="pt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Distribuição por Localidade</CardTitle>
-              <CardDescription>
-                Análise de leads por região geográfica
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80 flex items-center justify-center border rounded">
-                <p className="text-muted-foreground">Estatísticas por localidade em desenvolvimento</p>
-              </div>
-            </CardContent>
-          </Card>
+          <LocationsTabContent />
         </TabsContent>
       </Tabs>
       
@@ -162,8 +170,55 @@ const RecruitmentDashboard: React.FC = () => {
           </Button>
         </CardHeader>
         <CardContent>
-          <div className="h-[400px] flex items-center justify-center border rounded">
-            <p className="text-muted-foreground">Painel operacional em desenvolvimento</p>
+          <div className="rounded-md border overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-muted">
+                <tr className="[&_th]:p-3 [&_th]:text-left [&_th]:font-medium [&_th]:text-muted-foreground">
+                  <th>Etapa</th>
+                  <th className="text-right">Leads</th>
+                  <th className="text-right">% do Total</th>
+                  <th className="text-right">Conversão p/ Próx. Etapa</th>
+                  <th className="text-right">Tempo Médio</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                <tr>
+                  <td className="p-3 font-medium">Leads Gerados</td>
+                  <td className="p-3 text-right">539</td>
+                  <td className="p-3 text-right">100%</td>
+                  <td className="p-3 text-right">78.9%</td>
+                  <td className="p-3 text-right">-</td>
+                </tr>
+                <tr className="bg-muted/50">
+                  <td className="p-3 font-medium">Contatos Realizados</td>
+                  <td className="p-3 text-right">425</td>
+                  <td className="p-3 text-right">78.9%</td>
+                  <td className="p-3 text-right">67.1%</td>
+                  <td className="p-3 text-right">2 dias</td>
+                </tr>
+                <tr>
+                  <td className="p-3 font-medium">Agendamento</td>
+                  <td className="p-3 text-right">285</td>
+                  <td className="p-3 text-right">52.9%</td>
+                  <td className="p-3 text-right">63.9%</td>
+                  <td className="p-3 text-right">5 dias</td>
+                </tr>
+                <tr className="bg-muted/50">
+                  <td className="p-3 font-medium">Visita</td>
+                  <td className="p-3 text-right">182</td>
+                  <td className="p-3 text-right">33.8%</td>
+                  <td className="p-3 text-right">64.3%</td>
+                  <td className="p-3 text-right">3 dias</td>
+                </tr>
+                <tr>
+                  <td className="p-3 font-medium">Matrícula</td>
+                  <td className="p-3 text-right">117</td>
+                  <td className="p-3 text-right">21.7%</td>
+                  <td className="p-3 text-right">-</td>
+                  <td className="p-3 text-right">2 dias</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </CardContent>
       </Card>

@@ -1,35 +1,35 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { BarChart, UserPlus, CalendarCheck, School, TrendingUp } from 'lucide-react';
+import { UserPlus, CalendarCheck, School, TrendingUp } from 'lucide-react';
 
 const RecruitmentStats: React.FC = () => {
   // Estatísticas de exemplo para o dashboard
   const stats = [
     {
       label: 'Total de Leads',
-      value: '173',
+      value: '539',
       change: '+12%',
       icon: <UserPlus className="h-5 w-5" />,
       color: 'bg-blue-500',
     },
     {
       label: 'Agendamentos',
-      value: '47',
+      value: '285',
       change: '+5%',
       icon: <CalendarCheck className="h-5 w-5" />,
       color: 'bg-amber-500',
     },
     {
       label: 'Matrículas',
-      value: '28',
+      value: '117',
       change: '+8%',
       icon: <School className="h-5 w-5" />,
       color: 'bg-green-500',
     },
     {
       label: 'Taxa de Conversão',
-      value: '16.2%',
+      value: '21.7%',
       change: '+2.4%',
       icon: <TrendingUp className="h-5 w-5" />,
       color: 'bg-purple-500',
