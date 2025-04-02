@@ -2,6 +2,14 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { 
+  Table, 
+  TableHeader, 
+  TableBody, 
+  TableHead, 
+  TableRow, 
+  TableCell 
+} from '@/components/ui/table';
 
 interface CoursesTableProps {
   coursesData: {
@@ -46,27 +54,27 @@ const CoursesTable: React.FC<CoursesTableProps> = ({ coursesData }) => {
         <Badge variant="outline">Última atualização: hoje</Badge>
       </CardHeader>
       <CardContent>
-        <div className="rounded-md border overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-muted">
-              <tr className="[&_th]:p-2 [&_th]:text-left [&_th]:font-medium [&_th]:text-muted-foreground">
-                <th>Curso</th>
-                <th className="text-right">Leads</th>
-                <th className="text-right">Matrículas</th>
-                <th className="text-right">Conversão</th>
-                <th className="text-right">Meta</th>
-                <th className="text-right">Progresso</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader className="bg-muted">
+              <TableRow>
+                <TableHead>Curso</TableHead>
+                <TableHead className="text-right">Leads</TableHead>
+                <TableHead className="text-right">Matrículas</TableHead>
+                <TableHead className="text-right">Conversão</TableHead>
+                <TableHead className="text-right">Meta</TableHead>
+                <TableHead className="text-right">Progresso</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {coursesData.map((course, index) => (
-                <tr key={index} className={index % 2 === 0 ? "" : "bg-muted/50"}>
-                  <td className="p-2 font-medium">{course.name}</td>
-                  <td className="p-2 text-right">{course.leads}</td>
-                  <td className="p-2 text-right">{course.matriculas}</td>
-                  <td className="p-2 text-right">{course.conversao.toFixed(1)}%</td>
-                  <td className="p-2 text-right">{course.meta}</td>
-                  <td className="p-2 text-right">
+                <TableRow key={index} className={index % 2 === 0 ? "" : "bg-muted/50"}>
+                  <TableCell className="font-medium">{course.name}</TableCell>
+                  <TableCell className="text-right">{course.leads}</TableCell>
+                  <TableCell className="text-right">{course.matriculas}</TableCell>
+                  <TableCell className="text-right">{course.conversao.toFixed(1)}%</TableCell>
+                  <TableCell className="text-right">{course.meta}</TableCell>
+                  <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
                       <span className={
                         course.cumprimento >= 85 ? "text-green-600" : 
@@ -76,19 +84,19 @@ const CoursesTable: React.FC<CoursesTableProps> = ({ coursesData }) => {
                         {course.cumprimento.toFixed(1)}%
                       </span>
                     </div>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-              <tr className="bg-muted/20 font-semibold">
-                <td className="p-2">Total</td>
-                <td className="p-2 text-right">{totals.leads}</td>
-                <td className="p-2 text-right">{totals.matriculas}</td>
-                <td className="p-2 text-right">{totalConversao}%</td>
-                <td className="p-2 text-right">{totals.meta}</td>
-                <td className="p-2 text-right">{totalCumprimento}%</td>
-              </tr>
-            </tbody>
-          </table>
+              <TableRow className="bg-muted/20 font-semibold">
+                <TableCell>Total</TableCell>
+                <TableCell className="text-right">{totals.leads}</TableCell>
+                <TableCell className="text-right">{totals.matriculas}</TableCell>
+                <TableCell className="text-right">{totalConversao}%</TableCell>
+                <TableCell className="text-right">{totals.meta}</TableCell>
+                <TableCell className="text-right">{totalCumprimento}%</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
         </div>
       </CardContent>
     </Card>
