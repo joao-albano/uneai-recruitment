@@ -59,20 +59,42 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     if (!editedLead) return;
     
     onSave(editedLead);
+    toast({
+      title: "Lead atualizado",
+      description: "As informações foram atualizadas com sucesso"
+    });
     onOpenChange(false);
   };
 
-  const handleClose = () => {
+  const handleClose = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     onOpenChange(false);
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+    <Dialog 
+      open={open} 
+      onOpenChange={(value) => {
+        // Handle onOpenChange directly to prevent propagation issues
+        onOpenChange(value);
+      }}
+    >
+      <DialogContent 
+        className="sm:max-w-[500px]" 
+        onClick={handleClick}
+        onPointerDownOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>Editar Lead</DialogTitle>
         </DialogHeader>
@@ -87,6 +109,7 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
                   name="name"
                   value={editedLead.name || ''}
                   onChange={handleInputChange}
+                  onClick={handleClick}
                   required
                 />
               </div>
@@ -99,6 +122,7 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
                   type="number"
                   value={editedLead.children || 0}
                   onChange={handleInputChange}
+                  onClick={handleClick}
                   required
                 />
               </div>
@@ -112,7 +136,7 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione um curso" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent onClick={handleClick}>
                     <SelectItem value="Ensino Fundamental">Ensino Fundamental</SelectItem>
                     <SelectItem value="Ensino Médio">Ensino Médio</SelectItem>
                     <SelectItem value="Educação Infantil">Educação Infantil</SelectItem>
@@ -129,7 +153,7 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione um canal" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent onClick={handleClick}>
                     <SelectItem value="Site">Site</SelectItem>
                     <SelectItem value="Facebook">Facebook</SelectItem>
                     <SelectItem value="Instagram">Instagram</SelectItem>

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import {
   Table,
   TableBody,
@@ -50,7 +50,7 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
     }
   };
 
-  // Função para tratar eventos com prevenção de propagação
+  // Function to handle actions with proper event handling
   const handleAction = (
     e: React.MouseEvent, 
     actionHandler?: (e: React.MouseEvent, leadId: number) => void, 
@@ -89,7 +89,7 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
             </TableRow>
           ) : (
             leads.map((lead) => (
-              <TableRow key={lead.id} onClick={(e) => e.stopPropagation()}>
+              <TableRow key={lead.id}>
                 <TableCell className="font-medium">{lead.name}</TableCell>
                 <TableCell>{lead.course}</TableCell>
                 <TableCell className="hidden sm:table-cell">{lead.channel}</TableCell>
@@ -102,34 +102,44 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
                 <TableCell className="hidden md:table-cell">{lead.createdAt}</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                      <Button variant="ghost" size="icon">
+                    <DropdownMenuTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        type="button"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                    <DropdownMenuContent 
+                      align="end" 
+                      className="bg-white z-50"
+                      onClick={(e) => e.stopPropagation()}
+                      onPointerDownOutside={(e) => e.preventDefault()}
+                    >
                       <DropdownMenuLabel>Ações</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       {onEditLead && (
                         <DropdownMenuItem 
-                          onClick={(e) => handleAction(e, onEditLead, lead.id)}
                           className="cursor-pointer"
+                          onClick={(e) => handleAction(e, onEditLead, lead.id)}
                         >
                           Editar Lead
                         </DropdownMenuItem>
                       )}
                       {onChangeStage && (
                         <DropdownMenuItem 
-                          onClick={(e) => handleAction(e, onChangeStage, lead.id)}
                           className="cursor-pointer"
+                          onClick={(e) => handleAction(e, onChangeStage, lead.id)}
                         >
                           Alterar Etapa
                         </DropdownMenuItem>
                       )}
                       {onViewHistory && (
                         <DropdownMenuItem 
-                          onClick={(e) => handleAction(e, onViewHistory, lead.id)}
                           className="cursor-pointer"
+                          onClick={(e) => handleAction(e, onViewHistory, lead.id)}
                         >
                           Ver Histórico
                         </DropdownMenuItem>
@@ -155,4 +165,5 @@ const LeadsTableView: React.FC<LeadsTableViewProps> = ({
   );
 };
 
-export default LeadsTableView;
+// Use React.memo to prevent unnecessary re-renders
+export default memo(LeadsTableView);

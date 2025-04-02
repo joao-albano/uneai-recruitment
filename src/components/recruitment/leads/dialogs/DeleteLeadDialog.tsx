@@ -25,11 +25,15 @@ const DeleteLeadDialog: React.FC<DeleteLeadDialogProps> = ({
   onConfirm,
 }) => {
   const handleDelete = (e: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
+    e.preventDefault();
+    e.stopPropagation();
     onConfirm(lead?.id);
+    onOpenChange(false);
+  };
+
+  const handleCancel = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     onOpenChange(false);
   };
 
@@ -43,7 +47,7 @@ const DeleteLeadDialog: React.FC<DeleteLeadDialogProps> = ({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel onClick={handleCancel}>Cancelar</AlertDialogCancel>
           <AlertDialogAction 
             onClick={handleDelete}
             className="bg-destructive hover:bg-destructive/90"

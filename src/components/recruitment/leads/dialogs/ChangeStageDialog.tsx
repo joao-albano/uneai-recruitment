@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -44,21 +44,42 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
     }
   };
 
+  const handleCancel = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onOpenChange(false);
+  };
+
   // Atualizar o estado quando o lead mudar
-  React.useEffect(() => {
+  useEffect(() => {
     if (lead?.stage) {
       setStage(lead.stage);
     }
   }, [lead]);
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]" onClick={(e) => e.stopPropagation()}>
+    <Dialog 
+      open={open} 
+      onOpenChange={(value) => {
+        // Handle onOpenChange directly to prevent propagation issues
+        onOpenChange(value);
+      }}
+    >
+      <DialogContent 
+        className="sm:max-w-[500px]" 
+        onClick={handleClick}
+        onPointerDownOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>Alterar Etapa</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 py-4" onClick={(e) => e.stopPropagation()}>
+        <form onSubmit={handleSubmit} className="space-y-4 py-4">
           <div className="space-y-2">
             <div className="flex items-center gap-2 mb-4">
               <span className="font-medium">Lead:</span>
@@ -74,7 +95,7 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
               <SelectTrigger>
                 <SelectValue placeholder="Selecione uma etapa" />
               </SelectTrigger>
-              <SelectContent onClick={(e) => e.stopPropagation()}>
+              <SelectContent onClick={handleClick}>
                 <SelectItem value="Contato Inicial">Contato Inicial</SelectItem>
                 <SelectItem value="Agendamento">Agendamento</SelectItem>
                 <SelectItem value="Visita">Visita</SelectItem>
@@ -91,7 +112,7 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={4}
-              onClick={(e) => e.stopPropagation()}
+              onClick={handleClick}
             />
           </div>
 
@@ -99,10 +120,7 @@ const ChangeStageDialog: React.FC<ChangeStageDialogProps> = ({
             <Button 
               type="button" 
               variant="outline" 
-              onClick={(e) => {
-                e.stopPropagation();
-                onOpenChange(false);
-              }}
+              onClick={handleCancel}
             >
               Cancelar
             </Button>

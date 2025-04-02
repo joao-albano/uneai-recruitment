@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 import { 
   Card, 
@@ -47,7 +47,7 @@ const LeadCard: React.FC<LeadCardProps> = ({
   onViewHistory,
   onDeleteLead
 }) => {
-  // Função para tratar eventos com prevenção de propagação
+  // Function to handle actions with proper event handling
   const handleAction = (
     e: React.MouseEvent, 
     actionHandler: (e: React.MouseEvent, leadId: number) => void
@@ -80,12 +80,18 @@ const LeadCard: React.FC<LeadCardProps> = ({
                     variant="ghost" 
                     size="icon" 
                     className="h-8 w-8"
+                    type="button"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                <DropdownMenuContent 
+                  align="end" 
+                  className="bg-white z-50"
+                  onClick={(e) => e.stopPropagation()}
+                  onPointerDownOutside={(e) => e.preventDefault()}
+                >
                   <DropdownMenuLabel>Ações</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
@@ -152,4 +158,5 @@ const LeadCard: React.FC<LeadCardProps> = ({
   );
 };
 
-export default LeadCard;
+// Use memo to prevent unnecessary re-renders
+export default memo(LeadCard);

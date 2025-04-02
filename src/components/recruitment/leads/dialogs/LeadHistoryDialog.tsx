@@ -17,10 +17,22 @@ const LeadHistoryDialog: React.FC<LeadHistoryDialogProps> = ({
 }) => {
   // Buscar histórico do lead
   const history = lead ? getLeadHistory(lead.id) : [];
+  
+  const handleDialogInteraction = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh]" onClick={(e) => e.stopPropagation()}>
+    <Dialog open={open} onOpenChange={(value) => {
+      // Prevent propagation by handling the event directly
+      onOpenChange(value);
+    }}>
+      <DialogContent 
+        className="sm:max-w-[600px] max-h-[80vh]" 
+        onClick={handleDialogInteraction}
+        onPointerDownOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle className="text-xl">Histórico do Lead</DialogTitle>
           {lead && (
