@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -50,7 +51,8 @@ const PlanCard: React.FC<PlanCardProps> = ({
       secretary: isPtBR ? 'Secretaria' : 'Secretary',
       pedagogical: isPtBR ? 'Pedagógico' : 'Pedagogical',
       billing: isPtBR ? 'Cobrança' : 'Billing',
-      emotional: isPtBR ? 'Escuta Emocional' : 'Emotional Support'
+      emotional: isPtBR ? 'Escuta Emocional' : 'Emotional Support',
+      finance: isPtBR ? 'Financeiro' : 'Finance'
     };
     
     return productNameMap[productType] || productType;

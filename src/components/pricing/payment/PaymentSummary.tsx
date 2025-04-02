@@ -32,7 +32,8 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({ plan, yearlyBilling }) 
       secretary: isPtBR ? 'Secretaria' : 'Secretary',
       pedagogical: isPtBR ? 'Pedagógico' : 'Pedagogical',
       billing: isPtBR ? 'Faturamento' : 'Billing',
-      emotional: isPtBR ? 'Escuta Emocional' : 'Emotional Support'
+      emotional: isPtBR ? 'Escuta Emocional' : 'Emotional Support',
+      finance: isPtBR ? 'Financeiro' : 'Finance'
     };
     
     return productNameMap[productType] || productType;
