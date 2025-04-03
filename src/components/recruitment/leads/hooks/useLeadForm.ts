@@ -54,11 +54,14 @@ export const useLeadForm = () => {
       phone: result.phone,
       course: result.course,
       children: result.children?.length || 0,
+      _childrenData: result.children || [],
       channel: result.channel,
       stage: "Contato Inicial",
       status: "Novo",
       createdAt: createdAt, // Use consistent ISO format for dates
-      notes: result.observations || ""
+      notes: result.observations || "",
+      enrollmentIntention: result.enrollmentIntention || "",
+      contactTime: result.contactTime || ""
     };
     
     // Add to mock data

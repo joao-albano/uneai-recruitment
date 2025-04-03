@@ -1,10 +1,11 @@
+
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Separator } from '@/components/ui/separator';
-import { User, Clock, Bookmark, Phone, Mail, MessageSquare, Users } from 'lucide-react';
+import { User, Clock, Bookmark, Phone, Mail, MessageSquare, Users, PieChart, Calendar, AlertTriangle } from 'lucide-react';
 
 interface Child {
   name: string;
@@ -69,6 +70,36 @@ const ViewLeadDialog: React.FC<ViewLeadDialogProps> = ({ open, onOpenChange, lea
     }
   };
 
+  const formatEnrollmentIntention = (intention: string) => {
+    switch (intention?.toLowerCase()) {
+      case 'alta':
+        return 'Alta';
+      case 'media':
+        return 'Média';
+      case 'baixa':
+        return 'Baixa';
+      case 'indefinida':
+        return 'Indefinida';
+      default:
+        return 'Não informada';
+    }
+  };
+
+  const formatContactTime = (time: string) => {
+    switch (time?.toLowerCase()) {
+      case 'manha':
+        return 'Manhã';
+      case 'tarde':
+        return 'Tarde';
+      case 'noite':
+        return 'Noite';
+      case 'qualquer':
+        return 'Qualquer horário';
+      default:
+        return 'Não informado';
+    }
+  };
+
   const hasChildren = lead.children && 
     (typeof lead.children === 'number' && lead.children > 0) ||
     (Array.isArray(lead.children) && lead.children.length > 0);
@@ -80,6 +111,8 @@ const ViewLeadDialog: React.FC<ViewLeadDialogProps> = ({ open, onOpenChange, lea
       : 0;
 
   const hasChildrenData = leadChildren.length > 0;
+
+  const hasAdditionalInfo = lead.enrollmentIntention || lead.contactTime;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -158,6 +191,35 @@ const ViewLeadDialog: React.FC<ViewLeadDialogProps> = ({ open, onOpenChange, lea
               </div>
             </div>
           </div>
+
+          {hasAdditionalInfo && (
+            <div className="bg-muted/20 rounded-md p-4">
+              <h3 className="font-semibold text-md mb-3 flex items-center gap-2">
+                <PieChart className="h-4 w-4" /> Informações Adicionais
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                {lead.enrollmentIntention && (
+                  <div>
+                    <div className="text-sm text-muted-foreground">Intenção de Matrícula</div>
+                    <div className="font-medium flex items-center gap-1">
+                      <AlertTriangle className={`h-3 w-3 ${lead.enrollmentIntention === 'alta' ? 'text-green-500' : lead.enrollmentIntention === 'media' ? 'text-amber-500' : 'text-gray-500'}`} />
+                      {formatEnrollmentIntention(lead.enrollmentIntention)}
+                    </div>
+                  </div>
+                )}
+                
+                {lead.contactTime && (
+                  <div>
+                    <div className="text-sm text-muted-foreground">Melhor Horário para Contato</div>
+                    <div className="font-medium flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      {formatContactTime(lead.contactTime)}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {hasChildren && (
             <div className="bg-muted/20 rounded-md p-4">

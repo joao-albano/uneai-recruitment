@@ -1,4 +1,3 @@
-
 import { format, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -11,11 +10,25 @@ export const mockLeadsData = [
     phone: '(11) 98765-4321',
     course: 'Ensino Fundamental',
     children: 2,
+    _childrenData: [
+      {
+        name: 'Pedro Silva',
+        age: '8',
+        grade: '3º ano'
+      },
+      {
+        name: 'Maria Silva',
+        age: '10',
+        grade: '5º ano'
+      }
+    ],
     channel: 'Site',
     stage: 'Contato Inicial',
     status: 'Novo',
     createdAt: format(subDays(new Date(), 3), 'yyyy-MM-dd'),
-    notes: 'Interessado no programa bilíngue para os filhos.'
+    notes: 'Interessado no programa bilíngue para os filhos.',
+    enrollmentIntention: 'alta',
+    contactTime: 'manha'
   },
   {
     id: 2,
@@ -24,11 +37,20 @@ export const mockLeadsData = [
     phone: '(11) 91234-5678',
     course: 'Educação Infantil',
     children: 1,
+    _childrenData: [
+      {
+        name: 'Sofia Oliveira',
+        age: '4',
+        grade: 'Pré-escola'
+      }
+    ],
     channel: 'Facebook',
     stage: 'Agendamento',
     status: 'Em Andamento',
     createdAt: format(subDays(new Date(), 5), 'yyyy-MM-dd'),
-    notes: 'Agendou visita para próxima semana. Filha tem 4 anos.'
+    notes: 'Agendou visita para próxima semana. Filha tem 4 anos.',
+    enrollmentIntention: 'alta',
+    contactTime: 'tarde'
   },
   {
     id: 3,
@@ -37,11 +59,30 @@ export const mockLeadsData = [
     phone: '(21) 99876-5432',
     course: 'Ensino Médio',
     children: 3,
+    _childrenData: [
+      {
+        name: 'Gabriel Santos',
+        age: '14',
+        grade: '9º ano'
+      },
+      {
+        name: 'Júlia Santos',
+        age: '16',
+        grade: '2º ano EM'
+      },
+      {
+        name: 'Lucas Santos',
+        age: '17',
+        grade: '3º ano EM'
+      }
+    ],
     channel: 'Instagram',
     stage: 'Visita',
     status: 'Aguardando',
     createdAt: format(subDays(new Date(), 7), 'yyyy-MM-dd'),
-    notes: 'Visitou a escola ontem. Ficou impressionado com o laboratório de ciências.'
+    notes: 'Visitou a escola ontem. Ficou impressionado com o laboratório de ciências.',
+    enrollmentIntention: 'media',
+    contactTime: 'noite'
   },
   {
     id: 4,
@@ -50,11 +91,25 @@ export const mockLeadsData = [
     phone: '(11) 97654-3210',
     course: 'Ensino Fundamental',
     children: 2,
+    _childrenData: [
+      {
+        name: 'Miguel Pereira',
+        age: '7',
+        grade: '2º ano'
+      },
+      {
+        name: 'Rafael Pereira',
+        age: '9',
+        grade: '4º ano'
+      }
+    ],
     channel: 'WhatsApp',
     stage: 'Matrícula',
     status: 'Finalizado',
     createdAt: format(subDays(new Date(), 10), 'yyyy-MM-dd'),
-    notes: 'Finalizou a matrícula dos dois filhos para o próximo semestre.'
+    notes: 'Finalizou a matrícula dos dois filhos para o próximo semestre.',
+    enrollmentIntention: 'alta',
+    contactTime: 'qualquer'
   },
   {
     id: 5,
@@ -63,11 +118,20 @@ export const mockLeadsData = [
     phone: '(19) 98888-7777',
     course: 'Educação Infantil',
     children: 1,
+    _childrenData: [
+      {
+        name: 'Isabela Costa',
+        age: '3',
+        grade: 'Maternal II'
+      }
+    ],
     channel: 'Indicação',
     stage: 'Contato Inicial',
     status: 'Novo',
     createdAt: format(subDays(new Date(), 2), 'yyyy-MM-dd'),
-    notes: 'Indicado por Maria Oliveira. Interessado no período integral.'
+    notes: 'Indicado por Maria Oliveira. Interessado no período integral.',
+    enrollmentIntention: 'media',
+    contactTime: 'manha'
   },
   {
     id: 6,
@@ -331,4 +395,3 @@ export const mockLeadStats = {
     { name: 'Matrícula', value: 25 }
   ]
 };
-

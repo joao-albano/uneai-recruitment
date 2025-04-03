@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -55,7 +54,6 @@ function EditLeadDialog({
       if (Array.isArray(lead.children)) {
         setChildren(lead.children);
       } else if (typeof lead.children === 'number' && lead.children > 0) {
-        // If we only have a count but no details, create empty children slots
         // First check if there's a _childrenData field with actual data
         if (lead._childrenData && Array.isArray(lead._childrenData)) {
           setChildren(lead._childrenData);
@@ -122,7 +120,8 @@ function EditLeadDialog({
       const leadToSave = JSON.parse(JSON.stringify(editedLead));
       
       // Store the children data directly
-      leadToSave.children = children;
+      leadToSave.children = children.length;
+      leadToSave._childrenData = children;
       
       onSave(leadToSave);
       
@@ -183,9 +182,10 @@ function EditLeadDialog({
           },
           React.createElement(
             TabsList,
-            { className: "grid grid-cols-2 mb-4" },
+            { className: "grid grid-cols-3 mb-4" },
             React.createElement(TabsTrigger, { value: "basic" }, "Informações Básicas"),
-            React.createElement(TabsTrigger, { value: "children" }, "Dados dos Filhos")
+            React.createElement(TabsTrigger, { value: "children" }, "Dados dos Filhos"),
+            React.createElement(TabsTrigger, { value: "additional" }, "Informações Adicionais")
           ),
           
           React.createElement(
@@ -415,6 +415,60 @@ function EditLeadDialog({
                   React.createElement("span", null, "Adicionar Filho")
                 )
               )
+          ),
+          
+          React.createElement(
+            TabsContent,
+            { value: "additional", className: "space-y-4 py-2" },
+            React.createElement("div", { className: "grid grid-cols-2 gap-4" },
+              React.createElement("div", { className: "space-y-2" },
+                React.createElement(Label, { htmlFor: "enrollmentIntention" }, "Intenção de Matrícula"),
+                React.createElement(
+                  Select,
+                  {
+                    value: editedLead.enrollmentIntention || '',
+                    onValueChange: (value) => handleSelectChange('enrollmentIntention', value)
+                  },
+                  React.createElement(
+                    SelectTrigger,
+                    { id: "enrollmentIntention", className: "bg-white" },
+                    React.createElement(SelectValue, { placeholder: "Selecione uma intenção" })
+                  ),
+                  React.createElement(
+                    SelectContent,
+                    { position: "popper", className: "bg-white" },
+                    React.createElement(SelectItem, { value: "alta" }, "Alta"),
+                    React.createElement(SelectItem, { value: "media" }, "Média"),
+                    React.createElement(SelectItem, { value: "baixa" }, "Baixa"),
+                    React.createElement(SelectItem, { value: "indefinida" }, "Indefinida")
+                  )
+                )
+              ),
+              
+              React.createElement("div", { className: "space-y-2" },
+                React.createElement(Label, { htmlFor: "contactTime" }, "Melhor Horário para Contato"),
+                React.createElement(
+                  Select,
+                  {
+                    value: editedLead.contactTime || '',
+                    onValueChange: (value) => handleSelectChange('contactTime', value)
+                  },
+                  React.createElement(
+                    SelectTrigger,
+                    { id: "contactTime", className: "bg-white" },
+                    React.createElement(SelectValue, { placeholder: "Selecione um horário" })
+                  ),
+                  React.createElement(
+                    SelectContent,
+                    { position: "popper", className: "bg-white" },
+                    React.createElement(SelectItem, { value: "manha" }, "Manhã"),
+                    React.createElement(SelectItem, { value: "tarde" }, "Tarde"),
+                    React.createElement(SelectItem, { value: "noite" }, "Noite"),
+                    React.createElement(SelectItem, { value: "qualquer" }, "Qualquer horário")
+                  )
+                )
+              )
+            )
           )
         ),
         
