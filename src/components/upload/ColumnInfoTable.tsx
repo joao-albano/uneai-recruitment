@@ -2,25 +2,29 @@
 import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { InstitutionType } from '@/utils/validation/headerTypes';
+import { ProductType } from '@/context/product/types';
 
 export interface ColumnInfoTableProps {
   institutionType: InstitutionType;
-  currentProduct?: 'recruitment' | 'retention';
+  currentProduct?: ProductType | 'recruitment' | 'retention';
 }
 
 const ColumnInfoTable: React.FC<ColumnInfoTableProps> = ({ 
   institutionType,
   currentProduct = 'retention'
 }) => {
+  // Ensure we only use 'recruitment' or 'retention' for column determination
+  const effectiveProduct = currentProduct === 'recruitment' ? 'recruitment' : 'retention';
+  
   // Change required columns based on institution type and product
-  const requiredColumns = currentProduct === 'recruitment' 
+  const requiredColumns = effectiveProduct === 'recruitment' 
     ? (institutionType === 'school' 
         ? ['nome', 'ra', 'turma', 'telefone'] 
         : ['nome', 'email', 'curso', 'telefone'])
     : ['nome', 'ra', 'turma', 'frequencia', 'notas']; // For retention
 
   // Change optional columns based on institution type and product
-  const optionalColumns = currentProduct === 'recruitment'
+  const optionalColumns = effectiveProduct === 'recruitment'
     ? (institutionType === 'school'
         ? ['email', 'curso', 'responsavel', 'obs'] 
         : ['cpf', 'endereco', 'obs'])

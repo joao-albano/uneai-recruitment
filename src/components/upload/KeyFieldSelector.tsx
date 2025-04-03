@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { useProduct } from '@/context/ProductContext';
 import { getKeyFields } from '@/utils/validation/templateManager';
-import type { InstitutionType } from '@/utils/validation/headerTypes';
+import type { InstitutionType, ProductType } from '@/utils/validation/headerTypes';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { KeyRound } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -11,7 +11,7 @@ interface KeyFieldSelectorProps {
   institutionType: InstitutionType;
   value: string;
   onChange: (value: string) => void;
-  currentProduct?: string; // Add currentProduct prop
+  currentProduct?: string | ProductType; // Update to accept string or ProductType
 }
 
 const KeyFieldSelector: React.FC<KeyFieldSelectorProps> = ({
@@ -20,9 +20,12 @@ const KeyFieldSelector: React.FC<KeyFieldSelectorProps> = ({
   onChange,
   currentProduct
 }) => {
+  // Determine effective product type
+  const effectiveProduct = (currentProduct === 'recruitment') ? 'recruitment' : 'retention';
+  
   // Get available key fields for this product and institution type
   const keyFields = getKeyFields(
-    currentProduct === 'recruitment' ? 'recruitment' : 'retention',
+    effectiveProduct,
     institutionType
   );
   
@@ -42,7 +45,7 @@ const KeyFieldSelector: React.FC<KeyFieldSelectorProps> = ({
   }
 
   // For retention product or for schools in recruitment product, RA is required
-  if (currentProduct === 'retention' || (institutionType === 'school' && currentProduct === 'recruitment')) {
+  if (effectiveProduct === 'retention' || (institutionType === 'school' && effectiveProduct === 'recruitment')) {
     return (
       <div className="mb-4">
         <div className="text-sm font-medium mb-2 flex items-center gap-1.5">
@@ -58,12 +61,12 @@ const KeyFieldSelector: React.FC<KeyFieldSelectorProps> = ({
           </SelectContent>
         </Select>
         <p className="mt-1 text-xs text-muted-foreground">
-          {currentProduct === 'retention' ? 
+          {effectiveProduct === 'retention' ? 
             'Para o módulo de retenção, o campo RA (número de matrícula) é obrigatoriamente usado como chave única.' :
             'Para educação básica, o campo RA (número de matrícula) é obrigatoriamente usado como chave única.'
           }
         </p>
-        {currentProduct === 'retention' && (
+        {effectiveProduct === 'retention' && (
           <Alert variant="default" className="mt-2 py-2 border-amber-200 bg-amber-50">
             <AlertDescription className="text-xs text-amber-700">
               A importação mensal usa o RA como base para decidir se atualiza um registro existente ou cria um novo.
@@ -93,7 +96,7 @@ const KeyFieldSelector: React.FC<KeyFieldSelectorProps> = ({
           ))}
         </SelectContent>
       </Select>
-      {institutionType === 'university' && currentProduct === 'recruitment' && (
+      {institutionType === 'university' && effectiveProduct === 'recruitment' && (
         <Alert variant="default" className="mt-2 py-2 border-amber-200 bg-amber-50">
           <AlertDescription className="text-xs text-amber-700">
             Para Ensino Superior, você deve escolher entre Email ou CPF como campo chave.

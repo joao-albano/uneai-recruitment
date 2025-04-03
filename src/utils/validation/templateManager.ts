@@ -9,7 +9,10 @@ export type { ProductType, InstitutionType };
 
 // Function to generate template Excel file based on product and institution type
 export const generateExcelTemplate = (productType: ProductType, institutionType: InstitutionType) => {
-  const columns = getTemplateColumns(productType, institutionType);
+  // Ensure we only use 'recruitment' or 'retention' for template generation
+  const effectiveProduct = (productType === 'recruitment') ? 'recruitment' : 'retention';
+  
+  const columns = getTemplateColumns(effectiveProduct, institutionType);
   const headers = columns.map(col => col.header);
   const examples = columns.map(col => col.example);
   
@@ -37,11 +40,15 @@ export const downloadTemplate = (productType: ProductType = 'retention', institu
 
 // Function to get template format - used for documentation/display
 export const getTemplateFormat = (productType: ProductType = 'retention', institutionType: InstitutionType = 'school') => {
-  return getTemplateColumns(productType, institutionType);
+  // Ensure we only use 'recruitment' or 'retention' for template generation
+  const effectiveProduct = (productType === 'recruitment') ? 'recruitment' : 'retention';
+  return getTemplateColumns(effectiveProduct, institutionType);
 };
 
 // Function to get key fields based on product and institution type
 export const getKeyFields = (productType: ProductType, institutionType: InstitutionType): ColumnDefinition[] => {
-  const allColumns = getTemplateColumns(productType, institutionType);
+  // Ensure we only use 'recruitment' or 'retention' for key fields
+  const effectiveProduct = (productType === 'recruitment') ? 'recruitment' : 'retention';
+  const allColumns = getTemplateColumns(effectiveProduct, institutionType);
   return allColumns.filter(column => column.isKeyField === true);
 };
