@@ -35,12 +35,13 @@ interface EditLeadDialogProps {
   onSave: (updatedLead: any) => void;
 }
 
-const EditLeadDialog: React.FC<EditLeadDialogProps> = ({ 
+// Fixed component declaration with standard function syntax instead of const assignment
+function EditLeadDialog({ 
   open, 
   onOpenChange,
   lead,
   onSave
-}) => {
+}: EditLeadDialogProps) {
   const [editedLead, setEditedLead] = useState<any>({});
   const [activeTab, setActiveTab] = useState('basic');
   const [children, setChildren] = useState<ChildData[]>([]);
@@ -385,6 +386,6 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
       </DialogContent>
     </Dialog>
   );
-};
+}
 
 export default EditLeadDialog;
