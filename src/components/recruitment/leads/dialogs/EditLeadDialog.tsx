@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -40,13 +41,13 @@ function EditLeadDialog({
   lead,
   onSave
 }: EditLeadDialogProps) {
-  const [editedLead, setEditedLead] = useState<any>({});
-  const [activeTab, setActiveTab] = useState('basic');
-  const [children, setChildren] = useState<ChildData[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editedLead, setEditedLead] = React.useState<any>({});
+  const [activeTab, setActiveTab] = React.useState('basic');
+  const [children, setChildren] = React.useState<ChildData[]>([]);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (lead && open) {
       const leadCopy = JSON.parse(JSON.stringify(lead));
       setEditedLead(leadCopy);
@@ -54,12 +55,18 @@ function EditLeadDialog({
       if (Array.isArray(lead.children)) {
         setChildren(lead.children);
       } else if (typeof lead.children === 'number' && lead.children > 0) {
-        const emptyChildren = Array(lead.children).fill(0).map(() => ({
-          name: "",
-          age: "",
-          grade: ""
-        }));
-        setChildren(emptyChildren);
+        // If we only have a count but no details, create empty children slots
+        // First check if there's a _childrenData field with actual data
+        if (lead._childrenData && Array.isArray(lead._childrenData)) {
+          setChildren(lead._childrenData);
+        } else {
+          const emptyChildren = Array(lead.children).fill(0).map(() => ({
+            name: "",
+            age: "",
+            grade: ""
+          }));
+          setChildren(emptyChildren);
+        }
       } else {
         setChildren([]);
       }
@@ -68,11 +75,11 @@ function EditLeadDialog({
     }
   }, [lead, open]);
 
-  const handleDialogClick = useCallback((e: React.MouseEvent) => {
+  const handleDialogClick = React.useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
   }, []);
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setEditedLead(prev => ({
       ...prev,
@@ -80,22 +87,22 @@ function EditLeadDialog({
     }));
   }, []);
 
-  const handleSelectChange = useCallback((name: string, value: string) => {
+  const handleSelectChange = React.useCallback((name: string, value: string) => {
     setEditedLead(prev => ({
       ...prev,
       [name]: value
     }));
   }, []);
 
-  const addChild = useCallback(() => {
+  const addChild = React.useCallback(() => {
     setChildren(prev => [...prev, { name: "", age: "", grade: "" }]);
   }, []);
 
-  const removeChild = useCallback((index: number) => {
+  const removeChild = React.useCallback((index: number) => {
     setChildren(prev => prev.filter((_, i) => i !== index));
   }, []);
 
-  const updateChild = useCallback((index: number, field: keyof ChildData, value: string) => {
+  const updateChild = React.useCallback((index: number, field: keyof ChildData, value: string) => {
     setChildren(prev => 
       prev.map((child, i) => 
         i === index ? { ...child, [field]: value } : child
@@ -103,7 +110,7 @@ function EditLeadDialog({
     );
   }, []);
 
-  const handleSubmit = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
     
@@ -113,7 +120,9 @@ function EditLeadDialog({
     
     try {
       const leadToSave = JSON.parse(JSON.stringify(editedLead));
-      leadToSave.children = children.length > 0 ? children : leadToSave.children;
+      
+      // Store the children data directly
+      leadToSave.children = children;
       
       onSave(leadToSave);
       
@@ -139,7 +148,7 @@ function EditLeadDialog({
     onOpenChange(false);
     return null;
   }
-
+  
   return React.createElement(
     Dialog,
     {
