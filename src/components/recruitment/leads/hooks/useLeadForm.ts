@@ -46,6 +46,13 @@ export const useLeadForm = () => {
       createdAt: createdAt,
     };
     
+    // Make sure each child has all required properties
+    const childrenData = data.children?.map(child => ({
+      name: child.name || '',   // Ensure required properties have default values
+      age: child.age || '',
+      grade: child.grade || '',
+    })) || [];
+    
     // Update the mock data array - fixing by adding the missing required properties
     const newLead = {
       id: result.id,
@@ -53,8 +60,8 @@ export const useLeadForm = () => {
       email: result.email,
       phone: result.phone,
       course: result.course,
-      children: result.children?.length || 0,
-      _childrenData: result.children || [],
+      children: childrenData.length || 0,
+      _childrenData: childrenData, // Now properly typed with required fields
       channel: result.channel,
       stage: "Contato Inicial",
       status: "Novo",

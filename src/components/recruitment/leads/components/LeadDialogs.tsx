@@ -23,7 +23,7 @@ interface LeadDialogsProps {
   setViewDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   onSaveLead: (updatedLead: any) => void;
   onSaveStage: (leadId: number, newStage: string, notes?: string) => void;
-  onConfirmDelete: (leadId: number) => void;
+  onConfirmDelete: (leadId: number) => void; // This name matches what DeleteLeadDialog expects
   onLeadCreated?: (lead: any) => void;
 }
 
@@ -90,7 +90,7 @@ const LeadDialogs: React.FC<LeadDialogsProps> = ({
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         lead={selectedLead}
-        onConfirmDelete={onConfirmDelete}
+        onConfirmDelete={onConfirmDelete} // Changed this to match the updated prop name
       />
     </>
   );

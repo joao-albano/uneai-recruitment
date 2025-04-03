@@ -16,14 +16,14 @@ interface DeleteLeadDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   lead: any;
-  onConfirm: (leadId: number) => void;
+  onConfirmDelete: (leadId: number) => void; // Changed from onConfirm to onConfirmDelete for consistency
 }
 
 const DeleteLeadDialog: React.FC<DeleteLeadDialogProps> = ({
   open,
   onOpenChange,
   lead,
-  onConfirm,
+  onConfirmDelete, // Updated parameter name
 }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
@@ -39,7 +39,7 @@ const DeleteLeadDialog: React.FC<DeleteLeadDialogProps> = ({
     
     try {
       // Call confirm action
-      onConfirm(Number(lead.id));
+      onConfirmDelete(Number(lead.id));
       
       // Show success toast
       toast({
@@ -59,7 +59,7 @@ const DeleteLeadDialog: React.FC<DeleteLeadDialogProps> = ({
     } finally {
       setIsDeleting(false);
     }
-  }, [lead?.id, isDeleting, onConfirm, onOpenChange, toast]);
+  }, [lead?.id, isDeleting, onConfirmDelete, onOpenChange, toast]);
 
   // Handle cancel with proper event prevention
   const handleCancel = useCallback((e: React.MouseEvent) => {

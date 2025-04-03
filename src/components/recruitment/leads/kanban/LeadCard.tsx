@@ -1,4 +1,3 @@
-
 import React, { memo, useCallback } from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 import { 
@@ -23,7 +22,7 @@ interface Lead {
   id: number;
   name: string;
   course: string;
-  children: number;
+  children: number | any[];
   channel: string;
   stage: string;
   status: string;
@@ -49,7 +48,6 @@ const LeadCard: React.FC<LeadCardProps> = ({
   onViewHistory,
   onDeleteLead
 }) => {
-  // Function to handle actions with proper event handling
   const handleAction = useCallback((
     e: React.MouseEvent, 
     actionHandler: (e: React.MouseEvent, leadId: number) => void
@@ -62,7 +60,6 @@ const LeadCard: React.FC<LeadCardProps> = ({
     actionHandler(e, lead.id);
   }, [lead.id]);
 
-  // Get status color based on status value
   const getStatusColor = useCallback((status: string) => {
     switch (status?.toLowerCase()) {
       case 'novo':
@@ -78,15 +75,14 @@ const LeadCard: React.FC<LeadCardProps> = ({
     }
   }, []);
 
-  // Stop propagation on all card clicks
   const handleCardClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
   }, []);
 
-  // Check if lead has children
-  const hasChildren = lead.children && 
+  const hasChildren = lead.children && (
     (typeof lead.children === 'number' && lead.children > 0) ||
-    (Array.isArray(lead.children) && lead.children.length > 0);
+    (Array.isArray(lead.children) && lead.children.length > 0)
+  );
   
   const childrenCount = typeof lead.children === 'number' 
     ? lead.children 
@@ -205,5 +201,4 @@ const LeadCard: React.FC<LeadCardProps> = ({
   );
 };
 
-// Use memo to prevent unnecessary re-renders
 export default memo(LeadCard);
