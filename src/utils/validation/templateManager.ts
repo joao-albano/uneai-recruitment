@@ -1,6 +1,6 @@
 
 // Update imports to use the new file structure
-import { ProductType, InstitutionType } from './headerTypes';
+import { ProductType, InstitutionType, ColumnDefinition } from './headerTypes';
 import { getTemplateColumns } from './templateFormat';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
@@ -37,4 +37,18 @@ export const downloadTemplate = (productType: ProductType = 'retention', institu
 // Function to get template format - used for documentation/display
 export const getTemplateFormat = (productType: ProductType = 'retention', institutionType: InstitutionType = 'school') => {
   return getTemplateColumns(productType, institutionType);
+};
+
+// Get key fields for a given product and institution type
+export const getKeyFields = (productType: ProductType = 'retention', institutionType: InstitutionType = 'school'): ColumnDefinition[] => {
+  const columns = getTemplateColumns(productType, institutionType);
+  
+  // Filter columns that can be used as key fields
+  if (institutionType === 'school') {
+    // For schools, RA (registro) is the key field
+    return columns.filter(col => col.header === 'ra' || col.header === 'registro');
+  } else {
+    // For universities, email and CPF can be key fields
+    return columns.filter(col => col.isKeyField || ['email', 'cpf'].includes(col.header));
+  }
 };
