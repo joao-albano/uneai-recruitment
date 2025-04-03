@@ -15,6 +15,7 @@ interface ScheduleItemProps {
   onMarkCompleted?: (id: string) => void;
   onCancelSchedule?: (id: string) => void;
   onDetailsClick?: () => void;
+  showActions?: boolean;
 }
 
 const ScheduleItem: React.FC<ScheduleItemProps> = ({
@@ -26,7 +27,8 @@ const ScheduleItem: React.FC<ScheduleItemProps> = ({
   status,
   onMarkCompleted,
   onCancelSchedule,
-  onDetailsClick
+  onDetailsClick,
+  showActions = true
 }) => {
   const formattedDate = formatDateForDisplay(date);
   const formattedTime = formatTimeForDisplay(date);

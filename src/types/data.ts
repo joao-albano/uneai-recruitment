@@ -1,7 +1,7 @@
-
 // Define types for our data
 import { WhatsAppConfig } from '@/utils/whatsappIntegration';
 import { WhatsAppMessage } from './whatsapp';
+import { ProductType } from '@/context/product/types';
 
 export type SchoolSegment = 'ENSINO MÉDIO' | 'ENSINO FUNDAMENTAL I' | 'ENSINO FUNDAMENTAL II' | 'EDUCAÇÃO INFANTIL';
 
@@ -39,6 +39,7 @@ export type ScheduleItem = {
   agentName: string;
   status: 'scheduled' | 'completed' | 'canceled';
   notes?: string;
+  productContext?: ProductType;
 };
 
 export type AlertItem = {

@@ -86,6 +86,7 @@ const DaySchedulesDialog: React.FC<DaySchedulesDialogProps> = ({
             <EmptyScheduleState
               message={`Não há agendamentos para ${formattedDate}`}
               icon="calendar"
+              showButton={false}
             />
           )}
         </div>
