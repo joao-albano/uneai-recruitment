@@ -4,10 +4,11 @@ import { HeaderMap } from "./types";
 // Function to convert Excel column headers to our expected property names
 export const mapHeadersToProperties = (headers: string[]): HeaderMap => {
   const headerMap: Record<string, string> = {
-    // Portuguese headers - standard format
+    // Student headers (basic education)
     'nome': 'name',
     'registro': 'registrationNumber',
     'matricula': 'registrationNumber',
+    'ra': 'registrationNumber',
     'turma': 'class',
     'segmento': 'segment',
     'nota': 'grade',
@@ -42,7 +43,41 @@ export const mapHeadersToProperties = (headers: string[]): HeaderMap => {
     'attendance': 'attendance',
     'behavior': 'behavior',
     'parent_name': 'parentName',
-    'parent_contact': 'parentContact'
+    'parent_contact': 'parentContact',
+    
+    // Lead headers (recruitment)
+    'email': 'email',
+    'telefone': 'phone',
+    'phone': 'phone',
+    'canal': 'channel',
+    'curso': 'course',
+    'serie': 'grade',
+    'etapa': 'stage',
+    'status': 'status',
+    'data_contato': 'contactDate',
+    'responsavel': 'responsible',
+    'responsavel_atendimento': 'responsible',
+    'filhos': 'children',
+    'quantidade_filhos': 'children',
+    'nome_filhos': 'childrenNames',
+    'idade_filhos': 'childrenAges',
+    'observacoes': 'observations',
+    'obs': 'observations',
+    'intenção_matrícula': 'enrollmentIntention',
+    'intenção_matricula': 'enrollmentIntention',
+    'intencao_matricula': 'enrollmentIntention',
+    'melhor_horario_contato': 'contactTime',
+    'horario_contato': 'contactTime',
+    'cpf': 'cpf',
+    'modalidade': 'modality',
+    'período': 'period',
+    'periodo': 'period',
+    'campus': 'campus',
+    
+    // University student headers
+    'cr': 'gradePoint',
+    'semestre': 'semester',
+    'disciplinas_pendentes': 'pendingCourses'
   };
 
   return headers.reduce((acc, header, index) => {
@@ -61,11 +96,33 @@ export const mapHeadersToProperties = (headers: string[]): HeaderMap => {
   }, {} as Record<string, string>);
 };
 
+// Get required headers based on product type and institution type
+export const getRequiredHeaders = (
+  productType: 'retention' | 'recruitment' = 'retention', 
+  institutionType: 'school' | 'university' = 'school'
+): string[] => {
+  if (productType === 'recruitment') {
+    if (institutionType === 'school') {
+      return ['nome', 'email', 'telefone', 'canal'];
+    } else {
+      return ['nome', 'email', 'telefone', 'canal', 'curso'];
+    }
+  } else {
+    if (institutionType === 'school') {
+      return ['nome', 'registro', 'turma', 'segmento'];
+    } else {
+      return ['nome', 'registro', 'curso', 'periodo', 'semestre'];
+    }
+  }
+};
+
 // Header validation function
-export const validateHeaders = (headers: string[]): boolean => {
-  const requiredHeaders = [
-    'nome', 'registro', 'turma', 'segmento'
-  ];
+export const validateHeaders = (
+  headers: string[], 
+  productType: 'retention' | 'recruitment' = 'retention',
+  institutionType: 'school' | 'university' = 'school'
+): boolean => {
+  const requiredHeaders = getRequiredHeaders(productType, institutionType);
   
   // Create a more flexible header matching approach
   const normalizedHeaders = headers.map(h => h.toLowerCase().trim());
@@ -74,8 +131,10 @@ export const validateHeaders = (headers: string[]): boolean => {
     // Check standard forms
     if (normalizedHeaders.includes(required)) return true;
     
-    // Special case for 'registro' - also accept 'matricula'
-    if (required === 'registro' && normalizedHeaders.includes('matricula')) return true;
+    // Special case for 'registro' - also accept 'matricula' or 'ra'
+    if (required === 'registro' && 
+        (normalizedHeaders.includes('matricula') || normalizedHeaders.includes('ra'))) 
+      return true;
     
     // Check English equivalents
     const englishEquivalent = 
@@ -86,6 +145,10 @@ export const validateHeaders = (headers: string[]): boolean => {
       required === 'nota' ? 'grade' :
       required === 'frequencia' ? 'attendance' :
       required === 'comportamento' ? 'behavior' :
+      required === 'telefone' ? 'phone' :
+      required === 'curso' ? 'course' :
+      required === 'periodo' ? 'period' :
+      required === 'canal' ? 'channel' :
       required;
     
     if (normalizedHeaders.includes(englishEquivalent)) return true;
@@ -96,14 +159,54 @@ export const validateHeaders = (headers: string[]): boolean => {
   });
 };
 
-// Get the expected format of the Excel file
-export const getExcelFormat = (): { headers: string[]; description: string } => {
-  return {
-    headers: [
-      'Nome', 'Registro', 'Turma', 'Segmento', 'Nota', 'Frequencia', 'Comportamento',
-      'Nome_Responsavel', 'Contato_Responsavel'
-    ],
-    description: 'O arquivo deve conter as colunas: Nome, Registro (número de matrícula), Turma, Segmento (Ensino Médio, Fundamental I, etc.), Nota (0-10), Frequência (0-100), Comportamento (0-10), ' +
-      'Nome do Responsável, e Contato do Responsável (formato (99) 99999-9999)'
-  };
+// Get the expected format of the Excel file based on product and institution type
+export const getExcelFormat = (
+  productType: 'retention' | 'recruitment' = 'retention',
+  institutionType: 'school' | 'university' = 'school'
+): { headers: string[]; description: string } => {
+  if (productType === 'recruitment') {
+    if (institutionType === 'school') {
+      return {
+        headers: [
+          'Nome', 'Email', 'Telefone', 'Canal', 'Serie', 'Quantidade_Filhos',
+          'Nome_Filhos', 'Idade_Filhos', 'Intenção_Matrícula', 'Melhor_Horario_Contato', 'Observacoes'
+        ],
+        description: 'O arquivo deve conter as colunas: Nome, Email, Telefone, Canal (origem), Série pretendida, ' +
+          'Quantidade de Filhos, Nomes dos Filhos, Idades dos Filhos, Intenção de Matrícula, ' +
+          'Melhor Horário para Contato, e Observações.'
+      };
+    } else {
+      return {
+        headers: [
+          'Nome', 'Email', 'Telefone', 'CPF', 'Canal', 'Curso', 'Modalidade', 
+          'Período', 'Campus', 'Intenção_Matrícula', 'Melhor_Horario_Contato', 'Observacoes'
+        ],
+        description: 'O arquivo deve conter as colunas: Nome, Email, Telefone, CPF, Canal (origem), ' +
+          'Curso de interesse, Modalidade (presencial/EAD), Período, Campus, Intenção de Matrícula, ' +
+          'Melhor Horário para Contato, e Observações.'
+      };
+    }
+  } else {
+    if (institutionType === 'school') {
+      return {
+        headers: [
+          'Nome', 'Registro', 'Turma', 'Segmento', 'Nota', 'Frequencia', 'Comportamento',
+          'Nome_Responsavel', 'Contato_Responsavel'
+        ],
+        description: 'O arquivo deve conter as colunas: Nome, Registro (número de matrícula), Turma, ' +
+          'Segmento (Ensino Médio, Fundamental I, etc.), Nota (0-10), Frequência (0-100), Comportamento (0-10), ' +
+          'Nome do Responsável, e Contato do Responsável (formato (99) 99999-9999)'
+      };
+    } else {
+      return {
+        headers: [
+          'Nome', 'Registro', 'CPF', 'Curso', 'Periodo', 'Semestre', 'CR', 
+          'Frequencia', 'Disciplinas_Pendentes', 'Email'
+        ],
+        description: 'O arquivo deve conter as colunas: Nome, Registro (número de matrícula), CPF, ' +
+          'Curso, Período (matutino/vespertino/noturno), Semestre atual, CR (coeficiente de rendimento), ' +
+          'Frequência (0-100), Disciplinas Pendentes, e Email do aluno.'
+      };
+    }
+  }
 };

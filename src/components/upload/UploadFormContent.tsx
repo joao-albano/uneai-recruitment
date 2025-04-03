@@ -5,15 +5,19 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import DragDropArea from './DragDropArea';
 import ValidationErrorsDisplay from './ValidationErrorsDisplay';
 import ColumnInfoTable from './ColumnInfoTable';
+import InstitutionTypeSelector from './InstitutionTypeSelector';
+import KeyFieldSelector from './KeyFieldSelector';
 import FileUploadHandler from './FileUploadHandler';
-import { downloadTemplate } from '@/utils/validation/templateManager';
+import { downloadTemplate, InstitutionType } from '@/utils/validation/templateManager';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle, InfoIcon } from 'lucide-react';
+import { CheckCircle, InfoIcon, KeyRound, Download } from 'lucide-react';
 import { useProduct } from '@/context/ProductContext';
 
 const UploadFormContent: React.FC = () => {
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [showColumnInfo, setShowColumnInfo] = useState<boolean>(false);
+  const [institutionType, setInstitutionType] = useState<InstitutionType>('school');
+  const [keyField, setKeyField] = useState<string>('');
   const { currentProduct } = useProduct();
   
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -46,7 +50,7 @@ const UploadFormContent: React.FC = () => {
   };
 
   const handleDownloadTemplate = () => {
-    downloadTemplate(currentProduct);
+    downloadTemplate(currentProduct, institutionType);
   };
   
   return (
@@ -88,39 +92,53 @@ const UploadFormContent: React.FC = () => {
                 </Alert>
               )}
               
-              <div className="flex space-x-2">
+              {/* Tipo de instituição */}
+              <InstitutionTypeSelector 
+                value={institutionType} 
+                onChange={setInstitutionType} 
+              />
+              
+              {/* Campo chave */}
+              <KeyFieldSelector 
+                institutionType={institutionType}
+                value={keyField}
+                onChange={setKeyField}
+              />
+              
+              <div className="flex flex-wrap gap-2">
                 <Button 
                   variant="outline" 
-                  size="sm" 
+                  size="sm"
                   onClick={toggleColumnInfo} 
-                  className="text-xs"
+                  className="text-xs flex items-center gap-1"
                 >
-                  {showColumnInfo ? 'Ocultar informações da planilha' : 'Exibir informações da planilha'}
+                  {showColumnInfo ? 'Ocultar informações' : 'Mostrar informações'}
                 </Button>
                 
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleDownloadTemplate}
-                  className="text-xs"
+                  className="text-xs flex items-center gap-1"
                 >
+                  <Download className="h-3 w-3" />
                   Baixar modelo
                 </Button>
               </div>
               
-              {showColumnInfo && <ColumnInfoTable />}
+              {showColumnInfo && <ColumnInfoTable institutionType={institutionType} />}
               
               <Alert variant="default" className="bg-blue-50 border-blue-200 my-2">
                 <InfoIcon className="h-4 w-4 text-blue-600" />
                 <AlertTitle className="text-blue-800">
                   {currentProduct === 'recruitment' 
                     ? 'Importação de Leads' 
-                    : 'Controle mensal de dados'}
+                    : 'Controle de dados'}
                 </AlertTitle>
                 <AlertDescription className="text-blue-700">
                   {currentProduct === 'recruitment'
-                    ? 'Os leads serão mesclados com base no email ou telefone. Leads duplicados serão atualizados com as informações mais recentes.'
-                    : 'Os dados são mesclados com base na matrícula (RA) e no mês corrente. Registros do mesmo aluno no mesmo mês serão atualizados, enquanto importações em meses diferentes criarão novos registros.'}
+                    ? `Os leads serão mesclados com base no campo "${keyField || 'selecionado'}". Registros duplicados serão atualizados com as informações mais recentes.`
+                    : `Os dados são mesclados com base no campo "${keyField || 'selecionado'}". Registros duplicados serão atualizados com as informações mais recentes.`}
                 </AlertDescription>
               </Alert>
               
@@ -145,7 +163,7 @@ const UploadFormContent: React.FC = () => {
               </Button>
               <Button 
                 onClick={handleProcessFile} 
-                disabled={!file || uploadProgress < 100 || isProcessing}
+                disabled={!file || uploadProgress < 100 || isProcessing || !keyField}
               >
                 {isProcessing ? 'Processando...' : 'Processar dados'}
               </Button>
