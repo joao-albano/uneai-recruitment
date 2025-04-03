@@ -45,12 +45,43 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ productContext }) => {
     studentsWithoutSchedules
   } = useScheduleFilters(filteredSchedules, today);
   
+  const handleViewDetails = (schedule) => {
+    setDialogState(prev => ({
+      ...prev,
+      detailsDialogOpen: true,
+      selectedSchedule: schedule
+    }));
+  };
+  
+  const handleNewSchedule = () => {
+    setDialogState(prev => ({
+      ...prev,
+      scheduleDialogOpen: true
+    }));
+  };
+  
+  const handleViewReminders = () => {
+    setDialogState(prev => ({
+      ...prev,
+      remindersHistoryDialogOpen: true
+    }));
+  };
+  
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-2">
           <CalendarView 
-            calendarState={calendarState} 
+            formattedMonthYear={calendarState.formattedMonthYear}
+            firstDayOfMonth={calendarState.firstDayOfMonth}
+            daysInMonth={calendarState.daysInMonth}
+            today={today}
+            selectedDate={calendarState.selectedDate}
+            previousMonth={calendarState.previousMonth}
+            nextMonth={calendarState.nextMonth}
+            hasSchedulesOnDay={calendarState.hasSchedulesOnDay}
+            getScheduleCountForDay={calendarState.getScheduleCountForDay}
+            getScheduleStatusForDay={calendarState.getScheduleStatusForDay}
             onDayClick={(day) => {
               setDialogState(prev => ({
                 ...prev,
@@ -67,40 +98,22 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ productContext }) => {
         
         <div className="space-y-8">
           <TodaySchedules 
-            schedules={todaySchedules}
-            onViewDetails={(schedule) => {
-              setDialogState(prev => ({
-                ...prev,
-                detailsDialogOpen: true,
-                selectedSchedule: schedule
-              }));
-            }}
+            todaySchedules={todaySchedules}
+            onViewDetails={handleViewDetails}
+            onCompleted={(id) => console.log('Completed', id)}
+            onCanceled={(id) => console.log('Canceled', id)}
           />
           
           <UpcomingSchedules 
-            schedules={upcomingSchedules}
-            onViewDetails={(schedule) => {
-              setDialogState(prev => ({
-                ...prev,
-                detailsDialogOpen: true,
-                selectedSchedule: schedule
-              }));
-            }}
+            upcomingSchedules={upcomingSchedules}
+            onViewDetails={handleViewDetails}
+            onCompleted={(id) => console.log('Completed', id)}
+            onCanceled={(id) => console.log('Canceled', id)}
           />
           
           <ScheduleStats 
-            onNewSchedule={() => {
-              setDialogState(prev => ({
-                ...prev,
-                scheduleDialogOpen: true
-              }));
-            }}
-            onViewReminders={() => {
-              setDialogState(prev => ({
-                ...prev,
-                remindersHistoryDialogOpen: true
-              }));
-            }}
+            onNewSchedule={handleNewSchedule}
+            onViewReminders={handleViewReminders}
           />
         </div>
       </div>

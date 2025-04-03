@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Check, Calendar, X, User, Clock, FileText, ExternalLink } from 'lucide-react';
 import { formatDateForDisplay, formatTimeForDisplay } from '@/data/schedules/scheduleUtils';
+import { Schedule } from '@/types/schedule';
 
 interface ScheduleItemProps {
   id: string;

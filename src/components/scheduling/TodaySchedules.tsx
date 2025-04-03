@@ -7,16 +7,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface TodaySchedulesProps {
   todaySchedules: Schedule[];
-  onCompleted: (id: string) => void;
-  onCanceled: (id: string) => void;
-  onDetailsClick: (schedule: Schedule) => void;
+  onViewDetails: (schedule: Schedule) => void;
+  onCompleted?: (id: string) => void;
+  onCanceled?: (id: string) => void;
 }
 
 const TodaySchedules: React.FC<TodaySchedulesProps> = ({
   todaySchedules,
+  onViewDetails,
   onCompleted,
-  onCanceled,
-  onDetailsClick
+  onCanceled
 }) => {
   const scheduledAppointments = todaySchedules.filter(s => s.status === 'scheduled');
   
@@ -55,7 +55,7 @@ const TodaySchedules: React.FC<TodaySchedulesProps> = ({
             status={schedule.status}
             onMarkCompleted={onCompleted}
             onCancelSchedule={onCanceled}
-            onDetailsClick={() => onDetailsClick(schedule)}
+            onDetailsClick={() => onViewDetails(schedule)}
           />
         ))}
       </CardContent>

@@ -7,14 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface UpcomingSchedulesProps {
   upcomingSchedules: Schedule[];
-  onDetailsClick: (schedule: Schedule) => void;
+  onViewDetails: (schedule: Schedule) => void;
   onCompleted?: (id: string) => void;
   onCanceled?: (id: string) => void;
 }
 
 const UpcomingSchedules: React.FC<UpcomingSchedulesProps> = ({
   upcomingSchedules,
-  onDetailsClick,
+  onViewDetails,
   onCompleted,
   onCanceled
 }) => {
@@ -53,7 +53,7 @@ const UpcomingSchedules: React.FC<UpcomingSchedulesProps> = ({
             status={schedule.status}
             onMarkCompleted={onCompleted}
             onCancelSchedule={onCanceled}
-            onDetailsClick={() => onDetailsClick(schedule)}
+            onDetailsClick={() => onViewDetails(schedule)}
           />
         ))}
       </CardContent>

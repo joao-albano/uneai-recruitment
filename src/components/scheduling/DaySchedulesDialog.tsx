@@ -70,9 +70,14 @@ const DaySchedulesDialog: React.FC<DaySchedulesDialogProps> = ({
           {daySchedules.length > 0 ? (
             <div className="space-y-4">
               {daySchedules.map(schedule => (
-                <ScheduleItem 
+                <ScheduleItem
                   key={schedule.id}
-                  schedule={schedule}
+                  id={schedule.id}
+                  studentName={schedule.studentName}
+                  date={new Date(schedule.date)}
+                  agentName={schedule.agentName}
+                  notes={schedule.notes}
+                  status={schedule.status}
                   showActions={true}
                 />
               ))}

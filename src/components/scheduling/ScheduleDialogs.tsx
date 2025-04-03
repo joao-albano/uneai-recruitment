@@ -36,6 +36,15 @@ const ScheduleDialogs: React.FC<ScheduleDialogsProps> = ({
   availableStudents,
   productContext
 }) => {
+  // Function to handle schedule status changes
+  const handleStatusChange = () => {
+    // This is just a placeholder function to satisfy the type requirement
+    console.log("Status changed");
+  };
+  
+  // Mock messages for reminders history
+  const reminderMessages = [];
+
   return (
     <>
       <ScheduleDialog
@@ -59,6 +68,7 @@ const ScheduleDialogs: React.FC<ScheduleDialogsProps> = ({
           }));
         }}
         schedule={dialogState.selectedSchedule}
+        onStatusChange={handleStatusChange}
       />
       
       <DaySchedulesDialog
@@ -81,6 +91,7 @@ const ScheduleDialogs: React.FC<ScheduleDialogsProps> = ({
             remindersHistoryDialogOpen: open
           }));
         }}
+        messages={reminderMessages}
       />
     </>
   );
