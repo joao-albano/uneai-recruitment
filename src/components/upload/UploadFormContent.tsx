@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import DragDropArea from './DragDropArea';
@@ -19,6 +19,15 @@ const UploadFormContent: React.FC = () => {
   const [institutionType, setInstitutionType] = useState<InstitutionType>('school');
   const [keyField, setKeyField] = useState<string>('');
   const { currentProduct } = useProduct();
+  
+  // Set default key field based on institution type
+  useEffect(() => {
+    if (institutionType === 'school' && currentProduct === 'recruitment') {
+      setKeyField('ra');
+    } else if (keyField === 'ra' && institutionType === 'university') {
+      setKeyField(''); // Reset if we had 'ra' selected but switched to university
+    }
+  }, [institutionType, currentProduct]);
   
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -51,6 +60,15 @@ const UploadFormContent: React.FC = () => {
 
   const handleDownloadTemplate = () => {
     downloadTemplate(currentProduct, institutionType);
+  };
+  
+  // Determine if we can proceed based on key field selection
+  const isKeyFieldValid = () => {
+    if (institutionType === 'school') {
+      return keyField === 'ra'; // RA is required for schools
+    } else {
+      return keyField === 'email' || keyField === 'cpf'; // Email or CPF for universities
+    }
   };
   
   return (
@@ -102,7 +120,7 @@ const UploadFormContent: React.FC = () => {
               <KeyFieldSelector 
                 institutionType={institutionType}
                 value={keyField}
-                onChange={setKeyField}
+                onChange={setKeyField} 
               />
               
               <div className="flex flex-wrap gap-2">
@@ -136,9 +154,9 @@ const UploadFormContent: React.FC = () => {
                     : 'Controle de dados'}
                 </AlertTitle>
                 <AlertDescription className="text-blue-700">
-                  {currentProduct === 'recruitment'
-                    ? `Os leads serão mesclados com base no campo "${keyField || 'selecionado'}". Registros duplicados serão atualizados com as informações mais recentes.`
-                    : `Os dados são mesclados com base no campo "${keyField || 'selecionado'}". Registros duplicados serão atualizados com as informações mais recentes.`}
+                  {institutionType === 'school' 
+                    ? `Para educação básica, o RA (número de matrícula) é obrigatório e será usado como chave única para evitar duplicações.`
+                    : `Para ensino superior, ${keyField ? `o campo "${keyField}"` : "um campo entre CPF e Email"} será usado como chave única para evitar duplicações.`}
                 </AlertDescription>
               </Alert>
               
@@ -163,7 +181,7 @@ const UploadFormContent: React.FC = () => {
               </Button>
               <Button 
                 onClick={handleProcessFile} 
-                disabled={!file || uploadProgress < 100 || isProcessing || !keyField}
+                disabled={!file || uploadProgress < 100 || isProcessing || !isKeyFieldValid()}
               >
                 {isProcessing ? 'Processando...' : 'Processar dados'}
               </Button>

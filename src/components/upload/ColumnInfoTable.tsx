@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useProduct } from '@/context/ProductContext';
 import { getTemplateFormat, InstitutionType } from '@/utils/validation/templateManager';
 import { Badge } from '@/components/ui/badge';
-import { KeyRound } from 'lucide-react';
+import { KeyRound, AlertTriangle } from 'lucide-react';
 
 interface ColumnInfoTableProps {
   institutionType: InstitutionType;
@@ -35,14 +35,38 @@ const ColumnInfoTable: React.FC<ColumnInfoTableProps> = ({ institutionType }) =>
             <TableRow key={column.header}>
               <TableCell className="font-medium flex items-center gap-2">
                 {column.header} 
-                {column.required && <span className="text-red-500">*</span>}
-                {column.isKeyField && <KeyRound className="h-3 w-3 text-amber-500" title="Campo pode ser usado como chave única" />}
+                {column.required && (
+                  <span className="text-red-500" title="Campo obrigatório">*</span>
+                )}
+                {column.isKeyField && institutionType === 'school' && (
+                  <KeyRound className="h-3 w-3 text-amber-500" title="Campo chave obrigatório" />
+                )}
+                {column.isKeyField && institutionType === 'university' && (
+                  <KeyRound className="h-3 w-3 text-amber-500" title="Campo pode ser usado como chave única" />
+                )}
               </TableCell>
               <TableCell>
                 {column.description}
-                {column.isKeyField && (
+                {column.isKeyField && institutionType === 'school' && (
                   <Badge variant="outline" className="ml-2 text-xs bg-amber-50 text-amber-700 border-amber-200">
-                    Chave única
+                    Chave única obrigatória
+                  </Badge>
+                )}
+                {column.isKeyField && institutionType === 'university' && (
+                  <Badge variant="outline" className="ml-2 text-xs bg-amber-50 text-amber-700 border-amber-200">
+                    Chave única opcional
+                  </Badge>
+                )}
+                {institutionType === 'university' && column.header === 'email' && (
+                  <Badge variant="outline" className="ml-2 text-xs bg-blue-50 text-blue-700 border-blue-200">
+                    <AlertTriangle className="h-3 w-3 mr-1 inline" />
+                    Email ou CPF necessário
+                  </Badge>
+                )}
+                {institutionType === 'university' && column.header === 'cpf' && (
+                  <Badge variant="outline" className="ml-2 text-xs bg-blue-50 text-blue-700 border-blue-200">
+                    <AlertTriangle className="h-3 w-3 mr-1 inline" />
+                    Email ou CPF necessário
                   </Badge>
                 )}
               </TableCell>
@@ -51,10 +75,25 @@ const ColumnInfoTable: React.FC<ColumnInfoTableProps> = ({ institutionType }) =>
           ))}
         </TableBody>
       </Table>
-      <p className="mt-4 text-xs text-muted-foreground">
-        <strong>Nota:</strong> Os campos marcados com <span className="text-red-500">*</span> são obrigatórios.
-        Os campos com <KeyRound className="h-3 w-3 text-amber-500 inline mb-0.5" /> podem ser usados como chaves únicas para evitar duplicações.
-      </p>
+      <div className="mt-4 space-y-2 text-xs text-muted-foreground">
+        <p>
+          <strong>Nota:</strong> Os campos marcados com <span className="text-red-500">*</span> são obrigatórios.
+        </p>
+        
+        {institutionType === 'school' && (
+          <p className="flex items-center gap-1">
+            <KeyRound className="h-3 w-3 text-amber-500 inline" />
+            <span>O campo RA é obrigatório e será usado como chave única para evitar duplicações.</span>
+          </p>
+        )}
+        
+        {institutionType === 'university' && (
+          <p className="flex items-center gap-1">
+            <KeyRound className="h-3 w-3 text-amber-500 inline" />
+            <span>É necessário fornecer pelo menos um dos campos Email ou CPF, que serão usados como chave única.</span>
+          </p>
+        )}
+      </div>
     </div>
   );
 };

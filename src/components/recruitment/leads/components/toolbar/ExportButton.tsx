@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Download, ChevronDown } from 'lucide-react';
 import { 
@@ -39,10 +39,10 @@ const ExportButton: React.FC<ExportButtonProps> = ({ exportLeads }) => {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => handleDownloadTemplate('school')}>
-          Baixar modelo (Educação Básica)
+          Baixar modelo para Educação Básica (RA obrigatório)
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleDownloadTemplate('university')}>
-          Baixar modelo (Ensino Superior)
+          Baixar modelo para Ensino Superior (Email ou CPF)
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

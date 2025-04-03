@@ -3,7 +3,7 @@ import * as FileSaver from 'file-saver';
 import { ProductType } from '@/context/product/types';
 
 export type InstitutionType = 'school' | 'university';
-export type KeyFieldType = 'email' | 'phone' | 'registration' | 'cpf';
+export type KeyFieldType = 'email' | 'cpf' | 'registration';
 
 interface TemplateColumn {
   header: string;
@@ -19,10 +19,10 @@ const templates: Record<ProductType, Record<InstitutionType, TemplateColumn[]>> 
     // Template para escolas (educação básica)
     school: [
       { header: 'nome', required: true, example: 'Ana Carolina', description: 'Nome completo do lead' },
-      { header: 'email', required: true, example: 'ana@email.com', description: 'Email para contato', isKeyField: true },
-      { header: 'telefone', required: true, example: '(11) 98765-4321', description: 'Telefone para contato', isKeyField: true },
-      { header: 'ra', required: false, example: '123456', description: 'Número de registro/matrícula do aluno', isKeyField: true },
-      { header: 'cpf', required: false, example: '123.456.789-10', description: 'CPF do responsável', isKeyField: true },
+      { header: 'email', required: true, example: 'ana@email.com', description: 'Email para contato' },
+      { header: 'telefone', required: true, example: '(11) 98765-4321', description: 'Telefone para contato' },
+      { header: 'ra', required: true, example: '123456', description: 'Número de registro/matrícula do aluno', isKeyField: true },
+      { header: 'cpf', required: false, example: '123.456.789-10', description: 'CPF do responsável' },
       { header: 'canal', required: true, example: 'Instagram', description: 'Canal de origem (ex: Facebook, Instagram, Site)' },
       { header: 'serie', required: false, example: '1º Ano', description: 'Série/ano pretendido' },
       { header: 'etapa', required: false, example: 'Contato Inicial', description: 'Etapa atual no funil de captação' },
@@ -40,7 +40,7 @@ const templates: Record<ProductType, Record<InstitutionType, TemplateColumn[]>> 
     university: [
       { header: 'nome', required: true, example: 'Carlos Oliveira', description: 'Nome completo do lead' },
       { header: 'email', required: true, example: 'carlos@email.com', description: 'Email para contato', isKeyField: true },
-      { header: 'telefone', required: true, example: '(11) 98765-4321', description: 'Telefone para contato', isKeyField: true },
+      { header: 'telefone', required: true, example: '(11) 98765-4321', description: 'Telefone para contato' },
       { header: 'cpf', required: false, example: '123.456.789-10', description: 'CPF do candidato', isKeyField: true },
       { header: 'canal', required: true, example: 'Site', description: 'Canal de origem (ex: Facebook, Instagram, Site)' },
       { header: 'curso', required: true, example: 'Engenharia', description: 'Curso de interesse' },
@@ -80,7 +80,6 @@ const templates: Record<ProductType, Record<InstitutionType, TemplateColumn[]>> 
       { header: 'cr', required: false, example: '8.5', description: 'Coeficiente de Rendimento (de 0 a 10)' },
       { header: 'frequencia', required: false, example: '85', description: 'Porcentagem de presença (de 0 a 100)' },
       { header: 'disciplinas_pendentes', required: false, example: '2', description: 'Número de disciplinas pendentes' },
-      { header: 'contato', required: false, example: '(11) 98765-4321', description: 'Telefone para contato', isKeyField: true },
       { header: 'email', required: false, example: 'ana@email.com', description: 'Email do aluno', isKeyField: true },
       { header: 'observacoes', required: false, example: 'Aluno com dificuldade em cálculo', description: 'Observações adicionais' }
     ]
@@ -135,4 +134,3 @@ export const getKeyFields = (
 ): TemplateColumn[] => {
   return templates[productType][institutionType].filter(col => col.isKeyField === true);
 };
-
