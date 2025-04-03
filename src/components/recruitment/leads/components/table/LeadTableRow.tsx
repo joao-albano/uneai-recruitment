@@ -5,9 +5,11 @@ import { Badge } from '@/components/ui/badge';
 import LeadActionMenu from './LeadActionMenu';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Users } from 'lucide-react';
 
 interface LeadTableRowProps {
   lead: any;
+  onViewLead?: (e: React.MouseEvent, leadId: number) => void;
   onEditLead?: (e: React.MouseEvent, leadId: number) => void;
   onChangeStage?: (e: React.MouseEvent, leadId: number) => void;
   onViewHistory?: (e: React.MouseEvent, leadId: number) => void;
@@ -17,6 +19,7 @@ interface LeadTableRowProps {
 
 const LeadTableRow: React.FC<LeadTableRowProps> = ({
   lead,
+  onViewLead,
   onEditLead,
   onChangeStage,
   onViewHistory,
@@ -68,9 +71,30 @@ const LeadTableRow: React.FC<LeadTableRowProps> = ({
     e.stopPropagation();
   };
 
+  // Check if lead has children
+  const hasChildren = lead.children && 
+    (typeof lead.children === 'number' && lead.children > 0) ||
+    (Array.isArray(lead.children) && lead.children.length > 0);
+  
+  const childrenCount = typeof lead.children === 'number' 
+    ? lead.children 
+    : Array.isArray(lead.children) 
+      ? lead.children.length 
+      : 0;
+
   return (
     <TableRow key={lead.id} onClick={handleRowClick} className="hover:bg-muted/40 transition-colors">
-      <TableCell className="font-medium">{lead.name}</TableCell>
+      <TableCell className="font-medium">
+        <div className="flex items-center gap-1">
+          {lead.name}
+          {hasChildren && (
+            <div className="ml-1 flex items-center text-primary" title={`${childrenCount} filho(s)`}>
+              <Users size={14} />
+              <span className="text-xs ml-1">{childrenCount}</span>
+            </div>
+          )}
+        </div>
+      </TableCell>
       <TableCell>{lead.course}</TableCell>
       <TableCell className="hidden sm:table-cell">{lead.channel}</TableCell>
       <TableCell>{lead.stage}</TableCell>
@@ -85,6 +109,7 @@ const LeadTableRow: React.FC<LeadTableRowProps> = ({
       <TableCell className="text-right" onClick={handleCellClick}>
         <LeadActionMenu
           leadId={lead.id}
+          onViewLead={onViewLead}
           onEditLead={onEditLead}
           onChangeStage={onChangeStage}
           onViewHistory={onViewHistory}

@@ -4,6 +4,7 @@ import { useLeadEditActions } from './useLeadEditActions';
 import { useLeadStageActions } from './useLeadStageActions';
 import { useLeadHistoryActions } from './useLeadHistoryActions';
 import { useLeadDeleteActions } from './useLeadDeleteActions';
+import { useLeadViewActions } from './useLeadViewActions';
 
 export const useLeadActions = (
   leadsData: any[],
@@ -12,9 +13,16 @@ export const useLeadActions = (
   setEditDialogOpen: React.Dispatch<React.SetStateAction<boolean>>,
   setStageDialogOpen: React.Dispatch<React.SetStateAction<boolean>>,
   setHistoryDialogOpen: React.Dispatch<React.SetStateAction<boolean>>,
-  setDeleteDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setDeleteDialogOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  setViewDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   // Importar todas as ações de leads dos hooks específicos
+  const viewActions = useLeadViewActions(
+    leadsData,
+    setSelectedLead,
+    setViewDialogOpen
+  );
+  
   const editActions = useLeadEditActions(
     leadsData, 
     setLeadsData, 
@@ -44,6 +52,7 @@ export const useLeadActions = (
   
   // Retornar todas as ações combinadas
   return {
+    ...viewActions,
     ...editActions,
     ...stageActions,
     ...historyActions,
@@ -51,5 +60,5 @@ export const useLeadActions = (
   };
 };
 
-// Re-exportar a função utilitária de getStatusForStage do novo arquivo
+// Re-exportar a função utilitária de getStatusForStage do arquivo de utils
 export { getStatusForStage } from './utils/leadStatusUtils';

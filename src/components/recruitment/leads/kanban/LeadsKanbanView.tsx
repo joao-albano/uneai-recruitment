@@ -1,64 +1,85 @@
 
-import React from 'react';
-import { DragDropContext, DropResult } from '@hello-pangea/dnd';
+import React, { useState } from 'react';
+import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
 import StageColumn from './StageColumn';
-import { handleDragEnd } from './KanbanUtils';
-
-interface Lead {
-  id: number;
-  name: string;
-  course: string;
-  children: number;
-  channel: string;
-  stage: string;
-  status: string;
-  createdAt: string;
-}
-
-interface StageGroups {
-  [key: string]: Lead[];
-}
 
 interface LeadsKanbanViewProps {
-  stageGroups: StageGroups;
-  onStageChange: (leadId: number, newStage: string, notes?: string) => void;
+  stageGroups: any;
+  onViewLead: (e: React.MouseEvent, leadId: number) => void;
   onEditLead: (e: React.MouseEvent, leadId: number) => void;
   onChangeStage: (e: React.MouseEvent, leadId: number) => void;
-  openChangeStageDialog?: (leadId: number) => void;
   onViewHistory: (e: React.MouseEvent, leadId: number) => void;
   onDeleteLead: (e: React.MouseEvent, leadId: number) => void;
+  onStageChange: (leadId: number, newStage: string, notes?: string) => void;
+  openChangeStageDialog?: (leadId: number) => void;
 }
 
-const LeadsKanbanView: React.FC<LeadsKanbanViewProps> = ({ 
-  stageGroups, 
-  onStageChange,
+const LeadsKanbanView: React.FC<LeadsKanbanViewProps> = ({
+  stageGroups,
+  onViewLead,
   onEditLead,
   onChangeStage,
-  openChangeStageDialog,
   onViewHistory,
-  onDeleteLead 
+  onDeleteLead,
+  onStageChange,
+  openChangeStageDialog
 }) => {
-  const handleOnDragEnd = (result: DropResult) => {
-    handleDragEnd(result, onStageChange);
+  const [draggingLeadId, setDraggingLeadId] = useState<number | null>(null);
+
+  // Handle drag end
+  const handleDragEnd = (result: DropResult) => {
+    setDraggingLeadId(null);
+    
+    // If dropped outside a valid area
+    if (!result.destination) {
+      return;
+    }
+
+    const { draggableId, destination } = result;
+    
+    // Extract leadId from draggableId format 'lead-{id}'
+    const leadId = parseInt(draggableId.split('-')[1]);
+    
+    // Extract the new stage from destination droppableId
+    const newStage = destination.droppableId;
+    
+    if (leadId && newStage) {
+      // Update the lead stage
+      onStageChange(leadId, newStage);
+    }
+  };
+  
+  // Handle drag start
+  const handleDragStart = (result: any) => {
+    // Extract leadId from draggableId format 'lead-{id}'
+    const leadId = parseInt(result.draggableId.split('-')[1]);
+    setDraggingLeadId(leadId);
   };
 
   return (
-    <DragDropContext onDragEnd={handleOnDragEnd}>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pb-6 overflow-x-auto">
-        {Object.entries(stageGroups).map(([stageName, leads]) => (
-          <StageColumn 
-            key={stageName}
-            stageName={stageName}
-            leads={leads || []} 
-            onEditLead={onEditLead}
-            onChangeStage={onChangeStage}
-            openChangeStageDialog={openChangeStageDialog}
-            onViewHistory={onViewHistory}
-            onDeleteLead={onDeleteLead}
-          />
-        ))}
-      </div>
-    </DragDropContext>
+    <div className="mt-4">
+      <DragDropContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {Object.entries(stageGroups).map(([stageName, leads]: [string, any[]]) => (
+            <Droppable droppableId={stageName} key={stageName}>
+              {(provided) => (
+                <StageColumn
+                  stageName={stageName}
+                  leads={leads}
+                  provided={provided}
+                  onViewLead={onViewLead}
+                  onEditLead={onEditLead}
+                  onChangeStage={onChangeStage}
+                  onViewHistory={onViewHistory}
+                  onDeleteLead={onDeleteLead}
+                  activeLeadId={draggingLeadId}
+                />
+              )}
+            </Droppable>
+          ))}
+        </div>
+      </DragDropContext>
+    </div>
   );
 };
 

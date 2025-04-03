@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, Users, Eye, Edit, Layers, History, AlertTriangle } from 'lucide-react';
 
 interface Lead {
   id: number;
@@ -33,6 +33,7 @@ interface Lead {
 interface LeadCardProps {
   lead: Lead;
   index: number;
+  onViewLead: (e: React.MouseEvent, leadId: number) => void;
   onEditLead: (e: React.MouseEvent, leadId: number) => void;
   onChangeStage: (e: React.MouseEvent, leadId: number) => void;
   onViewHistory: (e: React.MouseEvent, leadId: number) => void;
@@ -42,6 +43,7 @@ interface LeadCardProps {
 const LeadCard: React.FC<LeadCardProps> = ({ 
   lead, 
   index,
+  onViewLead,
   onEditLead,
   onChangeStage,
   onViewHistory,
@@ -81,6 +83,17 @@ const LeadCard: React.FC<LeadCardProps> = ({
     e.stopPropagation();
   }, []);
 
+  // Check if lead has children
+  const hasChildren = lead.children && 
+    (typeof lead.children === 'number' && lead.children > 0) ||
+    (Array.isArray(lead.children) && lead.children.length > 0);
+  
+  const childrenCount = typeof lead.children === 'number' 
+    ? lead.children 
+    : Array.isArray(lead.children) 
+      ? lead.children.length 
+      : 0;
+
   return (
     <Draggable draggableId={`lead-${lead.id}`} index={index}>
       {(provided, snapshot) => (
@@ -95,7 +108,15 @@ const LeadCard: React.FC<LeadCardProps> = ({
         >
           <CardHeader className="px-3 py-2 pb-0">
             <div className="flex justify-between items-start">
-              <div className="font-medium line-clamp-1">{lead.name}</div>
+              <div className="font-medium line-clamp-1 flex items-center gap-1">
+                {lead.name}
+                {hasChildren && (
+                  <div className="ml-1 flex items-center text-primary" title={`${childrenCount} filho(s)`}>
+                    <Users size={14} />
+                    <span className="text-xs ml-1">{childrenCount}</span>
+                  </div>
+                )}
+              </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
@@ -118,20 +139,30 @@ const LeadCard: React.FC<LeadCardProps> = ({
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
                     className="cursor-pointer hover:bg-muted"
+                    onClick={(e) => handleAction(e, onViewLead)}
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Visualizar Lead
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="cursor-pointer hover:bg-muted"
                     onClick={(e) => handleAction(e, onEditLead)}
                   >
+                    <Edit className="h-4 w-4 mr-2" />
                     Editar Lead
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     className="cursor-pointer hover:bg-muted"
                     onClick={(e) => handleAction(e, onChangeStage)}
                   >
+                    <Layers className="h-4 w-4 mr-2" />
                     Alterar Etapa
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     className="cursor-pointer hover:bg-muted"
                     onClick={(e) => handleAction(e, onViewHistory)}
                   >
+                    <History className="h-4 w-4 mr-2" />
                     Ver Histórico
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -139,6 +170,7 @@ const LeadCard: React.FC<LeadCardProps> = ({
                     className="text-destructive cursor-pointer hover:bg-muted"
                     onClick={(e) => handleAction(e, onDeleteLead)}
                   >
+                    <AlertTriangle className="h-4 w-4 mr-2" />
                     Excluir Lead
                   </DropdownMenuItem>
                 </DropdownMenuContent>

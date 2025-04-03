@@ -3,23 +3,26 @@ import React from 'react';
 import LeadCreateDialog from '../LeadCreateDialog';
 import EditLeadDialog from '../dialogs/EditLeadDialog';
 import ChangeStageDialog from '../dialogs/ChangeStageDialog';
-import DeleteLeadDialog from '../dialogs/DeleteLeadDialog';
 import LeadHistoryDialog from '../dialogs/LeadHistoryDialog';
+import DeleteLeadDialog from '../dialogs/DeleteLeadDialog';
+import ViewLeadDialog from '../dialogs/ViewLeadDialog';
 
 interface LeadDialogsProps {
   openDialog: boolean;
-  setOpenDialog: (open: boolean) => void;
+  setOpenDialog: React.Dispatch<React.SetStateAction<boolean>>;
   selectedLead: any;
   editDialogOpen: boolean;
-  setEditDialogOpen: (open: boolean) => void;
+  setEditDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   stageDialogOpen: boolean;
-  setStageDialogOpen: (open: boolean) => void;
+  setStageDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   historyDialogOpen: boolean;
-  setHistoryDialogOpen: (open: boolean) => void;
+  setHistoryDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   deleteDialogOpen: boolean;
-  setDeleteDialogOpen: (open: boolean) => void;
-  onSaveLead: (lead: any) => void;
-  onSaveStage: (leadId: number, newStage: string, notes: string) => void;
+  setDeleteDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  viewDialogOpen: boolean;
+  setViewDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onSaveLead: (updatedLead: any) => void;
+  onSaveStage: (leadId: number, newStage: string, notes?: string) => void;
   onConfirmDelete: (leadId: number) => void;
   onLeadCreated?: (lead: any) => void;
 }
@@ -36,6 +39,8 @@ const LeadDialogs: React.FC<LeadDialogsProps> = ({
   setHistoryDialogOpen,
   deleteDialogOpen,
   setDeleteDialogOpen,
+  viewDialogOpen,
+  setViewDialogOpen,
   onSaveLead,
   onSaveStage,
   onConfirmDelete,
@@ -43,42 +48,50 @@ const LeadDialogs: React.FC<LeadDialogsProps> = ({
 }) => {
   return (
     <>
+      {/* Create Lead Dialog */}
       <LeadCreateDialog 
         open={openDialog} 
         onOpenChange={setOpenDialog}
         onLeadCreated={onLeadCreated}
       />
       
-      {selectedLead && (
-        <>
-          <EditLeadDialog 
-            open={editDialogOpen} 
-            onOpenChange={setEditDialogOpen} 
-            lead={selectedLead}
-            onSave={onSaveLead}
-          />
-          
-          <ChangeStageDialog 
-            open={stageDialogOpen} 
-            onOpenChange={setStageDialogOpen} 
-            lead={selectedLead}
-            onSave={onSaveStage}
-          />
-          
-          <DeleteLeadDialog 
-            open={deleteDialogOpen} 
-            onOpenChange={setDeleteDialogOpen} 
-            lead={selectedLead}
-            onConfirm={onConfirmDelete}
-          />
-          
-          <LeadHistoryDialog 
-            open={historyDialogOpen} 
-            onOpenChange={setHistoryDialogOpen} 
-            lead={selectedLead}
-          />
-        </>
-      )}
+      {/* View Lead Dialog */}
+      <ViewLeadDialog
+        open={viewDialogOpen}
+        onOpenChange={setViewDialogOpen}
+        lead={selectedLead}
+      />
+      
+      {/* Edit Lead Dialog */}
+      <EditLeadDialog 
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        lead={selectedLead}
+        onSave={onSaveLead}
+      />
+      
+      {/* Change Stage Dialog */}
+      <ChangeStageDialog 
+        open={stageDialogOpen}
+        onOpenChange={setStageDialogOpen}
+        lead={selectedLead}
+        onSave={onSaveStage}
+      />
+      
+      {/* Lead History Dialog */}
+      <LeadHistoryDialog 
+        open={historyDialogOpen}
+        onOpenChange={setHistoryDialogOpen}
+        lead={selectedLead}
+      />
+      
+      {/* Delete Lead Dialog */}
+      <DeleteLeadDialog 
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        lead={selectedLead}
+        onConfirmDelete={onConfirmDelete}
+      />
     </>
   );
 };

@@ -27,8 +27,11 @@ const LeadsManagement: React.FC = () => {
     setHistoryDialogOpen,
     deleteDialogOpen,
     setDeleteDialogOpen,
+    viewDialogOpen,
+    setViewDialogOpen,
     filteredLeads,
     stageGroups,
+    handleViewLead,
     handleEditLead,
     handleChangeStage,
     openChangeStageDialog,
@@ -40,7 +43,10 @@ const LeadsManagement: React.FC = () => {
     clearFilters,
     handleExportLeads,
     getLeadCounts,
-    handleLeadCreated
+    handleLeadCreated,
+    currentPage,
+    itemsPerPage,
+    handlePageChange
   } = useLeadsManagement();
   
   return (
@@ -64,12 +70,16 @@ const LeadsManagement: React.FC = () => {
         exportLeads={handleExportLeads}
         filteredLeads={filteredLeads}
         stageGroups={stageGroups}
+        onViewLead={handleViewLead}
         onEditLead={handleEditLead}
         onChangeStage={handleChangeStage}
         onViewHistory={handleViewHistory}
         onDeleteLead={handleDeleteLead}
         onStageChange={handleSaveStage}
         openChangeStageDialog={openChangeStageDialog}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
       />
       
       <LeadDialogs 
@@ -84,6 +94,8 @@ const LeadsManagement: React.FC = () => {
         setHistoryDialogOpen={setHistoryDialogOpen}
         deleteDialogOpen={deleteDialogOpen}
         setDeleteDialogOpen={setDeleteDialogOpen}
+        viewDialogOpen={viewDialogOpen}
+        setViewDialogOpen={setViewDialogOpen}
         onSaveLead={handleSaveLead}
         onSaveStage={handleSaveStage}
         onConfirmDelete={handleConfirmDelete}

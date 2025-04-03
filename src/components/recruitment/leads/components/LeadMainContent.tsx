@@ -15,12 +15,16 @@ interface LeadMainContentProps {
   exportLeads: () => void;
   filteredLeads: any[];
   stageGroups: any;
+  onViewLead: (e: React.MouseEvent, leadId: number) => void;
   onEditLead: (e: React.MouseEvent, leadId: number) => void;
   onChangeStage: (e: React.MouseEvent, leadId: number) => void;
   openChangeStageDialog?: (leadId: number) => void;
   onViewHistory: (e: React.MouseEvent, leadId: number) => void;
   onDeleteLead: (e: React.MouseEvent, leadId: number) => void;
   onStageChange: (leadId: number, newStage: string, notes?: string) => void;
+  currentPage: number;
+  itemsPerPage: number;
+  onPageChange: (page: number) => void;
 }
 
 const LeadMainContent: React.FC<LeadMainContentProps> = ({
@@ -34,14 +38,22 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
   exportLeads,
   filteredLeads,
   stageGroups,
+  onViewLead,
   onEditLead,
   onViewHistory,
   onDeleteLead,
   onStageChange,
   onChangeStage,
   openChangeStageDialog,
+  currentPage,
+  itemsPerPage,
+  onPageChange
 }) => {
   // Memoize event handlers to prevent unnecessary re-renders
+  const handleViewLead = useCallback((e: React.MouseEvent, leadId: number) => {
+    onViewLead(e, leadId);
+  }, [onViewLead]);
+
   const handleEditLead = useCallback((e: React.MouseEvent, leadId: number) => {
     onEditLead(e, leadId);
   }, [onEditLead]);
@@ -79,12 +91,16 @@ const LeadMainContent: React.FC<LeadMainContentProps> = ({
         viewMode={viewMode}
         filteredLeads={filteredLeads}
         stageGroups={stageGroups}
+        onViewLead={handleViewLead}
         onEditLead={handleEditLead}
         onChangeStage={handleChangeStage}
         onViewHistory={handleViewHistory}
         onDeleteLead={handleDeleteLead}
         onStageChange={handleStageChange}
         openChangeStageDialog={openChangeStageDialog}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        onPageChange={onPageChange}
       />
     </div>
   );
