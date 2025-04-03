@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Separator } from '@/components/ui/separator';
-import { User, Clock, Bookmark, Phone, Mail, MessageSquare } from 'lucide-react';
+import { User, Clock, Bookmark, Phone, Mail, MessageSquare, Users } from 'lucide-react';
 
 interface Child {
   name: string;
@@ -65,6 +65,17 @@ const ViewLeadDialog: React.FC<ViewLeadDialogProps> = ({ open, onOpenChange, lea
     }
   };
 
+  // Check if lead has children
+  const hasChildren = lead.children && 
+    (typeof lead.children === 'number' && lead.children > 0) ||
+    (Array.isArray(lead.children) && lead.children.length > 0);
+  
+  const childrenCount = typeof lead.children === 'number' 
+    ? lead.children 
+    : Array.isArray(lead.children) 
+      ? lead.children.length 
+      : 0;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
@@ -72,6 +83,12 @@ const ViewLeadDialog: React.FC<ViewLeadDialogProps> = ({ open, onOpenChange, lea
           <DialogTitle className="text-xl flex items-center gap-2">
             <User className="h-5 w-5" /> 
             Detalhes do Lead
+            {hasChildren && (
+              <Badge variant="outline" className="ml-2 flex items-center gap-1 bg-primary/10 text-primary">
+                <Users className="h-3 w-3" />
+                <span>{childrenCount} filho(s)</span>
+              </Badge>
+            )}
           </DialogTitle>
         </DialogHeader>
 
@@ -140,40 +157,37 @@ const ViewLeadDialog: React.FC<ViewLeadDialogProps> = ({ open, onOpenChange, lea
           </div>
 
           {/* Children */}
-          {Array.isArray(leadChildren) && leadChildren.length > 0 ? (
+          {hasChildren && (
             <div className="bg-muted/20 rounded-md p-4">
               <h3 className="font-semibold text-md mb-3 flex items-center gap-2">
-                <User className="h-4 w-4" /> Informações dos Filhos ({leadChildren.length})
+                <Users className="h-4 w-4" /> Informações dos Filhos ({childrenCount})
               </h3>
-              {leadChildren.map((child, index) => (
-                <div key={index} className="mb-3 last:mb-0 p-3 border rounded-md">
-                  <h4 className="font-medium">Filho {index + 1}</h4>
-                  <div className="grid grid-cols-3 gap-2 mt-2">
-                    <div>
-                      <div className="text-sm text-muted-foreground">Nome</div>
-                      <div>{child.name}</div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground">Idade</div>
-                      <div>{child.age}</div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground">Série</div>
-                      <div>{child.grade}</div>
+              {Array.isArray(leadChildren) && leadChildren.length > 0 ? (
+                leadChildren.map((child, index) => (
+                  <div key={index} className="mb-3 last:mb-0 p-3 border rounded-md">
+                    <h4 className="font-medium">Filho {index + 1}</h4>
+                    <div className="grid grid-cols-3 gap-2 mt-2">
+                      <div>
+                        <div className="text-sm text-muted-foreground">Nome</div>
+                        <div>{child.name}</div>
+                      </div>
+                      <div>
+                        <div className="text-sm text-muted-foreground">Idade</div>
+                        <div>{child.age}</div>
+                      </div>
+                      <div>
+                        <div className="text-sm text-muted-foreground">Série</div>
+                        <div>{child.grade}</div>
+                      </div>
                     </div>
                   </div>
+                ))
+              ) : (
+                <div className="text-center p-3 bg-muted/30 rounded-md">
+                  <p className="text-sm">Este lead possui {childrenCount} filho(s) registrado(s), mas os detalhes não estão disponíveis.</p>
                 </div>
-              ))}
+              )}
             </div>
-          ) : (
-            lead.children && typeof lead.children === 'number' && lead.children > 0 ? (
-              <div className="bg-muted/20 rounded-md p-4">
-                <h3 className="font-semibold text-md mb-1 flex items-center gap-2">
-                  <User className="h-4 w-4" /> Filhos
-                </h3>
-                <p className="text-sm">Este lead possui {lead.children} filho(s) registrado(s), mas os detalhes não estão disponíveis.</p>
-              </div>
-            ) : null
           )}
 
           {/* Observations/Notes */}
