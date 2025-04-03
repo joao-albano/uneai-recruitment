@@ -57,8 +57,8 @@ const RecruitmentAlertsList: React.FC = () => {
       </div>
       
       <AlertSearch 
-        value={searchTerm} 
-        onChange={setSearchTerm} 
+        searchTerm={searchTerm} 
+        setSearchTerm={setSearchTerm} 
       />
       
       <AlertTabs 
@@ -70,6 +70,7 @@ const RecruitmentAlertsList: React.FC = () => {
         onViewDetails={handleViewDetails}
         onScheduleMeeting={handleScheduleMeeting}
         onMarkAsResolved={markAlertActionTaken}
+        searchTerm={searchTerm}
       />
     </div>
   );
