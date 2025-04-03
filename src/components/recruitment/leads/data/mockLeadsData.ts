@@ -1,3 +1,4 @@
+
 import { format, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -294,6 +295,13 @@ export const mockLeadHistory = {
       action: 'Contato',
       user: 'Ana Atendimento',
       notes: 'Primeiro contato realizado por telefone. Cliente interessado em conhecer mais sobre o programa bilíngue.'
+    },
+    { 
+      id: 103, 
+      date: format(subDays(new Date(), 1), 'dd/MM/yyyy HH:mm'),
+      action: 'Interação',
+      user: 'Ana Atendimento',
+      notes: 'Cliente solicitou informações detalhadas sobre valores e período integral.'
     }
   ],
   2: [
@@ -317,6 +325,13 @@ export const mockLeadHistory = {
       action: 'Agendamento',
       user: 'Marcelo Secretaria',
       notes: 'Agendamento de visita para o dia 15/07/2024 às 14h30.'
+    },
+    { 
+      id: 204, 
+      date: format(subDays(new Date(), 0), 'dd/MM/yyyy HH:mm'),
+      action: 'Matrícula',
+      user: 'Juliana Matrícula',
+      notes: 'Finalização da matrícula realizada com sucesso. Documentação completa recebida.'
     }
   ],
   3: [
@@ -349,7 +364,361 @@ export const mockLeadHistory = {
       notes: 'Cliente visitou a escola e demonstrou grande interesse no laboratório de ciências.'
     }
   ],
-  // Mais históricos para outros leads podem ser adicionados conforme necessário
+  4: [
+    {
+      id: 401,
+      date: format(subDays(new Date(), 15), 'dd/MM/yyyy HH:mm'),
+      action: 'Criação',
+      user: 'Carlos Admin',
+      notes: 'Lead gerado por formulário de WhatsApp'
+    },
+    {
+      id: 402,
+      date: format(subDays(new Date(), 13), 'dd/MM/yyyy HH:mm'),
+      action: 'Contato',
+      user: 'Ana Atendimento',
+      notes: 'Primeira abordagem feita com envio de catálogo de cursos'
+    },
+    {
+      id: 403,
+      date: format(subDays(new Date(), 12), 'dd/MM/yyyy HH:mm'),
+      action: 'Interação',
+      user: 'Ana Atendimento',
+      notes: 'Cliente solicitou informações sobre bolsas de estudos disponíveis'
+    },
+    {
+      id: 404,
+      date: format(subDays(new Date(), 10), 'dd/MM/yyyy HH:mm'),
+      action: 'Visita',
+      user: 'Marcelo Secretaria',
+      notes: 'Cliente visitou o campus e conheceu as instalações'
+    },
+    {
+      id: 405,
+      date: format(subDays(new Date(), 5), 'dd/MM/yyyy HH:mm'),
+      action: 'Negociação',
+      user: 'Juliana Matrícula',
+      notes: 'Oferecido desconto de 15% na mensalidade para os dois filhos'
+    },
+    {
+      id: 406,
+      date: format(subDays(new Date(), 2), 'dd/MM/yyyy HH:mm'),
+      action: 'Matrícula',
+      user: 'Juliana Matrícula',
+      notes: 'Finalização das duas matrículas com sucesso'
+    }
+  ],
+  5: [
+    {
+      id: 501,
+      date: format(subDays(new Date(), 8), 'dd/MM/yyyy HH:mm'),
+      action: 'Criação',
+      user: 'Maria Recepção',
+      notes: 'Lead criado por indicação de outro cliente'
+    },
+    {
+      id: 502,
+      date: format(subDays(new Date(), 7), 'dd/MM/yyyy HH:mm'),
+      action: 'Contato',
+      user: 'Ana Atendimento',
+      notes: 'Cliente tem interesse específico no período integral para a filha de 3 anos'
+    },
+    {
+      id: 503,
+      date: format(subDays(new Date(), 5), 'dd/MM/yyyy HH:mm'),
+      action: 'Agendamento',
+      user: 'Marcelo Secretaria',
+      notes: 'Visita agendada para conhecer as salas do maternal'
+    }
+  ],
+  6: [
+    {
+      id: 601,
+      date: format(subDays(new Date(), 6), 'dd/MM/yyyy HH:mm'),
+      action: 'Criação',
+      user: 'Carlos Admin',
+      notes: 'Lead gerado pelo site institucional'
+    },
+    {
+      id: 602,
+      date: format(subDays(new Date(), 5), 'dd/MM/yyyy HH:mm'),
+      action: 'Contato',
+      user: 'Ana Atendimento',
+      notes: 'Cliente interessado em informações sobre intercâmbio para o ensino médio'
+    },
+    {
+      id: 603,
+      date: format(subDays(new Date(), 4), 'dd/MM/yyyy HH:mm'),
+      action: 'Agendamento',
+      user: 'Marcelo Secretaria',
+      notes: 'Agendamento para reunião com coordenador do programa de intercâmbio'
+    }
+  ],
+  7: [
+    {
+      id: 701,
+      date: format(subDays(new Date(), 7), 'dd/MM/yyyy HH:mm'),
+      action: 'Criação',
+      user: 'Carlos Admin',
+      notes: 'Lead gerado por mensagem no WhatsApp'
+    },
+    {
+      id: 702,
+      date: format(subDays(new Date(), 6), 'dd/MM/yyyy HH:mm'),
+      action: 'Contato',
+      user: 'Ana Atendimento',
+      notes: 'Cliente com dúvidas sobre a metodologia de ensino para educação infantil'
+    },
+    {
+      id: 703,
+      date: format(subDays(new Date(), 3), 'dd/MM/yyyy HH:mm'),
+      action: 'Envio de Material',
+      user: 'Ana Atendimento',
+      notes: 'Enviado material detalhado sobre metodologia pedagógica e proposta pedagógica'
+    }
+  ],
+  8: [
+    {
+      id: 801,
+      date: format(subDays(new Date(), 15), 'dd/MM/yyyy HH:mm'),
+      action: 'Criação',
+      user: 'Carlos Admin',
+      notes: 'Lead gerado por ação nas redes sociais'
+    },
+    {
+      id: 802,
+      date: format(subDays(new Date(), 14), 'dd/MM/yyyy HH:mm'),
+      action: 'Contato',
+      user: 'Ana Atendimento',
+      notes: 'Cliente com três filhos, buscando desconto por volume'
+    },
+    {
+      id: 803,
+      date: format(subDays(new Date(), 12), 'dd/MM/yyyy HH:mm'),
+      action: 'Negociação',
+      user: 'Roberto Direção',
+      notes: 'Aprovado desconto de 20% para os três filhos em função do volume'
+    },
+    {
+      id: 804,
+      date: format(subDays(new Date(), 12), 'dd/MM/yyyy HH:mm'),
+      action: 'Matrícula',
+      user: 'Juliana Matrícula',
+      notes: 'Documentação recebida e matrículas finalizadas com sucesso'
+    }
+  ],
+  9: [
+    {
+      id: 901,
+      date: format(subDays(new Date(), 2), 'dd/MM/yyyy HH:mm'),
+      action: 'Criação',
+      user: 'Carlos Admin',
+      notes: 'Lead gerado por busca orgânica no Google'
+    },
+    {
+      id: 902,
+      date: format(subDays(new Date(), 1), 'dd/MM/yyyy HH:mm'),
+      action: 'Contato Inicial',
+      user: 'Ana Atendimento',
+      notes: 'Primeira abordagem feita. Cliente solicitou informações sobre bolsas de estudo disponíveis.'
+    }
+  ],
+  10: [
+    {
+      id: 1001,
+      date: format(subDays(new Date(), 5), 'dd/MM/yyyy HH:mm'),
+      action: 'Criação',
+      user: 'Carlos Admin',
+      notes: 'Lead gerado por anúncio no Instagram'
+    },
+    {
+      id: 1002,
+      date: format(subDays(new Date(), 4), 'dd/MM/yyyy HH:mm'),
+      action: 'Contato',
+      user: 'Ana Atendimento',
+      notes: 'Cliente interessado em cursos na área de exatas'
+    },
+    {
+      id: 1003,
+      date: format(subDays(new Date(), 3), 'dd/MM/yyyy HH:mm'),
+      action: 'Agendamento',
+      user: 'Marcelo Secretaria',
+      notes: 'Agendada visita para conhecer laboratórios de física e química'
+    }
+  ],
+  11: [
+    {
+      id: 1101,
+      date: format(subDays(new Date(), 6), 'dd/MM/yyyy HH:mm'),
+      action: 'Criação',
+      user: 'Maria Recepção',
+      notes: 'Lead criado por indicação de outro cliente'
+    },
+    {
+      id: 1102,
+      date: format(subDays(new Date(), 5), 'dd/MM/yyyy HH:mm'),
+      action: 'Contato',
+      user: 'Ana Atendimento',
+      notes: 'Cliente interessado em vagas para dois filhos pequenos'
+    },
+    {
+      id: 1103,
+      date: format(subDays(new Date(), 4), 'dd/MM/yyyy HH:mm'),
+      action: 'Visita',
+      user: 'Roberto Direção',
+      notes: 'Cliente visitou a escola e ficou impressionado com a estrutura'
+    },
+    {
+      id: 1104,
+      date: format(subDays(new Date(), 2), 'dd/MM/yyyy HH:mm'),
+      action: 'Segundo Contato',
+      user: 'Ana Atendimento',
+      notes: 'Follow-up após visita. Cliente ainda comparando com outras escolas.'
+    }
+  ],
+  12: [
+    {
+      id: 1201,
+      date: format(subDays(new Date(), 18), 'dd/MM/yyyy HH:mm'),
+      action: 'Criação',
+      user: 'Carlos Admin',
+      notes: 'Lead gerado pelo formulário do site'
+    },
+    {
+      id: 1202,
+      date: format(subDays(new Date(), 17), 'dd/MM/yyyy HH:mm'),
+      action: 'Contato',
+      user: 'Ana Atendimento',
+      notes: 'Cliente interessado em informações sobre transporte escolar'
+    },
+    {
+      id: 1203,
+      date: format(subDays(new Date(), 16), 'dd/MM/yyyy HH:mm'),
+      action: 'Interação',
+      user: 'Marcelo Secretaria',
+      notes: 'Enviado rotas e valores do transporte escolar'
+    },
+    {
+      id: 1204,
+      date: format(subDays(new Date(), 15), 'dd/MM/yyyy HH:mm'),
+      action: 'Matrícula',
+      user: 'Juliana Matrícula',
+      notes: 'Matrícula finalizada incluindo serviço de transporte escolar'
+    }
+  ],
+  13: [
+    {
+      id: 1301,
+      date: format(subDays(new Date(), 1), 'dd/MM/yyyy HH:mm'),
+      action: 'Criação',
+      user: 'Thiago Atendimento',
+      notes: 'Lead gerado após contato via WhatsApp'
+    },
+    {
+      id: 1302,
+      date: format(subDays(new Date(), 0), 'dd/MM/yyyy HH:mm'),
+      action: 'Contato',
+      user: 'Ana Atendimento',
+      notes: 'Cliente interessado específicamente em preparação para vestibular'
+    }
+  ],
+  14: [
+    {
+      id: 1401,
+      date: format(subDays(new Date(), 3), 'dd/MM/yyyy HH:mm'),
+      action: 'Criação',
+      user: 'Carlos Admin',
+      notes: 'Lead gerado por ação promocional no Facebook'
+    },
+    {
+      id: 1402,
+      date: format(subDays(new Date(), 2), 'dd/MM/yyyy HH:mm'),
+      action: 'Contato',
+      user: 'Ana Atendimento',
+      notes: 'Cliente possui criança com necessidades especiais e busca informações sobre acessibilidade'
+    },
+    {
+      id: 1403,
+      date: format(subDays(new Date(), 1), 'dd/MM/yyyy HH:mm'),
+      action: 'Interação',
+      user: 'Ana Atendimento',
+      notes: 'Enviadas informações detalhadas sobre acessibilidade e suporte para necessidades especiais'
+    },
+    {
+      id: 1404,
+      date: format(subDays(new Date(), 0), 'dd/MM/yyyy HH:mm'),
+      action: 'Agendamento',
+      user: 'Marcelo Secretaria',
+      notes: 'Agendada visita com coordenador pedagógico especializado em inclusão'
+    }
+  ],
+  15: [
+    {
+      id: 1501,
+      date: format(subDays(new Date(), 7), 'dd/MM/yyyy HH:mm'),
+      action: 'Criação',
+      user: 'Carlos Admin',
+      notes: 'Lead gerado por postagem orgânica no Instagram'
+    },
+    {
+      id: 1502,
+      date: format(subDays(new Date(), 6), 'dd/MM/yyyy HH:mm'),
+      action: 'Contato',
+      user: 'Ana Atendimento',
+      notes: 'Cliente com três filhos está comparando escolas da região'
+    },
+    {
+      id: 1503,
+      date: format(subDays(new Date(), 3), 'dd/MM/yyyy HH:mm'),
+      action: 'Visita',
+      user: 'Roberto Direção',
+      notes: 'Família visitou escola no sábado e conheceu todas as instalações'
+    },
+    {
+      id: 1504,
+      date: format(subDays(new Date(), 1), 'dd/MM/yyyy HH:mm'),
+      action: 'Segundo Contato',
+      user: 'Ana Atendimento',
+      notes: 'Follow-up após visita. Família solicitou proposta comercial com possíveis descontos.'
+    }
+  ],
+  16: [
+    {
+      id: 1601,
+      date: format(subDays(new Date(), 25), 'dd/MM/yyyy HH:mm'),
+      action: 'Criação',
+      user: 'Carlos Admin',
+      notes: 'Lead gerado pelo formulário do site'
+    },
+    {
+      id: 1602,
+      date: format(subDays(new Date(), 24), 'dd/MM/yyyy HH:mm'),
+      action: 'Contato',
+      user: 'Ana Atendimento',
+      notes: 'Cliente interessado no programa de intercâmbio para ensino médio'
+    },
+    {
+      id: 1603,
+      date: format(subDays(new Date(), 22), 'dd/MM/yyyy HH:mm'),
+      action: 'Reunião',
+      user: 'Paulo Coordenação',
+      notes: 'Reunião com coordenador do programa de intercâmbio para esclarecer detalhes'
+    },
+    {
+      id: 1604,
+      date: format(subDays(new Date(), 21), 'dd/MM/yyyy HH:mm'),
+      action: 'Matrícula',
+      user: 'Juliana Matrícula',
+      notes: 'Matrícula finalizada com inclusão no programa de intercâmbio'
+    },
+    {
+      id: 1605,
+      date: format(subDays(new Date(), 20), 'dd/MM/yyyy HH:mm'),
+      action: 'Pagamento',
+      user: 'Financeiro',
+      notes: 'Confirmação do pagamento da primeira mensalidade recebido'
+    }
+  ]
 };
 
 // Function to group leads by stage
