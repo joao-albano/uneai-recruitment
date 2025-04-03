@@ -37,8 +37,10 @@ export const useAlertsManagement = () => {
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(10, 0, 0, 0);
     
+    const scheduleId = `schedule-${Date.now()}`;
+    
     addSchedule({
-      id: `schedule-${Date.now()}`,
+      id: scheduleId,
       studentId: leadId,
       studentName: leadName,
       date: tomorrow,
@@ -49,16 +51,30 @@ export const useAlertsManagement = () => {
     
     markAlertActionTaken(alertId);
     
-    toast({
-      title: 'Atendimento agendado',
-      description: `Agendado para ${tomorrow.toLocaleDateString()} às ${tomorrow.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`
-    });
+    // Navegação opcional para a página de agendamento
+    if (confirm('Deseja visualizar o agendamento criado na página de Agenda?')) {
+      navigate('/schedule?id=' + scheduleId);
+    }
   };
   
   const handleViewDetails = (alertId: string) => {
     markAlertAsRead(alertId);
+    
+    // Para o módulo de recrutamento, navegamos para a página de detalhes específica
     if (currentProduct === 'recruitment') {
-      navigate(`/recruitment/alerts?id=${alertId}`);
+      // Verifica se o alerta existe antes de navegar
+      const alertToView = alerts.find(a => a.id === alertId);
+      
+      if (alertToView && alertToView.studentId) {
+        // Se o alerta estiver relacionado a um lead, redirecionar para os detalhes do lead
+        navigate(`/recruitment/leads?view=${alertToView.studentId}`);
+      } else {
+        // Caso não tenha um lead específico, apenas marcar como lido
+        toast({
+          title: "Alerta visualizado",
+          description: "Este alerta foi marcado como lido."
+        });
+      }
     } else {
       navigate(`/students?alertId=${alertId}`);
     }

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar, Check, Eye } from 'lucide-react';
 import AlertIcon, { getAlertBgColor } from '@/components/alerts/AlertIcon';
 import { getAlertTitle, getDefaultAlertMessage } from '../utils/alertUtils';
+import { useToast } from '@/hooks/use-toast';
 
 interface AlertCardProps {
   alert: Alert;
@@ -21,6 +22,34 @@ const AlertCard: React.FC<AlertCardProps> = ({
   onScheduleMeeting,
   onMarkAsResolved
 }) => {
+  const { toast } = useToast();
+  
+  const handleViewDetails = () => {
+    onViewDetails(alert.id);
+    toast({
+      title: "Visualizando detalhes",
+      description: `Detalhes do alerta para ${alert.studentName}`,
+    });
+  };
+  
+  const handleScheduleMeeting = () => {
+    if (alert.studentId) {
+      onScheduleMeeting(alert.id, alert.studentId, alert.studentName);
+      toast({
+        title: "Agendamento criado",
+        description: "Um novo atendimento foi agendado. Acesse a página de Agenda para visualizar.",
+      });
+    }
+  };
+  
+  const handleResolve = () => {
+    onMarkAsResolved(alert.id);
+    toast({
+      title: "Alerta resolvido",
+      description: "Este alerta foi marcado como resolvido e não aparecerá mais como pendente.",
+    });
+  };
+  
   return (
     <Card className={`${!alert.read ? 'border-l-4 border-l-primary' : ''}`}>
       <CardHeader className="pb-2">
@@ -58,7 +87,7 @@ const AlertCard: React.FC<AlertCardProps> = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onViewDetails(alert.id)}
+              onClick={handleViewDetails}
             >
               <Eye className="mr-1 h-4 w-4" /> Detalhes
             </Button>
@@ -70,7 +99,7 @@ const AlertCard: React.FC<AlertCardProps> = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => onScheduleMeeting(alert.id, alert.studentId, alert.studentName)}
+                    onClick={handleScheduleMeeting}
                   >
                     <Calendar className="mr-1 h-4 w-4" /> Agendar
                   </Button>
@@ -78,7 +107,7 @@ const AlertCard: React.FC<AlertCardProps> = ({
                 <Button
                   variant="default"
                   size="sm"
-                  onClick={() => onMarkAsResolved(alert.id)}
+                  onClick={handleResolve}
                 >
                   <Check className="mr-1 h-4 w-4" /> Resolver
                 </Button>
