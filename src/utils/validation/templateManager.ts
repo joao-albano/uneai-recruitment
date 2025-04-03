@@ -2,7 +2,7 @@
 import { getTemplateColumns } from './templateFormat';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
-export type { ProductType, InstitutionType } from './headerTypes';
+import { ProductType, InstitutionType, ColumnDefinition } from './headerTypes';
 
 // Function to generate template Excel file based on product and institution type
 export const generateExcelTemplate = (productType: ProductType, institutionType: InstitutionType) => {
@@ -35,4 +35,10 @@ export const downloadTemplate = (productType: ProductType = 'retention', institu
 // Function to get template format - used for documentation/display
 export const getTemplateFormat = (productType: ProductType = 'retention', institutionType: InstitutionType = 'school') => {
   return getTemplateColumns(productType, institutionType);
+};
+
+// Function to get key fields based on product and institution type
+export const getKeyFields = (productType: ProductType, institutionType: InstitutionType): ColumnDefinition[] => {
+  const allColumns = getTemplateColumns(productType, institutionType);
+  return allColumns.filter(column => column.isKeyField === true);
 };
