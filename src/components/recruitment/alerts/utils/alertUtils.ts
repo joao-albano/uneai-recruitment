@@ -1,4 +1,3 @@
-
 import { Alert } from '@/types/alert';
 
 export const getAlertTitle = (alert: Alert): string => {
@@ -21,6 +20,12 @@ export const getAlertTitle = (alert: Alert): string => {
       return 'Informação importante';
     case 'error':
       return 'Erro do sistema';
+    case 'survey-requested':
+      return `Pesquisa solicitada: ${alert.studentName}`;
+    case 'meeting-scheduled':
+      return `Reunião agendada: ${alert.studentName}`;
+    case 'appointment-reminder':
+      return `Lembrete de compromisso: ${alert.studentName}`;
     default:
       return alert.studentName || 'Alerta do sistema';
   }
@@ -43,20 +48,24 @@ export const getDefaultAlertMessage = (alert: Alert): string => {
     case 'low-risk':
       return `${alert.studentName} apresenta indicadores que merecem acompanhamento`;
     case 'info':
-      return 'Informação relevante para o processo de captação';
+      return 'Informação relevante para o processo';
     case 'error':
       return 'Ocorreu um erro no sistema que requer atenção';
+    case 'survey-requested':
+      return `Uma nova pesquisa foi solicitada para ${alert.studentName}`;
+    case 'meeting-scheduled':
+      return `Uma reunião foi agendada com ${alert.studentName}`;
+    case 'appointment-reminder':
+      return `Lembrete de compromisso com ${alert.studentName}`;
     default:
       return 'Alerta do sistema';
   }
 };
 
 export const filterRecruitmentAlerts = (alerts: Alert[], searchTerm: string) => {
-  // Filter alerts relevant to recruitment
   const recruitmentAlertTypes = ['lead-opportunity', 'stage-change', 'campaign-performance', 'lead-assigned'];
   
   return alerts.filter(alert => {
-    // Include alerts of recruitment specific types or general alerts like 'info' or 'error'
     const isRecruitmentAlert = 
       recruitmentAlertTypes.includes(alert.type) || 
       ['info', 'error'].includes(alert.type);
@@ -66,5 +75,21 @@ export const filterRecruitmentAlerts = (alerts: Alert[], searchTerm: string) => 
       (alert.message && alert.message.toLowerCase().includes(searchTerm.toLowerCase()));
     
     return isRecruitmentAlert && matchesSearch;
+  });
+};
+
+export const filterRetentionAlerts = (alerts: Alert[], searchTerm: string) => {
+  const retentionAlertTypes = ['high-risk', 'medium-risk', 'low-risk', 'survey-requested', 'meeting-scheduled', 'appointment-reminder'];
+  
+  return alerts.filter(alert => {
+    const isRetentionAlert = 
+      retentionAlertTypes.includes(alert.type) || 
+      ['info', 'error'].includes(alert.type);
+    
+    const matchesSearch = 
+      (alert.studentName && alert.studentName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (alert.message && alert.message.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    return isRetentionAlert && matchesSearch;
   });
 };

@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useData } from '@/context/DataContext';
-import { filterRecruitmentAlerts } from '../utils/alertUtils';
+import { filterRecruitmentAlerts, filterRetentionAlerts } from '../utils/alertUtils';
 import { Alert } from '@/types/alert';
+import { useProduct } from '@/context/ProductContext';
 
 export const useAlertsManagement = () => {
   const { alerts, markAlertAsRead, markAlertActionTaken, addSchedule, generateDemoData } = useData();
@@ -12,17 +13,20 @@ export const useAlertsManagement = () => {
   const [activeTab, setActiveTab] = useState('all');
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { currentProduct } = useProduct();
   
   useEffect(() => {
     // Verificar se temos alertas, caso não, gerar dados demonstrativos
     if (alerts.length === 0) {
-      console.log("Carregando dados de demonstração para a lista de alertas de recrutamento");
+      console.log(`Carregando dados de demonstração para a lista de alertas de ${currentProduct === 'recruitment' ? 'captação' : 'retenção'}`);
       generateDemoData();
     }
-  }, [alerts.length, generateDemoData]);
+  }, [alerts.length, generateDemoData, currentProduct]);
   
-  // Filter alerts based on search term
-  const filteredAlerts = filterRecruitmentAlerts(alerts, searchTerm);
+  // Filter alerts based on search term and product type
+  const filteredAlerts = currentProduct === 'recruitment' 
+    ? filterRecruitmentAlerts(alerts, searchTerm)
+    : filterRetentionAlerts(alerts, searchTerm);
   
   // Divide alerts into unread and read
   const unreadAlerts = filteredAlerts.filter(alert => !alert.read);
@@ -38,9 +42,9 @@ export const useAlertsManagement = () => {
       studentId: leadId,
       studentName: leadName,
       date: tomorrow,
-      agentName: 'Coord. Renata',
+      agentName: currentProduct === 'recruitment' ? 'Coord. Renata' : 'Prof. Carlos',
       status: 'scheduled',
-      notes: 'Acompanhamento de lead potencial'
+      notes: currentProduct === 'recruitment' ? 'Acompanhamento de lead potencial' : 'Acompanhamento de aluno em risco'
     });
     
     markAlertActionTaken(alertId);
@@ -53,7 +57,11 @@ export const useAlertsManagement = () => {
   
   const handleViewDetails = (alertId: string) => {
     markAlertAsRead(alertId);
-    navigate(`/recruitment/alerts?id=${alertId}`);
+    if (currentProduct === 'recruitment') {
+      navigate(`/recruitment/alerts?id=${alertId}`);
+    } else {
+      navigate(`/students?alertId=${alertId}`);
+    }
   };
 
   return {

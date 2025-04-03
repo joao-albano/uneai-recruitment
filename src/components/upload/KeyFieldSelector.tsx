@@ -11,15 +11,15 @@ interface KeyFieldSelectorProps {
   institutionType: InstitutionType;
   value: string;
   onChange: (value: string) => void;
+  currentProduct?: string; // Add currentProduct prop
 }
 
 const KeyFieldSelector: React.FC<KeyFieldSelectorProps> = ({
   institutionType,
   value,
-  onChange
+  onChange,
+  currentProduct
 }) => {
-  const { currentProduct } = useProduct();
-  
   // Get available key fields for this product and institution type
   const keyFields = getKeyFields(
     currentProduct === 'recruitment' ? 'recruitment' : 'retention',
@@ -41,8 +41,8 @@ const KeyFieldSelector: React.FC<KeyFieldSelectorProps> = ({
     return null;
   }
 
-  // For schools, RA is required and should be the only key field
-  if (institutionType === 'school' && currentProduct === 'recruitment') {
+  // For retention product or for schools in recruitment product, RA is required
+  if (currentProduct === 'retention' || (institutionType === 'school' && currentProduct === 'recruitment')) {
     return (
       <div className="mb-4">
         <div className="text-sm font-medium mb-2 flex items-center gap-1.5">
@@ -58,13 +58,23 @@ const KeyFieldSelector: React.FC<KeyFieldSelectorProps> = ({
           </SelectContent>
         </Select>
         <p className="mt-1 text-xs text-muted-foreground">
-          Para educação básica, o campo RA (número de matrícula) é obrigatoriamente usado como chave única.
+          {currentProduct === 'retention' ? 
+            'Para o módulo de retenção, o campo RA (número de matrícula) é obrigatoriamente usado como chave única.' :
+            'Para educação básica, o campo RA (número de matrícula) é obrigatoriamente usado como chave única.'
+          }
         </p>
+        {currentProduct === 'retention' && (
+          <Alert variant="default" className="mt-2 py-2 border-amber-200 bg-amber-50">
+            <AlertDescription className="text-xs text-amber-700">
+              A importação mensal usa o RA como base para decidir se atualiza um registro existente ou cria um novo.
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
     );
   }
 
-  // For universities, allow selection between CPF and email
+  // For universities in recruitment product, allow selection between CPF and email
   return (
     <div className="mb-4">
       <div className="text-sm font-medium mb-2 flex items-center gap-1.5">

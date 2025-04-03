@@ -1,7 +1,8 @@
+
 import { StudentData, UploadRecord } from '@/types/data';
 import { parseCSV, parseExcel } from '@/utils/validation';
 import { ValidationError } from '@/utils/validation/types';
-import { mergeStudentsMonthly } from './mergeUtils';
+import { mergeStudentsMonthly, mergeRecruitmentLeads } from './mergeUtils';
 import { processStudentData } from '@/utils/riskCalculator';
 
 interface ProcessFileResult {
@@ -15,7 +16,9 @@ interface ProcessFileResult {
 export async function processFile(
   file: File,
   addUploadRecord: (record: Omit<UploadRecord, 'id'>) => void,
-  currentStudents: StudentData[]
+  currentStudents: StudentData[],
+  productType: 'recruitment' | 'retention' = 'retention',
+  keyField: string = 'registrationNumber'
 ): Promise<ProcessFileResult> {
   // Process the file based on its type
   const fileType = file.name.split('.').pop()?.toLowerCase();
@@ -25,10 +28,10 @@ export async function processFile(
     if (fileType === 'csv') {
       // Process CSV file
       const text = await file.text();
-      result = await parseCSV(text);
+      result = await parseCSV(text, productType);
     } else {
       // Process Excel file
-      result = await parseExcel(file);
+      result = await parseExcel(file, productType);
     }
     
     // Check for validation errors
@@ -54,11 +57,24 @@ export async function processFile(
     
     // Process data if valid
     if (result.data.length > 0) {
-      // Implement the monthly merge control logic
-      const { mergedStudents, updatedCount, newCount } = mergeStudentsMonthly(
-        result.data, 
-        currentStudents
-      );
+      // Use different merge logic based on product type
+      let mergedStudents: StudentData[];
+      let updatedCount: number;
+      let newCount: number;
+      
+      if (productType === 'retention') {
+        // For retention - use monthly merge control logic
+        const mergeResult = mergeStudentsMonthly(result.data, currentStudents);
+        mergedStudents = mergeResult.mergedStudents;
+        updatedCount = mergeResult.updatedCount;
+        newCount = mergeResult.newCount;
+      } else {
+        // For recruitment - use key-based merge without monthly tracking
+        const mergeResult = mergeRecruitmentLeads(result.data, currentStudents, keyField);
+        mergedStudents = mergeResult.mergedLeads;
+        updatedCount = mergeResult.updatedCount;
+        newCount = mergeResult.newCount;
+      }
       
       // Generate behavior scores randomly for the imported students (only for new students)
       const dataWithBehavior = mergedStudents.map(student => {

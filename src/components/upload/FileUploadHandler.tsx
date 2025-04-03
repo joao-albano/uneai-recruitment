@@ -1,8 +1,10 @@
+
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useData } from '@/context/DataContext';
 import { processFile, generateAlertsFromStudents } from './FileProcessor';
 import { ValidationError } from '@/utils/validation/types';
+import { useProduct } from '@/context/ProductContext';
 
 interface FileUploadHandlerProps {
   children: (props: {
@@ -29,6 +31,7 @@ const FileUploadHandler: React.FC<FileUploadHandlerProps> = ({ children }) => {
   
   const { toast } = useToast();
   const { students, setStudents, addAlert, addUploadRecord } = useData();
+  const { currentProduct } = useProduct();
   
   const resetUpload = () => {
     setFile(null);
@@ -73,7 +76,13 @@ const FileUploadHandler: React.FC<FileUploadHandlerProps> = ({ children }) => {
     setIsProcessing(true);
     
     try {
-      const result = await processFile(file, addUploadRecord, students);
+      // Determine product type based on context
+      const productType = currentProduct === 'recruitment' ? 'recruitment' : 'retention';
+      
+      // Get key field (for recruitment with university type)
+      const keyField = 'registrationNumber'; // Default to RA for all retention cases
+      
+      const result = await processFile(file, addUploadRecord, students, productType, keyField);
       
       if (result.errors && result.errors.length > 0) {
         setValidationErrors(result.errors);

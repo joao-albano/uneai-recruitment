@@ -29,7 +29,7 @@ export function mergeStudentsMonthly(
     );
     
     if (existingIndex >= 0) {
-      // Update existing student data
+      // Update existing student data for the current month
       mergedStudents[existingIndex] = { 
         ...mergedStudents[existingIndex], 
         ...newStudent,
@@ -44,4 +44,42 @@ export function mergeStudentsMonthly(
   }
   
   return { mergedStudents, updatedCount, newCount };
+}
+
+/**
+ * Special merge function for recruitment leads that doesn't use monthly tracking
+ */
+export function mergeRecruitmentLeads(
+  newLeads: StudentData[],
+  existingLeads: StudentData[],
+  keyField: string = 'registrationNumber'
+): { mergedLeads: StudentData[], updatedCount: number, newCount: number } {
+  let updatedCount = 0;
+  let newCount = 0;
+  
+  const mergedLeads = [...existingLeads];
+  
+  // Process each new lead
+  for (const newLead of newLeads) {
+    // For recruitment, we simply check if the key field already exists
+    const existingIndex = mergedLeads.findIndex(
+      lead => lead[keyField as keyof StudentData] === newLead[keyField as keyof StudentData]
+    );
+    
+    if (existingIndex >= 0) {
+      // Update existing lead data
+      mergedLeads[existingIndex] = { 
+        ...mergedLeads[existingIndex], 
+        ...newLead,
+        id: mergedLeads[existingIndex].id // Keep the original ID
+      };
+      updatedCount++;
+    } else {
+      // Add as a new lead
+      mergedLeads.push(newLead);
+      newCount++;
+    }
+  }
+  
+  return { mergedLeads: mergedLeads, updatedCount, newCount };
 }

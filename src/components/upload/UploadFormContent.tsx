@@ -20,10 +20,13 @@ const UploadFormContent: React.FC = () => {
   const [institutionType, setInstitutionType] = useState<InstitutionType>('school');
   const [keyField, setKeyField] = useState<string>('');
   const { currentProduct } = useProduct();
-  
-  // Set default key field based on institution type
+
+  // For retention product, always set to school type and force RA as key
   useEffect(() => {
-    if (institutionType === 'school' && currentProduct === 'recruitment') {
+    if (currentProduct === 'retention') {
+      setInstitutionType('school');
+      setKeyField('ra');
+    } else if (institutionType === 'school' && currentProduct === 'recruitment') {
       setKeyField('ra');
     } else if (keyField === 'ra' && institutionType === 'university') {
       setKeyField(''); // Reset if we had 'ra' selected but switched to university
@@ -68,7 +71,9 @@ const UploadFormContent: React.FC = () => {
   
   // Determine if we can proceed based on key field selection
   const isKeyFieldValid = () => {
-    if (institutionType === 'school') {
+    if (currentProduct === 'retention') {
+      return keyField === 'ra'; // RA is always required for retention
+    } else if (institutionType === 'school') {
       return keyField === 'ra'; // RA is required for schools
     } else {
       return keyField === 'email' || keyField === 'cpf'; // Email or CPF for universities
@@ -114,17 +119,20 @@ const UploadFormContent: React.FC = () => {
                 </Alert>
               )}
               
-              {/* Tipo de instituição */}
-              <InstitutionTypeSelector 
-                value={institutionType} 
-                onChange={setInstitutionType} 
-              />
+              {/* Tipo de instituição - apenas exibido para recrutamento */}
+              {currentProduct === 'recruitment' && (
+                <InstitutionTypeSelector 
+                  value={institutionType} 
+                  onChange={setInstitutionType} 
+                />
+              )}
               
-              {/* Campo chave */}
+              {/* Campo chave - customizado por produto */}
               <KeyFieldSelector 
                 institutionType={institutionType}
                 value={keyField}
-                onChange={setKeyField} 
+                onChange={setKeyField}
+                currentProduct={currentProduct}
               />
               
               <div className="flex flex-wrap gap-2">
@@ -148,19 +156,24 @@ const UploadFormContent: React.FC = () => {
                 </Button>
               </div>
               
-              {showColumnInfo && <ColumnInfoTable institutionType={institutionType} />}
+              {showColumnInfo && <ColumnInfoTable 
+                institutionType={institutionType} 
+                currentProduct={currentProduct}
+              />}
               
               <Alert variant="default" className="bg-blue-50 border-blue-200 my-2">
                 <InfoIcon className="h-4 w-4 text-blue-600" />
                 <AlertTitle className="text-blue-800">
                   {currentProduct === 'recruitment' 
                     ? 'Importação de Leads' 
-                    : 'Controle de dados'}
+                    : 'Controle de dados de alunos'}
                 </AlertTitle>
                 <AlertDescription className="text-blue-700">
-                  {institutionType === 'school' 
-                    ? `Para educação básica, o RA (número de matrícula) é obrigatório e será usado como chave única para evitar duplicações.`
-                    : `Para ensino superior, ${keyField ? `o campo "${keyField}"` : "um campo entre CPF e Email"} será usado como chave única para evitar duplicações.`}
+                  {currentProduct === 'retention' 
+                    ? `Para retenção escolar, o RA (número de matrícula) é obrigatório e será usado como chave única para controle mensal das importações.`
+                    : institutionType === 'school' 
+                      ? `Para educação básica, o RA (número de matrícula) é obrigatório e será usado como chave única para evitar duplicações.`
+                      : `Para ensino superior, ${keyField ? `o campo "${keyField}"` : "um campo entre CPF e Email"} será usado como chave única para evitar duplicações.`}
                 </AlertDescription>
               </Alert>
               
