@@ -37,9 +37,9 @@ const ScheduleDialogs: React.FC<ScheduleDialogsProps> = ({
   productContext
 }) => {
   // Function to handle schedule status changes
-  const handleStatusChange = () => {
-    // This is just a placeholder function to satisfy the type requirement
-    console.log("Status changed");
+  const handleStatusChange = (id: string, status: 'scheduled' | 'completed' | 'canceled') => {
+    // Update the status in context
+    console.log(`Changing status for ${id} to ${status}`);
   };
   
   // Mock messages for reminders history

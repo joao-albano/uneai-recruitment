@@ -18,7 +18,37 @@ export const useScheduleOperations = () => {
     const agentName = formData.get('agentName') as string || userEmail;
     const productContext = formData.get('productContext') as ProductType | null;
     
+    // Get education type specific fields
+    const educationType = formData.get('educationType') as 'basic' | 'higher' | null;
+    const parentName = formData.get('parentName') as string | null;
+    const parentPhone = formData.get('parentPhone') as string | null;
+    const studentPhone = formData.get('studentPhone') as string | null;
+    const studentEmail = formData.get('studentEmail') as string | null;
+    const course = formData.get('course') as string | null;
+    
+    // Validate required fields
     if (!studentId || !date || !time) return false;
+    
+    // Validate education type specific required fields
+    if (productContext === 'recruitment' && educationType === 'basic') {
+      if (!parentName || !parentPhone) {
+        toast({
+          title: 'Dados incompletos',
+          description: 'Para educação básica, o nome e telefone do responsável são obrigatórios.',
+          variant: 'destructive'
+        });
+        return false;
+      }
+    } else if (productContext === 'recruitment' && educationType === 'higher') {
+      if (!studentPhone || !studentEmail || !course) {
+        toast({
+          title: 'Dados incompletos',
+          description: 'Para ensino superior, telefone, email e curso de interesse são obrigatórios.',
+          variant: 'destructive'
+        });
+        return false;
+      }
+    }
     
     const [year, month, day] = date.split('-').map(Number);
     const [hours, minutes] = time.split(':').map(Number);
@@ -41,7 +71,15 @@ export const useScheduleOperations = () => {
       agentName: agentName || defaultAgentName,
       status: 'scheduled',
       notes,
-      productContext
+      productContext,
+      
+      // Add education type specific fields
+      educationType,
+      ...(parentName && { parentName }),
+      ...(parentPhone && { parentPhone }),
+      ...(studentPhone && { studentPhone }),
+      ...(studentEmail && { studentEmail }),
+      ...(course && { course })
     };
     
     addSchedule(newSchedule);

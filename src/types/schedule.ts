@@ -10,6 +10,14 @@ export interface Schedule {
   status: 'scheduled' | 'completed' | 'canceled';
   notes?: string;
   productContext?: ProductType;
+  
+  // Additional fields for education context
+  educationType?: 'basic' | 'higher';
+  parentName?: string;
+  parentPhone?: string;
+  studentPhone?: string;
+  studentEmail?: string;
+  course?: string;
 }
 
 export interface FormattedScheduleData {

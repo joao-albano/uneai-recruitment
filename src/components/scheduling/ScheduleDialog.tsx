@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useScheduleOperations } from '@/hooks/schedule/useScheduleOperations';
 import { ProductType } from '@/context/product/types';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 interface ScheduleDialogProps {
   open: boolean;
@@ -27,8 +28,33 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
   const [scheduleTime, setScheduleTime] = useState('');
   const [notes, setNotes] = useState('');
   const [agentName, setAgentName] = useState('');
+  const [educationType, setEducationType] = useState<'basic' | 'higher'>('basic');
+  
+  // Additional fields for different education types
+  const [parentName, setParentName] = useState('');
+  const [parentPhone, setParentPhone] = useState('');
+  const [studentPhone, setStudentPhone] = useState('');
+  const [studentEmail, setStudentEmail] = useState('');
+  const [course, setCourse] = useState('');
   
   const { handleScheduleSubmit } = useScheduleOperations();
+  
+  // Reset form when dialog opens
+  useEffect(() => {
+    if (open) {
+      setSelectedStudent('');
+      setScheduleDate('');
+      setScheduleTime('');
+      setNotes('');
+      setAgentName('');
+      setParentName('');
+      setParentPhone('');
+      setStudentPhone('');
+      setStudentEmail('');
+      setCourse('');
+      setEducationType('basic');
+    }
+  }, [open]);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,15 +70,22 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
       formData.append('productContext', productContext);
     }
     
+    // Add education type specific fields
+    formData.append('educationType', educationType);
+    
+    if (educationType === 'basic') {
+      formData.append('parentName', parentName);
+      formData.append('parentPhone', parentPhone);
+    } else {
+      formData.append('studentPhone', studentPhone);
+      formData.append('studentEmail', studentEmail);
+      formData.append('course', course);
+    }
+    
     const success = handleScheduleSubmit(formData);
     
     if (success) {
       // Reset form and close dialog
-      setSelectedStudent('');
-      setScheduleDate('');
-      setScheduleTime('');
-      setNotes('');
-      setAgentName('');
       onOpenChange(false);
     }
   };
@@ -103,6 +136,26 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
               </SelectContent>
             </Select>
           </div>
+
+          {productContext === 'recruitment' && (
+            <div className="space-y-2">
+              <Label>Tipo de Instituição</Label>
+              <RadioGroup 
+                value={educationType} 
+                onValueChange={(value: 'basic' | 'higher') => setEducationType(value)}
+                className="flex space-x-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="basic" id="basic" />
+                  <Label htmlFor="basic">Educação Básica</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="higher" id="higher" />
+                  <Label htmlFor="higher">Ensino Superior (IES)</Label>
+                </div>
+              </RadioGroup>
+            </div>
+          )}
           
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -126,6 +179,72 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
               />
             </div>
           </div>
+          
+          {/* Education specific fields */}
+          {productContext === 'recruitment' && educationType === 'basic' && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="parentName">Nome do Responsável</Label>
+                <Input 
+                  id="parentName" 
+                  type="text" 
+                  placeholder="Nome completo do responsável"
+                  value={parentName} 
+                  onChange={(e) => setParentName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="parentPhone">Telefone do Responsável</Label>
+                <Input 
+                  id="parentPhone" 
+                  type="tel" 
+                  placeholder="(00) 00000-0000"
+                  value={parentPhone} 
+                  onChange={(e) => setParentPhone(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+          )}
+          
+          {productContext === 'recruitment' && educationType === 'higher' && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="studentPhone">Telefone do Aluno</Label>
+                <Input 
+                  id="studentPhone" 
+                  type="tel" 
+                  placeholder="(00) 00000-0000"
+                  value={studentPhone} 
+                  onChange={(e) => setStudentPhone(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="studentEmail">Email do Aluno</Label>
+                <Input 
+                  id="studentEmail" 
+                  type="email" 
+                  placeholder="email@exemplo.com"
+                  value={studentEmail} 
+                  onChange={(e) => setStudentEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="course">Curso de Interesse</Label>
+                <Input 
+                  id="course" 
+                  type="text" 
+                  placeholder="Ex: Administração, Direito, etc."
+                  value={course} 
+                  onChange={(e) => setCourse(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+          )}
           
           <div className="space-y-2">
             <Label htmlFor="agent">Responsável</Label>
