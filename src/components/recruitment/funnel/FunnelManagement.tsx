@@ -6,6 +6,8 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import FunnelStageEditDialog from './FunnelStageEditDialog';
 import { useToast } from '@/hooks/use-toast';
+import FunnelConfigDialog from './FunnelConfigDialog';
+import NewStageDialog from './NewStageDialog';
 
 interface FunnelStage {
   id: string;
@@ -74,8 +76,13 @@ const initialFunnelStages = [
 const FunnelManagement: React.FC = () => {
   const { toast } = useToast();
   const [funnelStages, setFunnelStages] = useState<FunnelStage[]>(initialFunnelStages);
+  
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedStage, setSelectedStage] = useState<FunnelStage | null>(null);
+  
+  const [configDialogOpen, setConfigDialogOpen] = useState(false);
+  
+  const [newStageDialogOpen, setNewStageDialogOpen] = useState(false);
 
   const handleEditClick = (stage: FunnelStage) => {
     setSelectedStage(stage);
@@ -95,6 +102,43 @@ const FunnelManagement: React.FC = () => {
     });
   };
 
+  const handleAddNewStage = (stageData: {
+    name: string;
+    description: string;
+    expectedDuration: number;
+  }) => {
+    const newStageId = String(funnelStages.length + 1);
+    const newStageOrder = funnelStages.length + 1;
+    
+    const newStage: FunnelStage = {
+      id: newStageId,
+      name: stageData.name,
+      order: newStageOrder,
+      isActive: true,
+      leadCount: 0,
+      conversionRate: 0,
+      expectedDuration: stageData.expectedDuration,
+      description: stageData.description
+    };
+    
+    setFunnelStages(prevStages => [...prevStages, newStage]);
+    setNewStageDialogOpen(false);
+    
+    toast({
+      title: "Etapa criada",
+      description: `A etapa "${stageData.name}" foi adicionada ao funil com sucesso.`,
+    });
+  };
+
+  const handleSaveConfig = (config: {
+    autoMoveLeads: boolean;
+    notifyStaleLeads: boolean;
+    staleDays: number;
+  }) => {
+    console.log("Funnel configuration saved:", config);
+    setConfigDialogOpen(false);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -105,11 +149,18 @@ const FunnelManagement: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="gap-2">
+          <Button 
+            variant="outline" 
+            className="gap-2"
+            onClick={() => setConfigDialogOpen(true)}
+          >
             <Settings className="h-4 w-4" />
             Configurar
           </Button>
-          <Button className="gap-2">
+          <Button 
+            className="gap-2"
+            onClick={() => setNewStageDialogOpen(true)}
+          >
             <Plus className="h-4 w-4" />
             Nova Etapa
           </Button>
@@ -273,6 +324,18 @@ const FunnelManagement: React.FC = () => {
         onOpenChange={setEditDialogOpen}
         stage={selectedStage}
         onSave={handleSaveStage}
+      />
+      
+      <FunnelConfigDialog
+        open={configDialogOpen}
+        onOpenChange={setConfigDialogOpen}
+        onSave={handleSaveConfig}
+      />
+      
+      <NewStageDialog
+        open={newStageDialogOpen}
+        onOpenChange={setNewStageDialogOpen}
+        onSave={handleAddNewStage}
       />
     </div>
   );
