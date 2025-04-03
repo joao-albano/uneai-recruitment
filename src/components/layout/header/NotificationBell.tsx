@@ -1,17 +1,30 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useProduct } from '@/context/product';
+import { useData } from '@/context/DataContext';
 
 interface NotificationBellProps {
-  unreadCount: number;
+  unreadCount?: number;
 }
 
-const NotificationBell: React.FC<NotificationBellProps> = ({ unreadCount }) => {
+const NotificationBell: React.FC<NotificationBellProps> = ({ unreadCount: propUnreadCount }) => {
   const { currentProduct } = useProduct();
+  const [unreadCount, setUnreadCount] = useState(propUnreadCount || 0);
+  const dataContext = useData();
+  
+  // If we have a data context, use it to get unread alerts count
+  useEffect(() => {
+    if (dataContext?.alerts) {
+      const count = dataContext.alerts.filter(alert => !alert.read).length;
+      setUnreadCount(count);
+    } else if (propUnreadCount !== undefined) {
+      setUnreadCount(propUnreadCount);
+    }
+  }, [dataContext?.alerts, propUnreadCount]);
   
   // Show the component if we're in retention or recruitment products
   if (currentProduct !== 'retention' && currentProduct !== 'recruitment') {

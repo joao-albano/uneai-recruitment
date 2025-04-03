@@ -12,6 +12,7 @@ const RecruitmentAlertsPage: React.FC = () => {
   // Set the current product to 'recruitment'
   useEffect(() => {
     setCurrentProduct('recruitment');
+    console.log('Setting product to recruitment in alerts page');
   }, [setCurrentProduct]);
   
   return (

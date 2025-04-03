@@ -3,12 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import AlertIcon from '@/components/alerts/AlertIcon';
+import AlertIcon, { getAlertBgColor } from '@/components/alerts/AlertIcon';
 import { Button } from '@/components/ui/button';
 import { Calendar, Check, Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useData } from '@/context/DataContext';
+import { Alert } from '@/types/alert';
 
 const RecruitmentAlertsList: React.FC = () => {
   const { alerts, markAlertAsRead, markAlertActionTaken, addSchedule, generateDemoData } = useData();
@@ -33,7 +34,7 @@ const RecruitmentAlertsList: React.FC = () => {
     
     const matchesSearch = 
       alert.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      alert.message?.toLowerCase().includes(searchTerm.toLowerCase());
+      (alert.message && alert.message.toLowerCase().includes(searchTerm.toLowerCase()));
     
     return isRecruitmentAlert && matchesSearch;
   });
@@ -80,6 +81,7 @@ const RecruitmentAlertsList: React.FC = () => {
         </p>
       </div>
       
+      {/* Search field */}
       <div className="mb-6">
         <div className="relative">
           <input
@@ -174,7 +176,7 @@ const RecruitmentAlertsList: React.FC = () => {
 };
 
 interface AlertCardProps {
-  alert: any;
+  alert: Alert;
   onViewDetails: (id: string) => void;
   onScheduleMeeting: (id: string, studentId: string, studentName: string) => void;
   onMarkAsResolved: (id: string) => void;
@@ -287,32 +289,7 @@ const EmptyState: React.FC<{ searchTerm?: string; type?: string }> = ({ searchTe
   );
 };
 
-const getAlertBgColor = (type: string) => {
-  switch(type) {
-    case 'lead-opportunity':
-      return 'bg-green-100';
-    case 'stage-change':
-      return 'bg-blue-100';
-    case 'campaign-performance':
-      return 'bg-purple-100';
-    case 'lead-assigned':
-      return 'bg-amber-100';
-    case 'high-risk':
-      return 'bg-red-100';
-    case 'medium-risk':
-      return 'bg-yellow-100';
-    case 'low-risk':
-      return 'bg-blue-100';
-    case 'error':
-      return 'bg-red-100';
-    case 'info':
-      return 'bg-gray-100';
-    default:
-      return 'bg-gray-100';
-  }
-};
-
-const getAlertTitle = (alert: any): string => {
+const getAlertTitle = (alert: Alert): string => {
   switch(alert.type) {
     case 'lead-opportunity':
       return `Nova oportunidade: ${alert.studentName}`;
@@ -327,7 +304,7 @@ const getAlertTitle = (alert: any): string => {
   }
 };
 
-const getDefaultAlertMessage = (alert: any): string => {
+const getDefaultAlertMessage = (alert: Alert): string => {
   switch(alert.type) {
     case 'lead-opportunity':
       return `Detectado interesse de ${alert.studentName} com alta probabilidade de conversão`;

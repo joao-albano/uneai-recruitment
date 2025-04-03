@@ -14,6 +14,7 @@ import { WhatsAppProvider } from "@/context/whatsapp/WhatsAppContext";
 import { AppStateProvider } from "@/context/app/AppStateContext";
 import { ReactNode } from "react";
 import { ProductProvider } from "@/context/product";
+import { DataProvider } from "@/context/DataContext";
 
 interface AppProvidersProps {
   children: ReactNode;
@@ -40,11 +41,13 @@ const AppProviders = ({ children }: AppProvidersProps) => {
                     <UploadsProvider>
                       <WhatsAppProvider>
                         <AppStateProvider>
-                          <TooltipProvider>
-                            <Toaster />
-                            <Sonner />
-                            {children}
-                          </TooltipProvider>
+                          <DataProvider>
+                            <TooltipProvider>
+                              <Toaster />
+                              <Sonner />
+                              {children}
+                            </TooltipProvider>
+                          </DataProvider>
                         </AppStateProvider>
                       </WhatsAppProvider>
                     </UploadsProvider>
