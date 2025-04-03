@@ -1,106 +1,89 @@
 
-import React from 'react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import React, { useMemo } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Schedule } from '@/types/schedule';
+import { useSchedules } from '@/context/schedules/SchedulesContext';
 import ScheduleItem from './ScheduleItem';
 import EmptyScheduleState from './EmptyScheduleState';
-import { CalendarClock, CheckCircle2, XCircle } from 'lucide-react';
+import { ProductType } from '@/context/product/types';
 
 interface DaySchedulesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  date: Date;
-  schedules: Schedule[];
-  onScheduleClick: (schedule: Schedule) => void;
-  onAddNew: () => void;
+  day: Date | null;
+  productContext?: ProductType;
 }
 
-const DaySchedulesDialog: React.FC<DaySchedulesDialogProps> = ({
-  open,
+const DaySchedulesDialog: React.FC<DaySchedulesDialogProps> = ({ 
+  open, 
   onOpenChange,
-  date,
-  schedules,
-  onScheduleClick,
-  onAddNew
+  day,
+  productContext
 }) => {
-  const formattedDate = format(date, "EEEE, d 'de' MMMM", { locale: ptBR });
+  const { schedules } = useSchedules();
   
-  const scheduledAppointments = schedules.filter(s => s.status === 'scheduled');
-  const completedAppointments = schedules.filter(s => s.status === 'completed');
-  const canceledAppointments = schedules.filter(s => s.status === 'canceled');
-  
-  const renderSchedulesList = (items: Schedule[]) => {
-    if (items.length === 0) {
-      return (
-        <EmptyScheduleState 
-          message="Não há atendimentos nesta categoria"
-          buttonText=""
-          onAction={() => {}}
-          showButton={false}
-        />
+  const daySchedules = useMemo(() => {
+    if (!day) return [];
+    
+    let filteredSchedules = schedules.filter(schedule => {
+      const scheduleDate = new Date(schedule.date);
+      return scheduleDate.getDate() === day.getDate() &&
+             scheduleDate.getMonth() === day.getMonth() &&
+             scheduleDate.getFullYear() === day.getFullYear();
+    });
+    
+    // Further filter by product context if specified
+    if (productContext) {
+      filteredSchedules = filteredSchedules.filter(schedule => 
+        (schedule.productContext === productContext) ||
+        // For backward compatibility with existing schedules that don't have productContext
+        (!schedule.productContext && 
+         ((productContext === 'retention' && !schedule.studentId.startsWith('lead-')) ||
+          (productContext === 'recruitment' && schedule.studentId.startsWith('lead-'))))
       );
     }
     
-    return (
-      <div className="space-y-4 mt-2">
-        {items.map(schedule => (
-          <ScheduleItem
-            key={schedule.id}
-            id={schedule.id}
-            studentName={schedule.studentName}
-            date={schedule.date}
-            agentName={schedule.agentName}
-            notes={schedule.notes}
-            onMarkCompleted={() => {}}
-            onCancelSchedule={() => {}}
-            status={schedule.status}
-          />
-        ))}
-      </div>
+    return filteredSchedules.sort((a, b) => 
+      new Date(a.date).getTime() - new Date(b.date).getTime()
     );
-  };
+  }, [day, schedules, productContext]);
+  
+  const formattedDate = day 
+    ? day.toLocaleDateString('pt-BR', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })
+    : '';
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
-          <DialogTitle>Atendimentos do dia</DialogTitle>
-          <DialogDescription className="capitalize">
-            {formattedDate}
-          </DialogDescription>
+          <DialogTitle className="capitalize">
+            Agendamentos para {formattedDate}
+          </DialogTitle>
         </DialogHeader>
         
-        <Tabs defaultValue="scheduled" className="mt-2">
-          <TabsList className="grid grid-cols-3">
-            <TabsTrigger value="scheduled" className="flex items-center gap-1">
-              <CalendarClock className="h-4 w-4" />
-              <span>Agendados ({scheduledAppointments.length})</span>
-            </TabsTrigger>
-            <TabsTrigger value="completed" className="flex items-center gap-1">
-              <CheckCircle2 className="h-4 w-4" />
-              <span>Concluídos ({completedAppointments.length})</span>
-            </TabsTrigger>
-            <TabsTrigger value="canceled" className="flex items-center gap-1">
-              <XCircle className="h-4 w-4" />
-              <span>Cancelados ({canceledAppointments.length})</span>
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="scheduled" className="pt-4">
-            {renderSchedulesList(scheduledAppointments)}
-          </TabsContent>
-          
-          <TabsContent value="completed" className="pt-4">
-            {renderSchedulesList(completedAppointments)}
-          </TabsContent>
-          
-          <TabsContent value="canceled" className="pt-4">
-            {renderSchedulesList(canceledAppointments)}
-          </TabsContent>
-        </Tabs>
+        <div className="py-4 max-h-[500px] overflow-y-auto">
+          {daySchedules.length > 0 ? (
+            <div className="space-y-4">
+              {daySchedules.map(schedule => (
+                <ScheduleItem 
+                  key={schedule.id}
+                  schedule={schedule}
+                  showActions={true}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyScheduleState
+              message={`Não há agendamentos para ${formattedDate}`}
+              icon="calendar"
+            />
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

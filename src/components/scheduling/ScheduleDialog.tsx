@@ -1,163 +1,160 @@
 
-import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import React, { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useForm } from 'react-hook-form';
-import { Calendar, Clock, User } from 'lucide-react';
-
-// Import any necessary types
-interface Student {
-  id: string;
-  name: string;
-  riskLevel?: 'low' | 'medium' | 'high';
-}
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useScheduleOperations } from '@/hooks/schedule/useScheduleOperations';
+import { ProductType } from '@/context/product/types';
 
 interface ScheduleDialogProps {
   open: boolean;
-  onOpenChange: (show: boolean) => void;
-  students: Student[];
-  onSubmit: (formData: FormData) => boolean;
-  isOpen?: boolean;
-  onClose?: () => void;
+  onOpenChange: (open: boolean) => void;
+  availableStudents: any[];
+  productContext?: ProductType;
 }
 
-const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
-  open,
+const ScheduleDialog: React.FC<ScheduleDialogProps> = ({ 
+  open, 
   onOpenChange,
-  students,
-  onSubmit,
-  isOpen,
-  onClose
+  availableStudents,
+  productContext
 }) => {
-  const form = useForm();
+  const [selectedStudent, setSelectedStudent] = useState('');
+  const [scheduleDate, setScheduleDate] = useState('');
+  const [scheduleTime, setScheduleTime] = useState('');
+  const [notes, setNotes] = useState('');
+  const [agentName, setAgentName] = useState('');
   
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const { handleScheduleSubmit } = useScheduleOperations();
+  
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const success = onSubmit(formData);
+    
+    const formData = new FormData();
+    formData.append('studentId', selectedStudent);
+    formData.append('date', scheduleDate);
+    formData.append('time', scheduleTime);
+    formData.append('notes', notes);
+    formData.append('agentName', agentName);
+    
+    if (productContext) {
+      formData.append('productContext', productContext);
+    }
+    
+    const success = handleScheduleSubmit(formData);
     
     if (success) {
-      // Reset form
-      e.currentTarget.reset();
-      // Close dialog
+      // Reset form and close dialog
+      setSelectedStudent('');
+      setScheduleDate('');
+      setScheduleTime('');
+      setNotes('');
+      setAgentName('');
       onOpenChange(false);
     }
   };
   
-  const today = new Date().toISOString().split('T')[0];
-  
-  // Get current hour and minute for default time (nearest 30 min)
-  const now = new Date();
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
-  let defaultHour = currentHour;
-  let defaultMinute = currentMinute < 30 ? 30 : 0;
-  
-  // If minutes are past 30, increment hour
-  if (currentMinute >= 30) {
-    defaultHour = (currentHour + 1) % 24;
-  }
-  
-  const defaultTime = `${defaultHour.toString().padStart(2, '0')}:${defaultMinute.toString().padStart(2, '0')}`;
-  
+  // Filter students based on product context if specified
+  const filteredStudents = productContext 
+    ? availableStudents.filter(student => 
+        (productContext === 'recruitment' && student.id.startsWith('lead-')) ||
+        (productContext === 'retention' && !student.id.startsWith('lead-')))
+    : availableStudents;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Agendar atendimento</DialogTitle>
+          <DialogTitle>
+            {productContext === 'recruitment' 
+              ? 'Agendar Atendimento de Lead' 
+              : productContext === 'retention'
+                ? 'Agendar Atendimento de Aluno'
+                : 'Agendar Atendimento'}
+          </DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-6 mt-4">
-          <div className="flex gap-4 items-start">
-            <div className="flex-shrink-0 rounded-full bg-primary/10 p-2 flex items-center justify-center">
-              <User className="h-5 w-5 text-primary" />
-            </div>
-            <div className="w-full">
-              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Aluno
-              </label>
-              <Select name="studentId" required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione um aluno" />
-                </SelectTrigger>
-                <SelectContent>
-                  {students.map(student => (
-                    <SelectItem key={student.id} value={student.id}>
-                      {student.name} 
-                      {student.riskLevel && (
-                        <span className={`ml-2 text-xs px-1.5 py-0.5 rounded ${
-                          student.riskLevel === 'high' ? 'bg-red-100 text-red-700' :
-                          student.riskLevel === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                          'bg-green-100 text-green-700'
-                        }`}>
-                          {student.riskLevel === 'high' ? 'Alto' :
-                          student.riskLevel === 'medium' ? 'Médio' : 'Baixo'}
-                        </span>
-                      )}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+          <div className="space-y-2">
+            <Label htmlFor="student">
+              {productContext === 'recruitment' ? 'Lead' : 'Aluno'}
+            </Label>
+            <Select 
+              value={selectedStudent} 
+              onValueChange={setSelectedStudent}
+              required
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={
+                  productContext === 'recruitment' 
+                    ? 'Selecione um lead' 
+                    : 'Selecione um aluno'
+                } />
+              </SelectTrigger>
+              <SelectContent>
+                {filteredStudents.map((student) => (
+                  <SelectItem key={student.id} value={student.id}>
+                    {student.name || `${productContext === 'recruitment' ? 'Lead' : 'Aluno'} ${student.id}`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           
-          <div className="flex gap-4 items-start">
-            <div className="flex-shrink-0 rounded-full bg-primary/10 p-2 flex items-center justify-center">
-              <Calendar className="h-5 w-5 text-primary" />
-            </div>
-            <div className="w-full">
-              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Data
-              </label>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="date">Data</Label>
               <Input 
+                id="date" 
                 type="date" 
-                name="date" 
-                defaultValue={today}
+                value={scheduleDate} 
+                onChange={(e) => setScheduleDate(e.target.value)}
                 required
               />
             </div>
-          </div>
-          
-          <div className="flex gap-4 items-start">
-            <div className="flex-shrink-0 rounded-full bg-primary/10 p-2 flex items-center justify-center">
-              <Clock className="h-5 w-5 text-primary" />
-            </div>
-            <div className="w-full">
-              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Hora
-              </label>
+            <div className="space-y-2">
+              <Label htmlFor="time">Hora</Label>
               <Input 
+                id="time" 
                 type="time" 
-                name="time" 
-                defaultValue={defaultTime}
+                value={scheduleTime} 
+                onChange={(e) => setScheduleTime(e.target.value)}
                 required
               />
             </div>
           </div>
           
-          <div>
-            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              Observações
-            </label>
-            <Textarea 
-              name="notes" 
-              placeholder="Informe os detalhes do atendimento"
-              className="min-h-[100px]"
+          <div className="space-y-2">
+            <Label htmlFor="agent">Responsável</Label>
+            <Input 
+              id="agent" 
+              type="text" 
+              placeholder="Nome do responsável"
+              value={agentName} 
+              onChange={(e) => setAgentName(e.target.value)}
             />
           </div>
           
-          <div className="flex justify-end pt-2">
-            <Button variant="outline" type="button" className="mr-2" onClick={() => onOpenChange(false)}>
+          <div className="space-y-2">
+            <Label htmlFor="notes">Observações</Label>
+            <Textarea 
+              id="notes" 
+              placeholder="Detalhes do atendimento"
+              value={notes} 
+              onChange={(e) => setNotes(e.target.value)}
+              rows={3}
+            />
+          </div>
+          
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button type="submit">
-              Agendar
-            </Button>
-          </div>
+            <Button type="submit">Agendar</Button>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

@@ -12,6 +12,7 @@ import ConversationPage from "@/pages/recruitment/ConversationPage";
 import EnrollmentPredictionsPage from "@/pages/recruitment/EnrollmentPredictionsPage";
 import PredictiveReportingPage from "@/pages/recruitment/PredictiveReportingPage";
 import RecruitmentAlertsPage from "@/pages/recruitment/RecruitmentAlertsPage";
+import RecruitmentSchedulePage from "@/pages/recruitment/RecruitmentSchedulePage";
 
 interface RouteConfig {
   path: string;
@@ -50,6 +51,14 @@ export const recruitmentRoutes: RouteConfig[] = [
     element: (
       <ProtectedRoute>
         <RecruitmentAlertsPage />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/schedule",
+    element: (
+      <ProtectedRoute>
+        <RecruitmentSchedulePage />
       </ProtectedRoute>
     )
   },

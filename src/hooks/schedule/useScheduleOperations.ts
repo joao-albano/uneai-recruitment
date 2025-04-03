@@ -3,6 +3,7 @@ import { Schedule } from '@/types/schedule';
 import { useSchedules } from '@/context/schedules/SchedulesContext';
 import { useAuth } from '@/context/auth';
 import { useToast } from '@/hooks/use-toast';
+import { ProductType } from '@/context/product/types';
 
 export const useScheduleOperations = () => {
   const { addSchedule, updateScheduleStatus } = useSchedules();
@@ -15,21 +16,32 @@ export const useScheduleOperations = () => {
     const time = formData.get('time') as string;
     const notes = formData.get('notes') as string;
     const agentName = formData.get('agentName') as string || userEmail;
+    const productContext = formData.get('productContext') as ProductType | null;
     
     if (!studentId || !date || !time) return false;
     
     const [year, month, day] = date.split('-').map(Number);
     const [hours, minutes] = time.split(':').map(Number);
     const scheduleDate = new Date(year, month - 1, day, hours, minutes);
+
+    // Determine student name and default agent name based on product context
+    let studentName = `Aluno ${studentId}`; 
+    let defaultAgentName = 'Coord. Mariana';
+    
+    if (productContext === 'recruitment') {
+      studentName = `Lead ${studentId.replace('lead-', '')}`;
+      defaultAgentName = 'Coord. Renata';
+    }
     
     const newSchedule: Schedule = {
       id: `schedule-${Date.now()}`,
       studentId,
-      studentName: `Aluno ${studentId}`, // Simplified for example
+      studentName,
       date: scheduleDate,
-      agentName: agentName || 'Coord. Mariana',
+      agentName: agentName || defaultAgentName,
       status: 'scheduled',
       notes,
+      productContext
     };
     
     addSchedule(newSchedule);

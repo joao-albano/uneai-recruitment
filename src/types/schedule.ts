@@ -1,4 +1,6 @@
 
+import { ProductType } from '@/context/product/types';
+
 export interface Schedule {
   id: string;
   studentId: string;
@@ -7,6 +9,7 @@ export interface Schedule {
   agentName: string;
   status: 'scheduled' | 'completed' | 'canceled';
   notes?: string;
+  productContext?: ProductType;
 }
 
 export interface FormattedScheduleData {

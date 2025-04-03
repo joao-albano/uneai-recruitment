@@ -5,7 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useData } from '@/context/DataContext';
 import { filterRecruitmentAlerts, filterRetentionAlerts } from '../utils/alertUtils';
 import { Alert } from '@/types/alert';
-import { useProduct } from '@/context/ProductContext';
+import { useProduct } from '@/context/product';
 
 export const useAlertsManagement = () => {
   const { alerts, markAlertAsRead, markAlertActionTaken, addSchedule, generateDemoData } = useData();
@@ -46,14 +46,19 @@ export const useAlertsManagement = () => {
       date: tomorrow,
       agentName: currentProduct === 'recruitment' ? 'Coord. Renata' : 'Prof. Carlos',
       status: 'scheduled',
-      notes: currentProduct === 'recruitment' ? 'Acompanhamento de lead potencial' : 'Acompanhamento de aluno em risco'
+      notes: currentProduct === 'recruitment' ? 'Acompanhamento de lead potencial' : 'Acompanhamento de aluno em risco',
+      productContext: currentProduct
     });
     
     markAlertActionTaken(alertId);
     
-    // Navegação opcional para a página de agendamento
+    // Navegação baseada no produto atual
     if (confirm('Deseja visualizar o agendamento criado na página de Agenda?')) {
-      navigate('/schedule?id=' + scheduleId);
+      if (currentProduct === 'recruitment') {
+        navigate('/recruitment/schedule?id=' + scheduleId);
+      } else {
+        navigate('/schedule?id=' + scheduleId);
+      }
     }
   };
   

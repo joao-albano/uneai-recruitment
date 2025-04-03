@@ -26,12 +26,12 @@ const RecruitmentAlertsList: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  // Função para abrir a agenda
+  // Função para abrir a agenda de captação
   const goToSchedule = () => {
-    navigate('/schedule');
+    navigate('/recruitment/schedule');
     toast({
-      title: "Agenda",
-      description: "Aqui você pode visualizar e gerenciar todos os agendamentos."
+      title: "Agenda de Captação",
+      description: "Aqui você pode visualizar e gerenciar todos os agendamentos de leads."
     });
   };
   
@@ -51,7 +51,7 @@ const RecruitmentAlertsList: React.FC = () => {
           </div>
           <Button onClick={goToSchedule} variant="outline">
             <Calendar className="mr-2 h-4 w-4" />
-            Ver Agenda
+            Ver Agenda de Captação
           </Button>
         </div>
       </div>
