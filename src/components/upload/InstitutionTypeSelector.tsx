@@ -2,7 +2,7 @@
 import React from 'react';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { InstitutionType } from '@/utils/validation/templateManager';
+import { InstitutionType } from '@/utils/validation/headerTypes';
 import { School, GraduationCap, KeyRound } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 

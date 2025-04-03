@@ -4,6 +4,9 @@ import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 import { ProductType, InstitutionType, ColumnDefinition } from './headerTypes';
 
+// Re-export types
+export type { ProductType, InstitutionType };
+
 // Function to generate template Excel file based on product and institution type
 export const generateExcelTemplate = (productType: ProductType, institutionType: InstitutionType) => {
   const columns = getTemplateColumns(productType, institutionType);
