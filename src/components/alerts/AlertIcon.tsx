@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AlertTriangle, BookOpen, Calendar } from 'lucide-react';
+import { AlertTriangle, BookOpen, Calendar, UserPlus, LineChart, BarChart3, UserCheck } from 'lucide-react';
 
 type AlertIconProps = {
   type: string;
@@ -19,6 +19,14 @@ export const getAlertBgColor = (type: string) => {
       return 'bg-purple-100';
     case 'meeting-scheduled':
       return 'bg-green-100';
+    case 'lead-opportunity':
+      return 'bg-green-100';
+    case 'stage-change':
+      return 'bg-blue-100';
+    case 'campaign-performance':
+      return 'bg-purple-100';
+    case 'lead-assigned':
+      return 'bg-amber-100';
     default:
       return 'bg-gray-100';
   }
@@ -36,6 +44,14 @@ const AlertIcon: React.FC<AlertIconProps> = ({ type, className = "h-5 w-5" }) =>
       return <BookOpen className={`${className} text-purple-500`} />;
     case 'meeting-scheduled':
       return <Calendar className={`${className} text-green-500`} />;
+    case 'lead-opportunity':
+      return <UserPlus className={`${className} text-green-500`} />;
+    case 'stage-change':
+      return <LineChart className={`${className} text-blue-500`} />;
+    case 'campaign-performance':
+      return <BarChart3 className={`${className} text-purple-500`} />;
+    case 'lead-assigned':
+      return <UserCheck className={`${className} text-amber-500`} />;
     default:
       return <AlertTriangle className={className} />;
   }

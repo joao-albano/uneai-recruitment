@@ -13,13 +13,13 @@ interface NotificationBellProps {
 const NotificationBell: React.FC<NotificationBellProps> = ({ unreadCount }) => {
   const { currentProduct } = useProduct();
   
-  // Somente mostrar o componente se estiver no produto de retenção
-  if (currentProduct !== 'retention') {
+  // Show the component if we're in retention or recruitment products
+  if (currentProduct !== 'retention' && currentProduct !== 'recruitment') {
     return null;
   }
 
   return (
-    <Link to="/alerts" className="relative">
+    <Link to={currentProduct === 'recruitment' ? "/recruitment/alerts" : "/alerts"} className="relative">
       <Button variant="ghost" size="icon" className="relative">
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
