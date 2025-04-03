@@ -14,9 +14,8 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2 } from 'lucide-react';
-// Import the pre-built Dialog components from the UI library
 import {
-  Dialog,
+  Dialog as DialogComponent,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -153,7 +152,7 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
   }
 
   return (
-    <Dialog 
+    <DialogComponent 
       open={open} 
       onOpenChange={(isOpen) => {
         if (isSubmitting) return;
@@ -384,7 +383,7 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
           </div>
         )}
       </DialogContent>
-    </Dialog>
+    </DialogComponent>
   );
 };
 
