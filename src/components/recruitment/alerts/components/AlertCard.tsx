@@ -64,13 +64,17 @@ const AlertCard: React.FC<AlertCardProps> = ({
             </Button>
             {!alert.actionTaken && (
               <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onScheduleMeeting(alert.id, alert.studentId, alert.studentName)}
-                >
-                  <Calendar className="mr-1 h-4 w-4" /> Agendar
-                </Button>
+                {/* Mostra o botão de agendar apenas para alertas relacionados a leads específicos */}
+                {(alert.type === 'lead-opportunity' || alert.type === 'stage-change' || 
+                  alert.type === 'lead-assigned') && alert.studentId && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onScheduleMeeting(alert.id, alert.studentId, alert.studentName)}
+                  >
+                    <Calendar className="mr-1 h-4 w-4" /> Agendar
+                  </Button>
+                )}
                 <Button
                   variant="default"
                   size="sm"

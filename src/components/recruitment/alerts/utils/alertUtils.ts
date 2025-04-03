@@ -11,8 +11,18 @@ export const getAlertTitle = (alert: Alert): string => {
       return 'Performance de campanha';
     case 'lead-assigned':
       return `Lead designado: ${alert.studentName}`;
+    case 'high-risk':
+      return `Aluno em risco: ${alert.studentName}`;
+    case 'medium-risk':
+      return `Atenção necessária: ${alert.studentName}`;
+    case 'low-risk':
+      return `Acompanhamento: ${alert.studentName}`;
+    case 'info':
+      return 'Informação importante';
+    case 'error':
+      return 'Erro do sistema';
     default:
-      return alert.studentName;
+      return alert.studentName || 'Alerta do sistema';
   }
 };
 
@@ -21,11 +31,21 @@ export const getDefaultAlertMessage = (alert: Alert): string => {
     case 'lead-opportunity':
       return `Detectado interesse de ${alert.studentName} com alta probabilidade de conversão`;
     case 'stage-change':
-      return `${alert.studentName} avançou para uma nova etapa do funil de captação`;
+      return `${alert.studentName} teve uma mudança no estágio no funil de captação`;
     case 'campaign-performance':
       return 'Uma campanha está performando acima do esperado';
     case 'lead-assigned':
       return `${alert.studentName} foi designado para você acompanhar`;
+    case 'high-risk':
+      return `${alert.studentName} apresenta alto risco de evasão`;
+    case 'medium-risk':
+      return `${alert.studentName} requer atenção para evitar problemas futuros`;
+    case 'low-risk':
+      return `${alert.studentName} apresenta indicadores que merecem acompanhamento`;
+    case 'info':
+      return 'Informação relevante para o processo de captação';
+    case 'error':
+      return 'Ocorreu um erro no sistema que requer atenção';
     default:
       return 'Alerta do sistema';
   }
@@ -37,10 +57,12 @@ export const filterRecruitmentAlerts = (alerts: Alert[], searchTerm: string) => 
   
   return alerts.filter(alert => {
     // Include alerts of recruitment specific types or general alerts like 'info' or 'error'
-    const isRecruitmentAlert = recruitmentAlertTypes.includes(alert.type) || ['info', 'error'].includes(alert.type);
+    const isRecruitmentAlert = 
+      recruitmentAlertTypes.includes(alert.type) || 
+      ['info', 'error'].includes(alert.type);
     
     const matchesSearch = 
-      alert.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (alert.studentName && alert.studentName.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (alert.message && alert.message.toLowerCase().includes(searchTerm.toLowerCase()));
     
     return isRecruitmentAlert && matchesSearch;

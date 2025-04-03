@@ -3,6 +3,96 @@ import { AlertItem } from '@/types/data';
 
 export const generateDemoAlerts = (): AlertItem[] => {
   return [
+    // Alertas de captação (recrutamento)
+    {
+      id: 'c1',
+      studentId: 'lead1',
+      studentName: 'Ricardo Oliveira',
+      studentClass: 'Graduação',
+      type: 'lead-opportunity',
+      message: 'Lead com alta probabilidade de conversão. Visitou o site 5 vezes na última semana e baixou o material informativo do curso de Engenharia.',
+      createdAt: new Date(Date.now() - 3600000 * 2), // 2 horas atrás
+      read: false,
+      actionTaken: false
+    },
+    {
+      id: 'c2',
+      studentId: 'lead2',
+      studentName: 'Mariana Santos',
+      studentClass: 'Pós-graduação',
+      type: 'stage-change',
+      message: 'Mariana Santos avançou para a etapa de "Agendamento" no funil de captação. Recomenda-se contato imediato.',
+      createdAt: new Date(Date.now() - 86400000 * 1), // 1 dia atrás
+      read: false,
+      actionTaken: false
+    },
+    {
+      id: 'c3',
+      studentId: '',
+      studentName: '',
+      studentClass: '',
+      type: 'campaign-performance',
+      message: 'Campanha "Matrícula Antecipada 2025" está performando 35% acima da meta. Considere ampliar o investimento.',
+      createdAt: new Date(Date.now() - 86400000 * 2), // 2 dias atrás
+      read: true,
+      actionTaken: false
+    },
+    {
+      id: 'c4',
+      studentId: 'lead3',
+      studentName: 'Felipe Mendes',
+      studentClass: 'MBA',
+      type: 'lead-assigned',
+      message: 'Novo lead designado para seu acompanhamento. Felipe demonstrou interesse no programa de MBA Executivo durante evento corporativo.',
+      createdAt: new Date(Date.now() - 3600000 * 5), // 5 horas atrás
+      read: false,
+      actionTaken: false
+    },
+    {
+      id: 'c5',
+      studentId: 'lead4',
+      studentName: 'Carolina Barros',
+      studentClass: 'Graduação',
+      type: 'lead-opportunity',
+      message: 'Lead qualificado pelo chatbot como "alta prioridade". Solicitou informações sobre formas de pagamento e disponibilidade de bolsas para o curso de Psicologia.',
+      createdAt: new Date(Date.now() - 3600000 * 8), // 8 horas atrás
+      read: false,
+      actionTaken: false
+    },
+    {
+      id: 'c6',
+      studentId: '',
+      studentName: '',
+      studentClass: '',
+      type: 'info',
+      message: 'O prazo para matrículas com desconto termina em 5 dias. Existem 28 leads na etapa de "Interesse Confirmado" que ainda não foram contatados.',
+      createdAt: new Date(Date.now() - 86400000 * 1), // 1 dia atrás
+      read: true,
+      actionTaken: true
+    },
+    {
+      id: 'c7',
+      studentId: 'lead5',
+      studentName: 'André Martins',
+      studentClass: 'Técnico',
+      type: 'stage-change',
+      message: 'André Martins regrediu da etapa "Proposta Enviada" para "Avaliando Concorrentes". Recomenda-se ação de reengajamento urgente.',
+      createdAt: new Date(Date.now() - 86400000 * 3), // 3 dias atrás
+      read: true,
+      actionTaken: false
+    },
+    {
+      id: 'c8',
+      studentId: 'lead6',
+      studentName: 'Juliana Costa',
+      studentClass: 'Extensão',
+      type: 'lead-assigned',
+      message: 'Lead transferido para sua responsabilidade. Juliana está comparando preços dos cursos de extensão em Gestão de Projetos.',
+      createdAt: new Date(Date.now() - 3600000 * 12), // 12 horas atrás
+      read: false,
+      actionTaken: false
+    },
+    // Mantendo alguns alertas originais de alta prioridade
     {
       id: '1',
       studentId: '1',
@@ -22,50 +112,6 @@ export const generateDemoAlerts = (): AlertItem[] => {
       type: 'high-risk',
       message: 'URGENTE: Elena Costa atingiu frequência crítica (65%) e apresenta sinais de possível evasão. Necessária intervenção imediata.',
       createdAt: new Date(Date.now() - 86400000), // 1 dia atrás
-      read: false,
-      actionTaken: false
-    },
-    {
-      id: '3',
-      studentId: '3',
-      studentName: 'Carla Oliveira',
-      studentClass: '9B',
-      type: 'medium-risk',
-      message: 'Carla Oliveira apresentou dificuldades crescentes em matemática. Recomenda-se acompanhamento preventivo.',
-      createdAt: new Date(),
-      read: false,
-      actionTaken: false
-    },
-    {
-      id: '4',
-      studentId: '7',
-      studentName: 'Gabriela Lima',
-      studentClass: '9D',
-      type: 'medium-risk',
-      message: 'Gabriela Lima está próxima do limite mínimo de frequência (78%). Necessário contato com responsáveis.',
-      createdAt: new Date(Date.now() - 86400000 * 3), // 3 dias atrás
-      read: true,
-      actionTaken: true
-    },
-    {
-      id: '5',
-      studentId: '2',
-      studentName: 'Bruno Santos',
-      studentClass: '9A',
-      type: 'low-risk',
-      message: 'Bruno Santos manteve excelente desempenho por 3 meses consecutivos. Considerar indicação para programa de alunos destaque.',
-      createdAt: new Date(Date.now() - 86400000 * 4), // 4 dias atrás
-      read: true,
-      actionTaken: true
-    },
-    {
-      id: '6',
-      studentId: '8',
-      studentName: 'Henrique Alves',
-      studentClass: '9D',
-      type: 'low-risk',
-      message: 'Henrique Alves conquistou primeiro lugar na Olimpíada de Matemática. Oportunidade para destacar conquista.',
-      createdAt: new Date(Date.now() - 86400000 * 1), // 1 dia atrás
       read: false,
       actionTaken: false
     }

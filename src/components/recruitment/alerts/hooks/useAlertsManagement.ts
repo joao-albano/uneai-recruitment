@@ -14,6 +14,7 @@ export const useAlertsManagement = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
+    // Verificar se temos alertas, caso não, gerar dados demonstrativos
     if (alerts.length === 0) {
       console.log("Carregando dados de demonstração para a lista de alertas de recrutamento");
       generateDemoData();
