@@ -21,6 +21,7 @@ interface LeadDialogsProps {
   onSaveLead: (lead: any) => void;
   onSaveStage: (leadId: number, newStage: string, notes: string) => void;
   onConfirmDelete: (leadId: number) => void;
+  onLeadCreated?: (lead: any) => void;
 }
 
 const LeadDialogs: React.FC<LeadDialogsProps> = ({
@@ -37,11 +38,16 @@ const LeadDialogs: React.FC<LeadDialogsProps> = ({
   setDeleteDialogOpen,
   onSaveLead,
   onSaveStage,
-  onConfirmDelete
+  onConfirmDelete,
+  onLeadCreated
 }) => {
   return (
     <>
-      <LeadCreateDialog open={openDialog} onOpenChange={setOpenDialog} />
+      <LeadCreateDialog 
+        open={openDialog} 
+        onOpenChange={setOpenDialog}
+        onLeadCreated={onLeadCreated}
+      />
       
       {selectedLead && (
         <>

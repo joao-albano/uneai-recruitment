@@ -23,6 +23,9 @@ export const useLeadData = () => {
       };
       
       setStageGroups(updatedGroups);
+      
+      // Also update filtered leads when leadsData changes
+      setFilteredLeads(JSON.parse(JSON.stringify(leadsData)));
     } catch (error) {
       console.error("Error updating stage groups:", error);
     }
@@ -51,12 +54,27 @@ export const useLeadData = () => {
     }
   }, []);
 
+  // Add a helper method to add a new lead directly to the data
+  const addNewLead = useCallback((lead: any) => {
+    try {
+      setLeadsData(prevLeads => {
+        // Create a deep copy of the current leads and add the new lead
+        const updatedLeads = [...JSON.parse(JSON.stringify(prevLeads)), lead];
+        return updatedLeads;
+      });
+      console.log("Lead added to state:", lead);
+    } catch (error) {
+      console.error("Error adding new lead:", error);
+    }
+  }, []);
+
   return {
     leadsData,
     setLeadsData: setLeadsDataSafely,
     filteredLeads,
     setFilteredLeads,
     stageGroups,
-    setStageGroups
+    setStageGroups,
+    addNewLead
   };
 };

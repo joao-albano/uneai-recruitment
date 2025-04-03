@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
 import { useLeadForm } from './hooks/useLeadForm';
@@ -11,20 +11,41 @@ import { useToast } from '@/hooks/use-toast';
 interface LeadCreateDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onLeadCreated?: (lead: any) => void;
 }
 
-const LeadCreateDialog: React.FC<LeadCreateDialogProps> = ({ open, onOpenChange }) => {
-  const { form, onSubmit } = useLeadForm();
+const LeadCreateDialog: React.FC<LeadCreateDialogProps> = ({ 
+  open, 
+  onOpenChange,
+  onLeadCreated
+}) => {
+  const { form, onSubmit, resetForm } = useLeadForm();
   const { toast } = useToast();
   
+  // Reset form when dialog opens or closes
+  useEffect(() => {
+    if (open) {
+      resetForm();
+    }
+  }, [open, resetForm]);
+
   const handleSubmit = form.handleSubmit((data) => {
     try {
       const result = onSubmit(data);
       console.log('Lead salvo com sucesso:', result);
+      
+      // Call the onLeadCreated callback if provided
+      if (onLeadCreated) {
+        onLeadCreated(result);
+      }
+      
       toast({
         title: "Lead criado com sucesso",
         description: "As informações do lead foram salvas"
       });
+      
+      // Reset form and close dialog
+      resetForm();
       onOpenChange(false);
     } catch (error) {
       console.error('Erro ao salvar lead:', error);

@@ -42,6 +42,8 @@ const LeadTableRow: React.FC<LeadTableRowProps> = ({
   // Format date consistently
   const formatDate = (dateString: string) => {
     try {
+      if (!dateString) return "Data inválida";
+      
       // Parse the date - handle ISO strings or other date formats
       const date = typeof dateString === 'string' 
         ? dateString.includes('T') 
@@ -49,9 +51,14 @@ const LeadTableRow: React.FC<LeadTableRowProps> = ({
           : new Date(dateString)
         : new Date(dateString);
       
+      if (isNaN(date.getTime())) {
+        console.error("Invalid date detected:", dateString);
+        return "Data inválida";
+      }
+      
       return format(date, 'dd/MM/yyyy', { locale: ptBR });
     } catch (e) {
-      console.error("Error formatting date:", e);
+      console.error("Error formatting date:", e, "dateString:", dateString);
       return "Data inválida";
     }
   };
@@ -73,7 +80,7 @@ const LeadTableRow: React.FC<LeadTableRowProps> = ({
         </Badge>
       </TableCell>
       <TableCell className="hidden md:table-cell">
-        {typeof lead.createdAt !== 'undefined' ? formatDate(lead.createdAt) : "Data inválida"}
+        {formatDate(lead.createdAt)}
       </TableCell>
       <TableCell className="text-right" onClick={handleCellClick}>
         <LeadActionMenu

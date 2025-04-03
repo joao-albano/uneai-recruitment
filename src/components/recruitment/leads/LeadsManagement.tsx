@@ -39,7 +39,8 @@ const LeadsManagement: React.FC = () => {
     handleConfirmDelete,
     clearFilters,
     handleExportLeads,
-    getLeadCounts
+    getLeadCounts,
+    handleLeadCreated
   } = useLeadsManagement();
   
   return (
@@ -86,6 +87,7 @@ const LeadsManagement: React.FC = () => {
         onSaveLead={handleSaveLead}
         onSaveStage={handleSaveStage}
         onConfirmDelete={handleConfirmDelete}
+        onLeadCreated={handleLeadCreated}
       />
     </div>
   );

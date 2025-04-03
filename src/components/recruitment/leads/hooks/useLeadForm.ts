@@ -2,9 +2,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { leadFormSchema, LeadFormValues } from '../types/leadForm';
-import { useEffect } from 'react';
+import { useCallback } from 'react';
 import { mockLeadsData } from '../data/mockLeadsData';
-import { format } from 'date-fns';
 
 const defaultValues = {
   parentName: "",
@@ -27,18 +26,16 @@ export const useLeadForm = () => {
     defaultValues,
   });
 
-  // Reset the form when opened
-  useEffect(() => {
+  // Reset form function
+  const resetForm = useCallback(() => {
     form.reset(defaultValues);
-  }, [form.reset]);
+  }, [form]);
 
   // Handle form submission
   const onSubmit = (data: LeadFormValues) => {
     console.log('Dados do formulário submetidos:', data);
     
-    // Here we would send data to the API in a real implementation
-    
-    // Create current date in ISO format but formatted properly for display
+    // Create current date in ISO format
     const now = new Date();
     const createdAt = now.toISOString();
     
@@ -50,7 +47,7 @@ export const useLeadForm = () => {
     };
     
     // Update the mock data array - fixing by adding the missing required properties
-    mockLeadsData.push({
+    const newLead = {
       id: result.id,
       name: result.parentName,
       email: result.email,
@@ -62,11 +59,14 @@ export const useLeadForm = () => {
       status: "Novo",
       createdAt: createdAt, // Use consistent ISO format for dates
       notes: result.observations || ""
-    });
+    };
+    
+    // Add to mock data
+    mockLeadsData.push(newLead);
     
     console.log('Lead salvo com sucesso:', result);
-    return result;
+    return newLead;
   };
 
-  return { form, onSubmit };
+  return { form, onSubmit, resetForm };
 };

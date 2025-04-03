@@ -5,6 +5,7 @@ import { useLeadDialogs } from './useLeadDialogs';
 import { useLeadFilters } from './useLeadFilters';
 import { useLeadActions } from './useLeadActions';
 import { useLeadExport } from './useLeadExport';
+import { useCallback } from 'react';
 
 export const useLeadsManagement = () => {
   // Use specialized hooks
@@ -35,6 +36,12 @@ export const useLeadsManagement = () => {
   // Export functionality
   const exportActions = useLeadExport();
 
+  // Handle new lead creation
+  const handleLeadCreated = useCallback((lead: any) => {
+    console.log("New lead created in management hook:", lead);
+    dataState.addNewLead(lead);
+  }, [dataState]);
+
   return {
     // View mode
     ...viewModeState,
@@ -53,7 +60,10 @@ export const useLeadsManagement = () => {
     ...leadActions,
     
     // From useLeadExport
-    handleExportLeads: () => exportActions.handleExportLeads(dataState.filteredLeads)
+    handleExportLeads: () => exportActions.handleExportLeads(dataState.filteredLeads),
+
+    // New lead handler
+    handleLeadCreated
   };
 };
 
