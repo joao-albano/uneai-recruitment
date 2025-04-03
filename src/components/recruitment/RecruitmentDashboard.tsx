@@ -9,6 +9,7 @@ const RecruitmentDashboard: React.FC = () => {
     <div className="container mx-auto py-6">
       <DashboardHeader />
       <DashboardTabs />
+      <OperationalVisualizationTable />
     </div>
   );
 };

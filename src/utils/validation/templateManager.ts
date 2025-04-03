@@ -1,22 +1,21 @@
 
-// Update imports to use the new file structure
-import { ProductType, InstitutionType, ColumnDefinition } from './headerTypes';
 import { getTemplateColumns } from './templateFormat';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
-
-// Just assuming this function exists based on the imports in other files
 export type { ProductType, InstitutionType } from './headerTypes';
 
 // Function to generate template Excel file based on product and institution type
-export const generateExcelTemplate = (productType: ProductType, institutionType: InstitutionType): ArrayBuffer => {
+export const generateExcelTemplate = (productType: ProductType, institutionType: InstitutionType) => {
   const columns = getTemplateColumns(productType, institutionType);
   const headers = columns.map(col => col.header);
   const examples = columns.map(col => col.example);
   
   // Create workbook and worksheet
   const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.aoa_to_sheet([headers, examples]);
+  const ws = XLSX.utils.aoa_to_sheet([
+    headers,
+    examples
+  ]);
   
   // Add worksheet to workbook
   XLSX.utils.book_append_sheet(wb, ws, 'Template');
@@ -26,10 +25,9 @@ export const generateExcelTemplate = (productType: ProductType, institutionType:
 };
 
 // Function to download template
-export const downloadTemplate = (productType: ProductType = 'retention', institutionType: InstitutionType = 'school'): void => {
+export const downloadTemplate = (productType: ProductType = 'retention', institutionType: InstitutionType = 'school') => {
   const templateData = generateExcelTemplate(productType, institutionType);
   const blob = new Blob([templateData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  
   const filename = `template_${productType}_${institutionType}_${new Date().toISOString().slice(0, 10)}.xlsx`;
   saveAs(blob, filename);
 };
@@ -37,18 +35,4 @@ export const downloadTemplate = (productType: ProductType = 'retention', institu
 // Function to get template format - used for documentation/display
 export const getTemplateFormat = (productType: ProductType = 'retention', institutionType: InstitutionType = 'school') => {
   return getTemplateColumns(productType, institutionType);
-};
-
-// Get key fields for a given product and institution type
-export const getKeyFields = (productType: ProductType = 'retention', institutionType: InstitutionType = 'school'): ColumnDefinition[] => {
-  const columns = getTemplateColumns(productType, institutionType);
-  
-  // Filter columns that can be used as key fields
-  if (institutionType === 'school') {
-    // For schools, RA (registro) is the key field
-    return columns.filter(col => col.header === 'ra' || col.header === 'registro');
-  } else {
-    // For universities, email and CPF can be key fields
-    return columns.filter(col => col.isKeyField || ['email', 'cpf'].includes(col.header));
-  }
 };

@@ -1,13 +1,24 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, ArrowRight, Users, ArrowDown, Settings, Filter } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import FunnelStageEditDialog from './FunnelStageEditDialog';
+import { useToast } from '@/hooks/use-toast';
 
-// Dados fictícios para demonstração
-const funnelStages = [
+interface FunnelStage {
+  id: string;
+  name: string;
+  order: number;
+  isActive: boolean;
+  leadCount: number;
+  conversionRate: number;
+  expectedDuration: number;
+  description: string;
+}
+
+const initialFunnelStages = [
   { 
     id: '1', 
     name: 'Lead Gerado', 
@@ -61,6 +72,29 @@ const funnelStages = [
 ];
 
 const FunnelManagement: React.FC = () => {
+  const { toast } = useToast();
+  const [funnelStages, setFunnelStages] = useState<FunnelStage[]>(initialFunnelStages);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedStage, setSelectedStage] = useState<FunnelStage | null>(null);
+
+  const handleEditClick = (stage: FunnelStage) => {
+    setSelectedStage(stage);
+    setEditDialogOpen(true);
+  };
+
+  const handleSaveStage = (updatedStage: FunnelStage) => {
+    setFunnelStages(prevStages => 
+      prevStages.map(stage => 
+        stage.id === updatedStage.id ? updatedStage : stage
+      )
+    );
+    
+    toast({
+      title: "Etapa atualizada",
+      description: `A etapa "${updatedStage.name}" foi atualizada com sucesso.`,
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -82,7 +116,6 @@ const FunnelManagement: React.FC = () => {
         </div>
       </div>
 
-      {/* Visualização do Funil */}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle>Visualização do Funil</CardTitle>
@@ -105,7 +138,13 @@ const FunnelManagement: React.FC = () => {
                         <h3 className="font-medium text-lg">{stage.name}</h3>
                         <p className="text-sm text-muted-foreground">{stage.description}</p>
                       </div>
-                      <Button variant="outline" size="sm">Editar</Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleEditClick(stage)}
+                      >
+                        Editar
+                      </Button>
                     </div>
                     
                     <div className="bg-muted p-4 rounded-lg mt-2">
@@ -144,7 +183,6 @@ const FunnelManagement: React.FC = () => {
                   </div>
                 </div>
                 
-                {/* Setas conectando as etapas */}
                 {index < funnelStages.length - 1 && (
                   <div className="absolute left-6 top-full h-8 flex items-center justify-center">
                     <ArrowDown className="h-6 w-6 text-muted-foreground" />
@@ -156,7 +194,6 @@ const FunnelManagement: React.FC = () => {
         </CardContent>
       </Card>
       
-      {/* Análise de Conversão */}
       <Card>
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
@@ -230,6 +267,13 @@ const FunnelManagement: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+      
+      <FunnelStageEditDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        stage={selectedStage}
+        onSave={handleSaveStage}
+      />
     </div>
   );
 };

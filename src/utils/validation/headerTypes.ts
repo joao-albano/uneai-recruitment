@@ -1,22 +1,21 @@
 
-// Define product and institution types
-export type ProductType = 'retention' | 'recruitment';
+// Product types
+export type ProductType = 'recruitment' | 'retention';
+
+// Institution types
 export type InstitutionType = 'school' | 'university';
 
-// Format type for Excel template
-export type ExcelFormat = {
-  headers: string[];
-  description: string;
-};
-
-// Column definition type
-export type ColumnDefinition = {
+// Column definition interface
+export interface ColumnDefinition {
   header: string;
   description: string;
   example: string;
   required: boolean;
   isKeyField?: boolean;
-};
+}
 
-// Header mapping type
-export type HeaderMapping = Record<string, string>;
+// Excel format interface
+export interface ExcelFormat {
+  headers: string[];
+  description: string;
+}
