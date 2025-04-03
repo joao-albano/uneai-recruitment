@@ -3,7 +3,7 @@
 export { mapHeadersToProperties } from './headerMapping';
 export { getRequiredHeaders, validateHeaders } from './headerRequirements';
 export { getExcelFormat } from './templateFormat';
-export { 
+export type { 
   ProductType, 
   InstitutionType, 
   ExcelFormat, 

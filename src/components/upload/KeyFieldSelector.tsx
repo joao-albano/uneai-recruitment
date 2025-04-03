@@ -1,7 +1,8 @@
 
 import React, { useEffect } from 'react';
 import { useProduct } from '@/context/ProductContext';
-import { getKeyFields, InstitutionType } from '@/utils/validation/templateManager';
+import { getKeyFields } from '@/utils/validation/templateManager';
+import type { InstitutionType } from '@/utils/validation/headerTypes';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { KeyRound } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -20,7 +21,10 @@ const KeyFieldSelector: React.FC<KeyFieldSelectorProps> = ({
   const { currentProduct } = useProduct();
   
   // Get available key fields for this product and institution type
-  const keyFields = getKeyFields(currentProduct, institutionType);
+  const keyFields = getKeyFields(
+    currentProduct === 'recruitment' ? 'recruitment' : 'retention',
+    institutionType
+  );
   
   // When institution type changes, reset the selected key field if it's not valid for the new type
   useEffect(() => {
@@ -80,7 +84,7 @@ const KeyFieldSelector: React.FC<KeyFieldSelectorProps> = ({
         </SelectContent>
       </Select>
       {institutionType === 'university' && currentProduct === 'recruitment' && (
-        <Alert variant="outline" className="mt-2 py-2 border-amber-200 bg-amber-50">
+        <Alert variant="default" className="mt-2 py-2 border-amber-200 bg-amber-50">
           <AlertDescription className="text-xs text-amber-700">
             Para Ensino Superior, você deve escolher entre Email ou CPF como campo chave.
             Um destes campos deve estar presente em todos os registros.

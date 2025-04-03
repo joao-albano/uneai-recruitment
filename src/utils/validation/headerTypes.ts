@@ -1,6 +1,4 @@
 
-import { HeaderMap } from "./types";
-
 // Define product and institution types
 export type ProductType = 'retention' | 'recruitment';
 export type InstitutionType = 'school' | 'university';

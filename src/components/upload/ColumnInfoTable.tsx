@@ -2,7 +2,7 @@
 import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useProduct } from '@/context/ProductContext';
-import { InstitutionType } from '@/utils/validation/headerTypes';
+import type { InstitutionType } from '@/utils/validation/headerTypes';
 import { getTemplateColumns } from '@/utils/validation/templateFormat';
 import { Badge } from '@/components/ui/badge';
 import { KeyRound, AlertTriangle } from 'lucide-react';
@@ -15,7 +15,10 @@ const ColumnInfoTable: React.FC<ColumnInfoTableProps> = ({ institutionType }) =>
   const { currentProduct } = useProduct();
   
   // Get column definitions for the current product and institution type
-  const columns = getTemplateColumns(currentProduct, institutionType);
+  const columns = getTemplateColumns(
+    currentProduct === 'recruitment' ? 'recruitment' : 'retention',
+    institutionType
+  );
   
   return (
     <div className="border rounded-md p-4 bg-muted/30 mb-4">
@@ -40,10 +43,10 @@ const ColumnInfoTable: React.FC<ColumnInfoTableProps> = ({ institutionType }) =>
                   <span className="text-red-500" title="Campo obrigatório">*</span>
                 )}
                 {column.isKeyField && institutionType === 'school' && (
-                  <KeyRound className="h-3 w-3 text-amber-500" title="Campo chave obrigatório" />
+                  <KeyRound className="h-3 w-3 text-amber-500" aria-label="Campo chave obrigatório" />
                 )}
                 {column.isKeyField && institutionType === 'university' && (
-                  <KeyRound className="h-3 w-3 text-amber-500" title="Campo pode ser usado como chave única" />
+                  <KeyRound className="h-3 w-3 text-amber-500" aria-label="Campo pode ser usado como chave única" />
                 )}
               </TableCell>
               <TableCell>

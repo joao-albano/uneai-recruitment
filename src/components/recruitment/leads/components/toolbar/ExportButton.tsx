@@ -9,7 +9,8 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
-import { downloadTemplate, InstitutionType } from '@/utils/validation/templateManager';
+import { downloadTemplate } from '@/utils/validation/templateManager';
+import type { InstitutionType } from '@/utils/validation/headerTypes';
 import { useProduct } from '@/context/ProductContext';
 
 interface ExportButtonProps {
@@ -21,7 +22,10 @@ const ExportButton: React.FC<ExportButtonProps> = ({ exportLeads }) => {
   
   // Handle template download by institution type
   const handleDownloadTemplate = (institutionType: InstitutionType) => {
-    downloadTemplate(currentProduct, institutionType);
+    downloadTemplate(
+      currentProduct === 'recruitment' ? 'recruitment' : 'retention',
+      institutionType
+    );
   };
 
   return (

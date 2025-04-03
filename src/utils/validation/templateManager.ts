@@ -6,7 +6,7 @@ import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 
 // Just assuming this function exists based on the imports in other files
-export { ProductType, InstitutionType } from './headerTypes';
+export type { ProductType, InstitutionType } from './headerTypes';
 
 // Function to generate template Excel file based on product and institution type
 export const generateExcelTemplate = (productType: ProductType, institutionType: InstitutionType): ArrayBuffer => {

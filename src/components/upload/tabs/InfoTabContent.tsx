@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Info, KeyRound, Plus } from 'lucide-react';
-import { downloadTemplate, InstitutionType } from '@/utils/validation/templateManager';
+import { downloadTemplate } from '@/utils/validation/templateManager';
+import type { InstitutionType } from '@/utils/validation/headerTypes';
 import InstitutionTypeSelector from '@/components/upload/InstitutionTypeSelector';
 import { useProduct } from '@/context/ProductContext';
 
@@ -12,7 +13,10 @@ const InfoTabContent: React.FC = () => {
   const { currentProduct } = useProduct();
 
   const handleDownloadTemplate = () => {
-    downloadTemplate(currentProduct, institutionType);
+    downloadTemplate(
+      currentProduct === 'recruitment' ? 'recruitment' : 'retention',
+      institutionType
+    );
   };
 
   return (

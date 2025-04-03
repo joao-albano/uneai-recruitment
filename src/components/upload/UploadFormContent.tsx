@@ -8,7 +8,8 @@ import ColumnInfoTable from './ColumnInfoTable';
 import InstitutionTypeSelector from './InstitutionTypeSelector';
 import KeyFieldSelector from './KeyFieldSelector';
 import FileUploadHandler from './FileUploadHandler';
-import { downloadTemplate, InstitutionType } from '@/utils/validation/templateManager';
+import { downloadTemplate } from '@/utils/validation/templateManager';
+import type { InstitutionType } from '@/utils/validation/headerTypes';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CheckCircle, InfoIcon, KeyRound, Download } from 'lucide-react';
 import { useProduct } from '@/context/ProductContext';
@@ -59,7 +60,10 @@ const UploadFormContent: React.FC = () => {
   };
 
   const handleDownloadTemplate = () => {
-    downloadTemplate(currentProduct, institutionType);
+    downloadTemplate(
+      currentProduct === 'recruitment' ? 'recruitment' : 'retention',
+      institutionType
+    );
   };
   
   // Determine if we can proceed based on key field selection
