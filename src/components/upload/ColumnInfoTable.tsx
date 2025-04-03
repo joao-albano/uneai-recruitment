@@ -1,105 +1,96 @@
 
 import React from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useProduct } from '@/context/ProductContext';
-import type { InstitutionType } from '@/utils/validation/headerTypes';
-import { getTemplateColumns } from '@/utils/validation/templateFormat';
-import { Badge } from '@/components/ui/badge';
-import { KeyRound, AlertTriangle } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { InstitutionType } from '@/utils/validation/headerTypes';
 
-interface ColumnInfoTableProps {
+export interface ColumnInfoTableProps {
   institutionType: InstitutionType;
+  currentProduct?: 'recruitment' | 'retention';
 }
 
-const ColumnInfoTable: React.FC<ColumnInfoTableProps> = ({ institutionType }) => {
-  const { currentProduct } = useProduct();
-  
-  // Get column definitions for the current product and institution type
-  const columns = getTemplateColumns(
-    currentProduct === 'recruitment' ? 'recruitment' : 'retention',
-    institutionType
-  );
+const ColumnInfoTable: React.FC<ColumnInfoTableProps> = ({ 
+  institutionType,
+  currentProduct = 'retention'
+}) => {
+  // Change required columns based on institution type and product
+  const requiredColumns = currentProduct === 'recruitment' 
+    ? (institutionType === 'school' 
+        ? ['nome', 'ra', 'turma', 'telefone'] 
+        : ['nome', 'email', 'curso', 'telefone'])
+    : ['nome', 'ra', 'turma', 'frequencia', 'notas']; // For retention
+
+  // Change optional columns based on institution type and product
+  const optionalColumns = currentProduct === 'recruitment'
+    ? (institutionType === 'school'
+        ? ['email', 'curso', 'responsavel', 'obs'] 
+        : ['cpf', 'endereco', 'obs'])
+    : ['comportamento', 'responsavel', 'contato_responsavel', 'obs']; // For retention
   
   return (
-    <div className="border rounded-md p-4 bg-muted/30 mb-4">
-      <h3 className="text-sm font-medium mb-2">
-        Formato da planilha para {currentProduct === 'recruitment' ? 'captação de leads' : 'dados dos alunos'} 
-        ({institutionType === 'school' ? 'Educação Básica' : 'Ensino Superior'}):
-      </h3>
+    <div className="border rounded-md">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-1/4">Coluna</TableHead>
-            <TableHead className="w-2/4">Descrição</TableHead>
-            <TableHead className="w-1/4">Exemplo</TableHead>
+            <TableHead className="w-1/3">Coluna</TableHead>
+            <TableHead className="w-1/3">Obrigatório</TableHead>
+            <TableHead className="w-1/3">Descrição</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {columns.map((column) => (
-            <TableRow key={column.header}>
-              <TableCell className="font-medium flex items-center gap-2">
-                {column.header} 
-                {column.required && (
-                  <span className="text-red-500" title="Campo obrigatório">*</span>
-                )}
-                {column.isKeyField && institutionType === 'school' && (
-                  <KeyRound className="h-3 w-3 text-amber-500" aria-label="Campo chave obrigatório" />
-                )}
-                {column.isKeyField && institutionType === 'university' && (
-                  <KeyRound className="h-3 w-3 text-amber-500" aria-label="Campo pode ser usado como chave única" />
-                )}
-              </TableCell>
-              <TableCell>
-                {column.description}
-                {column.isKeyField && institutionType === 'school' && (
-                  <Badge variant="outline" className="ml-2 text-xs bg-amber-50 text-amber-700 border-amber-200">
-                    Chave única obrigatória
-                  </Badge>
-                )}
-                {column.isKeyField && institutionType === 'university' && (
-                  <Badge variant="outline" className="ml-2 text-xs bg-amber-50 text-amber-700 border-amber-200">
-                    Chave única opcional
-                  </Badge>
-                )}
-                {institutionType === 'university' && column.header === 'email' && (
-                  <Badge variant="outline" className="ml-2 text-xs bg-blue-50 text-blue-700 border-blue-200">
-                    <AlertTriangle className="h-3 w-3 mr-1 inline" />
-                    Email ou CPF necessário
-                  </Badge>
-                )}
-                {institutionType === 'university' && column.header === 'cpf' && (
-                  <Badge variant="outline" className="ml-2 text-xs bg-blue-50 text-blue-700 border-blue-200">
-                    <AlertTriangle className="h-3 w-3 mr-1 inline" />
-                    Email ou CPF necessário
-                  </Badge>
-                )}
-              </TableCell>
-              <TableCell className="text-muted-foreground">{column.example}</TableCell>
+          {requiredColumns.map(column => (
+            <TableRow key={column}>
+              <TableCell className="font-medium">{column}</TableCell>
+              <TableCell>Sim</TableCell>
+              <TableCell>{getColumnDescription(column)}</TableCell>
+            </TableRow>
+          ))}
+          {optionalColumns.map(column => (
+            <TableRow key={column}>
+              <TableCell className="font-medium">{column}</TableCell>
+              <TableCell>Não</TableCell>
+              <TableCell>{getColumnDescription(column)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <div className="mt-4 space-y-2 text-xs text-muted-foreground">
-        <p>
-          <strong>Nota:</strong> Os campos marcados com <span className="text-red-500">*</span> são obrigatórios.
-        </p>
-        
-        {institutionType === 'school' && (
-          <p className="flex items-center gap-1">
-            <KeyRound className="h-3 w-3 text-amber-500 inline" />
-            <span>O campo RA é obrigatório e será usado como chave única para evitar duplicações.</span>
-          </p>
-        )}
-        
-        {institutionType === 'university' && (
-          <p className="flex items-center gap-1">
-            <KeyRound className="h-3 w-3 text-amber-500 inline" />
-            <span>É necessário fornecer pelo menos um dos campos Email ou CPF, que serão usados como chave única.</span>
-          </p>
-        )}
-      </div>
     </div>
   );
 };
+
+// Helper function to get description for each column
+function getColumnDescription(column: string): string {
+  switch (column.toLowerCase()) {
+    case 'nome':
+      return 'Nome completo do aluno/lead';
+    case 'ra':
+      return 'Registro acadêmico (código de matrícula)';
+    case 'email':
+      return 'Endereço de e-mail';
+    case 'cpf':
+      return 'CPF do aluno/lead';
+    case 'telefone':
+      return 'Telefone de contato';
+    case 'turma':
+      return 'Turma ou série do aluno';
+    case 'curso':
+      return 'Curso de interesse';
+    case 'frequencia':
+      return 'Percentual de frequência às aulas (0-100)';
+    case 'notas':
+      return 'Média das notas do aluno (0-10)';
+    case 'comportamento':
+      return 'Avaliação de comportamento (1-5)';
+    case 'responsavel':
+      return 'Nome do responsável';
+    case 'contato_responsavel':
+      return 'Telefone do responsável';
+    case 'endereco':
+      return 'Endereço residencial ou comercial';
+    case 'obs':
+      return 'Observações adicionais';
+    default:
+      return 'Informação adicional';
+  }
+}
 
 export default ColumnInfoTable;

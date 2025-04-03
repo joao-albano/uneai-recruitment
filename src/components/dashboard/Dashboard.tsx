@@ -61,10 +61,10 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  // Convert AlertItem[] to Alert[] by formatting createdAt to string
+  // Convert AlertItem[] to Alert[] by formatting createdAt to Date objects
   const convertedAlerts: Alert[] = alerts.map(alert => ({
     ...alert,
-    createdAt: alert.createdAt instanceof Date ? alert.createdAt.toISOString() : alert.createdAt
+    createdAt: alert.createdAt instanceof Date ? alert.createdAt : new Date(alert.createdAt)
   }));
 
   return (

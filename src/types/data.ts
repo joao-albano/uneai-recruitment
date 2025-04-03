@@ -46,7 +46,7 @@ export type AlertItem = {
   studentId: string;
   studentName: string;
   studentClass: string;
-  type: 'high-risk' | 'medium-risk' | 'low-risk' | 'survey-requested' | 'meeting-scheduled' | 'appointment-reminder' | 'error' | 'info';
+  type: 'high-risk' | 'medium-risk' | 'low-risk' | 'survey-requested' | 'meeting-scheduled' | 'appointment-reminder' | 'error' | 'info' | 'lead-opportunity' | 'stage-change' | 'campaign-performance' | 'lead-assigned';
   message: string;
   createdAt: Date;
   read: boolean;
@@ -96,4 +96,3 @@ export type DataContextType = {
   // Nova função para processar as pesquisas com o modelo de IA
   processSurveyWithRiskModel: (survey: SurveyData) => void;
 };
-

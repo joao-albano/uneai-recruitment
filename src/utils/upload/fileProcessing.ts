@@ -1,4 +1,3 @@
-
 import { StudentData, UploadRecord } from '@/types/data';
 import { parseCSV, parseExcel } from '@/utils/validation';
 import { ValidationError } from '@/utils/validation/types';
@@ -28,10 +27,10 @@ export async function processFile(
     if (fileType === 'csv') {
       // Process CSV file
       const text = await file.text();
-      result = await parseCSV(text, productType);
+      result = await parseCSV(text);
     } else {
       // Process Excel file
-      result = await parseExcel(file, productType);
+      result = await parseExcel(file);
     }
     
     // Check for validation errors
