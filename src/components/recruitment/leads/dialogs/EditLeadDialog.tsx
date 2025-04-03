@@ -15,12 +15,14 @@ import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2 } from 'lucide-react';
 import {
-  Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
+
+// Import Dialog separately to avoid JSX identifier conflicts
+import { Dialog as DialogRoot } from "@/components/ui/dialog";
 
 interface ChildData {
   name: string;
@@ -152,7 +154,7 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
   }
 
   return (
-    <Dialog 
+    <DialogRoot 
       open={open} 
       onOpenChange={(isOpen) => {
         if (isSubmitting) return;
@@ -383,7 +385,7 @@ const EditLeadDialog: React.FC<EditLeadDialogProps> = ({
           </div>
         )}
       </DialogContent>
-    </Dialog>
+    </DialogRoot>
   );
 };
 
