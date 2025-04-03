@@ -2,7 +2,8 @@
 import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useProduct } from '@/context/ProductContext';
-import { getTemplateFormat, InstitutionType } from '@/utils/validation/templateManager';
+import { InstitutionType } from '@/utils/validation/headerTypes';
+import { getTemplateColumns } from '@/utils/validation/templateFormat';
 import { Badge } from '@/components/ui/badge';
 import { KeyRound, AlertTriangle } from 'lucide-react';
 
@@ -13,8 +14,8 @@ interface ColumnInfoTableProps {
 const ColumnInfoTable: React.FC<ColumnInfoTableProps> = ({ institutionType }) => {
   const { currentProduct } = useProduct();
   
-  // Obter as colunas específicas para o produto atual e tipo de instituição
-  const columns = getTemplateFormat(currentProduct, institutionType);
+  // Get column definitions for the current product and institution type
+  const columns = getTemplateColumns(currentProduct, institutionType);
   
   return (
     <div className="border rounded-md p-4 bg-muted/30 mb-4">
