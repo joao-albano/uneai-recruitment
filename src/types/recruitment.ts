@@ -74,7 +74,7 @@ export type FunnelStage = {
   order: number;
   description?: string;
   isActive: boolean;
-  leadCount?: number;      // Total de leads nessa etapa
+  leadCount: number;      // Making leadCount required
   conversionRate?: number; // Taxa de conversão dessa etapa
   expectedDuration?: number; // Duração esperada em dias nessa etapa
 };

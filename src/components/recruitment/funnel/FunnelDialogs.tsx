@@ -3,7 +3,7 @@ import React from 'react';
 import FunnelStageEditDialog from './FunnelStageEditDialog';
 import FunnelConfigDialog from './FunnelConfigDialog';
 import NewStageDialog from './NewStageDialog';
-import { FunnelStage } from '@/types/recruitment';
+import type { FunnelStage } from '@/types/recruitment';
 
 interface FunnelDialogsProps {
   editDialogOpen: boolean;

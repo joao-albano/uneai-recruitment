@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import FunnelStagesList from './FunnelStagesList';
-import { FunnelStage } from '@/types/recruitment';
+import type { FunnelStage } from '@/types/recruitment';
 
 interface FunnelVisualizationCardProps {
   stages: FunnelStage[];

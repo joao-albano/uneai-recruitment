@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,18 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-
-// Stage interface to match the data structure used in FunnelManagement
-interface FunnelStage {
-  id: string;
-  name: string;
-  order: number;
-  isActive: boolean;
-  leadCount: number;
-  conversionRate: number;
-  expectedDuration: number;
-  description: string;
-}
+import type { FunnelStage } from '@/types/recruitment';
 
 interface FunnelStageEditDialogProps {
   open: boolean;

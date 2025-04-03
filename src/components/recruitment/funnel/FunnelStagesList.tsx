@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowDown, Users } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { FunnelStage } from '@/types/recruitment';
+import type { FunnelStage } from '@/types/recruitment';
 
 interface FunnelStagesListProps {
   stages: FunnelStage[];
