@@ -45,10 +45,10 @@ const InfoTabContent: React.FC = () => {
                 {institutionType === 'school' ? (
                   <>
                     <li><strong>nome</strong> - Nome completo do lead (obrigatório)</li>
-                    <li><strong>email</strong> <KeyRound className="h-3 w-3 text-amber-500 inline mb-0.5" /> - Email do lead (obrigatório)</li>
-                    <li><strong>telefone</strong> <KeyRound className="h-3 w-3 text-amber-500 inline mb-0.5" /> - Número de telefone do lead (obrigatório)</li>
-                    <li><strong>ra</strong> <KeyRound className="h-3 w-3 text-amber-500 inline mb-0.5" /> - Número de registro/matrícula do aluno</li>
-                    <li><strong>cpf</strong> <KeyRound className="h-3 w-3 text-amber-500 inline mb-0.5" /> - CPF do responsável</li>
+                    <li><strong>email</strong> - Email do lead (obrigatório)</li>
+                    <li><strong>telefone</strong> - Número de telefone do lead</li>
+                    <li><strong>ra</strong> <KeyRound className="h-3 w-3 text-amber-500 inline mb-0.5" /> - Número de registro/matrícula do aluno (obrigatório)</li>
+                    <li><strong>cpf</strong> - CPF do responsável</li>
                     <li><strong>canal</strong> - Canal de origem (ex: Facebook, Instagram, Site) (obrigatório)</li>
                     <li><strong>serie</strong> - Série/ano pretendido</li>
                     <li><strong>quantidade_filhos</strong> - Número de filhos</li>
@@ -62,7 +62,7 @@ const InfoTabContent: React.FC = () => {
                   <>
                     <li><strong>nome</strong> - Nome completo do lead (obrigatório)</li>
                     <li><strong>email</strong> <KeyRound className="h-3 w-3 text-amber-500 inline mb-0.5" /> - Email do lead (obrigatório)</li>
-                    <li><strong>telefone</strong> <KeyRound className="h-3 w-3 text-amber-500 inline mb-0.5" /> - Número de telefone do lead (obrigatório)</li>
+                    <li><strong>telefone</strong> - Número de telefone do lead (obrigatório)</li>
                     <li><strong>cpf</strong> <KeyRound className="h-3 w-3 text-amber-500 inline mb-0.5" /> - CPF do candidato</li>
                     <li><strong>canal</strong> - Canal de origem (ex: Facebook, Instagram, Site) (obrigatório)</li>
                     <li><strong>curso</strong> - Curso de interesse (obrigatório)</li>

@@ -8,7 +8,7 @@ export const getRequiredHeaders = (
 ): string[] => {
   if (productType === 'recruitment') {
     if (institutionType === 'school') {
-      return ['nome', 'email', 'telefone', 'canal'];
+      return ['nome', 'email', 'ra', 'canal'];
     } else {
       return ['nome', 'email', 'telefone', 'canal', 'curso'];
     }

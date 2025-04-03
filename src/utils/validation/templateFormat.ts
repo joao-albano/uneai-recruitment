@@ -11,7 +11,7 @@ export const getTemplateColumns = (
       return [
         { header: 'nome', description: 'Nome completo do lead', example: 'João da Silva', required: true },
         { header: 'email', description: 'Email do lead', example: 'joao@email.com', required: true, isKeyField: false },
-        { header: 'telefone', description: 'Número de telefone do lead', example: '(11) 98765-4321', required: true, isKeyField: false },
+        { header: 'telefone', description: 'Número de telefone do lead', example: '(11) 98765-4321', required: false, isKeyField: false },
         { header: 'ra', description: 'Número de registro/matrícula do aluno', example: '123456', required: true, isKeyField: true },
         { header: 'cpf', description: 'CPF do responsável', example: '123.456.789-00', required: false, isKeyField: false },
         { header: 'canal', description: 'Canal de origem (ex: Facebook, Instagram, Site)', example: 'Facebook', required: true },
@@ -78,12 +78,14 @@ export const getExcelFormat = (
   
   if (productType === 'recruitment') {
     if (institutionType === 'school') {
-      description = 'O arquivo deve conter as colunas: Nome, Email, Telefone, Canal (origem), Série pretendida, ' +
+      description = 'O arquivo deve conter as colunas: Nome, Email, RA (obrigatórios), Telefone, ' +
+        'Canal (origem), Série pretendida, ' +
         'Quantidade de Filhos, Nomes dos Filhos, Idades dos Filhos, Intenção de Matrícula, ' +
         'Melhor Horário para Contato, e Observações.';
     } else {
-      description = 'O arquivo deve conter as colunas: Nome, Email, Telefone, CPF, Canal (origem), ' +
-        'Curso de interesse, Modalidade (presencial/EAD), Período, Campus, Intenção de Matrícula, ' +
+      description = 'O arquivo deve conter as colunas: Nome, Email, Telefone, Canal (origem), ' +
+        'Curso de interesse (obrigatórios), CPF, ' +
+        'Modalidade (presencial/EAD), Período, Campus, Intenção de Matrícula, ' +
         'Melhor Horário para Contato, e Observações.';
     }
   } else {
