@@ -3,6 +3,10 @@ import { useState, useEffect } from 'react';
 import { Campaign } from '@/types/recruitment';
 import { v4 as uuidv4 } from 'uuid';
 
+// Key for storing campaigns in localStorage
+const CAMPAIGNS_STORAGE_KEY = 'eduquest_recruitment_campaigns';
+
+// Demo campaigns as initial data
 const DEMO_CAMPAIGNS: Campaign[] = [
   {
     id: uuidv4(),
@@ -63,18 +67,48 @@ const DEMO_CAMPAIGNS: Campaign[] = [
   }
 ];
 
+// Helper to load campaigns from localStorage
+const loadCampaignsFromStorage = (): Campaign[] => {
+  try {
+    const storedData = localStorage.getItem(CAMPAIGNS_STORAGE_KEY);
+    if (storedData) {
+      const parsedData = JSON.parse(storedData);
+      
+      // Convert date strings back to Date objects
+      return parsedData.map((campaign: any) => ({
+        ...campaign,
+        startDate: new Date(campaign.startDate),
+        endDate: campaign.endDate ? new Date(campaign.endDate) : undefined
+      }));
+    }
+  } catch (error) {
+    console.error('Error loading campaigns from storage:', error);
+  }
+  
+  return DEMO_CAMPAIGNS;
+};
+
+// Helper to save campaigns to localStorage
+const saveCampaignsToStorage = (campaigns: Campaign[]) => {
+  try {
+    localStorage.setItem(CAMPAIGNS_STORAGE_KEY, JSON.stringify(campaigns));
+  } catch (error) {
+    console.error('Error saving campaigns to storage:', error);
+  }
+};
+
 export const useCampaigns = () => {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simula carregamento de dados
+    // Load saved campaigns from localStorage or use demo data
     const loadCampaigns = async () => {
       try {
-        // Simular atraso de rede
+        // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 500));
-        setCampaigns(DEMO_CAMPAIGNS);
+        setCampaigns(loadCampaignsFromStorage());
         setIsLoading(false);
       } catch (err) {
         setError('Erro ao carregar campanhas');
@@ -84,6 +118,13 @@ export const useCampaigns = () => {
 
     loadCampaigns();
   }, []);
+
+  // Save campaigns to localStorage whenever they change
+  useEffect(() => {
+    if (!isLoading && campaigns.length > 0) {
+      saveCampaignsToStorage(campaigns);
+    }
+  }, [campaigns, isLoading]);
 
   const createCampaign = (campaign: Omit<Campaign, 'id'>) => {
     const newCampaign = {
@@ -116,7 +157,7 @@ export const useCampaigns = () => {
     updateCampaign(id, { status: 'completed' });
   };
 
-  // Filtrar campanhas por status
+  // Filter campaigns by status
   const getArchivedCampaigns = () => {
     return campaigns.filter(campaign => campaign.status === 'completed');
   };
