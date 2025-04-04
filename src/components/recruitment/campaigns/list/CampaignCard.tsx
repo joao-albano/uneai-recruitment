@@ -10,7 +10,10 @@ import {
   Phone, 
   BarChart2,
   Send,
-  MoreVertical
+  ExternalLink,
+  MapPin,
+  Users,
+  GraduationCap
 } from 'lucide-react';
 import { Campaign } from '@/types/recruitment';
 
@@ -90,30 +93,52 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
           </div>
         </div>
         
-        <div className="bg-muted p-3 border-t flex items-center justify-between">
-          <div className="flex flex-wrap gap-1">
+        <div className="p-3 border-t">
+          <h4 className="text-xs font-medium mb-2">Segmentação</h4>
+          
+          <div className="space-y-2 mb-3">
             {campaign.target?.audience && (
-              <Badge variant="outline" className="text-xs">
-                {campaign.target.audience}
-              </Badge>
+              <div className="flex items-center gap-1">
+                <Users className="h-3 w-3 text-muted-foreground" />
+                <span className="text-xs">{campaign.target.audience}</span>
+              </div>
             )}
+            
             {campaign.target?.location && (
-              <Badge variant="outline" className="text-xs">
-                {campaign.target.location}
-              </Badge>
+              <div className="flex items-center gap-1">
+                <MapPin className="h-3 w-3 text-muted-foreground" />
+                <span className="text-xs">{campaign.target.location}</span>
+              </div>
             )}
-            {campaign.target?.courses && campaign.target.courses.map((course, index) => (
-              <Badge key={index} variant="outline" className="bg-primary/10 text-xs">
-                {course}
-              </Badge>
-            ))}
+            
+            {campaign.target?.courses && campaign.target.courses.length > 0 && (
+              <div className="flex items-start gap-1">
+                <GraduationCap className="h-3 w-3 text-muted-foreground mt-0.5" />
+                <div className="flex flex-wrap gap-1">
+                  {campaign.target.courses.map((course, index) => (
+                    <Badge key={index} variant="outline" className="bg-primary/10 text-xs px-1.5 py-0">
+                      {course}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {!campaign.target?.audience && !campaign.target?.location && 
+             (!campaign.target?.courses || campaign.target.courses.length === 0) && (
+              <p className="text-xs text-muted-foreground italic">
+                Nenhuma segmentação definida
+              </p>
+            )}
           </div>
           
           <Button 
             variant="ghost" 
             size="sm"
+            className="w-full flex items-center justify-center gap-1 mt-1"
             onClick={() => onViewDetails(campaign)}
           >
+            <ExternalLink className="h-3.5 w-3.5" />
             Ver Detalhes
           </Button>
         </div>
