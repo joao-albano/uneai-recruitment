@@ -153,12 +153,20 @@ const ChannelsTabContent: React.FC = () => {
                     top: 20,
                     right: 30,
                     left: 20,
-                    bottom: 5,
+                    bottom: 25, // Aumentado para dar mais espaço para os rótulos
                   }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
+                  <XAxis 
+                    dataKey="name" 
+                    height={30} // Altura específica para o eixo X
+                    tick={{ fontSize: 12 }} // Fonte menor para os rótulos
+                    tickMargin={10} // Espaço entre os ticks e os rótulos
+                  />
+                  <YAxis 
+                    width={30} // Largura específica para o eixo Y
+                    tick={{ fontSize: 12 }} // Fonte menor para os rótulos
+                  />
                   <ChartTooltip
                     content={
                       <ChartTooltipContent 
@@ -166,7 +174,12 @@ const ChannelsTabContent: React.FC = () => {
                       />
                     }
                   />
-                  <Legend />
+                  <Legend 
+                    wrapperStyle={{ 
+                      paddingTop: 10,
+                      fontSize: '12px' 
+                    }} 
+                  />
                   <Bar dataKey="whatsapp" name="WhatsApp" fill="#25D366" />
                   <Bar dataKey="facebook" name="Facebook" fill="#1877F2" />
                   <Bar dataKey="google" name="Google" fill="#4285F4" />
