@@ -1,13 +1,23 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage, Form } from '@/components/ui/form';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MessageSquare } from 'lucide-react';
+
+// Lista de leads mockados para demonstração
+// Em um ambiente real, esses leads viriam de uma API ou contexto
+const mockLeads = [
+  { id: '1', name: 'Maria Oliveira', email: 'maria@email.com', phone: '(11) 98765-4321', course: 'Psicologia' },
+  { id: '2', name: 'João Silva', email: 'joao@email.com', phone: '(11) 91234-5678', course: 'Administração' },
+  { id: '3', name: 'Pedro Souza', email: 'pedro@email.com', phone: '(11) 99876-5432', course: 'Direito' },
+  { id: '4', name: 'Ana Santos', email: 'ana@email.com', phone: '(11) 98877-6655', course: 'Medicina' },
+  { id: '5', name: 'Carla Lima', email: 'carla@email.com', phone: '(11) 97766-5544', course: 'Engenharia' },
+];
 
 interface NewConversationDialogProps {
   open: boolean;
@@ -21,13 +31,9 @@ interface NewConversationDialogProps {
 }
 
 const formSchema = z.object({
-  name: z.string().min(3, { message: 'Nome deve ter pelo menos 3 caracteres' }),
-  email: z.string().email({ message: 'Email inválido' }),
-  phone: z.string().min(10, { message: 'Telefone deve ter pelo menos 10 dígitos' }),
-  course: z.string().min(1, { message: 'Selecione um curso' }),
+  leadId: z.string().min(1, { message: 'Selecione um lead' }),
 });
 
-// Define the type using the schema to ensure it matches
 type FormValues = z.infer<typeof formSchema>;
 
 const NewConversationDialog: React.FC<NewConversationDialogProps> = ({
@@ -38,21 +44,24 @@ const NewConversationDialog: React.FC<NewConversationDialogProps> = ({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      phone: '',
-      course: '',
+      leadId: '',
     },
   });
 
   const onSubmit = (data: FormValues) => {
-    // Since data is validated by zod, we can safely pass it to onCreateConversation
-    onCreateConversation({
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      course: data.course
-    });
+    // Localiza o lead selecionado na lista de leads
+    const selectedLead = mockLeads.find(lead => lead.id === data.leadId);
+    
+    // Se encontrar o lead, inicia a conversa com ele
+    if (selectedLead) {
+      onCreateConversation({
+        name: selectedLead.name,
+        email: selectedLead.email,
+        phone: selectedLead.phone,
+        course: selectedLead.course
+      });
+    }
+    
     form.reset();
   };
 
@@ -66,65 +75,21 @@ const NewConversationDialog: React.FC<NewConversationDialogProps> = ({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="name"
+              name="leadId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome do Lead</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nome completo" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="email@exemplo.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Telefone</FormLabel>
-                  <FormControl>
-                    <Input placeholder="(00) 00000-0000" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="course"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Curso de Interesse</FormLabel>
+                  <FormLabel>Selecione um Lead</FormLabel>
                   <FormControl>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecione um curso" />
+                        <SelectValue placeholder="Selecione um lead" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="administracao">Administração</SelectItem>
-                        <SelectItem value="direito">Direito</SelectItem>
-                        <SelectItem value="psicologia">Psicologia</SelectItem>
-                        <SelectItem value="engenharia">Engenharia</SelectItem>
-                        <SelectItem value="medicina">Medicina</SelectItem>
-                        <SelectItem value="pedagogia">Pedagogia</SelectItem>
-                        <SelectItem value="sistemas">Sistemas de Informação</SelectItem>
+                        {mockLeads.map((lead) => (
+                          <SelectItem key={lead.id} value={lead.id}>
+                            {lead.name} - {lead.course}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -135,7 +100,10 @@ const NewConversationDialog: React.FC<NewConversationDialogProps> = ({
             
             <DialogFooter className="mt-6">
               <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
-              <Button type="submit">Iniciar Conversa</Button>
+              <Button type="submit">
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Iniciar Conversa
+              </Button>
             </DialogFooter>
           </form>
         </Form>
