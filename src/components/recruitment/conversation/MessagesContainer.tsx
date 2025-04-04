@@ -50,22 +50,24 @@ const MessagesContainer: React.FC<MessagesContainerProps> = ({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto p-4">
-      {messages.map(msg => (
-        <MessageBubble 
-          key={msg.id}
-          id={msg.id}
-          content={msg.content}
-          timestamp={msg.timestamp}
-          isFromLead={msg.isFromLead}
-          isFromAi={msg.isFromAi}
-          emotion={msg.emotion}
-          intent={msg.intent}
-          objection={msg.objection}
-          showAnalytics={showAnalytics}
-        />
-      ))}
-      <div ref={messagesEndRef} />
+    <div className="flex-1 overflow-y-auto p-4 pb-2 max-h-[calc(100vh-250px)]">
+      <div className="max-w-full">
+        {messages.map(msg => (
+          <MessageBubble 
+            key={msg.id}
+            id={msg.id}
+            content={msg.content}
+            timestamp={msg.timestamp}
+            isFromLead={msg.isFromLead}
+            isFromAi={msg.isFromAi}
+            emotion={msg.emotion}
+            intent={msg.intent}
+            objection={msg.objection}
+            showAnalytics={showAnalytics}
+          />
+        ))}
+        <div ref={messagesEndRef} />
+      </div>
     </div>
   );
 };

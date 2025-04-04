@@ -74,7 +74,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   return (
     <div className={`flex mb-4 ${isFromLead ? 'justify-start' : 'justify-end'}`}>
       <div 
-        className={`max-w-[80%] p-3 rounded-lg ${
+        className={`max-w-[85%] p-3 rounded-lg break-words ${
           isFromLead 
             ? 'bg-muted text-foreground rounded-tl-none' 
             : isFromAi
@@ -89,7 +89,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
         )}
         
         <div className="text-sm">{content}</div>
-        <div className="text-xs mt-1 opacity-70 flex justify-between items-center">
+        <div className="text-xs mt-1 opacity-70 flex justify-between items-center flex-wrap">
           <span>{formatTime(timestamp)}</span>
           <div className="flex flex-wrap gap-1 ml-2">
             {isFromLead && (

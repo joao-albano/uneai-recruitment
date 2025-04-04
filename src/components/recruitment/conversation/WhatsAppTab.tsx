@@ -27,7 +27,7 @@ const WhatsAppTab: React.FC<WhatsAppTabProps> = ({
   leadId
 }) => {
   return (
-    <TabsContent value="whatsapp" className="flex-1 flex flex-col p-0 m-0">
+    <TabsContent value="whatsapp" className="flex-1 flex flex-col p-0 m-0 h-full max-h-[calc(100vh-200px)]">
       <div className="flex items-center justify-end p-2 border-b">
         <Button
           variant="ghost"
@@ -52,17 +52,21 @@ const WhatsAppTab: React.FC<WhatsAppTabProps> = ({
         )}
       </div>
 
-      <MessagesContainer 
-        messages={messages}
-        showAnalytics={showAnalytics}
-        leadId={leadId}
-      />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <MessagesContainer 
+          messages={messages}
+          showAnalytics={showAnalytics}
+          leadId={leadId}
+        />
+      </div>
       
       {isSelectedLead && (
-        <MessageInput 
-          isAiMode={isAiMode}
-          onSendMessage={onSendMessage}
-        />
+        <div className="p-2 border-t bg-background">
+          <MessageInput 
+            isAiMode={isAiMode}
+            onSendMessage={onSendMessage}
+          />
+        </div>
       )}
     </TabsContent>
   );
