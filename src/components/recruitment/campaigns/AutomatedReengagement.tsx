@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -6,20 +7,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Zap, MessageSquare, Mail, Clock, AlertCircle, CheckCircle, Edit2, PlusIcon } from 'lucide-react';
+import { Zap, MessageSquare, Mail, Clock, AlertCircle, CheckCircle, Edit2, PlusIcon, Phone } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
-
-interface ReengagementRule {
-  id: string;
-  days: number;
-  enabled: boolean;
-  channels: Array<'email' | 'whatsapp' | 'sms'>;
-  message: string;
-  emotionalTone: 'neutral' | 'urgent' | 'friendly' | 'formal';
-  lastTriggered?: Date;
-  status: 'active' | 'paused';
-}
+import { ReengagementRule } from '@/types/recruitment';
+import { v4 as uuidv4 } from 'uuid';
+import { useVoiceCallConfig } from '@/hooks/useVoiceCallConfig';
 
 const DEFAULT_RULES: ReengagementRule[] = [
   {
@@ -56,6 +49,8 @@ const DEFAULT_RULES: ReengagementRule[] = [
 const AutomatedReengagement: React.FC = () => {
   const [rules, setRules] = useState<ReengagementRule[]>(DEFAULT_RULES);
   const [editingRule, setEditingRule] = useState<ReengagementRule | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const { config: voiceCallConfig } = useVoiceCallConfig();
   
   const handleToggleRule = (id: string) => {
     setRules(prev => prev.map(rule => 
@@ -75,25 +70,51 @@ const AutomatedReengagement: React.FC = () => {
     const rule = rules.find(r => r.id === id);
     if (rule) {
       setEditingRule({ ...rule });
+      setIsCreating(false);
     }
   };
   
   const handleSaveRule = () => {
     if (editingRule) {
-      setRules(prev => prev.map(rule => 
-        rule.id === editingRule.id ? editingRule : rule
-      ));
+      if (isCreating) {
+        // Add new rule
+        setRules(prev => [...prev, editingRule]);
+        toast({
+          title: 'Regra criada',
+          description: `Nova regra de reengajamento de ${editingRule.days} dias foi criada.`,
+        });
+      } else {
+        // Update existing rule
+        setRules(prev => prev.map(rule => 
+          rule.id === editingRule.id ? editingRule : rule
+        ));
+        toast({
+          title: 'Regra atualizada',
+          description: `As alterações na regra de ${editingRule.days} dias foram salvas.`,
+        });
+      }
       setEditingRule(null);
-      
-      toast({
-        title: 'Regra atualizada',
-        description: `As alterações na regra de ${editingRule.days} dias foram salvas.`,
-      });
+      setIsCreating(false);
     }
+  };
+  
+  const handleCreateNewRule = () => {
+    // Initialize a new rule with default values
+    setEditingRule({
+      id: uuidv4(),
+      days: 10,
+      enabled: true,
+      channels: ['email'],
+      message: 'Olá {{nome}}, gostaríamos de falar sobre sua inscrição para o curso de {{curso}}.',
+      emotionalTone: 'friendly',
+      status: 'active'
+    });
+    setIsCreating(true);
   };
   
   const handleCancelEdit = () => {
     setEditingRule(null);
+    setIsCreating(false);
   };
   
   const getToneColor = (tone: string): string => {
@@ -185,7 +206,11 @@ const AutomatedReengagement: React.FC = () => {
                     <div className="flex items-center">
                       {rule.channels.includes('whatsapp') && <MessageSquare className="h-3.5 w-3.5 mr-1" />}
                       {rule.channels.includes('email') && <Mail className="h-3.5 w-3.5 mr-1" />}
-                      <span>{rule.channels.map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(', ')}</span>
+                      {rule.channels.includes('voice') && <Phone className="h-3.5 w-3.5 mr-1" />}
+                      <span>{rule.channels.map(c => {
+                        if (c === 'voice') return 'Ligação de Voz';
+                        return c.charAt(0).toUpperCase() + c.slice(1);
+                      }).join(', ')}</span>
                     </div>
                     {rule.lastTriggered && (
                       <div className="flex items-center gap-1">
@@ -204,7 +229,7 @@ const AutomatedReengagement: React.FC = () => {
         </CardContent>
         
         <CardFooter>
-          <Button variant="outline" className="w-full">
+          <Button variant="outline" className="w-full" onClick={handleCreateNewRule}>
             <PlusIcon className="h-4 w-4 mr-2" />
             Adicionar Nova Regra de Reengajamento
           </Button>
@@ -214,7 +239,7 @@ const AutomatedReengagement: React.FC = () => {
       {editingRule && (
         <Card>
           <CardHeader>
-            <CardTitle>Editar Regra de Reengajamento</CardTitle>
+            <CardTitle>{isCreating ? 'Nova Regra de Reengajamento' : 'Editar Regra de Reengajamento'}</CardTitle>
             <CardDescription>
               Personalize a mensagem e configurações de reengajamento
             </CardDescription>
@@ -252,25 +277,85 @@ const AutomatedReengagement: React.FC = () => {
             
             <div className="space-y-2">
               <Label>Canais</Label>
-              <div className="flex flex-wrap gap-2">
-                {['email', 'whatsapp', 'sms'].map((channel) => (
-                  <div key={channel} className="flex items-center space-x-2">
-                    <Switch 
-                      checked={editingRule.channels.includes(channel as any)} 
-                      onCheckedChange={() => {
-                        const newChannels = editingRule.channels.includes(channel as any)
-                          ? editingRule.channels.filter(c => c !== channel)
-                          : [...editingRule.channels, channel as 'email' | 'whatsapp' | 'sms'];
-                        setEditingRule({...editingRule, channels: newChannels});
-                      }}
-                      id={`channel-${channel}`}
-                    />
-                    <Label htmlFor={`channel-${channel}`} className="cursor-pointer">
-                      {channel.charAt(0).toUpperCase() + channel.slice(1)}
-                    </Label>
-                  </div>
-                ))}
+              <div className="flex flex-wrap gap-4">
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    checked={editingRule.channels.includes('email')} 
+                    onCheckedChange={() => {
+                      const newChannels = editingRule.channels.includes('email')
+                        ? editingRule.channels.filter(c => c !== 'email')
+                        : [...editingRule.channels, 'email'];
+                      setEditingRule({...editingRule, channels: newChannels});
+                    }}
+                    id="channel-email"
+                  />
+                  <Label htmlFor="channel-email" className="cursor-pointer flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    Email
+                  </Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    checked={editingRule.channels.includes('whatsapp')} 
+                    onCheckedChange={() => {
+                      const newChannels = editingRule.channels.includes('whatsapp')
+                        ? editingRule.channels.filter(c => c !== 'whatsapp')
+                        : [...editingRule.channels, 'whatsapp'];
+                      setEditingRule({...editingRule, channels: newChannels});
+                    }}
+                    id="channel-whatsapp"
+                  />
+                  <Label htmlFor="channel-whatsapp" className="cursor-pointer flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4" />
+                    WhatsApp
+                  </Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    checked={editingRule.channels.includes('sms')} 
+                    onCheckedChange={() => {
+                      const newChannels = editingRule.channels.includes('sms')
+                        ? editingRule.channels.filter(c => c !== 'sms')
+                        : [...editingRule.channels, 'sms'];
+                      setEditingRule({...editingRule, channels: newChannels});
+                    }}
+                    id="channel-sms"
+                  />
+                  <Label htmlFor="channel-sms" className="cursor-pointer">
+                    SMS
+                  </Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    checked={editingRule.channels.includes('voice')} 
+                    onCheckedChange={() => {
+                      const newChannels = editingRule.channels.includes('voice')
+                        ? editingRule.channels.filter(c => c !== 'voice')
+                        : [...editingRule.channels, 'voice'];
+                      setEditingRule({...editingRule, channels: newChannels});
+                    }}
+                    id="channel-voice"
+                    disabled={voiceCallConfig.provider === 'disabled'}
+                  />
+                  <Label 
+                    htmlFor="channel-voice" 
+                    className={`cursor-pointer flex items-center gap-2 ${voiceCallConfig.provider === 'disabled' ? 'text-muted-foreground' : ''}`}
+                  >
+                    <Phone className="h-4 w-4" />
+                    Ligação de Voz
+                  </Label>
+                </div>
               </div>
+              
+              {voiceCallConfig.provider === 'disabled' && editingRule.channels.includes('voice') && (
+                <div className="mt-2 text-xs text-amber-500 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  A integração de chamadas de voz não está configurada. Configure nas configurações do sistema.
+                </div>
+              )}
             </div>
           
             <div className="space-y-2">
@@ -293,7 +378,7 @@ const AutomatedReengagement: React.FC = () => {
                 Cancelar
               </Button>
               <Button onClick={handleSaveRule}>
-                Salvar Alterações
+                {isCreating ? 'Criar Regra' : 'Salvar Alterações'}
               </Button>
             </div>
           </CardContent>
