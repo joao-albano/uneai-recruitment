@@ -31,6 +31,8 @@ import {
   Link,
   Settings,
   PersonStanding,
+  PlusCircle,
+  RefreshCw,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
@@ -114,7 +116,7 @@ const contentTemplates = [
     id: 'discount', 
     name: 'Oferta Especial', 
     content: 'Olá {nome}, temos uma condição especial para o curso de {curso} com {desconto}% de desconto nas primeiras mensalidades!',
-    emoji: '��'
+    emoji: '����'
   },
   { 
     id: 'reminder', 
@@ -161,6 +163,18 @@ const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({
   const [customContent, setCustomContent] = useState<string>('');
   const [messagePreview, setMessagePreview] = useState<string>('');
   const [previewType, setPreviewType] = useState<ChannelType>('whatsapp');
+  
+  const [templateVariables, setTemplateVariables] = useState<{[key: string]: string}>({
+    nome: 'Maria',
+    curso: 'Administração',
+    duracao: '4 anos',
+    valor: '499,90',
+    desconto: '30'
+  });
+  
+  const [newVariableKey, setNewVariableKey] = useState('');
+  const [newVariableValue, setNewVariableValue] = useState('');
+  const [showVariableForm, setShowVariableForm] = useState(false);
 
   const handleInputChange = (field: string, value: any) => {
     setCampaignData(prev => ({ ...prev, [field]: value }));
@@ -345,11 +359,12 @@ const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({
   const generateMessagePreview = (content: string) => {
     let preview = content;
     
-    preview = preview.replace(/{nome}/g, 'Maria');
-    preview = preview.replace(/{curso}/g, campaignData.target?.courses?.[0] || 'Administração');
-    preview = preview.replace(/{duracao}/g, '4 anos');
-    preview = preview.replace(/{valor}/g, '499,90');
-    preview = preview.replace(/{desconto}/g, '30');
+    Object.entries(templateVariables).forEach(([key, value]) => {
+      const regex = new RegExp(`{${key}}`, 'g');
+      preview = preview.replace(regex, value);
+    });
+    
+    preview = preview.replace(/@{nome}/g, templateVariables.nome || 'Maria');
     
     setMessagePreview(preview);
   };
@@ -357,6 +372,53 @@ const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({
   const handleContentChange = (content: string) => {
     setCustomContent(content);
     generateMessagePreview(content);
+  };
+  
+  const handleVariableChange = (key: string, value: string) => {
+    setTemplateVariables(prev => ({
+      ...prev,
+      [key]: value
+    }));
+    
+    generateMessagePreview(customContent);
+  };
+  
+  const handleAddVariable = () => {
+    if (!newVariableKey.trim()) {
+      toast({
+        title: "Nome da variável obrigatório",
+        description: "Por favor, informe um nome para a variável.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    const normalizedKey = newVariableKey.trim().replace(/\s+/g, '_');
+    
+    setTemplateVariables(prev => ({
+      ...prev,
+      [normalizedKey]: newVariableValue
+    }));
+    
+    setNewVariableKey('');
+    setNewVariableValue('');
+    setShowVariableForm(false);
+    
+    toast({
+      title: "Variável adicionada",
+      description: `A variável {${normalizedKey}} foi adicionada.`
+    });
+    
+    setCampaignData(prev => ({
+      ...prev,
+      content: {
+        ...prev.content,
+        variables: [
+          ...(prev.content?.variables || []),
+          normalizedKey
+        ]
+      }
+    }));
   };
   
   const generateAiContent = () => {
@@ -749,6 +811,103 @@ const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({
                 </label>
               </RadioGroup>
               
+              {(contentStrategy === 'ai' || contentStrategy === 'templates') && (
+                <Card className="border-dashed border-muted-foreground/20">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base">Variáveis da Mensagem</CardTitle>
+                    <CardDescription>
+                      Configure os valores que serão usados para substituir as variáveis no conteúdo
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {!showVariableForm ? (
+                        <div className="grid grid-cols-2 gap-3">
+                          {Object.entries(templateVariables).map(([key, value]) => (
+                            <div key={key} className="space-y-1">
+                              <Label htmlFor={`var-${key}`} className="text-xs font-medium">
+                                {`{${key}}`}
+                              </Label>
+                              <Input 
+                                id={`var-${key}`}
+                                value={value}
+                                onChange={(e) => handleVariableChange(key, e.target.value)}
+                                className="h-8"
+                                placeholder={`Valor para ${key}`}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          <div className="space-y-1">
+                            <Label htmlFor="new-var-key">Nome da Variável</Label>
+                            <Input 
+                              id="new-var-key"
+                              value={newVariableKey}
+                              onChange={(e) => setNewVariableKey(e.target.value)}
+                              placeholder="Ex: telefone, idade, etc."
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label htmlFor="new-var-value">Valor Padrão</Label>
+                            <Input 
+                              id="new-var-value"
+                              value={newVariableValue}
+                              onChange={(e) => setNewVariableValue(e.target.value)}
+                              placeholder="Valor padrão para a variável"
+                            />
+                          </div>
+                          <div className="flex justify-end gap-2">
+                            <Button 
+                              type="button" 
+                              variant="outline" 
+                              onClick={() => setShowVariableForm(false)}
+                              size="sm"
+                            >
+                              Cancelar
+                            </Button>
+                            <Button 
+                              type="button" 
+                              onClick={handleAddVariable}
+                              size="sm"
+                            >
+                              Adicionar
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {!showVariableForm && (
+                        <div className="flex justify-between items-center">
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            size="sm"
+                            className="flex items-center gap-1"
+                            onClick={() => setShowVariableForm(true)}
+                          >
+                            <PlusCircle className="h-3.5 w-3.5" />
+                            Nova Variável
+                          </Button>
+                          
+                          <Button 
+                            type="button" 
+                            variant="ghost" 
+                            size="sm"
+                            className="flex items-center gap-1 text-muted-foreground"
+                            onClick={() => generateMessagePreview(customContent)}
+                          >
+                            <RefreshCw className="h-3.5 w-3.5" />
+                            Atualizar Preview
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              
               {contentStrategy === 'ai' && (
                 <Card>
                   <CardHeader className="pb-3">
@@ -851,7 +1010,7 @@ const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({
                             className="font-mono text-sm"
                           />
                           <p className="text-xs text-muted-foreground">
-                            Use {'{nome}'}, {'{curso}'}, {'{duracao}'}, {'{valor}'} e {'{desconto}'} como variáveis que serão substituídas automaticamente.
+                            Use variáveis como {'{nome}'} que serão substituídas automaticamente pelos valores configurados.
                           </p>
                         </div>
                       )}
@@ -927,15 +1086,16 @@ const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({
                         <div>
                           <Label className="text-sm mb-2 block">Variáveis</Label>
                           <div className="flex flex-wrap gap-1">
-                            <Badge variant="outline" className="cursor-pointer" onClick={() => handleContentChange(customContent + " {nome}")}>
-                              {'{nome}'}
-                            </Badge>
-                            <Badge variant="outline" className="cursor-pointer" onClick={() => handleContentChange(customContent + " {curso}")}>
-                              {'{curso}'}
-                            </Badge>
-                            <Badge variant="outline" className="cursor-pointer" onClick={() => handleContentChange(customContent + " {valor}")}>
-                              {'{valor}'}
-                            </Badge>
+                            {Object.keys(templateVariables).map(key => (
+                              <Badge 
+                                key={key}
+                                variant="outline" 
+                                className="cursor-pointer" 
+                                onClick={() => handleContentChange(customContent + ` {${key}}`)}
+                              >
+                                {`{${key}}`}
+                              </Badge>
+                            ))}
                           </div>
                         </div>
                       </div>
