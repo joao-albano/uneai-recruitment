@@ -19,7 +19,7 @@ import CampaignConfigurationTab from './details/CampaignConfigurationTab';
 interface CampaignDetailsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  campaign: Campaign;
+  campaign: Campaign | null;
 }
 
 const CampaignDetailsDialog: React.FC<CampaignDetailsDialogProps> = ({
@@ -30,6 +30,11 @@ const CampaignDetailsDialog: React.FC<CampaignDetailsDialogProps> = ({
   const [editOpen, setEditOpen] = useState(false);
   const { updateCampaign } = useCampaigns();
   
+  // Add null check for campaign
+  if (!campaign) {
+    return null;
+  }
+  
   const handleSaveCampaign = (updatedCampaign: Campaign) => {
     updateCampaign(updatedCampaign.id, updatedCampaign);
   };
@@ -37,7 +42,7 @@ const CampaignDetailsDialog: React.FC<CampaignDetailsDialogProps> = ({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <CampaignDetailsHeader campaign={campaign} />
           
           <Tabs defaultValue="overview" className="w-full">

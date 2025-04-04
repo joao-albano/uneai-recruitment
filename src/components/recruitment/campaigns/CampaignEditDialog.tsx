@@ -30,7 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 interface CampaignEditDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  campaign: Campaign;
+  campaign: Campaign | null;
   onSave: (campaign: Campaign) => void;
 }
 
@@ -53,20 +53,29 @@ const CampaignEditDialog: React.FC<CampaignEditDialogProps> = ({
   campaign,
   onSave
 }) => {
-  const [selectedChannels, setSelectedChannels] = useState<ChannelType[]>(campaign.channel || []);
-  const [selectedCourses, setSelectedCourses] = useState<string[]>(campaign.target?.courses || []);
+  // Add null check - if campaign is null, we shouldn't render the dialog
+  if (!campaign) {
+    return null;
+  }
+  
+  // Initialize with empty array if channel is null or undefined
+  const initialChannels = campaign.channel || [];
+  const initialCourses = campaign?.target?.courses || [];
+  
+  const [selectedChannels, setSelectedChannels] = useState<ChannelType[]>(initialChannels);
+  const [selectedCourses, setSelectedCourses] = useState<string[]>(initialCourses);
   
   const form = useForm<CampaignFormValues>({
     defaultValues: {
-      name: campaign.name,
+      name: campaign.name || '',
       description: campaign.description || '',
       startDate: campaign.startDate ? new Date(campaign.startDate).toISOString().split('T')[0] : '',
       endDate: campaign.endDate ? new Date(campaign.endDate).toISOString().split('T')[0] : '',
       budget: campaign.budget,
-      channels: campaign.channel,
+      channels: initialChannels,
       audience: campaign.target?.audience || '',
       location: campaign.target?.location || '',
-      courses: campaign.target?.courses || [],
+      courses: initialCourses,
       isAutomated: campaign.isAutomated || false
     }
   });
@@ -121,7 +130,7 @@ const CampaignEditDialog: React.FC<CampaignEditDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Editar Campanha</DialogTitle>
           <DialogDescription>
