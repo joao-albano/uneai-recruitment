@@ -9,8 +9,6 @@ import {
   Users,
   AlertCircle,
   Zap,
-  BellRing,
-  MessageSquare,
   TrendingUp,
   Filter,
   Download
@@ -31,6 +29,8 @@ import {
 } from '@/components/ui/tooltip';
 import { toast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
+import { useCampaigns } from '@/hooks/recruitment/useCampaigns';
+import { useNavigate } from 'react-router-dom';
 
 interface OpportunityItem {
   id: string;
@@ -103,22 +103,41 @@ const demoOpportunities: OpportunityItem[] = [
 const OpportunityRadar: React.FC = () => {
   const [opportunities, setOpportunities] = useState<OpportunityItem[]>(demoOpportunities);
   const [filter, setFilter] = useState<'all' | 'course' | 'location' | 'interest'>('all');
+  const { createCampaign } = useCampaigns();
+  const navigate = useNavigate();
   
   const filteredOpportunities = opportunities.filter(
     opp => filter === 'all' || opp.type === filter
   );
   
   const handleCreateCampaign = (item: OpportunityItem) => {
+    // Create a fake campaign based on the opportunity
+    const newCampaign = createCampaign({
+      name: `Campanha: ${item.name}`,
+      description: `Campanha automática baseada em oportunidade: ${item.description}`,
+      startDate: new Date(),
+      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days later
+      status: 'draft',
+      budget: item.count * 100, // Simple budget calculation
+      channel: ['mail', 'whatsapp'],
+      target: {
+        audience: item.type === 'location' ? item.name : 'Geral',
+        courses: item.type === 'course' ? [item.name] : ['Todos os cursos']
+      }
+    });
+    
     toast({
-      title: 'Campanha iniciada',
-      description: `Criando campanha para "${item.name}"`,
+      title: 'Campanha criada com sucesso',
+      description: `Nova campanha "${newCampaign.name}" criada e disponível para edição`,
     });
   };
   
-  const handleNotifyLeads = (item: OpportunityItem) => {
-    toast({
-      title: 'Notificação enviada',
-      description: `${item.count} leads serão notificados sobre "${item.name}"`,
+  const handleDetailedAnalysis = () => {
+    navigate('/recruitment/analytics', { 
+      state: { 
+        analyticsSource: 'opportunity-radar',
+        opportunities: filteredOpportunities 
+      } 
     });
   };
   
@@ -254,24 +273,6 @@ const OpportunityRadar: React.FC = () => {
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
-                        
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button 
-                                size="sm" 
-                                variant="ghost"
-                                onClick={() => handleNotifyLeads(item)}
-                              >
-                                <BellRing className="h-3.5 w-3.5" />
-                                <span className="sr-only">Notificar Leads</span>
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Notificar Leads</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
                       </div>
                     </td>
                   </tr>
@@ -286,7 +287,7 @@ const OpportunityRadar: React.FC = () => {
             Exibindo {filteredOpportunities.length} de {opportunities.length} oportunidades
           </p>
           
-          <Button variant="link" size="sm" className="gap-1">
+          <Button variant="link" size="sm" className="gap-1" onClick={handleDetailedAnalysis}>
             <BarChart className="h-3.5 w-3.5" />
             <span>Ver Análise Detalhada</span>
           </Button>
@@ -320,14 +321,10 @@ const OpportunityRadar: React.FC = () => {
                       <strong className="text-sm">Ação sugerida:</strong>
                       <p className="text-sm mt-1">{opp.suggestedAction}</p>
                     </div>
-                    <div className="mt-4 flex gap-2">
-                      <Button size="sm" className="gap-1">
+                    <div className="mt-4">
+                      <Button size="sm" className="gap-1" onClick={() => handleCreateCampaign(opp)}>
                         <Zap className="h-3.5 w-3.5" />
                         <span>Criar Campanha</span>
-                      </Button>
-                      <Button size="sm" variant="outline" className="gap-1">
-                        <MessageSquare className="h-3.5 w-3.5" />
-                        <span>Contatar Leads</span>
                       </Button>
                     </div>
                   </div>

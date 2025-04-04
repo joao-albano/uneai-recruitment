@@ -13,6 +13,8 @@ import EnrollmentPredictionsPage from "@/pages/recruitment/EnrollmentPredictions
 import PredictiveReportingPage from "@/pages/recruitment/PredictiveReportingPage";
 import RecruitmentAlertsPage from "@/pages/recruitment/RecruitmentAlertsPage";
 import RecruitmentSchedulePage from "@/pages/recruitment/RecruitmentSchedulePage";
+import DetailedAnalysisPage from "@/pages/recruitment/DetailedAnalysisPage";
+import VoiceConfigurationPage from "@/pages/VoiceConfigurationPage";
 
 interface RouteConfig {
   path: string;
@@ -83,6 +85,22 @@ export const recruitmentRoutes: RouteConfig[] = [
     element: (
       <ProtectedRoute>
         <RecruitmentAnalyticsPage />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/detailed-analysis",
+    element: (
+      <ProtectedRoute>
+        <DetailedAnalysisPage />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/voice-config",
+    element: (
+      <ProtectedRoute>
+        <VoiceConfigurationPage />
       </ProtectedRoute>
     )
   },
