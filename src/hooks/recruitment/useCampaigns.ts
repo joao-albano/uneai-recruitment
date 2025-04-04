@@ -74,11 +74,12 @@ const loadCampaignsFromStorage = (): Campaign[] => {
     if (storedData) {
       const parsedData = JSON.parse(storedData);
       
-      // Convert date strings back to Date objects
+      // Convert date strings back to Date objects and ensure channel is always an array
       return parsedData.map((campaign: any) => ({
         ...campaign,
         startDate: new Date(campaign.startDate),
-        endDate: campaign.endDate ? new Date(campaign.endDate) : undefined
+        endDate: campaign.endDate ? new Date(campaign.endDate) : undefined,
+        channel: campaign.channel || [] // Ensure channel is never null
       }));
     }
   } catch (error) {
@@ -91,7 +92,13 @@ const loadCampaignsFromStorage = (): Campaign[] => {
 // Helper to save campaigns to localStorage
 const saveCampaignsToStorage = (campaigns: Campaign[]) => {
   try {
-    localStorage.setItem(CAMPAIGNS_STORAGE_KEY, JSON.stringify(campaigns));
+    // Ensure each campaign has a channel property before saving
+    const safeData = campaigns.map(campaign => ({
+      ...campaign,
+      channel: campaign.channel || []
+    }));
+    
+    localStorage.setItem(CAMPAIGNS_STORAGE_KEY, JSON.stringify(safeData));
   } catch (error) {
     console.error('Error saving campaigns to storage:', error);
   }
@@ -130,6 +137,7 @@ export const useCampaigns = () => {
     const newCampaign = {
       ...campaign,
       id: uuidv4(),
+      channel: campaign.channel || [], // Ensure channel is never null
       performance: campaign.performance || {
         leadsGenerated: 0,
         conversion: 0,
@@ -144,7 +152,11 @@ export const useCampaigns = () => {
   const updateCampaign = (id: string, updates: Partial<Campaign>) => {
     setCampaigns(prev => 
       prev.map(campaign => 
-        campaign.id === id ? { ...campaign, ...updates } : campaign
+        campaign.id === id ? { 
+          ...campaign, 
+          ...updates,
+          channel: updates.channel || campaign.channel || [] // Ensure channel is never null
+        } : campaign
       )
     );
   };

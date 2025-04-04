@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Campaign } from '@/types/recruitment';
 import CampaignCard from './CampaignCard';
@@ -22,6 +23,10 @@ const CampaignCardWithActions: React.FC<CampaignCardWithActionsProps> = ({
   onToggleStatus,
   onArchive
 }) => {
+  if (!campaign) {
+    return null; // Return null if campaign is not defined
+  }
+  
   if (showArchived) {
     return <CampaignCard campaign={campaign} onViewDetails={onViewDetails} />;
   }
@@ -47,9 +52,9 @@ const CampaignCardWithActions: React.FC<CampaignCardWithActionsProps> = ({
             {!showArchived && (
               <CampaignActions 
                 campaign={campaign}
-                onEdit={onEdit}
-                onToggleStatus={onToggleStatus}
-                onArchive={onArchive}
+                onEdit={() => onEdit(campaign)}
+                onToggleStatus={() => onToggleStatus(campaign)}
+                onArchive={() => onArchive(campaign)}
               />
             )}
           </div>

@@ -22,6 +22,10 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   campaign,
   onViewDetails
 }) => {
+  if (!campaign) {
+    return null; // Return null if campaign is not defined
+  }
+
   return (
     <Card key={campaign.id} className="overflow-hidden">
       <div className="flex border-b">
@@ -57,11 +61,11 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
             <div>
               <p className="text-muted-foreground">Canais</p>
               <div className="flex items-center gap-1 mt-1">
-                {campaign.channel.includes('mail') && <Mail className="h-4 w-4" />}
-                {campaign.channel.includes('whatsapp') && <MessageSquare className="h-4 w-4" />}
-                {campaign.channel.includes('voice') && <Phone className="h-4 w-4" />}
-                {campaign.channel.includes('sms') && <Send className="h-4 w-4" />}
-                {campaign.channel.length > 0 && (
+                {campaign.channel && campaign.channel.includes('mail') && <Mail className="h-4 w-4" />}
+                {campaign.channel && campaign.channel.includes('whatsapp') && <MessageSquare className="h-4 w-4" />}
+                {campaign.channel && campaign.channel.includes('voice') && <Phone className="h-4 w-4" />}
+                {campaign.channel && campaign.channel.includes('sms') && <Send className="h-4 w-4" />}
+                {campaign.channel && campaign.channel.length > 0 && (
                   <span className="ml-1">{campaign.channel.length} canais</span>
                 )}
               </div>

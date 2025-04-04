@@ -6,8 +6,6 @@ import { toast } from '@/hooks/use-toast';
 import CampaignCard from './CampaignCard';
 import EmptyCampaignState from './EmptyCampaignState';
 import CampaignActions from './CampaignActions';
-import CampaignDetailsDialog from '../CampaignDetailsDialog';
-import CampaignEditDialog from '../CampaignEditDialog';
 
 interface CampaignsListProps {
   showArchived?: boolean;
@@ -32,10 +30,13 @@ const CampaignsList: React.FC<CampaignsListProps> = ({
   
   // Update displayed campaigns whenever the campaigns list changes
   useEffect(() => {
-    setDisplayedCampaigns(showArchived ? getArchivedCampaigns() : getActiveCampaigns());
+    const campaignsToShow = showArchived ? getArchivedCampaigns() : getActiveCampaigns();
+    setDisplayedCampaigns(campaignsToShow || []);
   }, [campaigns, showArchived, getArchivedCampaigns, getActiveCampaigns]);
   
   const handleToggleCampaignStatus = (campaign: Campaign) => {
+    if (!campaign) return;
+    
     const newStatus = campaign.status === 'active' ? 'paused' : 'active';
     updateCampaign(campaign.id, { status: newStatus });
     
@@ -46,6 +47,8 @@ const CampaignsList: React.FC<CampaignsListProps> = ({
   };
   
   const handleArchiveCampaign = (campaign: Campaign) => {
+    if (!campaign) return;
+    
     archiveCampaign(campaign.id);
     
     toast({
@@ -54,30 +57,32 @@ const CampaignsList: React.FC<CampaignsListProps> = ({
     });
   };
   
-  if (displayedCampaigns.length === 0) {
+  if (!displayedCampaigns || displayedCampaigns.length === 0) {
     return <EmptyCampaignState showArchived={showArchived} />;
   }
   
   return (
     <div className="space-y-4">
       {displayedCampaigns.map(campaign => (
-        <div key={campaign.id} className="relative">
-          <CampaignCard
-            campaign={campaign}
-            onViewDetails={() => onOpenDetails(campaign)}
-          />
-          
-          {!showArchived && (
-            <div className="absolute top-6 right-6">
-              <CampaignActions
-                campaign={campaign}
-                onEdit={() => onOpenEdit(campaign)}
-                onToggleStatus={handleToggleCampaignStatus}
-                onArchive={handleArchiveCampaign}
-              />
-            </div>
-          )}
-        </div>
+        campaign && (
+          <div key={campaign.id} className="relative">
+            <CampaignCard
+              campaign={campaign}
+              onViewDetails={() => onOpenDetails(campaign)}
+            />
+            
+            {!showArchived && (
+              <div className="absolute top-6 right-6">
+                <CampaignActions
+                  campaign={campaign}
+                  onEdit={() => onOpenEdit(campaign)}
+                  onToggleStatus={handleToggleCampaignStatus}
+                  onArchive={handleArchiveCampaign}
+                />
+              </div>
+            )}
+          </div>
+        )
       ))}
     </div>
   );
