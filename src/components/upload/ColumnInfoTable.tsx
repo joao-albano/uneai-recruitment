@@ -19,16 +19,16 @@ const ColumnInfoTable: React.FC<ColumnInfoTableProps> = ({
   // Change required columns based on institution type and product
   const requiredColumns = effectiveProduct === 'recruitment' 
     ? (institutionType === 'school' 
-        ? ['nome', 'ra', 'turma', 'telefone'] 
-        : ['nome', 'email', 'curso', 'telefone'])
-    : ['nome', 'ra', 'turma', 'frequencia', 'notas']; // For retention
+        ? ['nome', 'canal', 'email_responsavel/cpf_responsavel'] 
+        : ['nome', 'email', 'telefone', 'curso', 'canal'])
+    : ['nome', 'ra', 'turma', 'segmento']; // For retention
 
   // Change optional columns based on institution type and product
   const optionalColumns = effectiveProduct === 'recruitment'
     ? (institutionType === 'school'
-        ? ['email', 'curso', 'responsavel', 'obs'] 
-        : ['cpf', 'endereco', 'obs'])
-    : ['comportamento', 'responsavel', 'contato_responsavel', 'obs']; // For retention
+        ? ['telefone', 'ra', 'nome_responsavel', 'cep', 'serie', 'quantidade_filhos', 'observacoes'] 
+        : ['cpf', 'modalidade', 'cep', 'período', 'observacoes'])
+    : ['comportamento', 'nota', 'frequencia', 'nome_responsavel', 'contato_responsavel']; // For retention
   
   return (
     <div className="border rounded-md">
@@ -80,11 +80,13 @@ function getColumnDescription(column: string): string {
       return 'Curso de interesse';
     case 'frequencia':
       return 'Percentual de frequência às aulas (0-100)';
-    case 'notas':
+    case 'nota':
       return 'Média das notas do aluno (0-10)';
     case 'comportamento':
       return 'Avaliação de comportamento (1-5)';
     case 'responsavel':
+      return 'Nome do responsável';
+    case 'nome_responsavel':
       return 'Nome do responsável';
     case 'contato_responsavel':
       return 'Telefone do responsável';
@@ -92,6 +94,24 @@ function getColumnDescription(column: string): string {
       return 'Endereço residencial ou comercial';
     case 'obs':
       return 'Observações adicionais';
+    case 'observacoes':
+      return 'Observações adicionais';
+    case 'canal':
+      return 'Canal de origem do lead';
+    case 'email_responsavel/cpf_responsavel':
+      return 'É necessário fornecer pelo menos um destes campos';
+    case 'cep':
+      return 'Código de Endereçamento Postal';
+    case 'serie':
+      return 'Série/ano pretendido';
+    case 'quantidade_filhos':
+      return 'Número de filhos';
+    case 'segmento':
+      return 'Segmento escolar (ENSINO MÉDIO, FUNDAMENTAL I, etc.)';
+    case 'modalidade':
+      return 'Modalidade (Presencial, EAD, Híbrido)';
+    case 'período':
+      return 'Período de interesse (Matutino, Vespertino, Noturno)';
     default:
       return 'Informação adicional';
   }

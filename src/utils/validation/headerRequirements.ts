@@ -8,7 +8,7 @@ export const getRequiredHeaders = (
 ): string[] => {
   if (productType === 'recruitment') {
     if (institutionType === 'school') {
-      return ['nome', 'canal']; // RA is no longer required, but email_responsavel or cpf_responsavel will be checked separately
+      return ['nome', 'canal']; // email_responsavel or cpf_responsavel will be checked separately
     } else {
       return ['nome', 'email', 'telefone', 'canal', 'curso'];
     }

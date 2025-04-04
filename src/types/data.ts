@@ -21,6 +21,7 @@ export type StudentData = {
   parentContact?: string;
   parentEmail?: string;  // Added parent email field
   parentCPF?: string;    // Added parent CPF field
+  zipCode?: string;      // Added zipCode field for CEP
   decisionPath?: string[]; // Add decision path for explainable AI;
   importMonth?: number;    // Month when the data was imported
   importYear?: number;     // Year when the data was imported

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Info, KeyRound, Plus } from 'lucide-react';
 import { downloadTemplate } from '@/utils/validation/templateManager';
 import type { InstitutionType } from '@/utils/validation/headerTypes';
@@ -60,11 +60,12 @@ const InfoTabContent: React.FC = () => {
                     <li><strong>telefone</strong> - Número de telefone do responsável</li>
                     <li><strong>ra</strong> - Número de registro/matrícula do aluno (opcional)</li>
                     <li><strong>nome_responsavel</strong> - Nome do responsável</li>
+                    <li><strong>cep</strong> - CEP</li>
                     <li><strong>canal</strong> - Canal de origem (ex: Facebook, Instagram, Site) (obrigatório)</li>
                     <li><strong>serie</strong> - Série/ano pretendido</li>
                     <li><strong>quantidade_filhos</strong> - Número de filhos</li>
                     <li><strong>nome_filhos</strong> - Nomes dos filhos (separados por vírgula)</li>
-                    <li><strong>idade_filhos</strong> - Idades dos filhos (separados por vírgula)</li>
+                    <li><strong>idade_filhos</strong> - Idades dos filhos (separadas por vírgula)</li>
                     <li><strong>intenção_matrícula</strong> - Nível de intenção de matrícula</li>
                     <li><strong>melhor_horario_contato</strong> - Melhor horário para contato</li>
                     <li><strong>observacoes</strong> - Observações gerais</li>
@@ -79,6 +80,7 @@ const InfoTabContent: React.FC = () => {
                     <li><strong>canal</strong> - Canal de origem (ex: Facebook, Instagram, Site) (obrigatório)</li>
                     <li><strong>curso</strong> - Curso de interesse (obrigatório)</li>
                     <li><strong>modalidade</strong> - Modalidade (Presencial, EAD, Híbrido)</li>
+                    <li><strong>cep</strong> - CEP</li>
                     <li><strong>período</strong> - Período de interesse (Matutino, Vespertino, Noturno)</li>
                     <li><strong>intenção_matrícula</strong> - Nível de intenção de matrícula</li>
                     <li><strong>melhor_horario_contato</strong> - Melhor horário para contato</li>

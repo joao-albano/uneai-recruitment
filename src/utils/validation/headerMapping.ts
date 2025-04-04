@@ -16,6 +16,7 @@ export const headerMappings: HeaderMapping = {
   'comportamento': 'behavior',
   'nome_responsavel': 'parentName',
   'contato_responsavel': 'parentContact',
+  'cep': 'zipCode',
   
   // Portuguese headers - alternative formats with underscores and capitalization
   'nome responsavel': 'parentName',
@@ -32,6 +33,7 @@ export const headerMappings: HeaderMapping = {
   'Matricula': 'registrationNumber',
   'Segmento': 'segment',
   'Comportamento': 'behavior',
+  'CEP': 'zipCode',
   
   // English headers (fallback)
   'name': 'name',
@@ -44,6 +46,7 @@ export const headerMappings: HeaderMapping = {
   'behavior': 'behavior',
   'parent_name': 'parentName',
   'parent_contact': 'parentContact',
+  'zip_code': 'zipCode',
   
   // Lead headers (recruitment)
   'email': 'email',

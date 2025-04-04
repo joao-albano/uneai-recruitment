@@ -15,6 +15,7 @@ export const getTemplateColumns = (
         { header: 'telefone', description: 'Número de telefone do responsável', example: '(11) 98765-4321', required: false, isKeyField: false },
         { header: 'ra', description: 'Número de registro/matrícula do aluno', example: '123456', required: false, isKeyField: false },
         { header: 'nome_responsavel', description: 'Nome do responsável', example: 'Maria Silva', required: false, isKeyField: false },
+        { header: 'cep', description: 'CEP', example: '01234-567', required: false, isKeyField: false },
         { header: 'canal', description: 'Canal de origem (ex: Facebook, Instagram, Site)', example: 'Facebook', required: true },
         { header: 'serie', description: 'Série/ano pretendido', example: '9º ano', required: false },
         { header: 'quantidade_filhos', description: 'Número de filhos', example: '2', required: false },
@@ -33,6 +34,7 @@ export const getTemplateColumns = (
         { header: 'canal', description: 'Canal de origem (ex: Facebook, Instagram, Site)', example: 'Instagram', required: true },
         { header: 'curso', description: 'Curso de interesse', example: 'Engenharia Civil', required: true },
         { header: 'modalidade', description: 'Modalidade (Presencial, EAD, Híbrido)', example: 'Presencial', required: false },
+        { header: 'cep', description: 'CEP', example: '01234-567', required: false, isKeyField: false },
         { header: 'período', description: 'Período de interesse', example: 'Noturno', required: false },
         { header: 'intenção_matrícula', description: 'Nível de intenção de matrícula', example: 'Média', required: false },
         { header: 'melhor_horario_contato', description: 'Melhor horário para contato', example: 'Tarde', required: false },
@@ -81,13 +83,13 @@ export const getExcelFormat = (
     if (institutionType === 'school') {
       description = 'O arquivo deve conter as colunas: Nome, Email do responsável OU CPF do responsável (obrigatórios), ' +
         'Telefone, Canal (origem), RA (opcional), ' +
-        'Nome do responsável, Série pretendida, ' +
+        'Nome do responsável, CEP, Série pretendida, ' +
         'Quantidade de Filhos, Nomes dos Filhos, Idades dos Filhos, Intenção de Matrícula, ' +
         'Melhor Horário para Contato, e Observações.';
     } else {
       description = 'O arquivo deve conter as colunas: Nome, Email, Telefone, Canal (origem), ' +
         'Curso de interesse (obrigatórios), CPF, ' +
-        'Modalidade (presencial/EAD), Período, Campus, Intenção de Matrícula, ' +
+        'Modalidade (presencial/EAD), CEP, Período, Intenção de Matrícula, ' +
         'Melhor Horário para Contato, e Observações.';
     }
   } else {
