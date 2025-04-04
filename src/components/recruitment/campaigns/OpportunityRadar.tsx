@@ -1,7 +1,6 @@
 
 import React from 'react';
 import OpportunityTable from './radar/OpportunityTable';
-import SuggestedActions from './radar/SuggestedActions';
 import { useOpportunityRadar } from './radar/hooks/useOpportunityRadar';
 
 const OpportunityRadar: React.FC = () => {
@@ -23,11 +22,6 @@ const OpportunityRadar: React.FC = () => {
         setFilter={setFilter}
         onCreateCampaign={handleCreateCampaign}
         onDetailedAnalysis={handleDetailedAnalysis}
-      />
-      
-      <SuggestedActions
-        opportunities={opportunities}
-        onCreateCampaign={handleCreateCampaign}
       />
     </div>
   );

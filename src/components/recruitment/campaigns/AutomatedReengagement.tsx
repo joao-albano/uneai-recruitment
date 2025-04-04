@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Card, CardHeader, CardDescription, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardDescription, CardTitle, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Zap } from 'lucide-react';
 import { useReengagementRules } from '@/hooks/useReengagementRules';
@@ -28,17 +28,22 @@ const AutomatedReengagement: React.FC = () => {
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-xl">
                 <Zap className="h-5 w-5" /> Reengajamento Automático
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="mt-1">
                 Configure mensagens automáticas para leads inativos baseado em períodos de tempo
               </CardDescription>
             </div>
-            <Switch 
-              checked={areAnyRulesEnabled}
-              onCheckedChange={toggleAllRules}
-            />
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">
+                {areAnyRulesEnabled ? 'Ativado' : 'Desativado'}
+              </span>
+              <Switch 
+                checked={areAnyRulesEnabled}
+                onCheckedChange={toggleAllRules}
+              />
+            </div>
           </div>
         </CardHeader>
 
@@ -58,13 +63,15 @@ const AutomatedReengagement: React.FC = () => {
               Personalize a mensagem e configurações de reengajamento
             </CardDescription>
           </CardHeader>
-          <ReengagementRuleForm
-            rule={editingRule}
-            isCreating={isCreating}
-            onSave={handleSaveRule}
-            onCancel={handleCancelEdit}
-            onRuleChange={handleUpdateRule}
-          />
+          <CardContent>
+            <ReengagementRuleForm
+              rule={editingRule}
+              isCreating={isCreating}
+              onSave={handleSaveRule}
+              onCancel={handleCancelEdit}
+              onRuleChange={handleUpdateRule}
+            />
+          </CardContent>
         </Card>
       )}
     </div>
