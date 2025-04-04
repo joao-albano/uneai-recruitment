@@ -114,7 +114,7 @@ const contentTemplates = [
     id: 'discount', 
     name: 'Oferta Especial', 
     content: 'Olá {nome}, temos uma condição especial para o curso de {curso} com {desconto}% de desconto nas primeiras mensalidades!',
-    emoji: '🎁'
+    emoji: '��'
   },
   { 
     id: 'reminder', 
@@ -685,29 +685,38 @@ const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({
               <Label>Estratégia de Conteúdo</Label>
               <RadioGroup 
                 value={contentStrategy} 
-                onValueChange={(value) => handleContentStrategyChange(value as 'ai' | 'manual' | 'templates')}
+                onValueChange={handleContentStrategyChange}
                 className="grid grid-cols-3 gap-4"
               >
-                <div className={`flex flex-col items-center gap-2 border rounded-lg p-4 cursor-pointer transition-all ${contentStrategy === 'ai' ? 'border-primary bg-primary/5' : 'border-border'}`}>
-                  <RadioGroupItem value="ai" id="ai" className="sr-only" />
+                <label 
+                  className={`flex flex-col items-center gap-2 border rounded-lg p-4 cursor-pointer transition-all ${contentStrategy === 'ai' ? 'border-primary bg-primary/5' : 'border-border'}`}
+                  htmlFor="radio-ai"
+                >
+                  <RadioGroupItem value="ai" id="radio-ai" />
                   <Sparkles className="h-8 w-8 text-amber-500" />
-                  <Label htmlFor="ai" className="font-medium cursor-pointer">IA Generativa</Label>
+                  <span className="font-medium">IA Generativa</span>
                   <p className="text-xs text-center text-muted-foreground">Geração automatizada de mensagens personalizadas</p>
-                </div>
+                </label>
                 
-                <div className={`flex flex-col items-center gap-2 border rounded-lg p-4 cursor-pointer transition-all ${contentStrategy === 'templates' ? 'border-primary bg-primary/5' : 'border-border'}`}>
-                  <RadioGroupItem value="templates" id="templates" className="sr-only" />
+                <label 
+                  className={`flex flex-col items-center gap-2 border rounded-lg p-4 cursor-pointer transition-all ${contentStrategy === 'templates' ? 'border-primary bg-primary/5' : 'border-border'}`}
+                  htmlFor="radio-templates"
+                >
+                  <RadioGroupItem value="templates" id="radio-templates" />
                   <FileText className="h-8 w-8 text-blue-500" />
-                  <Label htmlFor="templates" className="font-medium cursor-pointer">Templates</Label>
+                  <span className="font-medium">Templates</span>
                   <p className="text-xs text-center text-muted-foreground">Modelos pré-definidos adaptáveis</p>
-                </div>
+                </label>
                 
-                <div className={`flex flex-col items-center gap-2 border rounded-lg p-4 cursor-pointer transition-all ${contentStrategy === 'manual' ? 'border-primary bg-primary/5' : 'border-border'}`}>
-                  <RadioGroupItem value="manual" id="manual" className="sr-only" />
+                <label 
+                  className={`flex flex-col items-center gap-2 border rounded-lg p-4 cursor-pointer transition-all ${contentStrategy === 'manual' ? 'border-primary bg-primary/5' : 'border-border'}`}
+                  htmlFor="radio-manual"
+                >
+                  <RadioGroupItem value="manual" id="radio-manual" />
                   <FileText className="h-8 w-8 text-green-500" />
-                  <Label htmlFor="manual" className="font-medium cursor-pointer">Manual</Label>
+                  <span className="font-medium">Manual</span>
                   <p className="text-xs text-center text-muted-foreground">Criação personalizada de mensagens</p>
-                </div>
+                </label>
               </RadioGroup>
               
               {contentStrategy === 'ai' && (
