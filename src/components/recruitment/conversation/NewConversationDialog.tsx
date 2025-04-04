@@ -27,6 +27,7 @@ const formSchema = z.object({
   course: z.string().min(1, { message: 'Selecione um curso' }),
 });
 
+// Define the type using the schema to ensure it matches
 type FormValues = z.infer<typeof formSchema>;
 
 const NewConversationDialog: React.FC<NewConversationDialogProps> = ({
@@ -45,7 +46,13 @@ const NewConversationDialog: React.FC<NewConversationDialogProps> = ({
   });
 
   const onSubmit = (data: FormValues) => {
-    onCreateConversation(data);
+    // Since data is validated by zod, we can safely pass it to onCreateConversation
+    onCreateConversation({
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      course: data.course
+    });
     form.reset();
   };
 
