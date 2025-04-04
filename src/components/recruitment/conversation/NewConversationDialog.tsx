@@ -45,7 +45,6 @@ const NewConversationDialog: React.FC<NewConversationDialogProps> = ({
   });
 
   const onSubmit = (data: FormValues) => {
-    // Now data is properly typed and has all required fields
     onCreateConversation(data);
     form.reset();
   };
