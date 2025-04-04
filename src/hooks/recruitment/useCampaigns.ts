@@ -116,6 +116,15 @@ export const useCampaigns = () => {
     updateCampaign(id, { status: 'completed' });
   };
 
+  // Filtrar campanhas por status
+  const getArchivedCampaigns = () => {
+    return campaigns.filter(campaign => campaign.status === 'completed');
+  };
+
+  const getActiveCampaigns = () => {
+    return campaigns.filter(campaign => campaign.status !== 'completed');
+  };
+
   return {
     campaigns,
     isLoading,
@@ -123,6 +132,8 @@ export const useCampaigns = () => {
     createCampaign,
     updateCampaign,
     deleteCampaign,
-    archiveCampaign
+    archiveCampaign,
+    getArchivedCampaigns,
+    getActiveCampaigns
   };
 };

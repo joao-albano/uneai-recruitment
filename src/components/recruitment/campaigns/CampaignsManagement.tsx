@@ -39,7 +39,7 @@ const CampaignsManagement: React.FC = () => {
         </TabsList>
 
         <TabsContent value="active">
-          <CampaignsList />
+          <CampaignsList showArchived={false} />
         </TabsContent>
 
         <TabsContent value="automated">
@@ -51,19 +51,7 @@ const CampaignsManagement: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="archived">
-          <Card>
-            <CardHeader>
-              <CardTitle>Campanhas Arquivadas</CardTitle>
-              <CardDescription>Campanhas finalizadas ou pausadas permanentemente</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border p-4 text-center">
-                <p className="text-muted-foreground">
-                  Nenhuma campanha arquivada no momento.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <CampaignsList showArchived={true} />
         </TabsContent>
       </Tabs>
 

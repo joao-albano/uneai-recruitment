@@ -14,7 +14,8 @@ import {
   PauseCircle, 
   Play, 
   Archive, 
-  Edit 
+  Edit,
+  Send 
 } from 'lucide-react';
 import { 
   DropdownMenu,
@@ -24,13 +25,22 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useCampaigns } from '@/hooks/recruitment/useCampaigns';
 import CampaignDetailsDialog from './CampaignDetailsDialog';
+import CampaignEditDialog from './CampaignEditDialog';
 import { toast } from '@/hooks/use-toast';
 import { Campaign } from '@/types/recruitment';
 
-const CampaignsList: React.FC = () => {
-  const { campaigns, updateCampaign, archiveCampaign } = useCampaigns();
+interface CampaignsListProps {
+  showArchived?: boolean;
+}
+
+const CampaignsList: React.FC<CampaignsListProps> = ({ showArchived = false }) => {
+  const { campaigns, updateCampaign, archiveCampaign, getArchivedCampaigns, getActiveCampaigns } = useCampaigns();
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+  
+  // Filtramos as campanhas de acordo com o parâmetro showArchived
+  const displayedCampaigns = showArchived ? getArchivedCampaigns() : getActiveCampaigns();
   
   const handleViewDetails = (campaign: Campaign) => {
     setSelectedCampaign(campaign);
@@ -38,11 +48,8 @@ const CampaignsList: React.FC = () => {
   };
   
   const handleEditCampaign = (campaign: Campaign) => {
-    // For now, we'll just show a toast message
-    toast({
-      title: 'Editar campanha',
-      description: `Edição da campanha "${campaign.name}" será implementada em breve.`
-    });
+    setSelectedCampaign(campaign);
+    setEditOpen(true);
   };
   
   const handleToggleCampaignStatus = (campaign: Campaign) => {
@@ -63,24 +70,34 @@ const CampaignsList: React.FC = () => {
       description: `A campanha "${campaign.name}" foi arquivada com sucesso.`
     });
   };
+
+  const handleSaveCampaign = (updatedCampaign: Campaign) => {
+    updateCampaign(updatedCampaign.id, updatedCampaign);
+  };
   
-  if (campaigns.length === 0) {
+  if (displayedCampaigns.length === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Campanhas Ativas</CardTitle>
+          <CardTitle>{showArchived ? 'Campanhas Arquivadas' : 'Campanhas Ativas'}</CardTitle>
           <CardDescription>
-            Visualize e gerencie suas campanhas de captação em andamento
+            {showArchived 
+              ? 'Visualize suas campanhas arquivadas' 
+              : 'Visualize e gerencie suas campanhas de captação em andamento'}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border p-4 text-center">
             <p className="text-muted-foreground">
-              Você ainda não tem campanhas ativas. Crie uma nova campanha para começar.
+              {showArchived 
+                ? 'Você ainda não tem campanhas arquivadas.' 
+                : 'Você ainda não tem campanhas ativas. Crie uma nova campanha para começar.'}
             </p>
-            <Button variant="outline" className="mt-4">
-              Criar Campanha
-            </Button>
+            {!showArchived && (
+              <Button variant="outline" className="mt-4">
+                Criar Campanha
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -89,7 +106,7 @@ const CampaignsList: React.FC = () => {
   
   return (
     <div className="space-y-4">
-      {campaigns.map(campaign => (
+      {displayedCampaigns.map(campaign => (
         <Card key={campaign.id} className="overflow-hidden">
           <div className="flex border-b">
             <div className="flex-1 p-6">
@@ -97,40 +114,48 @@ const CampaignsList: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <h3 className="text-lg font-medium">{campaign.name}</h3>
                   <Badge variant={campaign.status === 'active' ? 'default' : 'outline'}>
-                    {campaign.status === 'active' ? 'Ativa' : 'Pausada'}
+                    {campaign.status === 'active' 
+                      ? 'Ativa' 
+                      : campaign.status === 'paused' 
+                        ? 'Pausada' 
+                        : campaign.status === 'completed' 
+                          ? 'Arquivada' 
+                          : 'Rascunho'}
                   </Badge>
                 </div>
                 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleEditCampaign(campaign)}>
-                      <Edit className="mr-2 h-4 w-4" />
-                      <span>Editar</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleToggleCampaignStatus(campaign)}>
-                      {campaign.status === 'active' ? (
-                        <>
-                          <PauseCircle className="mr-2 h-4 w-4" />
-                          <span>Pausar</span>
-                        </>
-                      ) : (
-                        <>
-                          <Play className="mr-2 h-4 w-4" />
-                          <span>Ativar</span>
-                        </>
-                      )}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleArchiveCampaign(campaign)}>
-                      <Archive className="mr-2 h-4 w-4" />
-                      <span>Arquivar</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                {!showArchived && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => handleEditCampaign(campaign)}>
+                        <Edit className="mr-2 h-4 w-4" />
+                        <span>Editar</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleToggleCampaignStatus(campaign)}>
+                        {campaign.status === 'active' ? (
+                          <>
+                            <PauseCircle className="mr-2 h-4 w-4" />
+                            <span>Pausar</span>
+                          </>
+                        ) : (
+                          <>
+                            <Play className="mr-2 h-4 w-4" />
+                            <span>Ativar</span>
+                          </>
+                        )}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleArchiveCampaign(campaign)}>
+                        <Archive className="mr-2 h-4 w-4" />
+                        <span>Arquivar</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
               
               <p className="mt-2 text-muted-foreground">{campaign.description}</p>
@@ -152,7 +177,7 @@ const CampaignsList: React.FC = () => {
                     {campaign.channel.includes('mail') && <Mail className="h-4 w-4" />}
                     {campaign.channel.includes('whatsapp') && <MessageSquare className="h-4 w-4" />}
                     {campaign.channel.includes('voice') && <Phone className="h-4 w-4" />}
-                    {campaign.channel.includes('sms') && <Badge variant="outline">SMS</Badge>}
+                    {campaign.channel.includes('sms') && <Send className="h-4 w-4" />}
                     {campaign.channel.length > 0 && (
                       <span className="ml-1">{campaign.channel.length} canais</span>
                     )}
@@ -203,11 +228,20 @@ const CampaignsList: React.FC = () => {
       ))}
       
       {selectedCampaign && (
-        <CampaignDetailsDialog 
-          open={detailsOpen} 
-          onOpenChange={setDetailsOpen} 
-          campaign={selectedCampaign}
-        />
+        <>
+          <CampaignDetailsDialog 
+            open={detailsOpen} 
+            onOpenChange={setDetailsOpen} 
+            campaign={selectedCampaign}
+          />
+          
+          <CampaignEditDialog 
+            open={editOpen} 
+            onOpenChange={setEditOpen} 
+            campaign={selectedCampaign}
+            onSave={handleSaveCampaign}
+          />
+        </>
       )}
     </div>
   );
