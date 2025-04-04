@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -135,37 +134,37 @@ const ChannelsTabContent: React.FC = () => {
               Volume de leads captados por dia da semana
             </CardDescription>
           </CardHeader>
-          <CardContent className="h-80">
+          <CardContent className="h-80 overflow-hidden">
             <ChartContainer
               config={{
                 whatsapp: { color: "#25D366" },
                 facebook: { color: "#1877F2" },
                 google: { color: "#4285F4" },
               }}
-              className="w-full aspect-[4/3]"
+              className="w-full h-full max-w-full"
             >
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="99%" height="100%">
                 <BarChart
                   width={500}
                   height={300}
                   data={weeklyData}
                   margin={{
                     top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 25, // Aumentado para dar mais espaço para os rótulos
+                    right: 20,
+                    left: 10,
+                    bottom: 25, 
                   }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
                     dataKey="name" 
-                    height={30} // Altura específica para o eixo X
-                    tick={{ fontSize: 12 }} // Fonte menor para os rótulos
-                    tickMargin={10} // Espaço entre os ticks e os rótulos
+                    height={30}
+                    tick={{ fontSize: 12 }}
+                    tickMargin={10}
                   />
                   <YAxis 
-                    width={30} // Largura específica para o eixo Y
-                    tick={{ fontSize: 12 }} // Fonte menor para os rótulos
+                    width={30}
+                    tick={{ fontSize: 12 }}
                   />
                   <ChartTooltip
                     content={
@@ -177,7 +176,8 @@ const ChannelsTabContent: React.FC = () => {
                   <Legend 
                     wrapperStyle={{ 
                       paddingTop: 10,
-                      fontSize: '12px' 
+                      fontSize: '12px',
+                      width: '90%'
                     }} 
                   />
                   <Bar dataKey="whatsapp" name="WhatsApp" fill="#25D366" />
