@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { ActiveConversation, Agent, Message } from './types';
 import { format } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
+import { toast } from "sonner";
 
 // Import components
 import ActiveConversationsList from './ActiveConversationsList';
@@ -17,6 +18,7 @@ import ChannelTab from './ChannelTab';
 import ConversationSettingsDialog from './ConversationSettingsDialog';
 import ConversationFiltersDialog from './ConversationFiltersDialog';
 import ConversationHeader from './ConversationHeader';
+import NewConversationDialog from './NewConversationDialog';
 
 const ConversationalAI: React.FC = () => {
   const [activeChannel, setActiveChannel] = useState<'whatsapp' | 'email' | 'voz'>('whatsapp');
@@ -24,6 +26,7 @@ const ConversationalAI: React.FC = () => {
   const [showAnalytics, setShowAnalytics] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [newConversationOpen, setNewConversationOpen] = useState(false);
   const [selectedConversationId, setSelectedConversationId] = useState<string | undefined>(undefined);
   
   // Mock data for conversations
@@ -293,6 +296,56 @@ const ConversationalAI: React.FC = () => {
     setSettingsOpen(true);
   };
 
+  const handleStartNewConversation = () => {
+    setNewConversationOpen(true);
+  };
+
+  const handleCreateNewConversation = (leadData: {
+    name: string;
+    email: string;
+    phone: string;
+    course: string;
+  }) => {
+    const newConversationId = uuidv4();
+    const newConversation: ActiveConversation = {
+      id: newConversationId,
+      leadName: leadData.name,
+      leadCourse: leadData.course,
+      lastMessage: 'Conversa iniciada',
+      lastMessageTime: new Date(),
+      unreadCount: 0,
+      status: 'new',
+      emotion: 'neutro'
+    };
+
+    // Add the new conversation to the list
+    setConversations(prev => [newConversation, ...prev]);
+
+    // Create initial message from AI
+    const initialMessage: Message = {
+      id: uuidv4(),
+      content: `Olá! Sou a assistente virtual da instituição. Em que posso ajudar você hoje?`,
+      timestamp: new Date(),
+      isFromLead: false,
+      isFromAi: true,
+    };
+
+    // Add the initial message to the messages map
+    setMessagesMap(prev => ({
+      ...prev,
+      [newConversationId]: [initialMessage]
+    }));
+
+    // Select the new conversation
+    setSelectedConversationId(newConversationId);
+    
+    // Close the dialog
+    setNewConversationOpen(false);
+    
+    // Show success toast
+    toast.success("Nova conversa iniciada com sucesso!");
+  };
+
   const selectedConversation = getSelectedConversation();
 
   return (
@@ -404,7 +457,7 @@ const ConversationalAI: React.FC = () => {
                 <p className="text-muted-foreground mb-4">
                   Selecione uma conversa na lista à esquerda ou inicie uma nova conversa.
                 </p>
-                <Button>Iniciar nova conversa</Button>
+                <Button onClick={handleStartNewConversation}>Iniciar nova conversa</Button>
               </div>
             </div>
           )}
@@ -427,6 +480,12 @@ const ConversationalAI: React.FC = () => {
           console.log('Applied filters:', filters);
           setFiltersOpen(false);
         }}
+      />
+      
+      <NewConversationDialog
+        open={newConversationOpen}
+        onClose={() => setNewConversationOpen(false)}
+        onCreateConversation={handleCreateNewConversation}
       />
     </div>
   );

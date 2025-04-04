@@ -4,12 +4,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MessageSquare, Mail, Phone } from 'lucide-react';
 import { EmotionType, IntentType } from '@/types/recruitment';
+import { Button } from '@/components/ui/button';
+import { toast } from "sonner";
+import { v4 as uuidv4 } from 'uuid';
 
 // Import our new components
 import ConversationHeader from './ConversationHeader';
 import WhatsAppTab from './WhatsAppTab';
 import ChannelTab from './ChannelTab';
 import { Message } from './types';
+import NewConversationDialog from './NewConversationDialog';
 
 interface ConversationInterfaceProps {
   leadName: string;
@@ -25,6 +29,7 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
   const [activeChannel, setActiveChannel] = useState<'whatsapp' | 'email' | 'voz'>('whatsapp');
   const [isAiMode, setIsAiMode] = useState(true);
   const [showAnalytics, setShowAnalytics] = useState(true);
+  const [newConversationOpen, setNewConversationOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -105,6 +110,30 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
   const toggleAnalytics = () => {
     setShowAnalytics(!showAnalytics);
   };
+  
+  const handleStartNewConversation = () => {
+    setNewConversationOpen(true);
+  };
+
+  const handleCreateNewConversation = (data: {
+    name: string;
+    email: string;
+    phone: string;
+    course: string;
+  }) => {
+    // Limpar as mensagens atuais e criar uma nova conversa
+    const initialMessage: Message = {
+      id: uuidv4(),
+      content: `Olá ${data.name}! Sou a assistente virtual da instituição. Como posso ajudar você hoje em relação ao curso de ${data.course}?`,
+      timestamp: new Date(),
+      isFromLead: false,
+      isFromAi: true,
+    };
+    
+    setMessages([initialMessage]);
+    setNewConversationOpen(false);
+    toast.success("Nova conversa iniciada com sucesso!");
+  };
 
   return (
     <Card className="h-[80vh] flex flex-col">
@@ -140,6 +169,8 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
             isAiMode={isAiMode}
             showAnalytics={showAnalytics}
             onSendMessage={handleSendMessage}
+            onOpenSettings={handleStartNewConversation}
+            isSelectedLead={true}
           />
           
           <ChannelTab 
@@ -157,6 +188,12 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
           />
         </Tabs>
       </CardContent>
+      
+      <NewConversationDialog
+        open={newConversationOpen}
+        onClose={() => setNewConversationOpen(false)}
+        onCreateConversation={handleCreateNewConversation}
+      />
     </Card>
   );
 };
