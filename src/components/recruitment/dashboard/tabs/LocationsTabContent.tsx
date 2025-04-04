@@ -100,23 +100,30 @@ const LocationsTabContent: React.FC = () => {
                 atual: { color: "#8b5cf6" },
                 anterior: { color: "#d4d4d8" },
               }}
-              className="w-full aspect-[4/3]"
+              className="w-full h-full"
             >
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="99%" height="100%">
                 <BarChart
                   width={500}
                   height={300}
                   data={comparisonData}
                   margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
+                    top: 5,
+                    right: 5,
+                    left: 5,
+                    bottom: 20,
                   }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
+                  <XAxis 
+                    dataKey="name" 
+                    fontSize={11}
+                    tick={{ fill: '#888888' }}
+                  />
+                  <YAxis 
+                    fontSize={11}
+                    tick={{ fill: '#888888' }}
+                  />
                   <ChartTooltip
                     content={
                       <ChartTooltipContent 
@@ -124,7 +131,11 @@ const LocationsTabContent: React.FC = () => {
                       />
                     }
                   />
-                  <Legend />
+                  <Legend 
+                    verticalAlign="bottom" 
+                    height={36}
+                    wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }}
+                  />
                   <Bar dataKey="atual" name="Período Atual" fill="#8b5cf6" />
                   <Bar dataKey="anterior" name="Período Anterior" fill="#d4d4d8" />
                 </BarChart>
@@ -145,23 +156,30 @@ const LocationsTabContent: React.FC = () => {
               config={{
                 distance: { color: "#3b82f6" },
               }}
-              className="w-full aspect-[4/3]"
+              className="w-full h-full"
             >
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="99%" height="100%">
                 <BarChart
                   width={500}
                   height={300}
                   data={distanceData}
                   margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
+                    top: 5,
+                    right: 5,
+                    left: 5,
+                    bottom: 20,
                   }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
+                  <XAxis 
+                    dataKey="name" 
+                    fontSize={11}
+                    tick={{ fill: '#888888' }}
+                  />
+                  <YAxis 
+                    fontSize={11}
+                    tick={{ fill: '#888888' }}
+                  />
                   <ChartTooltip
                     content={
                       <ChartTooltipContent 
@@ -169,7 +187,11 @@ const LocationsTabContent: React.FC = () => {
                       />
                     }
                   />
-                  <Legend />
+                  <Legend 
+                    verticalAlign="bottom" 
+                    height={36}
+                    wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }}
+                  />
                   <Bar dataKey="distance" name="Distância Média" fill="#3b82f6" />
                 </BarChart>
               </ResponsiveContainer>
