@@ -1,20 +1,15 @@
 
 import React from 'react';
-import { Campaign } from '@/types/recruitment';
 import { Button } from '@/components/ui/button';
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { 
-  MoreVertical, 
-  PauseCircle, 
-  Play, 
-  Archive, 
-  Edit 
-} from 'lucide-react';
+import { Campaign } from '@/types/recruitment';
+import { Archive, Edit, MoreVertical, Pause, Play } from 'lucide-react';
 
 interface CampaignActionsProps {
   campaign: Campaign;
@@ -29,10 +24,12 @@ const CampaignActions: React.FC<CampaignActionsProps> = ({
   onToggleStatus,
   onArchive
 }) => {
+  if (!campaign) return null;
+  
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" className="opacity-70 group-hover:opacity-100">
           <MoreVertical className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -41,10 +38,11 @@ const CampaignActions: React.FC<CampaignActionsProps> = ({
           <Edit className="mr-2 h-4 w-4" />
           <span>Editar</span>
         </DropdownMenuItem>
+        
         <DropdownMenuItem onClick={() => onToggleStatus(campaign)}>
           {campaign.status === 'active' ? (
             <>
-              <PauseCircle className="mr-2 h-4 w-4" />
+              <Pause className="mr-2 h-4 w-4" />
               <span>Pausar</span>
             </>
           ) : (
@@ -54,7 +52,13 @@ const CampaignActions: React.FC<CampaignActionsProps> = ({
             </>
           )}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onArchive(campaign)}>
+        
+        <DropdownMenuSeparator />
+        
+        <DropdownMenuItem 
+          onClick={() => onArchive(campaign)}
+          className="text-destructive focus:text-destructive"
+        >
           <Archive className="mr-2 h-4 w-4" />
           <span>Arquivar</span>
         </DropdownMenuItem>

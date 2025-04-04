@@ -65,14 +65,14 @@ const CampaignsList: React.FC<CampaignsListProps> = ({
     <div className="space-y-4">
       {displayedCampaigns.map(campaign => (
         campaign && (
-          <div key={campaign.id} className="relative">
+          <div key={campaign.id} className="relative group">
             <CampaignCard
               campaign={campaign}
               onViewDetails={() => onOpenDetails(campaign)}
             />
             
             {!showArchived && (
-              <div className="absolute top-6 right-6">
+              <div className="absolute top-4 right-4">
                 <CampaignActions
                   campaign={campaign}
                   onEdit={() => onOpenEdit(campaign)}

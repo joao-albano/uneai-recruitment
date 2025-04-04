@@ -64,6 +64,26 @@ const DEMO_CAMPAIGNS: Campaign[] = [
     target: {
       courses: ['Todos os cursos']
     }
+  },
+  {
+    id: uuidv4(),
+    name: 'Campanha: Modalidade EAD',
+    description: 'Campanha automática baseada em oportunidade: interesse em modalidade 100% EAD para cursos presenciais',
+    startDate: new Date('2025-04-04'),
+    endDate: new Date('2025-05-05'),
+    status: 'active',
+    budget: 3000,
+    channel: ['mail', 'whatsapp'],
+    performance: {
+      leadsGenerated: 0,
+      conversion: 0,
+      cost: 0,
+    },
+    target: {
+      audience: 'Geral',
+      courses: ['Todos os cursos']
+    },
+    isAutomated: true,
   }
 ];
 

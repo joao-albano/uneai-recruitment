@@ -10,7 +10,7 @@ import CampaignCreationDialog from './CampaignCreationDialog';
 import CampaignDetailsDialog from './CampaignDetailsDialog';
 import CampaignEditDialog from './CampaignEditDialog';
 import { useCampaigns } from '@/hooks/recruitment/useCampaigns';
-import { Campaign, OpportunityItem } from '@/types/recruitment';
+import { Campaign } from '@/types/recruitment';
 import { useOpportunityRadar } from './radar/hooks/useOpportunityRadar';
 
 const CampaignsManagement: React.FC = () => {
@@ -37,7 +37,7 @@ const CampaignsManagement: React.FC = () => {
   };
   
   return (
-    <div className="container mx-auto py-6 space-y-8 max-w-6xl">
+    <div className="container mx-auto py-6 space-y-8 max-w-7xl">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold">Campanhas de Captação</h1>
@@ -65,7 +65,6 @@ const CampaignsManagement: React.FC = () => {
             opportunities={opportunities} 
             onCreateCampaign={handleCreateCampaign} 
           />
-          <OpportunityRadar />
         </div>
       </div>
       
