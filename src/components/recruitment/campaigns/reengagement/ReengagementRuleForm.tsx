@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Mail, MessageSquare, Phone, AlertCircle } from 'lucide-react';
-import { ReengagementRule } from '@/types/recruitment';
+import { ReengagementRule, ChannelType } from '@/types/recruitment';
 import { useVoiceCallConfig } from '@/hooks/useVoiceCallConfig';
 
 interface ReengagementRuleFormProps {
@@ -76,7 +76,7 @@ const ReengagementRuleForm: React.FC<ReengagementRuleFormProps> = ({
               onCheckedChange={() => {
                 const newChannels = rule.channels.includes('mail')
                   ? rule.channels.filter(c => c !== 'mail')
-                  : [...rule.channels, 'mail'];
+                  : [...rule.channels, 'mail' as ChannelType];
                 onRuleChange({...rule, channels: newChannels});
               }}
               id="channel-email"
@@ -93,7 +93,7 @@ const ReengagementRuleForm: React.FC<ReengagementRuleFormProps> = ({
               onCheckedChange={() => {
                 const newChannels = rule.channels.includes('whatsapp')
                   ? rule.channels.filter(c => c !== 'whatsapp')
-                  : [...rule.channels, 'whatsapp'];
+                  : [...rule.channels, 'whatsapp' as ChannelType];
                 onRuleChange({...rule, channels: newChannels});
               }}
               id="channel-whatsapp"
@@ -110,7 +110,7 @@ const ReengagementRuleForm: React.FC<ReengagementRuleFormProps> = ({
               onCheckedChange={() => {
                 const newChannels = rule.channels.includes('sms')
                   ? rule.channels.filter(c => c !== 'sms')
-                  : [...rule.channels, 'sms'];
+                  : [...rule.channels, 'sms' as ChannelType];
                 onRuleChange({...rule, channels: newChannels});
               }}
               id="channel-sms"
@@ -126,7 +126,7 @@ const ReengagementRuleForm: React.FC<ReengagementRuleFormProps> = ({
               onCheckedChange={() => {
                 const newChannels = rule.channels.includes('voice')
                   ? rule.channels.filter(c => c !== 'voice')
-                  : [...rule.channels, 'voice'];
+                  : [...rule.channels, 'voice' as ChannelType];
                 onRuleChange({...rule, channels: newChannels});
               }}
               id="channel-voice"
