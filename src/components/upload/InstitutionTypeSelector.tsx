@@ -33,7 +33,7 @@ const InstitutionTypeSelector: React.FC<InstitutionTypeSelectorProps> = ({
           </div>
           <Badge variant="outline" className="ml-2 bg-amber-50 border-amber-200 text-amber-800 text-xs">
             <KeyRound className="h-3 w-3 mr-1 inline" />
-            RA obrigatório
+            Email/CPF responsável
           </Badge>
         </div>
         

@@ -11,7 +11,7 @@ interface KeyFieldSelectorProps {
   institutionType: InstitutionType;
   value: string;
   onChange: (value: string) => void;
-  currentProduct?: string | ProductType; // Update to accept string or ProductType
+  currentProduct?: string | ProductType;
 }
 
 const KeyFieldSelector: React.FC<KeyFieldSelectorProps> = ({
@@ -44,8 +44,8 @@ const KeyFieldSelector: React.FC<KeyFieldSelectorProps> = ({
     return null;
   }
 
-  // For retention product or for schools in recruitment product, RA is required
-  if (effectiveProduct === 'retention' || (institutionType === 'school' && effectiveProduct === 'recruitment')) {
+  // For retention product, RA is required
+  if (effectiveProduct === 'retention') {
     return (
       <div className="mb-4">
         <div className="text-sm font-medium mb-2 flex items-center gap-1.5">
@@ -61,23 +61,18 @@ const KeyFieldSelector: React.FC<KeyFieldSelectorProps> = ({
           </SelectContent>
         </Select>
         <p className="mt-1 text-xs text-muted-foreground">
-          {effectiveProduct === 'retention' ? 
-            'Para o módulo de retenção, o campo RA (número de matrícula) é obrigatoriamente usado como chave única.' :
-            'Para educação básica, o campo RA (número de matrícula) é obrigatoriamente usado como chave única.'
-          }
+          Para o módulo de retenção, o campo RA (número de matrícula) é obrigatoriamente usado como chave única.
         </p>
-        {effectiveProduct === 'retention' && (
-          <Alert variant="default" className="mt-2 py-2 border-amber-200 bg-amber-50">
-            <AlertDescription className="text-xs text-amber-700">
-              A importação mensal usa o RA como base para decidir se atualiza um registro existente ou cria um novo.
-            </AlertDescription>
-          </Alert>
-        )}
+        <Alert variant="default" className="mt-2 py-2 border-amber-200 bg-amber-50">
+          <AlertDescription className="text-xs text-amber-700">
+            A importação mensal usa o RA como base para decidir se atualiza um registro existente ou cria um novo.
+          </AlertDescription>
+        </Alert>
       </div>
     );
   }
 
-  // For universities in recruitment product, allow selection between CPF and email
+  // For recruitment product (both school and university), allow selection of key fields
   return (
     <div className="mb-4">
       <div className="text-sm font-medium mb-2 flex items-center gap-1.5">
@@ -96,14 +91,21 @@ const KeyFieldSelector: React.FC<KeyFieldSelectorProps> = ({
           ))}
         </SelectContent>
       </Select>
-      {institutionType === 'university' && effectiveProduct === 'recruitment' && (
+      {institutionType === 'school' && effectiveProduct === 'recruitment' ? (
+        <Alert variant="default" className="mt-2 py-2 border-amber-200 bg-amber-50">
+          <AlertDescription className="text-xs text-amber-700">
+            Para Educação Básica, você deve escolher entre Email do responsável ou CPF do responsável como campo chave.
+            Um destes campos deve estar presente em todos os registros.
+          </AlertDescription>
+        </Alert>
+      ) : institutionType === 'university' && effectiveProduct === 'recruitment' ? (
         <Alert variant="default" className="mt-2 py-2 border-amber-200 bg-amber-50">
           <AlertDescription className="text-xs text-amber-700">
             Para Ensino Superior, você deve escolher entre Email ou CPF como campo chave.
             Um destes campos deve estar presente em todos os registros.
           </AlertDescription>
         </Alert>
-      )}
+      ) : null}
       <p className="mt-1 text-xs text-muted-foreground">
         Este campo será usado para identificar registros duplicados durante a importação.
       </p>

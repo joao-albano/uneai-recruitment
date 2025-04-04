@@ -8,7 +8,7 @@ export const getRequiredHeaders = (
 ): string[] => {
   if (productType === 'recruitment') {
     if (institutionType === 'school') {
-      return ['nome', 'email', 'ra', 'canal'];
+      return ['nome', 'canal']; // RA is no longer required, but email_responsavel or cpf_responsavel will be checked separately
     } else {
       return ['nome', 'email', 'telefone', 'canal', 'curso'];
     }
@@ -31,6 +31,16 @@ export const validateHeaders = (
   
   // Create a more flexible header matching approach
   const normalizedHeaders = headers.map(h => h.toLowerCase().trim());
+  
+  // For school recruitment, check if either email_responsavel or cpf_responsavel is present
+  if (productType === 'recruitment' && institutionType === 'school') {
+    const hasEmailResponsavel = normalizedHeaders.includes('email_responsavel');
+    const hasCpfResponsavel = normalizedHeaders.includes('cpf_responsavel');
+    
+    if (!hasEmailResponsavel && !hasCpfResponsavel) {
+      return false; // Neither email_responsavel nor cpf_responsavel is present
+    }
+  }
   
   return requiredHeaders.every(required => {
     // Check standard forms

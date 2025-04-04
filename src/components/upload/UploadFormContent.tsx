@@ -26,12 +26,16 @@ const UploadFormContent: React.FC = () => {
     if (currentProduct === 'retention') {
       setInstitutionType('school');
       setKeyField('ra');
-    } else if (institutionType === 'school' && currentProduct === 'recruitment') {
-      setKeyField('ra');
-    } else if (keyField === 'ra' && institutionType === 'university') {
-      setKeyField(''); // Reset if we had 'ra' selected but switched to university
+    } else if (institutionType === 'university') {
+      if (keyField !== 'email' && keyField !== 'cpf') {
+        setKeyField('email'); // Default to email for university
+      }
+    } else if (institutionType === 'school') {
+      if (keyField !== 'email_responsavel' && keyField !== 'cpf_responsavel') {
+        setKeyField('email_responsavel'); // Default to email_responsavel for school
+      }
     }
-  }, [institutionType, currentProduct]);
+  }, [institutionType, currentProduct, keyField]);
   
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -74,7 +78,7 @@ const UploadFormContent: React.FC = () => {
     if (currentProduct === 'retention') {
       return keyField === 'ra'; // RA is always required for retention
     } else if (institutionType === 'school') {
-      return keyField === 'ra'; // RA is required for schools
+      return keyField === 'email_responsavel' || keyField === 'cpf_responsavel'; // Email or CPF for schools
     } else {
       return keyField === 'email' || keyField === 'cpf'; // Email or CPF for universities
     }
@@ -172,7 +176,7 @@ const UploadFormContent: React.FC = () => {
                   {currentProduct === 'retention' 
                     ? `Para retenção escolar, o RA (número de matrícula) é obrigatório e será usado como chave única para controle mensal das importações.`
                     : institutionType === 'school' 
-                      ? `Para educação básica, o RA (número de matrícula) é obrigatório e será usado como chave única para evitar duplicações.`
+                      ? `Para educação básica, ${keyField ? `o campo "${keyField === 'email_responsavel' ? 'Email do responsável' : 'CPF do responsável'}"` : "um campo entre Email do responsável ou CPF do responsável"} será usado como chave única para evitar duplicações.`
                       : `Para ensino superior, ${keyField ? `o campo "${keyField}"` : "um campo entre CPF e Email"} será usado como chave única para evitar duplicações.`}
                 </AlertDescription>
               </Alert>

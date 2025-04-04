@@ -54,11 +54,12 @@ const InfoTabContent: React.FC = () => {
               <ul className="list-disc pl-6 space-y-1 text-sm">
                 {institutionType === 'school' ? (
                   <>
-                    <li><strong>nome</strong> - Nome completo do lead (obrigatório)</li>
-                    <li><strong>email</strong> - Email do lead (obrigatório)</li>
-                    <li><strong>telefone</strong> - Número de telefone do lead</li>
-                    <li><strong>ra</strong> <KeyRound className="h-3 w-3 text-amber-500 inline mb-0.5" /> - Número de registro/matrícula do aluno (obrigatório)</li>
-                    <li><strong>cpf</strong> - CPF do responsável</li>
+                    <li><strong>nome</strong> - Nome completo do aluno (obrigatório)</li>
+                    <li><strong>email_responsavel</strong> <KeyRound className="h-3 w-3 text-amber-500 inline mb-0.5" /> - Email do responsável (obrigatório*)</li>
+                    <li><strong>cpf_responsavel</strong> <KeyRound className="h-3 w-3 text-amber-500 inline mb-0.5" /> - CPF do responsável (obrigatório*)</li>
+                    <li><strong>telefone</strong> - Número de telefone do responsável</li>
+                    <li><strong>ra</strong> - Número de registro/matrícula do aluno (opcional)</li>
+                    <li><strong>nome_responsavel</strong> - Nome do responsável</li>
                     <li><strong>canal</strong> - Canal de origem (ex: Facebook, Instagram, Site) (obrigatório)</li>
                     <li><strong>serie</strong> - Série/ano pretendido</li>
                     <li><strong>quantidade_filhos</strong> - Número de filhos</li>
@@ -67,6 +68,7 @@ const InfoTabContent: React.FC = () => {
                     <li><strong>intenção_matrícula</strong> - Nível de intenção de matrícula</li>
                     <li><strong>melhor_horario_contato</strong> - Melhor horário para contato</li>
                     <li><strong>observacoes</strong> - Observações gerais</li>
+                    <li className="text-xs text-amber-600 mt-1">* É necessário fornecer pelo menos um dos campos: email_responsavel OU cpf_responsavel</li>
                   </>
                 ) : (
                   <>
@@ -97,7 +99,9 @@ const InfoTabContent: React.FC = () => {
               <ul className="list-disc pl-6 space-y-1 text-sm">
                 {institutionType === 'school' ? (
                   <>
-                    <li><strong>ra</strong> - Número de registro do aluno (RA) - <span className="text-amber-600 font-medium">obrigatório</span></li>
+                    <li><strong>email_responsavel</strong> - Email do responsável</li>
+                    <li><strong>cpf_responsavel</strong> - CPF do responsável</li>
+                    <li><span className="text-amber-600 font-medium">Um destes campos é obrigatório</span></li>
                   </>
                 ) : (
                   <>

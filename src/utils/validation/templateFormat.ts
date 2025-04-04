@@ -10,10 +10,11 @@ export const getTemplateColumns = (
     if (institutionType === 'school') {
       return [
         { header: 'nome', description: 'Nome completo do lead', example: 'João da Silva', required: true },
-        { header: 'email', description: 'Email do lead', example: 'joao@email.com', required: true, isKeyField: false },
-        { header: 'telefone', description: 'Número de telefone do lead', example: '(11) 98765-4321', required: false, isKeyField: false },
-        { header: 'ra', description: 'Número de registro/matrícula do aluno', example: '123456', required: true, isKeyField: true },
-        { header: 'cpf', description: 'CPF do responsável', example: '123.456.789-00', required: false, isKeyField: false },
+        { header: 'email_responsavel', description: 'Email do responsável', example: 'responsavel@email.com', required: false, isKeyField: true },
+        { header: 'cpf_responsavel', description: 'CPF do responsável', example: '123.456.789-00', required: false, isKeyField: true },
+        { header: 'telefone', description: 'Número de telefone do responsável', example: '(11) 98765-4321', required: false, isKeyField: false },
+        { header: 'ra', description: 'Número de registro/matrícula do aluno', example: '123456', required: false, isKeyField: false },
+        { header: 'nome_responsavel', description: 'Nome do responsável', example: 'Maria Silva', required: false, isKeyField: false },
         { header: 'canal', description: 'Canal de origem (ex: Facebook, Instagram, Site)', example: 'Facebook', required: true },
         { header: 'serie', description: 'Série/ano pretendido', example: '9º ano', required: false },
         { header: 'quantidade_filhos', description: 'Número de filhos', example: '2', required: false },
@@ -78,8 +79,9 @@ export const getExcelFormat = (
   
   if (productType === 'recruitment') {
     if (institutionType === 'school') {
-      description = 'O arquivo deve conter as colunas: Nome, Email, RA (obrigatórios), Telefone, ' +
-        'Canal (origem), Série pretendida, ' +
+      description = 'O arquivo deve conter as colunas: Nome, Email do responsável OU CPF do responsável (obrigatórios), ' +
+        'Telefone, Canal (origem), RA (opcional), ' +
+        'Nome do responsável, Série pretendida, ' +
         'Quantidade de Filhos, Nomes dos Filhos, Idades dos Filhos, Intenção de Matrícula, ' +
         'Melhor Horário para Contato, e Observações.';
     } else {

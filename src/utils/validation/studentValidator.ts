@@ -19,13 +19,33 @@ export const validateStudentData = (
     });
   }
 
-  // Validate registration number
-  if (!data.registrationNumber) {
-    errors.push({
-      row: rowIndex,
-      column: 'registro',
-      message: 'Número de registro/matrícula é obrigatório'
-    });
+  // For recruitment with school type, require either email or cpf, and RA becomes optional
+  const isSchoolRecruitment = true; // We assume this is for recruitment with school type
+  
+  if (isSchoolRecruitment) {
+    // Either parent email or CPF is required for basic education in recruitment product
+    const hasParentEmail = !!data.parentEmail;
+    const hasParentCPF = !!data.parentCPF;
+    
+    if (!hasParentEmail && !hasParentCPF) {
+      errors.push({
+        row: rowIndex,
+        column: 'email_responsavel/cpf_responsavel',
+        message: 'É necessário fornecer pelo menos um Email OU CPF do responsável'
+      });
+    }
+    
+    // Registration number is now optional for basic education
+    // No validation error for missing registration number
+  } else {
+    // For retention product, registration is still required
+    if (!data.registrationNumber) {
+      errors.push({
+        row: rowIndex,
+        column: 'registro',
+        message: 'Número de registro/matrícula é obrigatório'
+      });
+    }
   }
 
   if (!data.class) {
@@ -89,6 +109,31 @@ export const validateStudentData = (
         row: rowIndex,
         column: 'comportamento',
         message: 'Comportamento deve ser um número entre 0 e 10'
+      });
+    }
+  }
+
+  // Validate parent email if provided
+  if (data.parentEmail !== undefined && typeof data.parentEmail === 'string') {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.parentEmail)) {
+      errors.push({
+        row: rowIndex,
+        column: 'email_responsavel',
+        message: 'Email do responsável deve ser um email válido'
+      });
+    }
+  }
+
+  // Validate parent CPF if provided
+  if (data.parentCPF !== undefined && typeof data.parentCPF === 'string') {
+    // Basic CPF format validation (more complex validation could be added)
+    const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$|^\d{11}$/;
+    if (!cpfRegex.test(data.parentCPF)) {
+      errors.push({
+        row: rowIndex,
+        column: 'cpf_responsavel',
+        message: 'CPF do responsável deve seguir o formato 123.456.789-00 ou apenas números'
       });
     }
   }
