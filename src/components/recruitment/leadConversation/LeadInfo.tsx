@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Card, CardContent, CardDescription, CardHeader, CardTitle 
@@ -8,6 +7,7 @@ import {
   User, Mail, Phone, MessageSquare, FileText, 
   Clock, BarChart2
 } from 'lucide-react';
+import { getEmotionBadge, getLeadScore } from './utils/leadUtils.tsx';
 
 interface LeadInfoProps {
   leadData: {
@@ -41,26 +41,6 @@ const LeadInfo: React.FC<LeadInfoProps> = ({ leadData }) => {
       case 'desistente': return <Badge className="bg-red-500">Desistente</Badge>;
       default: return <Badge className="bg-gray-500">Indefinido</Badge>;
     }
-  };
-  
-  const getEmotionBadge = (emotion?: string) => {
-    if (!emotion) return null;
-    
-    switch(emotion) {
-      case 'positivo': return <Badge className="bg-green-500">Positivo</Badge>;
-      case 'negativo': return <Badge className="bg-red-500">Negativo</Badge>;
-      case 'interessado': return <Badge className="bg-blue-500">Interessado</Badge>;
-      case 'hesitante': return <Badge className="bg-amber-500">Hesitante</Badge>;
-      case 'confuso': return <Badge className="bg-orange-500">Confuso</Badge>;
-      case 'entusiasmado': return <Badge className="bg-purple-500">Entusiasmado</Badge>;
-      default: return <Badge className="bg-gray-500">Neutro</Badge>;
-    }
-  };
-  
-  const getLeadScore = (score: number) => {
-    if (score >= 80) return <Badge className="bg-green-500">Alto ({score}%)</Badge>;
-    if (score >= 50) return <Badge className="bg-amber-500">Médio ({score}%)</Badge>;
-    return <Badge className="bg-red-500">Baixo ({score}%)</Badge>;
   };
 
   return (
