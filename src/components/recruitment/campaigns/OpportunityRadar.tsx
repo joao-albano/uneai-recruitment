@@ -31,6 +31,7 @@ import { toast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { useCampaigns } from '@/hooks/recruitment/useCampaigns';
 import { useNavigate } from 'react-router-dom';
+import { Campaign } from '@/types/recruitment';
 
 interface OpportunityItem {
   id: string;
@@ -103,7 +104,7 @@ const demoOpportunities: OpportunityItem[] = [
 const OpportunityRadar: React.FC = () => {
   const [opportunities, setOpportunities] = useState<OpportunityItem[]>(demoOpportunities);
   const [filter, setFilter] = useState<'all' | 'course' | 'location' | 'interest'>('all');
-  const { createCampaign } = useCampaigns();
+  const { createCampaign, campaigns } = useCampaigns();
   const navigate = useNavigate();
   
   const filteredOpportunities = opportunities.filter(
@@ -111,29 +112,41 @@ const OpportunityRadar: React.FC = () => {
   );
   
   const handleCreateCampaign = (item: OpportunityItem) => {
-    // Create a fake campaign based on the opportunity
-    const newCampaign = createCampaign({
+    // Create a campaign based on the opportunity
+    const newCampaign: Omit<Campaign, 'id'> = {
       name: `Campanha: ${item.name}`,
       description: `Campanha automática baseada em oportunidade: ${item.description}`,
       startDate: new Date(),
       endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days later
-      status: 'draft',
+      status: 'active', // Changed from 'draft' to 'active' so it appears in active campaigns
       budget: item.count * 100, // Simple budget calculation
       channel: ['mail', 'whatsapp'],
+      performance: {
+        leadsGenerated: 0,
+        conversion: 0,
+        cost: 0
+      },
       target: {
         audience: item.type === 'location' ? item.name : 'Geral',
         courses: item.type === 'course' ? [item.name] : ['Todos os cursos']
       }
-    });
+    };
+    
+    const createdCampaign = createCampaign(newCampaign);
     
     toast({
       title: 'Campanha criada com sucesso',
-      description: `Nova campanha "${newCampaign.name}" criada e disponível para edição`,
+      description: `Nova campanha "${createdCampaign.name}" criada e disponível para edição`,
     });
+    
+    // Optionally navigate to the active campaigns tab
+    setTimeout(() => {
+      navigate('/recruitment/campaigns', { state: { activeTab: 'active' } });
+    }, 1500);
   };
   
   const handleDetailedAnalysis = () => {
-    navigate('/recruitment/analytics', { 
+    navigate('/recruitment/detailed-analysis', { 
       state: { 
         analyticsSource: 'opportunity-radar',
         opportunities: filteredOpportunities 

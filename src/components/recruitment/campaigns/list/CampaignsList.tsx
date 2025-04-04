@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Campaign } from '@/types/recruitment';
 import { useCampaigns } from '@/hooks/recruitment/useCampaigns';
 import { toast } from '@/hooks/use-toast';
@@ -15,6 +15,7 @@ interface CampaignsListProps {
 
 const CampaignsList: React.FC<CampaignsListProps> = ({ showArchived = false }) => {
   const { 
+    campaigns,
     updateCampaign, 
     archiveCampaign, 
     getArchivedCampaigns, 
@@ -24,9 +25,12 @@ const CampaignsList: React.FC<CampaignsListProps> = ({ showArchived = false }) =
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+  const [displayedCampaigns, setDisplayedCampaigns] = useState<Campaign[]>([]);
   
-  // Filtramos as campanhas de acordo com o parâmetro showArchived
-  const displayedCampaigns = showArchived ? getArchivedCampaigns() : getActiveCampaigns();
+  // Update displayed campaigns whenever the campaigns list changes
+  useEffect(() => {
+    setDisplayedCampaigns(showArchived ? getArchivedCampaigns() : getActiveCampaigns());
+  }, [campaigns, showArchived, getArchivedCampaigns, getActiveCampaigns]);
   
   const handleViewDetails = (campaign: Campaign) => {
     setSelectedCampaign(campaign);
