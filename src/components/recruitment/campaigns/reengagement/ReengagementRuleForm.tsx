@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Mail, MessageSquare, Phone, AlertCircle } from 'lucide-react';
 import { ReengagementRule, ChannelType } from '@/types/recruitment';
 import { useVoiceCallConfig } from '@/hooks/useVoiceCallConfig';
+import { toast } from '@/hooks/use-toast';
 
 interface ReengagementRuleFormProps {
   rule: ReengagementRule;
@@ -33,6 +34,22 @@ const ReengagementRuleForm: React.FC<ReengagementRuleFormProps> = ({
       case 'formal': return 'text-blue-500';
       default: return 'text-gray-500';
     }
+  };
+  
+  const handleVoiceChannelToggle = () => {
+    if (voiceCallConfig.provider === 'disabled') {
+      toast({
+        title: "Serviço de Voz Não Configurado",
+        description: "Configure o serviço de ligações de voz nas configurações do sistema para ativar esta funcionalidade.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    const newChannels = rule.channels.includes('voice')
+      ? rule.channels.filter(c => c !== 'voice')
+      : [...rule.channels, 'voice' as ChannelType];
+    onRuleChange({...rule, channels: newChannels});
   };
 
   return (
@@ -123,12 +140,7 @@ const ReengagementRuleForm: React.FC<ReengagementRuleFormProps> = ({
           <div className="flex items-center space-x-2">
             <Switch 
               checked={rule.channels.includes('voice')} 
-              onCheckedChange={() => {
-                const newChannels = rule.channels.includes('voice')
-                  ? rule.channels.filter(c => c !== 'voice')
-                  : [...rule.channels, 'voice' as ChannelType];
-                onRuleChange({...rule, channels: newChannels});
-              }}
+              onCheckedChange={handleVoiceChannelToggle}
               id="channel-voice"
               disabled={voiceCallConfig.provider === 'disabled'}
             />
@@ -142,10 +154,10 @@ const ReengagementRuleForm: React.FC<ReengagementRuleFormProps> = ({
           </div>
         </div>
         
-        {voiceCallConfig.provider === 'disabled' && rule.channels.includes('voice') && (
+        {voiceCallConfig.provider === 'disabled' && (
           <div className="mt-2 text-xs text-amber-500 flex items-center gap-1">
             <AlertCircle className="h-3 w-3" />
-            A integração de chamadas de voz não está configurada. Configure nas configurações do sistema.
+            <span>A integração de chamadas de voz não está configurada. Configure nas <a href="/admin/apis" className="underline">configurações do sistema</a>.</span>
           </div>
         )}
       </div>

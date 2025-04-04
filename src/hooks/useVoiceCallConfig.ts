@@ -31,10 +31,15 @@ export const useVoiceCallConfig = () => {
   const updateConfig = (newConfig: Partial<VoiceCallConfig>) => {
     setConfig(prev => ({ ...prev, ...newConfig }));
   };
+  
+  const isProviderConfigured = () => {
+    return config.provider !== 'disabled' && config.enabled;
+  };
 
   return {
     config,
     updateConfig,
     setConfig,
+    isProviderConfigured,
   };
 };
