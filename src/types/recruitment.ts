@@ -100,9 +100,14 @@ export type Campaign = {
     audience?: string;
     location?: string;
     interests?: string[];
-    courses?: string[];  // Adicionando o campo de cursos
+    courses?: string[];
   };
   isAutomated?: boolean;
+  content?: {
+    strategy: 'ai' | 'manual' | 'templates';
+    template: string;
+    variables?: string[];
+  };
 };
 
 export type Conversation = {

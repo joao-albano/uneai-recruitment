@@ -24,6 +24,13 @@ import {
   Users,
   Sparkles,
   AlertCircle,
+  MessageCircle,
+  SendHorizontal,
+  Image,
+  FileText,
+  Link,
+  Settings,
+  PersonStanding,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
@@ -35,6 +42,10 @@ import {
 import {
   Card,
   CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
@@ -43,6 +54,8 @@ import { ptBR } from 'date-fns/locale';
 import { useCampaigns } from '@/hooks/recruitment/useCampaigns';
 import { Campaign, ChannelType } from '@/types/recruitment';
 import { toast } from '@/hooks/use-toast';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface CampaignCreationDialogProps {
   open: boolean;
@@ -84,6 +97,33 @@ const locationOptions = [
   { id: 'regiao-metropolitana', label: 'Região Metropolitana' },
 ];
 
+const contentTemplates = [
+  { 
+    id: 'welcome', 
+    name: 'Boas-vindas', 
+    content: 'Olá {nome}, tudo bem? Estamos muito felizes em receber seu interesse em nossos cursos. Podemos ajudar com mais informações?',
+    emoji: '👋'
+  },
+  { 
+    id: 'info', 
+    name: 'Informações do Curso', 
+    content: 'Olá {nome}, o curso de {curso} tem duração de {duracao} e mensalidades a partir de R$ {valor}. Posso enviar mais detalhes?',
+    emoji: '📚'
+  },
+  { 
+    id: 'discount', 
+    name: 'Oferta Especial', 
+    content: 'Olá {nome}, temos uma condição especial para o curso de {curso} com {desconto}% de desconto nas primeiras mensalidades!',
+    emoji: '🎁'
+  },
+  { 
+    id: 'reminder', 
+    name: 'Lembrete de Prazo', 
+    content: 'Olá {nome}, o prazo para inscrição no curso de {curso} está acabando! Não perca essa oportunidade.',
+    emoji: '⏰'
+  },
+];
+
 const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({ 
   open, 
   onOpenChange 
@@ -115,6 +155,12 @@ const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({
   const [useAiAssistance, setUseAiAssistance] = useState(false);
   
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
+
+  const [contentStrategy, setContentStrategy] = useState<'ai' | 'manual' | 'templates'>('ai');
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('');
+  const [customContent, setCustomContent] = useState<string>('');
+  const [messagePreview, setMessagePreview] = useState<string>('');
+  const [previewType, setPreviewType] = useState<ChannelType>('whatsapp');
 
   const handleInputChange = (field: string, value: any) => {
     setCampaignData(prev => ({ ...prev, [field]: value }));
@@ -271,6 +317,96 @@ const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({
       });
     }, 1500);
   };
+  
+  const handleContentStrategyChange = (strategy: 'ai' | 'manual' | 'templates') => {
+    setContentStrategy(strategy);
+    
+    if (strategy === 'templates' && selectedTemplate) {
+      const template = contentTemplates.find(t => t.id === selectedTemplate);
+      if (template) {
+        setCustomContent(template.content);
+        generateMessagePreview(template.content);
+      }
+    } else if (strategy === 'ai') {
+      setCustomContent('');
+      setMessagePreview('');
+    }
+  };
+  
+  const handleTemplateSelect = (templateId: string) => {
+    setSelectedTemplate(templateId);
+    const template = contentTemplates.find(t => t.id === templateId);
+    if (template) {
+      setCustomContent(template.content);
+      generateMessagePreview(template.content);
+    }
+  };
+  
+  const generateMessagePreview = (content: string) => {
+    let preview = content;
+    
+    preview = preview.replace(/{nome}/g, 'Maria');
+    preview = preview.replace(/{curso}/g, campaignData.target?.courses?.[0] || 'Administração');
+    preview = preview.replace(/{duracao}/g, '4 anos');
+    preview = preview.replace(/{valor}/g, '499,90');
+    preview = preview.replace(/{desconto}/g, '30');
+    
+    setMessagePreview(preview);
+  };
+  
+  const handleContentChange = (content: string) => {
+    setCustomContent(content);
+    generateMessagePreview(content);
+  };
+  
+  const generateAiContent = () => {
+    setTimeout(() => {
+      const audienceText = campaignData.target?.audience || 'estudantes em potencial';
+      const coursesText = campaignData.target?.courses?.join(', ') || 'nossos cursos';
+      const locationText = campaignData.target?.location || '';
+      
+      let aiGenerated = `Olá {nome}, tudo bem?\n\n`;
+      
+      if (campaignData.channel.includes('whatsapp')) {
+        aiGenerated += `Sou consultor educacional da ${campaignData.name.split(' ')[0] || 'Instituição'} e estamos com uma campanha especial para ${audienceText} interessados em ${coursesText}.`;
+      } else {
+        aiGenerated += `Estamos com vagas abertas para ${coursesText} e gostaríamos de apresentar nossas opções e benefícios para você.`;
+      }
+      
+      if (locationText) {
+        aiGenerated += `\n\nEstamos localizados na região ${locationText}, com fácil acesso e infraestrutura completa.`;
+      }
+      
+      aiGenerated += `\n\nGostaria de receber mais informações? Estou à disposição para ajudar.`;
+      
+      setCustomContent(aiGenerated);
+      generateMessagePreview(aiGenerated);
+      
+      setCampaignData(prev => ({
+        ...prev,
+        content: {
+          ...prev.content,
+          template: aiGenerated
+        }
+      }));
+      
+      toast({
+        title: 'Conteúdo gerado com sucesso',
+        description: 'A IA gerou uma mensagem personalizada baseada nos dados da campanha.',
+      });
+    }, 1500);
+  };
+  
+  React.useEffect(() => {
+    setCampaignData(prev => ({
+      ...prev,
+      content: {
+        strategy: 'ai',
+        template: '',
+        variables: ['nome', 'curso', 'duracao', 'valor', 'desconto']
+      }
+    }));
+  }, []);
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -545,54 +681,279 @@ const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({
           </TabsContent>
           
           <TabsContent value="content" className="space-y-4">
-            <div>
-              <p className="text-muted-foreground mb-6">
-                O conteúdo da campanha será configurado após a criação da campanha.
-              </p>
-              <div className="grid gap-4">
-                <Card className="border-dashed border-primary/30 bg-primary/5">
-                  <CardContent className="py-4 flex items-center gap-3">
-                    <div className="p-2 bg-primary/10 rounded-full">
-                      <Sparkles className="h-5 w-5 text-primary" />
-                    </div>
-                    <div className="text-sm">
-                      <p className="font-medium">Geração de Conteúdo por IA</p>
-                      <p className="text-muted-foreground">
-                        Sistema inteligente para criação de mensagens personalizadas
-                      </p>
-                    </div>
-                    <div className="ml-auto">
-                      <Badge>Recomendado</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card className="border-dashed border-muted-foreground/20">
-                  <CardContent className="py-4 flex items-center gap-3">
-                    <div className="p-2 bg-muted rounded-full">
-                      <Users className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <div className="text-sm">
-                      <p className="font-medium">Segmentação Avançada</p>
-                      <p className="text-muted-foreground">
-                        Mensagens específicas para diferentes segmentos do público
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-            
-            <div className="rounded-md border p-4 bg-amber-50/50">
-              <div className="flex gap-3">
-                <AlertCircle className="h-5 w-5 text-amber-500 mt-0.5" />
-                <div className="text-sm">
-                  <p className="font-medium text-amber-800">Dica de conteúdo</p>
-                  <p className="text-amber-800/80">
-                    As mensagens mais eficazes focam em benefícios tangíveis e incluem um chamado à ação claro.
-                  </p>
+            <div className="space-y-4">
+              <Label>Estratégia de Conteúdo</Label>
+              <RadioGroup 
+                value={contentStrategy} 
+                onValueChange={(value) => handleContentStrategyChange(value as 'ai' | 'manual' | 'templates')}
+                className="grid grid-cols-3 gap-4"
+              >
+                <div className={`flex flex-col items-center gap-2 border rounded-lg p-4 cursor-pointer transition-all ${contentStrategy === 'ai' ? 'border-primary bg-primary/5' : 'border-border'}`}>
+                  <RadioGroupItem value="ai" id="ai" className="sr-only" />
+                  <Sparkles className="h-8 w-8 text-amber-500" />
+                  <Label htmlFor="ai" className="font-medium cursor-pointer">IA Generativa</Label>
+                  <p className="text-xs text-center text-muted-foreground">Geração automatizada de mensagens personalizadas</p>
                 </div>
-              </div>
+                
+                <div className={`flex flex-col items-center gap-2 border rounded-lg p-4 cursor-pointer transition-all ${contentStrategy === 'templates' ? 'border-primary bg-primary/5' : 'border-border'}`}>
+                  <RadioGroupItem value="templates" id="templates" className="sr-only" />
+                  <FileText className="h-8 w-8 text-blue-500" />
+                  <Label htmlFor="templates" className="font-medium cursor-pointer">Templates</Label>
+                  <p className="text-xs text-center text-muted-foreground">Modelos pré-definidos adaptáveis</p>
+                </div>
+                
+                <div className={`flex flex-col items-center gap-2 border rounded-lg p-4 cursor-pointer transition-all ${contentStrategy === 'manual' ? 'border-primary bg-primary/5' : 'border-border'}`}>
+                  <RadioGroupItem value="manual" id="manual" className="sr-only" />
+                  <FileText className="h-8 w-8 text-green-500" />
+                  <Label htmlFor="manual" className="font-medium cursor-pointer">Manual</Label>
+                  <p className="text-xs text-center text-muted-foreground">Criação personalizada de mensagens</p>
+                </div>
+              </RadioGroup>
+              
+              {contentStrategy === 'ai' && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-amber-500" />
+                      Geração de Conteúdo por IA
+                    </CardTitle>
+                    <CardDescription>
+                      Nossa IA analisará seu público-alvo e criará mensagens personalizadas
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex flex-col space-y-2">
+                        <Label>Personalização da IA</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="friendly" defaultChecked />
+                            <Label htmlFor="friendly" className="text-sm">Tom amigável</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="formal" />
+                            <Label htmlFor="formal" className="text-sm">Tom formal</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="emojis" defaultChecked />
+                            <Label htmlFor="emojis" className="text-sm">Usar emojis</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="benefits" defaultChecked />
+                            <Label htmlFor="benefits" className="text-sm">Destacar benefícios</Label>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <Button 
+                        type="button" 
+                        onClick={generateAiContent}
+                        className="w-full"
+                      >
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Gerar conteúdo com IA
+                      </Button>
+                      
+                      {customContent && (
+                        <div className="space-y-2">
+                          <Label>Conteúdo gerado (editável)</Label>
+                          <Textarea 
+                            rows={5}
+                            value={customContent}
+                            onChange={(e) => handleContentChange(e.target.value)}
+                            className="font-mono text-sm"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              
+              {contentStrategy === 'templates' && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-blue-500" />
+                      Templates de Mensagens
+                    </CardTitle>
+                    <CardDescription>
+                      Escolha um modelo pré-definido e personalize conforme necessário
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <Select 
+                        value={selectedTemplate} 
+                        onValueChange={handleTemplateSelect}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um template" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {contentTemplates.map(template => (
+                            <SelectItem key={template.id} value={template.id}>
+                              <div className="flex items-center">
+                                <span className="mr-2">{template.emoji}</span>
+                                {template.name}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      
+                      {selectedTemplate && (
+                        <div className="space-y-2">
+                          <Label>Conteúdo do template (editável)</Label>
+                          <Textarea 
+                            rows={5}
+                            value={customContent}
+                            onChange={(e) => handleContentChange(e.target.value)}
+                            className="font-mono text-sm"
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Use {'{nome}'}, {'{curso}'}, {'{duracao}'}, {'{valor}'} e {'{desconto}'} como variáveis que serão substituídas automaticamente.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              
+              {contentStrategy === 'manual' && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-green-500" />
+                      Criação Manual
+                    </CardTitle>
+                    <CardDescription>
+                      Crie sua própria mensagem personalizada do zero
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Conteúdo da mensagem</Label>
+                        <Textarea 
+                          rows={5}
+                          placeholder="Digite a mensagem da sua campanha aqui..."
+                          value={customContent}
+                          onChange={(e) => handleContentChange(e.target.value)}
+                          className="font-mono text-sm"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Dica: Use {'{nome}'} para personalizar a mensagem com o nome do destinatário.
+                        </p>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-sm mb-2 block">Ferramentas de edição</Label>
+                          <div className="flex gap-1">
+                            <Button variant="outline" size="sm" type="button" className="h-8 w-8 p-0">
+                              <Image className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm" type="button" className="h-8 w-8 p-0">
+                              <Link className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm" type="button" className="h-8 w-8 p-0">
+                              <PersonStanding className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <Label className="text-sm mb-2 block">Variáveis</Label>
+                          <div className="flex flex-wrap gap-1">
+                            <Badge variant="outline" className="cursor-pointer" onClick={() => handleContentChange(customContent + " {nome}")}>
+                              {'{nome}'}
+                            </Badge>
+                            <Badge variant="outline" className="cursor-pointer" onClick={() => handleContentChange(customContent + " {curso}")}>
+                              {'{curso}'}
+                            </Badge>
+                            <Badge variant="outline" className="cursor-pointer" onClick={() => handleContentChange(customContent + " {valor}")}>
+                              {'{valor}'}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              
+              {messagePreview && (
+                <Card className="border-dashed">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <MessageCircle className="h-4 w-4" />
+                      Pré-visualização da Mensagem
+                    </CardTitle>
+                    <div className="flex justify-between items-center">
+                      <CardDescription>
+                        Visualize como sua mensagem aparecerá para o destinatário
+                      </CardDescription>
+                      
+                      <Select 
+                        value={previewType} 
+                        onValueChange={(value: ChannelType) => setPreviewType(value)}
+                      >
+                        <SelectTrigger className="w-[140px] h-8">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                          <SelectItem value="mail">Email</SelectItem>
+                          <SelectItem value="sms">SMS</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className={`rounded-lg p-4 ${
+                      previewType === 'whatsapp' 
+                        ? 'bg-green-50 border border-green-200' 
+                        : previewType === 'mail' 
+                          ? 'bg-blue-50 border border-blue-200' 
+                          : 'bg-gray-50 border border-gray-200'
+                    }`}>
+                      <div className="flex items-start gap-3">
+                        {previewType === 'whatsapp' && (
+                          <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                            <MessageSquare className="w-4 h-4 text-white" />
+                          </div>
+                        )}
+                        {previewType === 'mail' && (
+                          <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                            <Mail className="w-4 h-4 text-white" />
+                          </div>
+                        )}
+                        {previewType === 'sms' && (
+                          <div className="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center">
+                            <MessageCircle className="w-4 h-4 text-white" />
+                          </div>
+                        )}
+                        
+                        <div className="flex-1">
+                          <div className="text-sm font-medium mb-1">
+                            {previewType === 'whatsapp' && 'WhatsApp Message'}
+                            {previewType === 'mail' && 'Contato Campus Virtual'}
+                            {previewType === 'sms' && 'SMS Campus Virtual'}
+                          </div>
+                          <div className="whitespace-pre-line text-sm">
+                            {messagePreview}
+                          </div>
+                          <div className="mt-2 text-xs text-muted-foreground">
+                            {new Date().toLocaleTimeString()}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </TabsContent>
         </Tabs>
