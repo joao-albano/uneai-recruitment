@@ -1,71 +1,83 @@
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Zap, Clock, Filter, Users, Target } from 'lucide-react';
-import CampaignsList from './CampaignsList';
-import AutomatedReengagement from './AutomatedReengagement';
+import { Plus } from 'lucide-react';
+import CampaignsList from './list/CampaignsList';
+import SuggestedActions from './radar/SuggestedActions';
 import OpportunityRadar from './OpportunityRadar';
+import AutomatedReengagement from './AutomatedReengagement';
 import CampaignCreationDialog from './CampaignCreationDialog';
-import { useLocation } from 'react-router-dom';
+import CampaignDetailsDialog from './CampaignDetailsDialog';
+import CampaignEditDialog from './CampaignEditDialog';
+import { useCampaigns } from '@/hooks/recruitment/useCampaigns';
+import { Campaign } from '@/types/recruitment';
 
 const CampaignsManagement: React.FC = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('active');
-  const location = useLocation();
-
-  // Set the active tab based on location state if available
-  useEffect(() => {
-    if (location.state && location.state.activeTab) {
-      setActiveTab(location.state.activeTab);
-    }
-  }, [location.state]);
-
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+  
+  const { campaigns } = useCampaigns();
+  
+  const handleOpenDetails = (campaign: Campaign) => {
+    setSelectedCampaign(campaign);
+    setDetailsDialogOpen(true);
+  };
+  
+  const handleOpenEdit = (campaign: Campaign) => {
+    setSelectedCampaign(campaign);
+    setEditDialogOpen(true);
+  };
+  
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto py-6 space-y-8 max-w-6xl">
+      <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Campanhas</h1>
-          <p className="text-muted-foreground">
-            Gerencie suas campanhas de captação e reengajamento
+          <h1 className="text-2xl font-bold">Campanhas de Captação</h1>
+          <p className="text-muted-foreground mt-1">
+            Gerencie suas campanhas para captação de novos alunos
           </p>
         </div>
-        <Button 
-          className="flex items-center gap-1"
-          onClick={() => setCreateDialogOpen(true)}
-        >
-          <Plus className="h-4 w-4" />
+        <Button onClick={() => setCreateDialogOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
           Nova Campanha
         </Button>
       </div>
       
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-4 mb-4">
-          <TabsTrigger value="active">Campanhas Ativas</TabsTrigger>
-          <TabsTrigger value="automated">Reengajamento Automático</TabsTrigger>
-          <TabsTrigger value="radar">Radar de Oportunidades</TabsTrigger>
-          <TabsTrigger value="archived">Campanhas Arquivadas</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="active">
-          <CampaignsList showArchived={false} />
-        </TabsContent>
-
-        <TabsContent value="automated">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <CampaignsList 
+            campaigns={campaigns}
+            onOpenDetails={handleOpenDetails}
+            onOpenEdit={handleOpenEdit}
+          />
           <AutomatedReengagement />
-        </TabsContent>
-
-        <TabsContent value="radar">
+        </div>
+        
+        <div className="space-y-6">
+          <SuggestedActions />
           <OpportunityRadar />
-        </TabsContent>
-
-        <TabsContent value="archived">
-          <CampaignsList showArchived={true} />
-        </TabsContent>
-      </Tabs>
-
-      <CampaignCreationDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
+        </div>
+      </div>
+      
+      {/* Dialogs */}
+      <CampaignCreationDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+      />
+      
+      <CampaignDetailsDialog
+        open={detailsDialogOpen}
+        onOpenChange={setDetailsDialogOpen}
+        campaign={selectedCampaign}
+      />
+      
+      <CampaignEditDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        campaign={selectedCampaign}
+      />
     </div>
   );
 };
