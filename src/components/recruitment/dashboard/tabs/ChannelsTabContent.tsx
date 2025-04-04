@@ -88,21 +88,21 @@ const ChannelsTabContent: React.FC = () => {
               Porcentagem de leads captados por cada canal
             </CardDescription>
           </CardHeader>
-          <CardContent className="h-80">
+          <CardContent className="h-80 overflow-hidden">
             <ChartContainer
               config={{
                 leads: { color: "#8b5cf6" },
               }}
-              className="w-full aspect-[4/3]"
+              className="w-full h-full max-w-full"
             >
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="99%" height="100%">
                 <PieChart width={400} height={400}>
                   <Pie
                     data={channelData}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    outerRadius={80}
+                    outerRadius={70}
                     fill="#8884d8"
                     dataKey="count"
                     nameKey="name"
@@ -120,7 +120,17 @@ const ChannelsTabContent: React.FC = () => {
                       />
                     }
                   />
-                  <Legend />
+                  <Legend 
+                    layout="horizontal"
+                    verticalAlign="bottom"
+                    align="center"
+                    wrapperStyle={{
+                      paddingTop: 20,
+                      fontSize: '12px',
+                      width: '90%',
+                      margin: '0 auto',
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </ChartContainer>
