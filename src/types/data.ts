@@ -1,3 +1,4 @@
+
 // Define types for our data
 import { WhatsAppConfig } from '@/utils/whatsappIntegration';
 import { WhatsAppMessage } from './whatsapp';
@@ -18,6 +19,8 @@ export type StudentData = {
   actionItems?: string[];
   parentName?: string;
   parentContact?: string;
+  parentEmail?: string;  // Added parent email field
+  parentCPF?: string;    // Added parent CPF field
   decisionPath?: string[]; // Add decision path for explainable AI;
   importMonth?: number;    // Month when the data was imported
   importYear?: number;     // Year when the data was imported
