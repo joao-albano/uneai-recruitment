@@ -2,13 +2,12 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface NewConversationDialogProps {
   open: boolean;
@@ -46,6 +45,7 @@ const NewConversationDialog: React.FC<NewConversationDialogProps> = ({
   });
 
   const onSubmit = (data: FormValues) => {
+    // Now data is properly typed and has all required fields
     onCreateConversation(data);
     form.reset();
   };

@@ -16,6 +16,7 @@ export interface Agent {
   name: string;
   status: 'online' | 'offline' | 'busy';
   activeChats: number;
+  avatar?: string;
 }
 
 export interface Message {

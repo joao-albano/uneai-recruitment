@@ -2,7 +2,6 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Bot } from 'lucide-react';
-import { EmotionType, IntentType, ObjectionType } from '@/types/recruitment';
 
 interface MessageBubbleProps {
   id: string;
@@ -10,9 +9,9 @@ interface MessageBubbleProps {
   timestamp: Date;
   isFromLead: boolean;
   isFromAi?: boolean;
-  emotion?: EmotionType;
-  intent?: IntentType;
-  objection?: ObjectionType;
+  emotion?: string;
+  intent?: string;
+  objection?: string;
   showAnalytics: boolean;
 }
 
@@ -30,7 +29,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  const getEmotionColor = (emotion?: EmotionType) => {
+  const getEmotionColor = (emotion?: string) => {
     switch(emotion) {
       case 'positivo': return 'bg-green-500';
       case 'negativo': return 'bg-red-500';
@@ -42,7 +41,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
     }
   };
 
-  const renderEmotionBadge = (emotion?: EmotionType) => {
+  const renderEmotionBadge = (emotion?: string) => {
     if (!emotion || emotion === 'neutro' || !showAnalytics) return null;
     
     return (
@@ -52,7 +51,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
     );
   };
   
-  const renderIntentBadge = (intent?: IntentType) => {
+  const renderIntentBadge = (intent?: string) => {
     if (!intent || !showAnalytics) return null;
     
     return (
@@ -62,7 +61,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
     );
   };
   
-  const renderObjectionBadge = (objection?: ObjectionType) => {
+  const renderObjectionBadge = (objection?: string) => {
     if (!objection || objection === 'nenhuma' || !showAnalytics) return null;
     
     return (
