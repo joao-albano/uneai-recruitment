@@ -64,13 +64,14 @@ const CampaignsList: React.FC<CampaignsListProps> = ({ onOpenDetails, onOpenEdit
           <TabsContent value="active">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {activeCampaigns.length === 0 ? (
-                <EmptyCampaignState />
+                <EmptyCampaignState showArchived={false} />
               ) : (
                 activeCampaigns.map(campaign => (
                   <CampaignCardWithActions
                     key={campaign.id}
                     campaign={campaign}
-                    onView={() => onOpenDetails(campaign)}
+                    showArchived={false}
+                    onViewDetails={() => onOpenDetails(campaign)}
                     onEdit={() => onOpenEdit(campaign)}
                     onArchive={handleArchive}
                     onToggleStatus={handleToggleStatus}
@@ -84,14 +85,15 @@ const CampaignsList: React.FC<CampaignsListProps> = ({ onOpenDetails, onOpenEdit
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {archivedCampaigns.length === 0 ? (
                 <div className="col-span-2 flex justify-center items-center h-40">
-                  <p className="text-muted-foreground">Não há campanhas arquivadas.</p>
+                  <EmptyCampaignState showArchived={true} />
                 </div>
               ) : (
                 archivedCampaigns.map(campaign => (
                   <CampaignCardWithActions
                     key={campaign.id}
                     campaign={campaign}
-                    onView={() => onOpenDetails(campaign)}
+                    showArchived={true}
+                    onViewDetails={() => onOpenDetails(campaign)}
                     onEdit={() => onOpenEdit(campaign)}
                     onArchive={handleArchive}
                     onToggleStatus={handleToggleStatus}

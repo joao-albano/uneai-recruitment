@@ -9,15 +9,17 @@ import { Badge } from '@/components/ui/badge';
 interface CampaignCardWithActionsProps {
   campaign: Campaign;
   showArchived: boolean;
-  onViewDetails: (campaign: Campaign) => void;
-  onEdit: (campaign: Campaign) => void;
-  onToggleStatus: (campaign: Campaign) => void;
-  onArchive: (campaign: Campaign) => void;
+  onView?: (campaign: Campaign) => void;
+  onViewDetails?: (campaign: Campaign) => void;
+  onEdit?: (campaign: Campaign) => void;
+  onToggleStatus?: (campaign: Campaign) => void;
+  onArchive?: (campaign: Campaign) => void;
 }
 
 const CampaignCardWithActions: React.FC<CampaignCardWithActionsProps> = ({
   campaign,
   showArchived,
+  onView,
   onViewDetails,
   onEdit,
   onToggleStatus,
@@ -27,8 +29,17 @@ const CampaignCardWithActions: React.FC<CampaignCardWithActionsProps> = ({
     return null; // Return null if campaign is not defined
   }
   
+  // Normalize the view handler (support both onView and onViewDetails)
+  const handleViewClick = () => {
+    if (onViewDetails) {
+      onViewDetails(campaign);
+    } else if (onView) {
+      onView(campaign);
+    }
+  };
+  
   if (showArchived) {
-    return <CampaignCard campaign={campaign} onViewDetails={onViewDetails} />;
+    return <CampaignCard campaign={campaign} onViewDetails={handleViewClick} />;
   }
   
   return (
@@ -49,7 +60,7 @@ const CampaignCardWithActions: React.FC<CampaignCardWithActionsProps> = ({
               </Badge>
             </div>
             
-            {!showArchived && (
+            {!showArchived && onEdit && onToggleStatus && onArchive && (
               <CampaignActions 
                 campaign={campaign}
                 onEdit={() => onEdit(campaign)}

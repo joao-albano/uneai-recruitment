@@ -5,13 +5,11 @@ import CampaignsList from './list/CampaignsList';
 import { Campaign } from '@/types/recruitment';
 
 interface CampaignsListContainerProps {
-  showArchived?: boolean;
   onOpenDetails?: (campaign: Campaign) => void;
   onOpenEdit?: (campaign: Campaign) => void;
 }
 
 const CampaignsListContainer: React.FC<CampaignsListContainerProps> = ({ 
-  showArchived = false,
   onOpenDetails,
   onOpenEdit
 }) => {
@@ -34,7 +32,6 @@ const CampaignsListContainer: React.FC<CampaignsListContainerProps> = ({
 
   return (
     <CampaignsList 
-      showArchived={showArchived} 
       onOpenDetails={handleOpenDetails}
       onOpenEdit={handleOpenEdit}
     />

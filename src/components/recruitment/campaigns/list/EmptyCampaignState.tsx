@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
-interface EmptyCampaignStateProps {
+export interface EmptyCampaignStateProps {
   showArchived: boolean;
   onCreateCampaign?: () => void;
 }
