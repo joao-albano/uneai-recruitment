@@ -32,7 +32,7 @@ const ChannelDistributionChart: React.FC<ChannelDistributionChartProps> = ({ cha
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                outerRadius={70}
+                outerRadius={65}
                 fill="#8884d8"
                 dataKey="count"
                 nameKey="name"
@@ -54,11 +54,16 @@ const ChannelDistributionChart: React.FC<ChannelDistributionChartProps> = ({ cha
                 layout="horizontal"
                 verticalAlign="bottom"
                 align="center"
+                iconType="circle"
+                iconSize={8}
                 wrapperStyle={{
                   paddingTop: 20,
-                  fontSize: '12px',
-                  width: '90%',
+                  fontSize: '11px',
+                  width: '100%',
                   margin: '0 auto',
+                  maxWidth: '90%',
+                  overflowX: 'hidden',
+                  textOverflow: 'ellipsis'
                 }}
               />
             </PieChart>

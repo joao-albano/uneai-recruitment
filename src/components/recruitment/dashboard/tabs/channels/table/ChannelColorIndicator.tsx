@@ -8,7 +8,7 @@ interface ChannelColorIndicatorProps {
 const ChannelColorIndicator: React.FC<ChannelColorIndicatorProps> = ({ color }) => {
   return (
     <div 
-      className="h-3 w-3 rounded-full mr-2" 
+      className="h-3 w-3 rounded-full mr-2 flex-shrink-0" 
       style={{ backgroundColor: color }}
     />
   );
