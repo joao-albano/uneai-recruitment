@@ -3,6 +3,7 @@ import React, { useRef, useEffect } from 'react';
 import MessageBubble from './MessageBubble';
 import { Message } from './types';
 import { Loader2 } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface MessagesContainerProps {
   messages: Message[];
@@ -50,25 +51,27 @@ const MessagesContainer: React.FC<MessagesContainerProps> = ({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 pb-2 max-h-[calc(100vh-250px)]">
-      <div className="max-w-full">
-        {messages.map(msg => (
-          <MessageBubble 
-            key={msg.id}
-            id={msg.id}
-            content={msg.content}
-            timestamp={msg.timestamp}
-            isFromLead={msg.isFromLead}
-            isFromAi={msg.isFromAi}
-            emotion={msg.emotion}
-            intent={msg.intent}
-            objection={msg.objection}
-            showAnalytics={showAnalytics}
-          />
-        ))}
-        <div ref={messagesEndRef} />
+    <ScrollArea className="flex-1 h-full w-full">
+      <div className="p-4 pb-2">
+        <div className="max-w-full">
+          {messages.map(msg => (
+            <MessageBubble 
+              key={msg.id}
+              id={msg.id}
+              content={msg.content}
+              timestamp={msg.timestamp}
+              isFromLead={msg.isFromLead}
+              isFromAi={msg.isFromAi}
+              emotion={msg.emotion}
+              intent={msg.intent}
+              objection={msg.objection}
+              showAnalytics={showAnalytics}
+            />
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
       </div>
-    </div>
+    </ScrollArea>
   );
 };
 

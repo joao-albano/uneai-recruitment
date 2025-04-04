@@ -74,7 +74,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   return (
     <div className={`flex mb-4 ${isFromLead ? 'justify-start' : 'justify-end'}`}>
       <div 
-        className={`max-w-[85%] p-3 rounded-lg break-words ${
+        className={`max-w-[80%] p-3 rounded-lg break-words ${
           isFromLead 
             ? 'bg-muted text-foreground rounded-tl-none' 
             : isFromAi

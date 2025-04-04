@@ -27,7 +27,7 @@ const WhatsAppTab: React.FC<WhatsAppTabProps> = ({
   leadId
 }) => {
   return (
-    <TabsContent value="whatsapp" className="flex-1 flex flex-col p-0 m-0 h-full max-h-[calc(100vh-200px)]">
+    <TabsContent value="whatsapp" className="flex-1 flex flex-col p-0 m-0 h-full">
       <div className="flex items-center justify-end p-2 border-b">
         <Button
           variant="ghost"
