@@ -1,3 +1,4 @@
+
 // Tipos de dados para o módulo de captação (recrutamento)
 
 export type LeadStatus = 'novo' | 'contatado' | 'interessado' | 'nao_interessado' | 'agendado' | 'matriculado' | 'desistente';
@@ -100,6 +101,7 @@ export type Campaign = {
     audience?: string;
     location?: string;
     interests?: string[];
+    courses?: string[];  // Adicionando o campo de cursos
   };
   isAutomated?: boolean;
 };
