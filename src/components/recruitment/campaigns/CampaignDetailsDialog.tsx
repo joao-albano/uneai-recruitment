@@ -10,7 +10,7 @@ import { Campaign } from '@/types/recruitment';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Edit } from 'lucide-react';
 import { useCampaigns } from '@/hooks/recruitment/useCampaigns';
-import CampaignEditDialog from './CampaignEditDialog';
+import CampaignEditDialog from './edit/CampaignEditDialog';
 import CampaignDetailsHeader from './details/CampaignDetailsHeader';
 import CampaignOverviewTab from './details/CampaignOverviewTab';
 import CampaignPerformanceTab from './details/CampaignPerformanceTab';
