@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,9 +23,46 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useCampaigns } from '@/hooks/recruitment/useCampaigns';
+import CampaignDetailsDialog from './CampaignDetailsDialog';
+import { toast } from '@/hooks/use-toast';
+import { Campaign } from '@/types/recruitment';
 
 const CampaignsList: React.FC = () => {
-  const { campaigns } = useCampaigns();
+  const { campaigns, updateCampaign, archiveCampaign } = useCampaigns();
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+  
+  const handleViewDetails = (campaign: Campaign) => {
+    setSelectedCampaign(campaign);
+    setDetailsOpen(true);
+  };
+  
+  const handleEditCampaign = (campaign: Campaign) => {
+    // For now, we'll just show a toast message
+    toast({
+      title: 'Editar campanha',
+      description: `Edição da campanha "${campaign.name}" será implementada em breve.`
+    });
+  };
+  
+  const handleToggleCampaignStatus = (campaign: Campaign) => {
+    const newStatus = campaign.status === 'active' ? 'paused' : 'active';
+    updateCampaign(campaign.id, { status: newStatus });
+    
+    toast({
+      title: newStatus === 'active' ? 'Campanha ativada' : 'Campanha pausada',
+      description: `A campanha "${campaign.name}" foi ${newStatus === 'active' ? 'ativada' : 'pausada'} com sucesso.`
+    });
+  };
+  
+  const handleArchiveCampaign = (campaign: Campaign) => {
+    archiveCampaign(campaign.id);
+    
+    toast({
+      title: 'Campanha arquivada',
+      description: `A campanha "${campaign.name}" foi arquivada com sucesso.`
+    });
+  };
   
   if (campaigns.length === 0) {
     return (
@@ -71,11 +108,11 @@ const CampaignsList: React.FC = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleEditCampaign(campaign)}>
                       <Edit className="mr-2 h-4 w-4" />
                       <span>Editar</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleToggleCampaignStatus(campaign)}>
                       {campaign.status === 'active' ? (
                         <>
                           <PauseCircle className="mr-2 h-4 w-4" />
@@ -88,7 +125,7 @@ const CampaignsList: React.FC = () => {
                         </>
                       )}
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleArchiveCampaign(campaign)}>
                       <Archive className="mr-2 h-4 w-4" />
                       <span>Arquivar</span>
                     </DropdownMenuItem>
@@ -114,8 +151,8 @@ const CampaignsList: React.FC = () => {
                   <div className="flex items-center gap-1 mt-1">
                     {campaign.channel.includes('mail') && <Mail className="h-4 w-4" />}
                     {campaign.channel.includes('whatsapp') && <MessageSquare className="h-4 w-4" />}
-                    {campaign.channel.includes('facebook') && <Badge variant="outline">FB</Badge>}
-                    {campaign.channel.includes('instagram') && <Badge variant="outline">IG</Badge>}
+                    {campaign.channel.includes('voice') && <Phone className="h-4 w-4" />}
+                    {campaign.channel.includes('sms') && <Badge variant="outline">SMS</Badge>}
                     {campaign.channel.length > 0 && (
                       <span className="ml-1">{campaign.channel.length} canais</span>
                     )}
@@ -139,12 +176,24 @@ const CampaignsList: React.FC = () => {
                 <h4 className="text-sm font-medium">Segmentação</h4>
                 <div className="mt-2 flex flex-wrap gap-1">
                   <Badge variant="outline">{campaign.target?.audience || 'Geral'}</Badge>
-                  {campaign.target?.location && <Badge variant="outline">{campaign.target.location}</Badge>}
+                  {campaign.target?.location && (
+                    <Badge variant="outline">{campaign.target.location}</Badge>
+                  )}
+                  {campaign.target?.courses && campaign.target.courses.map((course, index) => (
+                    <Badge key={index} variant="outline" className="bg-primary/10">
+                      {course}
+                    </Badge>
+                  ))}
                 </div>
               </div>
               
               <div className="mt-auto pt-4">
-                <Button variant="secondary" className="w-full" size="sm">
+                <Button 
+                  variant="secondary" 
+                  className="w-full" 
+                  size="sm"
+                  onClick={() => handleViewDetails(campaign)}
+                >
                   Ver Detalhes
                 </Button>
               </div>
@@ -152,6 +201,14 @@ const CampaignsList: React.FC = () => {
           </div>
         </Card>
       ))}
+      
+      {selectedCampaign && (
+        <CampaignDetailsDialog 
+          open={detailsOpen} 
+          onOpenChange={setDetailsOpen} 
+          campaign={selectedCampaign}
+        />
+      )}
     </div>
   );
 };

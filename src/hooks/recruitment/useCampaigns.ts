@@ -12,7 +12,7 @@ const DEMO_CAMPAIGNS: Campaign[] = [
     endDate: new Date('2024-07-31'),
     status: 'active',
     budget: 5000,
-    channel: ['mail', 'whatsapp', 'facebook'],
+    channel: ['mail', 'whatsapp', 'voice'],
     performance: {
       leadsGenerated: 156,
       conversion: 23,
@@ -21,6 +21,7 @@ const DEMO_CAMPAIGNS: Campaign[] = [
     target: {
       audience: 'Ensino Médio',
       location: 'Zona Sul',
+      courses: ['Administração', 'Direito']
     }
   },
   {
@@ -38,6 +39,7 @@ const DEMO_CAMPAIGNS: Campaign[] = [
     },
     target: {
       audience: 'Leads Inativos',
+      courses: ['Engenharia Civil', 'Medicina']
     },
     isAutomated: true,
   },
@@ -49,11 +51,14 @@ const DEMO_CAMPAIGNS: Campaign[] = [
     endDate: new Date('2024-11-30'),
     status: 'draft',
     budget: 8000,
-    channel: ['mail', 'whatsapp', 'facebook', 'instagram'],
+    channel: ['mail', 'whatsapp', 'voice', 'sms'],
     performance: {
       leadsGenerated: 0,
       conversion: 0,
       cost: 0,
+    },
+    target: {
+      courses: ['Todos os cursos']
     }
   }
 ];
@@ -83,7 +88,12 @@ export const useCampaigns = () => {
   const createCampaign = (campaign: Omit<Campaign, 'id'>) => {
     const newCampaign = {
       ...campaign,
-      id: uuidv4()
+      id: uuidv4(),
+      performance: campaign.performance || {
+        leadsGenerated: 0,
+        conversion: 0,
+        cost: 0,
+      }
     };
     
     setCampaigns(prev => [...prev, newCampaign]);

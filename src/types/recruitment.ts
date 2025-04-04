@@ -1,9 +1,8 @@
-
 // Tipos de dados para o módulo de captação (recrutamento)
 
 export type LeadStatus = 'novo' | 'contatado' | 'interessado' | 'nao_interessado' | 'agendado' | 'matriculado' | 'desistente';
 
-export type ChannelType = 'site' | 'facebook' | 'instagram' | 'whatsapp' | 'indicacao' | 'google' | 'eventos' | 'presencial' | 'mail' | 'sms' | 'outros';
+export type ChannelType = 'site' | 'facebook' | 'instagram' | 'whatsapp' | 'indicacao' | 'google' | 'eventos' | 'presencial' | 'mail' | 'sms' | 'voice' | 'outros';
 
 export type EmotionType = 'neutro' | 'positivo' | 'negativo' | 'confuso' | 'interessado' | 'hesitante' | 'entusiasmado';
 

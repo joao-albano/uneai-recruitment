@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -19,7 +18,7 @@ import {
   Mail, 
   MessageSquare, 
   Phone, 
-  Facebook, 
+  Facebook,
   Instagram,
   Target,
   Users,
@@ -54,8 +53,7 @@ const channelOptions: { value: ChannelType; label: string; icon: React.ReactNode
   { value: 'mail', label: 'Email', icon: <Mail className="h-4 w-4" /> },
   { value: 'whatsapp', label: 'WhatsApp', icon: <MessageSquare className="h-4 w-4" /> },
   { value: 'sms', label: 'SMS', icon: <Phone className="h-4 w-4" /> },
-  { value: 'facebook', label: 'Facebook', icon: <Facebook className="h-4 w-4" /> },
-  { value: 'instagram', label: 'Instagram', icon: <Instagram className="h-4 w-4" /> },
+  { value: 'voice', label: 'Ligação de IA (Voz)', icon: <Phone className="h-4 w-4" /> },
 ];
 
 const audienceOptions = [
@@ -64,6 +62,17 @@ const audienceOptions = [
   { id: 'pos-graduacao', label: 'Pós-Graduação' },
   { id: 'leads-mornos', label: 'Leads Mornos (30+ dias)' },
   { id: 'leads-inativos', label: 'Leads Inativos (90+ dias)' },
+];
+
+const courseOptions = [
+  { id: 'administracao', label: 'Administração' },
+  { id: 'direito', label: 'Direito' },
+  { id: 'medicina', label: 'Medicina' },
+  { id: 'engenharia-civil', label: 'Engenharia Civil' },
+  { id: 'engenharia-computacao', label: 'Engenharia de Computação' },
+  { id: 'psicologia', label: 'Psicologia' },
+  { id: 'enfermagem', label: 'Enfermagem' },
+  { id: 'ciencia-computacao', label: 'Ciência da Computação' },
 ];
 
 const locationOptions = [
@@ -105,10 +114,11 @@ const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({
   
   const [useAiAssistance, setUseAiAssistance] = useState(false);
   
+  const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
+
   const handleInputChange = (field: string, value: any) => {
     setCampaignData(prev => ({ ...prev, [field]: value }));
     
-    // Clear error for the field if it exists
     if (formErrors[field as keyof typeof formErrors]) {
       setFormErrors(prev => ({ ...prev, [field]: false }));
     }
@@ -155,6 +165,27 @@ const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({
     }));
   };
   
+  const handleCourseSelect = (courseId: string) => {
+    const isSelected = selectedCourses.includes(courseId);
+    const updatedCourses = isSelected 
+      ? selectedCourses.filter(id => id !== courseId)
+      : [...selectedCourses, courseId];
+    
+    setSelectedCourses(updatedCourses);
+    
+    const courseLabels = updatedCourses.map(
+      id => courseOptions.find(option => option.id === id)?.label || ''
+    ).filter(Boolean);
+    
+    setCampaignData(prev => ({
+      ...prev,
+      target: {
+        ...prev.target,
+        courses: courseLabels
+      }
+    }));
+  };
+  
   const resetForm = () => {
     setCampaignData({
       name: '',
@@ -193,7 +224,16 @@ const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({
     }
     
     try {
-      const newCampaign = createCampaign(campaignData);
+      const campaignToCreate = {
+        ...campaignData,
+        performance: campaignData.performance || {
+          leadsGenerated: 0,
+          conversion: 0,
+          cost: 0,
+        }
+      };
+      
+      const newCampaign = createCampaign(campaignToCreate);
       
       toast({
         title: 'Campanha criada com sucesso',
@@ -212,7 +252,6 @@ const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({
   };
   
   const generateAiDescription = () => {
-    // Simular a geração de descrição por IA
     setTimeout(() => {
       const audienceText = campaignData.target?.audience || 'público alvo específico';
       const aiGenerated = `Campanha estratégica para captação de leads de ${audienceText} com foco em conversão através de ${
@@ -457,6 +496,30 @@ const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({
             </div>
             
             <div className="space-y-2">
+              <Label>Cursos (Estratégia de Campanha)</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {courseOptions.map(option => (
+                  <div 
+                    key={option.id} 
+                    className="flex items-center space-x-2"
+                  >
+                    <Checkbox 
+                      id={`course-${option.id}`} 
+                      checked={selectedCourses.includes(option.id)}
+                      onCheckedChange={() => handleCourseSelect(option.id)}
+                    />
+                    <Label 
+                      htmlFor={`course-${option.id}`}
+                      className="cursor-pointer text-sm"
+                    >
+                      {option.label}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="space-y-2">
               <Label>Localização</Label>
               <div className="grid grid-cols-2 gap-2">
                 {locationOptions.map(option => (
@@ -479,25 +542,6 @@ const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({
                 ))}
               </div>
             </div>
-            
-            <Card className="border-dashed border-muted-foreground/20 bg-muted/50">
-              <CardContent className="py-4 flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-full">
-                  <Target className="h-5 w-5 text-primary" />
-                </div>
-                <div className="text-sm">
-                  <p className="font-medium">Segmentação Inteligente</p>
-                  <p className="text-muted-foreground">
-                    Utilizar dados de comportamento para refinar o público-alvo.
-                  </p>
-                </div>
-                <div className="ml-auto">
-                  <Badge variant="outline" className="bg-muted">
-                    Em breve
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
           </TabsContent>
           
           <TabsContent value="content" className="space-y-4">
