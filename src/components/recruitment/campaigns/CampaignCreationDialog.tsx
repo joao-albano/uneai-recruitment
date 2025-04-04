@@ -116,7 +116,7 @@ const contentTemplates = [
     id: 'discount', 
     name: 'Oferta Especial', 
     content: 'Olá {nome}, temos uma condição especial para o curso de {curso} com {desconto}% de desconto nas primeiras mensalidades!',
-    emoji: '����'
+    emoji: '🏷️'
   },
   { 
     id: 'reminder', 
