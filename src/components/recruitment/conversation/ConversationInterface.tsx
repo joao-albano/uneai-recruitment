@@ -1,19 +1,15 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { 
-  Send, Mic, Paperclip, SmilePlus, 
-  MessageSquare, Mail, Phone, Bot,
-  ChevronLeft, MoreVertical, User,
-  UserCircle2, ToggleLeft, AlertCircle
-} from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { EmotionType, IntentType, ObjectionType } from '@/types/recruitment';
+import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { MessageSquare, Mail, Phone } from 'lucide-react';
+import { EmotionType, IntentType } from '@/types/recruitment';
+
+// Import our new components
+import ConversationHeader from './ConversationHeader';
+import WhatsAppTab from './WhatsAppTab';
+import ChannelTab from './ChannelTab';
+import { Message } from './types';
 
 interface ConversationInterfaceProps {
   leadName: string;
@@ -26,20 +22,10 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
   leadEmail,
   leadPhone
 }) => {
-  const [message, setMessage] = useState('');
   const [activeChannel, setActiveChannel] = useState<'whatsapp' | 'email' | 'voz'>('whatsapp');
   const [isAiMode, setIsAiMode] = useState(true);
   const [showAnalytics, setShowAnalytics] = useState(true);
-  const [messages, setMessages] = useState<{
-    id: string;
-    content: string;
-    timestamp: Date;
-    isFromLead: boolean;
-    isFromAi?: boolean;
-    emotion?: EmotionType;
-    intent?: IntentType;
-    objection?: ObjectionType;
-  }[]>([
+  const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       content: `Olá! Sou a assistente virtual da instituição. Em que posso ajudar você hoje?`,
@@ -80,7 +66,7 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
     }
   ]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = (message: string) => {
     if (!message.trim()) return;
     
     // Adiciona a mensagem do usuário
@@ -93,7 +79,6 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
     };
     
     setMessages(prev => [...prev, newMessage]);
-    setMessage('');
     
     // Simula uma resposta automática após um pequeno delay
     if (isAiMode) {
@@ -113,52 +98,6 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
     }
   };
 
-  const getEmotionColor = (emotion?: EmotionType) => {
-    switch(emotion) {
-      case 'positivo': return 'bg-green-500';
-      case 'negativo': return 'bg-red-500';
-      case 'interessado': return 'bg-blue-500';
-      case 'confuso': return 'bg-orange-500';
-      case 'hesitante': return 'bg-yellow-500';
-      case 'entusiasmado': return 'bg-purple-500';
-      default: return 'bg-gray-500';
-    }
-  };
-
-  const renderEmotionBadge = (emotion?: EmotionType) => {
-    if (!emotion || emotion === 'neutro' || !showAnalytics) return null;
-    
-    return (
-      <Badge className={`${getEmotionColor(emotion)} text-xs ml-2`}>
-        {emotion}
-      </Badge>
-    );
-  };
-  
-  const renderIntentBadge = (intent?: IntentType) => {
-    if (!intent || !showAnalytics) return null;
-    
-    return (
-      <Badge variant="outline" className="text-xs ml-2">
-        {intent.replace('_', ' ')}
-      </Badge>
-    );
-  };
-  
-  const renderObjectionBadge = (objection?: ObjectionType) => {
-    if (!objection || objection === 'nenhuma' || !showAnalytics) return null;
-    
-    return (
-      <Badge variant="destructive" className="text-xs ml-2">
-        {objection.replace('_', ' ')}
-      </Badge>
-    );
-  };
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
-
   const toggleAttendanceMode = () => {
     setIsAiMode(!isAiMode);
   };
@@ -169,77 +108,15 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
 
   return (
     <Card className="h-[80vh] flex flex-col">
-      <CardHeader className="pb-2 border-b">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center">
-            <Button variant="ghost" size="icon" className="mr-2">
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <div className="flex items-center">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <User className="h-5 w-5 text-primary" />
-              </div>
-              <div className="ml-3">
-                <CardTitle className="text-lg">{leadName}</CardTitle>
-                <CardDescription className="text-xs">
-                  {leadEmail && `${leadEmail} • `}
-                  {leadPhone && leadPhone}
-                </CardDescription>
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <div className="flex items-center space-x-2">
-              <Switch 
-                id="analytics-mode"
-                checked={showAnalytics}
-                onCheckedChange={toggleAnalytics}
-              />
-              <Label htmlFor="analytics-mode" className="text-xs">Exibir Análise</Label>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <Switch 
-                id="attendance-mode"
-                checked={isAiMode}
-                onCheckedChange={toggleAttendanceMode}
-              />
-              <Label htmlFor="attendance-mode" className="text-xs">Modo IA</Label>
-            </div>
-            
-            <Button variant="ghost" size="icon">
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-        
-        <div className="flex items-center mt-2">
-          <Badge 
-            variant={isAiMode ? "default" : "outline"} 
-            className="mr-2"
-          >
-            {isAiMode ? (
-              <div className="flex items-center">
-                <Bot className="h-3 w-3 mr-1" />
-                <span>Atendimento IA</span>
-              </div>
-            ) : (
-              <div className="flex items-center">
-                <UserCircle2 className="h-3 w-3 mr-1" />
-                <span>Atendimento Humano</span>
-              </div>
-            )}
-          </Badge>
-          
-          {!isAiMode && (
-            <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">
-              <User className="h-3 w-3 mr-1" />
-              <span>Atendente: Juliana Oliveira</span>
-            </Badge>
-          )}
-        </div>
-      </CardHeader>
+      <ConversationHeader 
+        leadName={leadName}
+        leadEmail={leadEmail}
+        leadPhone={leadPhone}
+        isAiMode={isAiMode}
+        showAnalytics={showAnalytics}
+        onToggleAttendanceMode={toggleAttendanceMode}
+        onToggleAnalytics={toggleAnalytics}
+      />
       
       <CardContent className="flex-1 flex flex-col p-0">
         <Tabs defaultValue="whatsapp" className="flex-1 flex flex-col">
@@ -258,152 +135,26 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="whatsapp" className="flex-1 flex flex-col p-0 m-0">
-            <div className="flex-1 overflow-y-auto p-4">
-              {messages.map(msg => (
-                <div 
-                  key={msg.id} 
-                  className={`flex mb-4 ${msg.isFromLead ? 'justify-start' : 'justify-end'}`}
-                >
-                  <div 
-                    className={`max-w-[80%] p-3 rounded-lg ${
-                      msg.isFromLead 
-                        ? 'bg-muted text-foreground rounded-tl-none' 
-                        : msg.isFromAi
-                          ? 'bg-primary text-primary-foreground rounded-tr-none'
-                          : 'bg-green-600 text-white rounded-tr-none'
-                    }`}
-                  >
-                    {!msg.isFromLead && !msg.isFromAi && (
-                      <div className="text-xs opacity-70 mb-1 italic">
-                        Atendente: Juliana Oliveira
-                      </div>
-                    )}
-                    
-                    <div className="text-sm">{msg.content}</div>
-                    <div className="text-xs mt-1 opacity-70 flex justify-between items-center">
-                      <span>{formatTime(msg.timestamp)}</span>
-                      <div className="flex flex-wrap gap-1 ml-2">
-                        {msg.isFromLead && (
-                          <>
-                            {renderEmotionBadge(msg.emotion)}
-                            {renderIntentBadge(msg.intent)}
-                            {renderObjectionBadge(msg.objection)}
-                          </>
-                        )}
-                        
-                        {!msg.isFromLead && msg.isFromAi && (
-                          <Bot className="h-3 w-3 ml-1" />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="p-4 border-t">
-              {isAiMode && (
-                <div className="mb-2 px-2">
-                  <div className="text-sm font-medium flex items-center">
-                    <Bot className="h-4 w-4 mr-1 text-primary" />
-                    Sugestões da IA:
-                  </div>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    <Badge 
-                      variant="outline" 
-                      className="cursor-pointer hover:bg-primary/10"
-                      onClick={() => setMessage("Temos bolsas de até 40% para alunos com experiência profissional na área. Posso explicar como funciona o processo de solicitação?")}
-                    >
-                      Oferecer bolsa por experiência
-                    </Badge>
-                    <Badge 
-                      variant="outline" 
-                      className="cursor-pointer hover:bg-primary/10"
-                      onClick={() => setMessage("Gostaria de agendar uma visita ao campus para conhecer nossa estrutura e conversar com coordenadores do curso?")}
-                    >
-                      Sugerir visita ao campus
-                    </Badge>
-                    <Badge 
-                      variant="outline" 
-                      className="cursor-pointer hover:bg-primary/10"
-                      onClick={() => setMessage("Além do desconto noturno, temos parcelamento especial em até 12x sem juros para matrícula antecipada. Tem interesse?")}
-                    >
-                      Condições de pagamento
-                    </Badge>
-                  </div>
-                </div>
-              )}
-              
-              {!isAiMode && (
-                <div className="mb-2 px-2">
-                  <div className="text-sm font-medium flex items-center text-green-700">
-                    <UserCircle2 className="h-4 w-4 mr-1" />
-                    Atendimento humano ativo
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    <div className="flex items-center">
-                      <AlertCircle className="h-3 w-3 mr-1" />
-                      <span>Tempo médio de resposta: 2 minutos</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon">
-                  <Paperclip className="h-4 w-4" />
-                </Button>
-                <Input 
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder={isAiMode 
-                    ? "Digite uma mensagem (IA responderá automaticamente)..." 
-                    : "Digite uma mensagem como atendente humano..."}
-                  className="flex-1"
-                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                />
-                <Button 
-                  size="icon" 
-                  variant="ghost"
-                >
-                  <SmilePlus className="h-4 w-4" />
-                </Button>
-                <Button 
-                  size="icon"
-                  onClick={handleSendMessage}
-                  disabled={!message.trim()}
-                  className={isAiMode ? "" : "bg-green-600 hover:bg-green-700"}
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </TabsContent>
+          <WhatsAppTab 
+            messages={messages}
+            isAiMode={isAiMode}
+            showAnalytics={showAnalytics}
+            onSendMessage={handleSendMessage}
+          />
           
-          <TabsContent value="email" className="flex-1 flex items-center justify-center">
-            <div className="text-center p-4">
-              <Mail className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium">Interface de Email</h3>
-              <p className="text-muted-foreground">
-                Integração de email em desenvolvimento.
-              </p>
-            </div>
-          </TabsContent>
+          <ChannelTab 
+            value="email"
+            icon="mail"
+            title="Interface de Email"
+            description="Integração de email em desenvolvimento."
+          />
           
-          <TabsContent value="voz" className="flex-1 flex items-center justify-center">
-            <div className="text-center p-4">
-              <Phone className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium">Interface de Voz</h3>
-              <p className="text-muted-foreground">
-                Integração de chamadas de voz em desenvolvimento.
-              </p>
-              <Button className="mt-4" variant="outline">
-                <Mic className="h-4 w-4 mr-2" />
-                Iniciar chamada (simulação)
-              </Button>
-            </div>
-          </TabsContent>
+          <ChannelTab 
+            value="voz"
+            icon="phone"
+            title="Interface de Voz"
+            description="Integração de chamadas de voz em desenvolvimento."
+          />
         </Tabs>
       </CardContent>
     </Card>
@@ -411,4 +162,3 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
 };
 
 export default ConversationInterface;
-
