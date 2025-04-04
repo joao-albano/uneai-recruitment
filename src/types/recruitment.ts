@@ -1,4 +1,3 @@
-
 // Tipos de dados para o módulo de captação (recrutamento)
 
 export type LeadStatus = 'novo' | 'contatado' | 'interessado' | 'nao_interessado' | 'agendado' | 'matriculado' | 'desistente';
@@ -170,7 +169,21 @@ export type ReengagementRule = {
   };
 };
 
-// Tipo para as oportunidades acadêmicas
+// Type for the opportunities in the radar
+export type OpportunityItem = {
+  id: string;
+  name: string;
+  type: 'course' | 'location' | 'interest';
+  count: number;
+  urgency: 'high' | 'medium' | 'low';
+  trend: 'up' | 'down' | 'stable';
+  trendPercentage: number;
+  description: string;
+  suggestedAction?: string;
+  leadIds?: string[]; // IDs dos leads relacionados a esta oportunidade
+};
+
+// Keeping the original AcademicOpportunity type
 export type AcademicOpportunity = {
   id: string;
   name: string;
