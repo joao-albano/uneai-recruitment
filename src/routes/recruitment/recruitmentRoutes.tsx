@@ -1,4 +1,3 @@
-
 import { ReactNode } from "react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoutes";
 import { ProductGuard } from "@/components/auth/ProductGuard";
@@ -9,6 +8,7 @@ import RecruitmentCampaignsPage from "@/pages/RecruitmentCampaignsPage";
 import RecruitmentAnalyticsPage from "@/pages/RecruitmentAnalyticsPage";
 import RecruitmentHomePage from "@/pages/recruitment/RecruitmentHomePage";
 import ConversationPage from "@/pages/recruitment/ConversationPage";
+import LeadConversationPage from "@/pages/recruitment/LeadConversationPage";
 import EnrollmentPredictionsPage from "@/pages/recruitment/EnrollmentPredictionsPage";
 import PredictiveReportingPage from "@/pages/recruitment/PredictiveReportingPage";
 import RecruitmentAlertsPage from "@/pages/recruitment/RecruitmentAlertsPage";
@@ -109,6 +109,14 @@ export const recruitmentRoutes: RouteConfig[] = [
     element: (
       <ProtectedRoute>
         <ConversationPage />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/conversation/:leadId",
+    element: (
+      <ProtectedRoute>
+        <LeadConversationPage />
       </ProtectedRoute>
     )
   },

@@ -7,9 +7,12 @@ import { Input } from '@/components/ui/input';
 import { 
   Send, Mic, Paperclip, SmilePlus, 
   MessageSquare, Mail, Phone, Bot,
-  ChevronLeft, MoreVertical, User
+  ChevronLeft, MoreVertical, User,
+  UserCircle2, ToggleLeft, AlertCircle
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { EmotionType, IntentType, ObjectionType } from '@/types/recruitment';
 
 interface ConversationInterfaceProps {
@@ -25,11 +28,14 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
 }) => {
   const [message, setMessage] = useState('');
   const [activeChannel, setActiveChannel] = useState<'whatsapp' | 'email' | 'voz'>('whatsapp');
+  const [isAiMode, setIsAiMode] = useState(true);
+  const [showAnalytics, setShowAnalytics] = useState(true);
   const [messages, setMessages] = useState<{
     id: string;
     content: string;
     timestamp: Date;
     isFromLead: boolean;
+    isFromAi?: boolean;
     emotion?: EmotionType;
     intent?: IntentType;
     objection?: ObjectionType;
@@ -39,6 +45,7 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
       content: `Olá! Sou a assistente virtual da instituição. Em que posso ajudar você hoje?`,
       timestamp: new Date(Date.now() - 1000 * 60 * 15),
       isFromLead: false,
+      isFromAi: true,
     },
     {
       id: '2',
@@ -53,6 +60,7 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
       content: `Sim, temos turmas de Administração no período noturno! As aulas acontecem de segunda a sexta, das 19h às 22h. Você trabalha durante o dia?`,
       timestamp: new Date(Date.now() - 1000 * 60 * 13),
       isFromLead: false,
+      isFromAi: true,
     },
     {
       id: '4',
@@ -68,6 +76,7 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
       content: `Entendo sua preocupação com o investimento! Temos várias opções de bolsas e descontos, especialmente para quem trabalha na área. Além disso, para o período noturno, oferecemos um desconto de 15% nas mensalidades. Posso enviar mais informações sobre nossos planos de pagamento?`,
       timestamp: new Date(Date.now() - 1000 * 60 * 11),
       isFromLead: false,
+      isFromAi: true,
     }
   ]);
 
@@ -80,24 +89,28 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
       content: message,
       timestamp: new Date(),
       isFromLead: false,
+      isFromAi: isAiMode,
     };
     
     setMessages(prev => [...prev, newMessage]);
     setMessage('');
     
     // Simula uma resposta automática após um pequeno delay
-    setTimeout(() => {
-      const aiResponse = {
-        id: (Date.now() + 1).toString(),
-        content: "Estou analisando sua mensagem. Como posso ajudar mais em relação ao curso de Administração?",
-        timestamp: new Date(),
-        isFromLead: true,
-        emotion: 'neutro' as EmotionType,
-        intent: 'duvida_processo' as IntentType,
-      };
-      
-      setMessages(prev => [...prev, aiResponse]);
-    }, 1500);
+    if (isAiMode) {
+      setTimeout(() => {
+        const aiResponse = {
+          id: (Date.now() + 1).toString(),
+          content: "Estou analisando sua mensagem. Como posso ajudar mais em relação ao curso de Administração?",
+          timestamp: new Date(),
+          isFromLead: true,
+          isFromAi: false,
+          emotion: 'neutro' as EmotionType,
+          intent: 'duvida_processo' as IntentType,
+        };
+        
+        setMessages(prev => [...prev, aiResponse]);
+      }, 1500);
+    }
   };
 
   const getEmotionColor = (emotion?: EmotionType) => {
@@ -113,7 +126,7 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
   };
 
   const renderEmotionBadge = (emotion?: EmotionType) => {
-    if (!emotion || emotion === 'neutro') return null;
+    if (!emotion || emotion === 'neutro' || !showAnalytics) return null;
     
     return (
       <Badge className={`${getEmotionColor(emotion)} text-xs ml-2`}>
@@ -123,7 +136,7 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
   };
   
   const renderIntentBadge = (intent?: IntentType) => {
-    if (!intent) return null;
+    if (!intent || !showAnalytics) return null;
     
     return (
       <Badge variant="outline" className="text-xs ml-2">
@@ -133,7 +146,7 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
   };
   
   const renderObjectionBadge = (objection?: ObjectionType) => {
-    if (!objection || objection === 'nenhuma') return null;
+    if (!objection || objection === 'nenhuma' || !showAnalytics) return null;
     
     return (
       <Badge variant="destructive" className="text-xs ml-2">
@@ -144,6 +157,14 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const toggleAttendanceMode = () => {
+    setIsAiMode(!isAiMode);
+  };
+
+  const toggleAnalytics = () => {
+    setShowAnalytics(!showAnalytics);
   };
 
   return (
@@ -167,9 +188,56 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
               </div>
             </div>
           </div>
-          <Button variant="ghost" size="icon">
-            <MoreVertical className="h-4 w-4" />
-          </Button>
+          
+          <div className="flex items-center gap-3">
+            <div className="flex items-center space-x-2">
+              <Switch 
+                id="analytics-mode"
+                checked={showAnalytics}
+                onCheckedChange={toggleAnalytics}
+              />
+              <Label htmlFor="analytics-mode" className="text-xs">Exibir Análise</Label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Switch 
+                id="attendance-mode"
+                checked={isAiMode}
+                onCheckedChange={toggleAttendanceMode}
+              />
+              <Label htmlFor="attendance-mode" className="text-xs">Modo IA</Label>
+            </div>
+            
+            <Button variant="ghost" size="icon">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+        
+        <div className="flex items-center mt-2">
+          <Badge 
+            variant={isAiMode ? "default" : "outline"} 
+            className="mr-2"
+          >
+            {isAiMode ? (
+              <div className="flex items-center">
+                <Bot className="h-3 w-3 mr-1" />
+                <span>Atendimento IA</span>
+              </div>
+            ) : (
+              <div className="flex items-center">
+                <UserCircle2 className="h-3 w-3 mr-1" />
+                <span>Atendimento Humano</span>
+              </div>
+            )}
+          </Badge>
+          
+          {!isAiMode && (
+            <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">
+              <User className="h-3 w-3 mr-1" />
+              <span>Atendente: Juliana Oliveira</span>
+            </Badge>
+          )}
         </div>
       </CardHeader>
       
@@ -201,9 +269,17 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
                     className={`max-w-[80%] p-3 rounded-lg ${
                       msg.isFromLead 
                         ? 'bg-muted text-foreground rounded-tl-none' 
-                        : 'bg-primary text-primary-foreground rounded-tr-none'
+                        : msg.isFromAi
+                          ? 'bg-primary text-primary-foreground rounded-tr-none'
+                          : 'bg-green-600 text-white rounded-tr-none'
                     }`}
                   >
+                    {!msg.isFromLead && !msg.isFromAi && (
+                      <div className="text-xs opacity-70 mb-1 italic">
+                        Atendente: Juliana Oliveira
+                      </div>
+                    )}
+                    
                     <div className="text-sm">{msg.content}</div>
                     <div className="text-xs mt-1 opacity-70 flex justify-between items-center">
                       <span>{formatTime(msg.timestamp)}</span>
@@ -215,6 +291,10 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
                             {renderObjectionBadge(msg.objection)}
                           </>
                         )}
+                        
+                        {!msg.isFromLead && msg.isFromAi && (
+                          <Bot className="h-3 w-3 ml-1" />
+                        )}
                       </div>
                     </div>
                   </div>
@@ -223,32 +303,52 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
             </div>
             
             <div className="p-4 border-t">
-              <div className="mb-2 px-2">
-                <div className="text-sm font-medium">Sugestões da IA:</div>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  <Badge 
-                    variant="outline" 
-                    className="cursor-pointer hover:bg-primary/10"
-                    onClick={() => setMessage("Temos bolsas de até 40% para alunos com experiência profissional na área. Posso explicar como funciona o processo de solicitação?")}
-                  >
-                    Oferecer bolsa por experiência
-                  </Badge>
-                  <Badge 
-                    variant="outline" 
-                    className="cursor-pointer hover:bg-primary/10"
-                    onClick={() => setMessage("Gostaria de agendar uma visita ao campus para conhecer nossa estrutura e conversar com coordenadores do curso?")}
-                  >
-                    Sugerir visita ao campus
-                  </Badge>
-                  <Badge 
-                    variant="outline" 
-                    className="cursor-pointer hover:bg-primary/10"
-                    onClick={() => setMessage("Além do desconto noturno, temos parcelamento especial em até 12x sem juros para matrícula antecipada. Tem interesse?")}
-                  >
-                    Condições de pagamento
-                  </Badge>
+              {isAiMode && (
+                <div className="mb-2 px-2">
+                  <div className="text-sm font-medium flex items-center">
+                    <Bot className="h-4 w-4 mr-1 text-primary" />
+                    Sugestões da IA:
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    <Badge 
+                      variant="outline" 
+                      className="cursor-pointer hover:bg-primary/10"
+                      onClick={() => setMessage("Temos bolsas de até 40% para alunos com experiência profissional na área. Posso explicar como funciona o processo de solicitação?")}
+                    >
+                      Oferecer bolsa por experiência
+                    </Badge>
+                    <Badge 
+                      variant="outline" 
+                      className="cursor-pointer hover:bg-primary/10"
+                      onClick={() => setMessage("Gostaria de agendar uma visita ao campus para conhecer nossa estrutura e conversar com coordenadores do curso?")}
+                    >
+                      Sugerir visita ao campus
+                    </Badge>
+                    <Badge 
+                      variant="outline" 
+                      className="cursor-pointer hover:bg-primary/10"
+                      onClick={() => setMessage("Além do desconto noturno, temos parcelamento especial em até 12x sem juros para matrícula antecipada. Tem interesse?")}
+                    >
+                      Condições de pagamento
+                    </Badge>
+                  </div>
                 </div>
-              </div>
+              )}
+              
+              {!isAiMode && (
+                <div className="mb-2 px-2">
+                  <div className="text-sm font-medium flex items-center text-green-700">
+                    <UserCircle2 className="h-4 w-4 mr-1" />
+                    Atendimento humano ativo
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    <div className="flex items-center">
+                      <AlertCircle className="h-3 w-3 mr-1" />
+                      <span>Tempo médio de resposta: 2 minutos</span>
+                    </div>
+                  </div>
+                </div>
+              )}
               
               <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon">
@@ -257,7 +357,9 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
                 <Input 
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Digite uma mensagem..."
+                  placeholder={isAiMode 
+                    ? "Digite uma mensagem (IA responderá automaticamente)..." 
+                    : "Digite uma mensagem como atendente humano..."}
                   className="flex-1"
                   onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                 />
@@ -271,6 +373,7 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
                   size="icon"
                   onClick={handleSendMessage}
                   disabled={!message.trim()}
+                  className={isAiMode ? "" : "bg-green-600 hover:bg-green-700"}
                 >
                   <Send className="h-4 w-4" />
                 </Button>
@@ -308,3 +411,4 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
 };
 
 export default ConversationInterface;
+
