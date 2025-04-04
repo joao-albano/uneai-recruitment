@@ -10,7 +10,8 @@ import CampaignCreationDialog from './CampaignCreationDialog';
 import CampaignDetailsDialog from './CampaignDetailsDialog';
 import CampaignEditDialog from './CampaignEditDialog';
 import { useCampaigns } from '@/hooks/recruitment/useCampaigns';
-import { Campaign } from '@/types/recruitment';
+import { Campaign, OpportunityItem } from '@/types/recruitment';
+import { useOpportunityRadar } from './radar/hooks/useOpportunityRadar';
 
 const CampaignsManagement: React.FC = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -18,7 +19,8 @@ const CampaignsManagement: React.FC = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   
-  const { campaigns } = useCampaigns();
+  const { campaigns, updateCampaign } = useCampaigns();
+  const { opportunities, handleCreateCampaign } = useOpportunityRadar();
   
   const handleOpenDetails = (campaign: Campaign) => {
     setSelectedCampaign(campaign);
@@ -28,6 +30,10 @@ const CampaignsManagement: React.FC = () => {
   const handleOpenEdit = (campaign: Campaign) => {
     setSelectedCampaign(campaign);
     setEditDialogOpen(true);
+  };
+  
+  const handleSaveCampaign = (campaign: Campaign) => {
+    updateCampaign(campaign.id, campaign);
   };
   
   return (
@@ -48,7 +54,6 @@ const CampaignsManagement: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <CampaignsList 
-            campaigns={campaigns}
             onOpenDetails={handleOpenDetails}
             onOpenEdit={handleOpenEdit}
           />
@@ -56,7 +61,10 @@ const CampaignsManagement: React.FC = () => {
         </div>
         
         <div className="space-y-6">
-          <SuggestedActions />
+          <SuggestedActions 
+            opportunities={opportunities} 
+            onCreateCampaign={handleCreateCampaign} 
+          />
           <OpportunityRadar />
         </div>
       </div>
@@ -77,6 +85,7 @@ const CampaignsManagement: React.FC = () => {
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
         campaign={selectedCampaign}
+        onSave={handleSaveCampaign}
       />
     </div>
   );

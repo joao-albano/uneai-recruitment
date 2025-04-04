@@ -11,9 +11,15 @@ import CampaignEditDialog from '../CampaignEditDialog';
 
 interface CampaignsListProps {
   showArchived?: boolean;
+  onOpenDetails: (campaign: Campaign) => void;
+  onOpenEdit: (campaign: Campaign) => void;
 }
 
-const CampaignsList: React.FC<CampaignsListProps> = ({ showArchived = false }) => {
+const CampaignsList: React.FC<CampaignsListProps> = ({ 
+  showArchived = false,
+  onOpenDetails,
+  onOpenEdit
+}) => {
   const { 
     campaigns,
     updateCampaign, 
@@ -22,25 +28,12 @@ const CampaignsList: React.FC<CampaignsListProps> = ({ showArchived = false }) =
     getActiveCampaigns 
   } = useCampaigns();
   
-  const [detailsOpen, setDetailsOpen] = useState(false);
-  const [editOpen, setEditOpen] = useState(false);
-  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const [displayedCampaigns, setDisplayedCampaigns] = useState<Campaign[]>([]);
   
   // Update displayed campaigns whenever the campaigns list changes
   useEffect(() => {
     setDisplayedCampaigns(showArchived ? getArchivedCampaigns() : getActiveCampaigns());
   }, [campaigns, showArchived, getArchivedCampaigns, getActiveCampaigns]);
-  
-  const handleViewDetails = (campaign: Campaign) => {
-    setSelectedCampaign(campaign);
-    setDetailsOpen(true);
-  };
-  
-  const handleEditCampaign = (campaign: Campaign) => {
-    setSelectedCampaign(campaign);
-    setEditOpen(true);
-  };
   
   const handleToggleCampaignStatus = (campaign: Campaign) => {
     const newStatus = campaign.status === 'active' ? 'paused' : 'active';
@@ -60,10 +53,6 @@ const CampaignsList: React.FC<CampaignsListProps> = ({ showArchived = false }) =
       description: `A campanha "${campaign.name}" foi arquivada com sucesso.`
     });
   };
-
-  const handleSaveCampaign = (updatedCampaign: Campaign) => {
-    updateCampaign(updatedCampaign.id, updatedCampaign);
-  };
   
   if (displayedCampaigns.length === 0) {
     return <EmptyCampaignState showArchived={showArchived} />;
@@ -75,14 +64,14 @@ const CampaignsList: React.FC<CampaignsListProps> = ({ showArchived = false }) =
         <div key={campaign.id} className="relative">
           <CampaignCard
             campaign={campaign}
-            onViewDetails={handleViewDetails}
+            onViewDetails={() => onOpenDetails(campaign)}
           />
           
           {!showArchived && (
             <div className="absolute top-6 right-6">
               <CampaignActions
                 campaign={campaign}
-                onEdit={handleEditCampaign}
+                onEdit={() => onOpenEdit(campaign)}
                 onToggleStatus={handleToggleCampaignStatus}
                 onArchive={handleArchiveCampaign}
               />
@@ -90,23 +79,6 @@ const CampaignsList: React.FC<CampaignsListProps> = ({ showArchived = false }) =
           )}
         </div>
       ))}
-      
-      {selectedCampaign && (
-        <>
-          <CampaignDetailsDialog 
-            open={detailsOpen} 
-            onOpenChange={setDetailsOpen} 
-            campaign={selectedCampaign}
-          />
-          
-          <CampaignEditDialog 
-            open={editOpen} 
-            onOpenChange={setEditOpen} 
-            campaign={selectedCampaign}
-            onSave={handleSaveCampaign}
-          />
-        </>
-      )}
     </div>
   );
 };
