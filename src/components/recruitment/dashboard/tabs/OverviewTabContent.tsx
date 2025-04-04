@@ -3,6 +3,7 @@ import React from 'react';
 import RecruitmentStats from '../RecruitmentStats';
 import FunnelChartCard from '../FunnelChartCard';
 import RecentLeadsCard from '../RecentLeadsCard';
+import OperationalVisualizationTable from '../OperationalVisualizationTable';
 
 const OverviewTabContent: React.FC = () => {
   return (
@@ -13,6 +14,8 @@ const OverviewTabContent: React.FC = () => {
         <FunnelChartCard />
         <RecentLeadsCard />
       </div>
+      
+      <OperationalVisualizationTable />
     </>
   );
 };
