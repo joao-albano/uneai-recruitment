@@ -397,6 +397,36 @@ const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({
     }, 1500);
   };
   
+  const handleEditorToolClick = (toolType: 'image' | 'link' | 'mention') => {
+    let textToInsert = '';
+    
+    switch (toolType) {
+      case 'image':
+        textToInsert = ' [IMAGEM: descrição da imagem] ';
+        toast({
+          title: 'Imagem adicionada',
+          description: 'Substitua "descrição da imagem" com uma descrição adequada.',
+        });
+        break;
+      case 'link':
+        textToInsert = ' [LINK: https://exemplo.com.br] ';
+        toast({
+          title: 'Link adicionado',
+          description: 'Substitua "https://exemplo.com.br" com a URL desejada.',
+        });
+        break;
+      case 'mention':
+        textToInsert = ' @{nome} ';
+        toast({
+          title: 'Menção adicionada',
+          description: 'A variável @{nome} será substituída pelo nome do destinatário.',
+        });
+        break;
+    }
+    
+    handleContentChange(customContent + textToInsert);
+  };
+  
   React.useEffect(() => {
     setCampaignData(prev => ({
       ...prev,
@@ -861,13 +891,34 @@ const CampaignCreationDialog: React.FC<CampaignCreationDialogProps> = ({
                         <div>
                           <Label className="text-sm mb-2 block">Ferramentas de edição</Label>
                           <div className="flex gap-1">
-                            <Button variant="outline" size="sm" type="button" className="h-8 w-8 p-0">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              type="button" 
+                              className="h-8 w-8 p-0"
+                              onClick={() => handleEditorToolClick('image')}
+                              title="Adicionar imagem"
+                            >
                               <Image className="h-4 w-4" />
                             </Button>
-                            <Button variant="outline" size="sm" type="button" className="h-8 w-8 p-0">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              type="button" 
+                              className="h-8 w-8 p-0"
+                              onClick={() => handleEditorToolClick('link')}
+                              title="Adicionar link"
+                            >
                               <Link className="h-4 w-4" />
                             </Button>
-                            <Button variant="outline" size="sm" type="button" className="h-8 w-8 p-0">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              type="button" 
+                              className="h-8 w-8 p-0"
+                              onClick={() => handleEditorToolClick('mention')}
+                              title="Adicionar menção"
+                            >
                               <PersonStanding className="h-4 w-4" />
                             </Button>
                           </div>
