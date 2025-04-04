@@ -10,6 +10,8 @@ export type OpportunityItem = {
   trend: 'up' | 'down' | 'stable';
   trendPercentage: number;
   description: string;
+  impact: number; // Adding the impact property
+  title: string; // Adding the title property
   suggestedAction?: string;
   leadIds?: string[]; // IDs dos leads relacionados a esta oportunidade
 };
