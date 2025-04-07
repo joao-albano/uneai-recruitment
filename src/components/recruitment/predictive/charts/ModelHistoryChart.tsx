@@ -23,23 +23,31 @@ export const ModelHistoryChart = () => {
         f1Score: { color: "#10b981" },
         aucRoc: { color: "#ef4444" },
       }}
-      className="w-full aspect-[4/3]"
+      className="w-full h-full"
     >
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
-          width={500}
-          height={300}
           data={data}
           margin={{
-            top: 20,
-            right: 30,
-            left: 20,
-            bottom: 5,
+            top: 10,
+            right: 10,
+            left: 0,
+            bottom: 20,
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis domain={[70, 100]} />
+          <XAxis 
+            dataKey="date" 
+            tick={{ fontSize: 11 }}
+            tickMargin={10}
+            height={30}
+          />
+          <YAxis 
+            domain={[70, 100]} 
+            tick={{ fontSize: 11 }}
+            tickMargin={5}
+            width={30}
+          />
           <ChartTooltip
             content={
               <ChartTooltipContent 
@@ -58,9 +66,14 @@ export const ModelHistoryChart = () => {
                 case 'aucRoc': return 'AUC-ROC';
                 default: return value;
               }
-            }} 
+            }}
+            wrapperStyle={{ 
+              paddingTop: '10px',
+              fontSize: '11px',
+              bottom: 0
+            }}
           />
-          <Line type="monotone" dataKey="accuracy" stroke="var(--color-accuracy)" activeDot={{ r: 8 }} />
+          <Line type="monotone" dataKey="accuracy" stroke="var(--color-accuracy)" activeDot={{ r: 6 }} />
           <Line type="monotone" dataKey="precision" stroke="var(--color-precision)" />
           <Line type="monotone" dataKey="recall" stroke="var(--color-recall)" />
           <Line type="monotone" dataKey="f1Score" stroke="var(--color-f1Score)" />

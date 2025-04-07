@@ -5,13 +5,15 @@ import { ModelHistoryChart } from '../charts/ModelHistoryChart';
 
 const HistoryChartCard: React.FC = () => {
   return (
-    <Card>
+    <Card className="overflow-hidden">
       <CardHeader>
         <CardTitle>Evolução Histórica das Métricas</CardTitle>
         <CardDescription>Desempenho do modelo ao longo do tempo</CardDescription>
       </CardHeader>
-      <CardContent className="h-80">
-        <ModelHistoryChart />
+      <CardContent className="p-6">
+        <div className="h-[300px] w-full">
+          <ModelHistoryChart />
+        </div>
       </CardContent>
     </Card>
   );
