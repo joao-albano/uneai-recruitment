@@ -29,6 +29,9 @@ export type ChannelPerformance = {
   costPerLead: number;
   totalCost: number;
   roi: number;
+  targetEnrollment?: number;
+  predictedEnrollment?: number;
+  confidence?: 'alta' | 'media' | 'baixa';
 };
 
 export type ChannelDistribution = {

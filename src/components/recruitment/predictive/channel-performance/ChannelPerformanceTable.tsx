@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { channelData } from './channelPerformanceData';
+import { ChannelPerformance } from '@/types/recruitment/predictions';
 
 const ChannelPerformanceTable: React.FC = () => {
   return (
@@ -29,8 +30,10 @@ const ChannelPerformanceTable: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {channelData.map((item, index) => {
-                const percentage = (item.predictedEnrollment / item.targetEnrollment) * 100;
+              {channelData.map((item: ChannelPerformance, index) => {
+                const percentage = item.targetEnrollment && item.predictedEnrollment 
+                  ? (item.predictedEnrollment / item.targetEnrollment) * 100 
+                  : 0;
                 return (
                   <tr key={index} className={index % 2 === 0 ? 'bg-white dark:bg-slate-950' : 'bg-muted/30'}>
                     <td className="px-4 py-3 text-sm">{item.name}</td>
@@ -52,16 +55,18 @@ const ChannelPerformanceTable: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-sm text-center">
-                      <Badge
-                        variant="outline"
-                        className={
-                          item.confidence === 'alta' 
-                            ? 'bg-green-50 text-green-700 border-green-200' 
-                            : 'bg-amber-50 text-amber-700 border-amber-200'
-                        }
-                      >
-                        {item.confidence}
-                      </Badge>
+                      {item.confidence && (
+                        <Badge
+                          variant="outline"
+                          className={
+                            item.confidence === 'alta' 
+                              ? 'bg-green-50 text-green-700 border-green-200' 
+                              : 'bg-amber-50 text-amber-700 border-amber-200'
+                          }
+                        >
+                          {item.confidence}
+                        </Badge>
+                      )}
                     </td>
                   </tr>
                 );

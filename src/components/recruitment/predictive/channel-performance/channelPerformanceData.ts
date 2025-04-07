@@ -9,7 +9,10 @@ export const channelData = [
     conversionRate: 24.5,
     costPerLead: 32.5,
     totalCost: 10400,
-    roi: 3.8
+    roi: 3.8,
+    targetEnrollment: 90,
+    predictedEnrollment: 78,
+    confidence: 'alta'
   },
   { 
     name: 'Facebook', 
@@ -18,7 +21,10 @@ export const channelData = [
     conversionRate: 18.7,
     costPerLead: 28.2,
     totalCost: 7896,
-    roi: 2.6
+    roi: 2.6,
+    targetEnrollment: 65,
+    predictedEnrollment: 52,
+    confidence: 'media'
   },
   { 
     name: 'Google', 
@@ -27,7 +33,10 @@ export const channelData = [
     conversionRate: 22.3,
     costPerLead: 35.8,
     totalCost: 15036,
-    roi: 2.9
+    roi: 2.9,
+    targetEnrollment: 105,
+    predictedEnrollment: 94,
+    confidence: 'alta'
   },
   { 
     name: 'Email', 
@@ -36,7 +45,10 @@ export const channelData = [
     conversionRate: 15.1,
     costPerLead: 12.4,
     totalCost: 2232,
-    roi: 4.2
+    roi: 4.2,
+    targetEnrollment: 35,
+    predictedEnrollment: 27,
+    confidence: 'baixa'
   },
   { 
     name: 'SMS', 
@@ -45,7 +57,10 @@ export const channelData = [
     conversionRate: 12.8,
     costPerLead: 8.6,
     totalCost: 1290,
-    roi: 3.7
+    roi: 3.7,
+    targetEnrollment: 25,
+    predictedEnrollment: 19,
+    confidence: 'baixa'
   },
   { 
     name: 'Eventos', 
@@ -54,7 +69,10 @@ export const channelData = [
     conversionRate: 28.5,
     costPerLead: 52.3,
     totalCost: 13075,
-    roi: 2.1
+    roi: 2.1,
+    targetEnrollment: 80,
+    predictedEnrollment: 71,
+    confidence: 'alta'
   },
 ];
 
