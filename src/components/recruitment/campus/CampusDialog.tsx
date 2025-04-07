@@ -59,7 +59,15 @@ const CampusDialog: React.FC<CampusDialogProps> = ({
   const onSubmit = async (values: FormValues) => {
     try {
       if (mode === 'create') {
-        await addCampus(values);
+        // Values will now have all required fields because of the zod schema validation
+        await addCampus({
+          name: values.name,
+          address: values.address,
+          city: values.city,
+          state: values.state,
+          zipCode: values.zipCode,
+          phone: values.phone
+        });
         toast({
           title: "Unidade criada",
           description: "A unidade foi criada com sucesso."
