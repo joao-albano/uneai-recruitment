@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import FunnelHeader from './FunnelHeader';
 import FunnelVisualizationCard from './FunnelVisualizationCard';
 import ConversionAnalysisCard from './ConversionAnalysisCard';
@@ -12,6 +12,7 @@ import { useFunnels } from './hooks/useFunnels';
 const FunnelManagement: React.FC = () => {
   const {
     funnelStages,
+    setFunnelStages,
     selectedStage,
     editDialogOpen,
     setEditDialogOpen,
@@ -35,6 +36,13 @@ const FunnelManagement: React.FC = () => {
     handleCreateFunnel,
   } = useFunnels();
 
+  // Update the funnel stages when the selected funnel changes
+  useEffect(() => {
+    if (selectedFunnel) {
+      setFunnelStages(selectedFunnel.stages || []);
+    }
+  }, [selectedFunnel, setFunnelStages]);
+
   return (
     <div className="space-y-6">
       <FunnelHeader 
@@ -43,18 +51,24 @@ const FunnelManagement: React.FC = () => {
         onNewFunnelClick={() => setCreateFunnelDialogOpen(true)}
       />
 
-      <FunnelSelector 
-        funnels={funnels} 
-        selectedFunnel={selectedFunnel} 
-        onSelectFunnel={setSelectedFunnel}
-        onCreateFunnel={() => setCreateFunnelDialogOpen(true)}
-      />
-      
-      <FunnelVisualizationCard 
-        stages={funnelStages} 
-        onEditStage={handleEditClick}
-        onAddSubStage={addSubStage}
-      />
+      <div className="grid gap-6 md:grid-cols-12">
+        <div className="md:col-span-4">
+          <FunnelSelector 
+            funnels={funnels} 
+            selectedFunnel={selectedFunnel} 
+            onSelectFunnel={setSelectedFunnel}
+            onCreateFunnel={() => setCreateFunnelDialogOpen(true)}
+          />
+        </div>
+        
+        <div className="md:col-span-8">
+          <FunnelVisualizationCard 
+            stages={funnelStages} 
+            onEditStage={handleEditClick}
+            onAddSubStage={addSubStage}
+          />
+        </div>
+      </div>
       
       <AiSuggestions funnel={selectedFunnel} stages={funnelStages} />
       
