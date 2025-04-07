@@ -88,7 +88,7 @@ const FunnelVisualizationCard: React.FC<FunnelVisualizationCardProps> = ({
                   size="sm"
                   onClick={() => onAddSubStage(stage.id)}
                   title="Adicionar sub-etapa"
-                  className="border-blue-200 bg-white hover:bg-blue-50 text-blue-600"
+                  className="border-blue-200 bg-white hover:bg-blue-50 text-gray-700 hover:text-gray-900"
                 >
                   <Plus className="h-4 w-4 mr-1" />
                   Sub-etapa
@@ -126,7 +126,7 @@ const FunnelVisualizationCard: React.FC<FunnelVisualizationCardProps> = ({
   return (
     <Card className="shadow-sm border-blue-100">
       <CardHeader className="pb-3 bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
-        <CardTitle className="text-lg text-blue-800">Visualização do Funil</CardTitle>
+        <CardTitle className="text-lg text-gray-900">Visualização do Funil</CardTitle>
       </CardHeader>
       <CardContent className="p-6 bg-white">
         {stages.length === 0 ? (
@@ -136,7 +136,7 @@ const FunnelVisualizationCard: React.FC<FunnelVisualizationCardProps> = ({
               variant="outline" 
               size="sm"
               onClick={() => {}} 
-              className="mt-4 border-blue-200 bg-white hover:bg-blue-50 text-blue-600"
+              className="mt-4 border-blue-200 bg-white hover:bg-blue-50 text-gray-700 hover:text-gray-900"
             >
               <Plus className="h-4 w-4 mr-1" />
               Adicionar Primeira Etapa

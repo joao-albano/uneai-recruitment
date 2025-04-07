@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Funnel, FunnelStage } from '@/types/recruitment';
@@ -18,7 +17,7 @@ const ConversionAnalysisCard: React.FC<ConversionAnalysisCardProps> = ({
     return (
       <Card className="bg-gradient-to-r from-blue-50 to-white border-blue-100 shadow-sm">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-medium flex items-center text-blue-800">
+          <CardTitle className="text-lg font-medium flex items-center text-gray-900">
             <BarChart className="h-5 w-5 mr-2 text-blue-500" />
             <span>Análise de Conversão</span>
           </CardTitle>
@@ -42,7 +41,7 @@ const ConversionAnalysisCard: React.FC<ConversionAnalysisCardProps> = ({
     return (
       <Card className="bg-gradient-to-r from-blue-50 to-white border-blue-100 shadow-sm">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-medium flex items-center text-blue-800">
+          <CardTitle className="text-lg font-medium flex items-center text-gray-900">
             <BarChart className="h-5 w-5 mr-2 text-blue-500" />
             <span>Análise de Conversão</span>
           </CardTitle>
@@ -65,7 +64,7 @@ const ConversionAnalysisCard: React.FC<ConversionAnalysisCardProps> = ({
     return (
       <Card className="bg-gradient-to-r from-blue-50 to-white border-blue-100 shadow-sm">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-medium flex items-center text-blue-800">
+          <CardTitle className="text-lg font-medium flex items-center text-gray-900">
             <BarChart className="h-5 w-5 mr-2 text-blue-500" />
             <span>Análise de Conversão</span>
           </CardTitle>
@@ -99,7 +98,7 @@ const ConversionAnalysisCard: React.FC<ConversionAnalysisCardProps> = ({
   return (
     <Card className="bg-gradient-to-r from-blue-50 to-white border-blue-100 shadow-sm">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-medium flex items-center text-blue-800">
+        <CardTitle className="text-lg font-medium flex items-center text-gray-900">
           <TrendingUp className="h-5 w-5 mr-2 text-blue-500" />
           <span>Análise de Conversão</span>
         </CardTitle>
@@ -108,8 +107,8 @@ const ConversionAnalysisCard: React.FC<ConversionAnalysisCardProps> = ({
         <div className="space-y-4">
           <div className="bg-white p-4 rounded-md border border-blue-100">
             <div className="flex justify-between items-center mb-1">
-              <h3 className="font-medium text-blue-800">Conversão Total do Funil</h3>
-              <span className="text-xl font-bold text-blue-600">{overallConversion}%</span>
+              <h3 className="font-medium text-gray-900">Conversão Total do Funil</h3>
+              <span className="text-xl font-bold text-gray-900">{overallConversion}%</span>
             </div>
             <p className="text-sm text-muted-foreground">
               {`Da etapa "${firstStage.name}" até "${lastStage.name}"`}
@@ -122,7 +121,7 @@ const ConversionAnalysisCard: React.FC<ConversionAnalysisCardProps> = ({
                   style={{ width: `${overallConversion}%` }}
                 ></div>
               </div>
-              <span className="ml-2 text-sm font-medium text-blue-800">{overallConversion}%</span>
+              <span className="ml-2 text-sm font-medium text-gray-900">{overallConversion}%</span>
             </div>
           </div>
           

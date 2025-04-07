@@ -28,13 +28,13 @@ const FunnelSelector: React.FC<FunnelSelectorProps> = ({
   return (
     <Card className="bg-gradient-to-r from-white to-blue-50 border-blue-100 shadow-sm">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-medium flex justify-between items-center text-blue-800">
+        <CardTitle className="text-lg font-medium flex justify-between items-center text-gray-900">
           <span>Selecionar Funil</span>
           <Button 
             onClick={onCreateFunnel} 
             size="sm" 
             variant="outline"
-            className="bg-white hover:bg-blue-50 border-blue-200"
+            className="bg-white hover:bg-blue-100 hover:text-gray-900 border-blue-200"
           >
             <Plus className="h-4 w-4 mr-1 text-blue-500" />
             Novo Funil
@@ -63,7 +63,7 @@ const FunnelSelector: React.FC<FunnelSelectorProps> = ({
           </Select>
           {selectedFunnel && (
             <div className="bg-white p-3 rounded-md border border-blue-100">
-              <h3 className="font-medium text-blue-800">{selectedFunnel.name}</h3>
+              <h3 className="font-medium text-gray-900">{selectedFunnel.name}</h3>
               <p className="mt-1 text-sm text-muted-foreground">
                 {selectedFunnel.description || "Sem descrição"}
               </p>
@@ -73,7 +73,7 @@ const FunnelSelector: React.FC<FunnelSelectorProps> = ({
               <div className="mt-2 text-xs">
                 <span className="font-medium">{selectedFunnel.stages.length} etapa{selectedFunnel.stages.length !== 1 ? 's' : ''}</span>
                 {selectedFunnel.stages.some(stage => stage.subStages && stage.subStages.length > 0) && (
-                  <span className="ml-2 bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded-full text-[10px]">
+                  <span className="ml-2 bg-blue-50 text-gray-700 px-1.5 py-0.5 rounded-full text-[10px]">
                     Com sub-etapas
                   </span>
                 )}
