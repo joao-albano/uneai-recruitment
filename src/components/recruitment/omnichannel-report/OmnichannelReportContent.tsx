@@ -1,11 +1,11 @@
 
 import React, { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import OmnichannelOverview from './OmnichannelOverview';
 import ChannelPerformance from './ChannelPerformance';
 import EmotionAnalysis from './EmotionAnalysis';
 import InteractionInsights from './InteractionInsights';
+import DetailedChannelDistribution from './DetailedChannelDistribution';
 import { omnichannelReportData } from './data/omnichannelReportData';
 
 const OmnichannelReportContent: React.FC = () => {
@@ -38,14 +38,19 @@ const OmnichannelReportContent: React.FC = () => {
       <OmnichannelOverview data={omnichannelReportData} dateRange={dateRange} />
       
       <Tabs defaultValue="channel-performance" className="w-full">
-        <TabsList className="grid grid-cols-3 mb-4">
+        <TabsList className="grid grid-cols-4 mb-4">
           <TabsTrigger value="channel-performance">Desempenho por Canal</TabsTrigger>
+          <TabsTrigger value="detailed-distribution">Humano vs IA</TabsTrigger>
           <TabsTrigger value="emotion-analysis">Análise de Emoções</TabsTrigger>
           <TabsTrigger value="interaction-insights">Insights de Interação</TabsTrigger>
         </TabsList>
         
         <TabsContent value="channel-performance" className="space-y-4">
           <ChannelPerformance data={omnichannelReportData} dateRange={dateRange} />
+        </TabsContent>
+        
+        <TabsContent value="detailed-distribution" className="space-y-4">
+          <DetailedChannelDistribution data={omnichannelReportData} dateRange={dateRange} />
         </TabsContent>
         
         <TabsContent value="emotion-analysis" className="space-y-4">

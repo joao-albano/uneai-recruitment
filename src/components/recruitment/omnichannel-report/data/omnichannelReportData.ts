@@ -19,12 +19,37 @@ export const omnichannelReportData: OmnichannelReportData = {
     phone: 20
   },
   
+  // Nova distribuição detalhada por canal (Humano vs IA)
+  detailedDistribution: {
+    phoneActive: {
+      human: 285,
+      ai: 142,
+      total: 427
+    },
+    phoneReceptive: {
+      human: 198,
+      ai: 145,
+      total: 343
+    },
+    whatsapp: {
+      human: 1425,
+      ai: 960,
+      total: 2385
+    },
+    email: {
+      human: 492,
+      ai: 200,
+      total: 692
+    }
+  },
+  
   // Insights principais
   keyInsights: [
     "O WhatsApp é o canal preferido para 62% dos atendimentos, com maior eficiência de resolução.",
     "Atendimentos com emoções positivas têm 23% mais chances de conversão.",
     "O horário de pico de atendimento é entre 14h e 16h, especialmente por WhatsApp.",
-    "Dúvidas sobre processo seletivo representam 35% de todos os atendimentos."
+    "Dúvidas sobre processo seletivo representam 35% de todos os atendimentos.",
+    "Atendimentos via IA têm taxa de resolução 8% menor que atendimentos humanos, mas respondem 72% mais rápido."
   ],
   
   // Dados para gráficos de desempenho por canal
@@ -81,7 +106,6 @@ export const omnichannelReportData: OmnichannelReportData = {
     }
   ],
   
-  // Análise de emoções
   emotionDistribution: {
     positive: 68,
     neutral: 21,

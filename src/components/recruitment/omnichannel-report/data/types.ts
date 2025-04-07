@@ -10,11 +10,35 @@ export interface OmnichannelReportData {
   dominantEmotion: 'positiva' | 'neutra' | 'negativa';
   positiveEmotionPercentage: number;
   
-  // Distribuição por canal
+  // Distribuição por canal detalhada
   channelDistribution: {
     whatsapp: number;
     email: number;
     phone: number;
+  };
+  
+  // Nova distribuição por canal com detalhamento humano vs IA
+  detailedDistribution: {
+    phoneActive: {
+      human: number;
+      ai: number;
+      total: number;
+    };
+    phoneReceptive: {
+      human: number;
+      ai: number;
+      total: number;
+    };
+    whatsapp: {
+      human: number;
+      ai: number;
+      total: number;
+    };
+    email: {
+      human: number;
+      ai: number;
+      total: number;
+    };
   };
   
   // Insights principais
