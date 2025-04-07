@@ -11,7 +11,6 @@ import RecruitmentHomePage from "@/pages/recruitment/RecruitmentHomePage";
 import ConversationPage from "@/pages/recruitment/ConversationPage";
 import LeadConversationPage from "@/pages/recruitment/LeadConversationPage";
 import EnrollmentPredictionsPage from "@/pages/recruitment/EnrollmentPredictionsPage";
-import PredictiveReportingPage from "@/pages/recruitment/PredictiveReportingPage";
 import RecruitmentAlertsPage from "@/pages/recruitment/RecruitmentAlertsPage";
 import RecruitmentSchedulePage from "@/pages/recruitment/RecruitmentSchedulePage";
 import DetailedAnalysisPage from "@/pages/recruitment/DetailedAnalysisPage";
@@ -127,14 +126,6 @@ export const recruitmentRoutes: RouteConfig[] = [
     element: (
       <ProtectedRoute>
         <EnrollmentPredictionsPage />
-      </ProtectedRoute>
-    )
-  },
-  {
-    path: "/recruitment/predictive-reporting",
-    element: (
-      <ProtectedRoute>
-        <PredictiveReportingPage />
       </ProtectedRoute>
     )
   },

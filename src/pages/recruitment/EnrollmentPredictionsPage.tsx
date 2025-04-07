@@ -4,13 +4,15 @@ import Layout from '@/components/layout/Layout';
 import { useProduct } from '@/context/ProductContext';
 import EnrollmentPredictionEngine from '@/components/recruitment/predictions/EnrollmentPredictionEngine';
 import StrategicDecisionDashboard from '@/components/recruitment/dashboard/StrategicDecisionDashboard';
+import ModelPerformanceMetrics from '@/components/recruitment/predictive/ModelPerformanceMetrics';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PieChart, BarChart3, PanelTop } from 'lucide-react';
+import { PieChart, BarChart3, PanelTop, LineChart } from 'lucide-react';
 
 const EnrollmentPredictionsPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { setCurrentProduct } = useProduct();
+  const [selectedPeriod, setSelectedPeriod] = useState<string>('2024.2');
   
   // Definir o produto atual como 'recruitment'
   React.useEffect(() => {
@@ -42,6 +44,10 @@ const EnrollmentPredictionsPage: React.FC = () => {
               <BarChart3 className="h-4 w-4" />
               Motor de Previsão
             </TabsTrigger>
+            <TabsTrigger value="metrics" className="gap-2">
+              <LineChart className="h-4 w-4" />
+              Métricas do Modelo
+            </TabsTrigger>
             <TabsTrigger value="distributions" className="gap-2">
               <PieChart className="h-4 w-4" />
               Distribuições
@@ -54,6 +60,10 @@ const EnrollmentPredictionsPage: React.FC = () => {
           
           <TabsContent value="predictions" className="m-0">
             <EnrollmentPredictionEngine />
+          </TabsContent>
+          
+          <TabsContent value="metrics" className="m-0">
+            <ModelPerformanceMetrics selectedPeriod={selectedPeriod} />
           </TabsContent>
           
           <TabsContent value="distributions" className="m-0">

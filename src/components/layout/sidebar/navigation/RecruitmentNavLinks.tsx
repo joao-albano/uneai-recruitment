@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, PieChart, Upload, Bell } from 'lucide-react';
+import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell } from 'lucide-react';
 import SidebarNavLink from '../SidebarNavLink';
 
 interface RecruitmentNavLinksProps {
@@ -68,12 +68,6 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
         to="/recruitment/predictions" 
         icon={LineChart} 
         label="Previsões" 
-        collapsed={collapsed}
-      />
-      <SidebarNavLink 
-        to="/recruitment/predictive-reporting" 
-        icon={PieChart} 
-        label="Relatórios Preditivos" 
         collapsed={collapsed}
       />
     </>
