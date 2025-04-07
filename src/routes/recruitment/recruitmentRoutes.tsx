@@ -1,4 +1,3 @@
-
 import { ReactNode } from "react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoutes";
 import { ProductGuard } from "@/components/auth/ProductGuard";
@@ -17,6 +16,7 @@ import DetailedAnalysisPage from "@/pages/recruitment/DetailedAnalysisPage";
 import VoiceConfigurationPage from "@/pages/VoiceConfigurationPage";
 import GeographicTargetingPage from "@/pages/recruitment/GeographicTargetingPage";
 import CampusManagementPage from "@/pages/recruitment/CampusManagementPage";
+import OmnichannelReportPage from "@/pages/recruitment/OmnichannelReportPage";
 
 interface RouteConfig {
   path: string;
@@ -143,6 +143,14 @@ export const recruitmentRoutes: RouteConfig[] = [
     element: (
       <ProtectedRoute>
         <CampusManagementPage />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/omnichannel-report",
+    element: (
+      <ProtectedRoute>
+        <OmnichannelReportPage />
       </ProtectedRoute>
     )
   }
