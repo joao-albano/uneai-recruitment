@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -9,17 +8,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Plus, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { FunnelStage } from '@/types/recruitment';
+import FunnelStageForm from './FunnelStageForm';
+import { createEmptyStage, prepareStageForSubmit } from './utils/stageUtils';
 
 interface FunnelStageDialogProps {
   open: boolean;
@@ -43,11 +35,7 @@ const FunnelStageDialog: React.FC<FunnelStageDialogProps> = ({
   onAddStage
 }) => {
   // Estado inicial do formulário
-  const [formState, setFormState] = React.useState<Partial<FunnelStage>>({
-    name: '',
-    color: 'bg-blue-500',
-    actions: [''],
-  });
+  const [formState, setFormState] = React.useState<Partial<FunnelStage>>(createEmptyStage());
   
   // Atualiza o estado do formulário quando edita uma etapa existente
   React.useEffect(() => {
@@ -61,42 +49,9 @@ const FunnelStageDialog: React.FC<FunnelStageDialogProps> = ({
         order: stage.order,
       });
     } else {
-      setFormState({
-        name: '',
-        color: 'bg-blue-500',
-        actions: [''],
-        order: 0,
-      });
+      setFormState(createEmptyStage());
     }
   }, [stage, open]);
-  
-  // Manipuladores de formulário
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormState({ ...formState, name: e.target.value });
-  };
-  
-  const handleColorChange = (value: string) => {
-    setFormState({ ...formState, color: value });
-  };
-  
-  const handleActionChange = (index: number, value: string) => {
-    const updatedActions = [...(formState.actions || [])];
-    updatedActions[index] = value;
-    setFormState({ ...formState, actions: updatedActions });
-  };
-  
-  const handleAddAction = () => {
-    setFormState({ 
-      ...formState, 
-      actions: [...(formState.actions || []), ''] 
-    });
-  };
-  
-  const handleRemoveAction = (index: number) => {
-    const updatedActions = [...(formState.actions || [])];
-    updatedActions.splice(index, 1);
-    setFormState({ ...formState, actions: updatedActions });
-  };
   
   const handleSubmit = () => {
     // Verificação básica
@@ -105,21 +60,7 @@ const FunnelStageDialog: React.FC<FunnelStageDialogProps> = ({
       return;
     }
     
-    // Filtrar ações vazias
-    const filteredActions = (formState.actions || []).filter(a => a.trim() !== '');
-    
-    // Preparar objeto para salvar
-    const stageData: FunnelStage = {
-      id: formState.id || `${Date.now()}`,
-      name: formState.name,
-      color: formState.color,
-      icon: formState.icon || null,
-      actions: filteredActions,
-      order: formState.order || 0,
-      isActive: true,
-      leadCount: 0,
-      expectedDuration: 1,
-    };
+    const stageData = prepareStageForSubmit(formState);
     
     if (onSave) {
       onSave(stageData);
@@ -145,74 +86,10 @@ const FunnelStageDialog: React.FC<FunnelStageDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
         
-        <div className="py-4 space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Nome da Etapa</Label>
-            <Input 
-              id="name" 
-              placeholder="Ex: Contato Inicial, Agendamento, etc."
-              value={formState.name}
-              onChange={handleNameChange}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="color">Cor da Etapa</Label>
-            <Select 
-              value={formState.color} 
-              onValueChange={handleColorChange}
-            >
-              <SelectTrigger id="color">
-                <SelectValue placeholder="Selecione uma cor" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="bg-blue-500">Azul</SelectItem>
-                <SelectItem value="bg-green-500">Verde</SelectItem>
-                <SelectItem value="bg-red-500">Vermelho</SelectItem>
-                <SelectItem value="bg-yellow-500">Amarelo</SelectItem>
-                <SelectItem value="bg-purple-500">Roxo</SelectItem>
-                <SelectItem value="bg-amber-500">Âmbar</SelectItem>
-                <SelectItem value="bg-pink-500">Rosa</SelectItem>
-                <SelectItem value="bg-indigo-500">Índigo</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="space-y-2">
-            <Label>Ações nesta Etapa</Label>
-            <div className="space-y-3">
-              {formState.actions?.map((action, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <Input 
-                    placeholder="Ex: Telefonema, E-mail, Visita, etc."
-                    value={action}
-                    onChange={(e) => handleActionChange(index, e.target.value)}
-                  />
-                  <Button 
-                    type="button"
-                    variant="ghost" 
-                    size="icon"
-                    onClick={() => handleRemoveAction(index)}
-                    disabled={formState.actions?.length === 1}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-              
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="w-full gap-2"
-                onClick={handleAddAction}
-              >
-                <Plus className="h-4 w-4" />
-                <span>Adicionar Ação</span>
-              </Button>
-            </div>
-          </div>
-        </div>
+        <FunnelStageForm 
+          formState={formState}
+          setFormState={setFormState}
+        />
         
         <DialogFooter>
           <Button 
