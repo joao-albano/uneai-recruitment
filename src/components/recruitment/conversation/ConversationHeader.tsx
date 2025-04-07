@@ -5,7 +5,13 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, MoreVertical, Bot, UserCircle2, User } from 'lucide-react';
+import { ChevronLeft, MoreVertical, Bot, UserCircle2, User, X } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface ConversationHeaderProps {
   leadName: string;
@@ -15,6 +21,7 @@ interface ConversationHeaderProps {
   showAnalytics: boolean;
   onToggleAttendanceMode: () => void;
   onToggleAnalytics: () => void;
+  onEndConversation?: () => void;
 }
 
 const ConversationHeader: React.FC<ConversationHeaderProps> = ({
@@ -24,7 +31,8 @@ const ConversationHeader: React.FC<ConversationHeaderProps> = ({
   isAiMode,
   showAnalytics,
   onToggleAttendanceMode,
-  onToggleAnalytics
+  onToggleAnalytics,
+  onEndConversation
 }) => {
   return (
     <CardHeader className="pb-2 border-b">
@@ -66,9 +74,24 @@ const ConversationHeader: React.FC<ConversationHeaderProps> = ({
             <Label htmlFor="attendance-mode" className="text-xs">Modo IA</Label>
           </div>
           
-          <Button variant="ghost" size="icon">
-            <MoreVertical className="h-4 w-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {onEndConversation && (
+                <DropdownMenuItem 
+                  onClick={onEndConversation}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Encerrar atendimento
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       
@@ -95,6 +118,18 @@ const ConversationHeader: React.FC<ConversationHeaderProps> = ({
             <User className="h-3 w-3 mr-1" />
             <span>Atendente: Juliana Oliveira</span>
           </Badge>
+        )}
+
+        {onEndConversation && (
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={onEndConversation}
+            className="ml-auto text-destructive border-destructive hover:bg-destructive/10"
+          >
+            <X className="h-3 w-3 mr-1" />
+            Encerrar
+          </Button>
         )}
       </div>
     </CardHeader>

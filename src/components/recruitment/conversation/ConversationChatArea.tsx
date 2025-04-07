@@ -3,7 +3,6 @@ import React from 'react';
 import { CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MessageSquare, Mail, Phone } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { ActiveConversation } from './types';
 import WhatsAppTab from './WhatsAppTab';
 import ChannelTab from './ChannelTab';
@@ -20,6 +19,7 @@ interface ConversationChatAreaProps {
   handleOpenSettings: () => void;
   handleSendMessage: (message: string) => void;
   messages: any[];
+  onEndConversation?: () => void;
 }
 
 const ConversationChatArea: React.FC<ConversationChatAreaProps> = ({
@@ -32,7 +32,8 @@ const ConversationChatArea: React.FC<ConversationChatAreaProps> = ({
   handleToggleAnalytics,
   handleOpenSettings,
   handleSendMessage,
-  messages
+  messages,
+  onEndConversation
 }) => {
   if (!selectedConversation) {
     return null;
@@ -48,6 +49,7 @@ const ConversationChatArea: React.FC<ConversationChatAreaProps> = ({
         showAnalytics={showAnalytics}
         onToggleAttendanceMode={handleToggleAiMode}
         onToggleAnalytics={handleToggleAnalytics}
+        onEndConversation={onEndConversation}
       />
       
       <CardContent className="flex-1 flex flex-col p-0">
@@ -73,6 +75,7 @@ const ConversationChatArea: React.FC<ConversationChatAreaProps> = ({
             showAnalytics={showAnalytics}
             onSendMessage={handleSendMessage}
             onOpenSettings={handleOpenSettings}
+            onEndConversation={onEndConversation}
           />
           
           <ChannelTab 

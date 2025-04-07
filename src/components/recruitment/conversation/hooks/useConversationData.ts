@@ -344,6 +344,7 @@ export function useConversationData() {
     setNewConversationOpen,
     selectedConversationId,
     conversations,
+    setConversations,
     agents,
     getSelectedConversation,
     getSelectedMessages,

@@ -9,6 +9,7 @@ import ConversationalAIHeader from './ConversationalAIHeader';
 import ConversationSettingsDialog from './ConversationSettingsDialog';
 import ConversationFiltersDialog from './ConversationFiltersDialog';
 import NewConversationDialog from './NewConversationDialog';
+import { toast } from "sonner";
 
 const ConversationalAI: React.FC = () => {
   const {
@@ -26,6 +27,7 @@ const ConversationalAI: React.FC = () => {
     setNewConversationOpen,
     selectedConversationId,
     conversations,
+    setConversations,
     agents,
     getSelectedConversation,
     getSelectedMessages,
@@ -40,10 +42,25 @@ const ConversationalAI: React.FC = () => {
 
   const selectedConversation = getSelectedConversation();
 
+  const handleEndConversation = () => {
+    if (!selectedConversationId) return;
+    
+    toast.success(`Atendimento encerrado com sucesso!`);
+    
+    // Remove a conversa da lista
+    setConversations(prevConversations => 
+      prevConversations.filter(conv => conv.id !== selectedConversationId)
+    );
+  };
+
+  const handleOpenFilters = () => {
+    setFiltersOpen(true);
+  };
+
   return (
     <div className="flex flex-col">
       <ConversationalAIHeader
-        onOpenFilters={() => setFiltersOpen(true)}
+        onOpenFilters={handleOpenFilters}
         onOpenSettings={handleOpenSettings}
       />
 
@@ -68,6 +85,7 @@ const ConversationalAI: React.FC = () => {
               handleOpenSettings={handleOpenSettings}
               handleSendMessage={handleSendMessage}
               messages={getSelectedMessages()}
+              onEndConversation={handleEndConversation}
             />
           ) : (
             <ConversationEmptyState
@@ -92,6 +110,7 @@ const ConversationalAI: React.FC = () => {
         onApplyFilters={(filters) => {
           console.log('Applied filters:', filters);
           setFiltersOpen(false);
+          toast.success("Filtros aplicados com sucesso!");
         }}
       />
       

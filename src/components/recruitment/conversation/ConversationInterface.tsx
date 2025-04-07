@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -8,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { toast } from "sonner";
 import { v4 as uuidv4 } from 'uuid';
 
-// Import our new components
 import ConversationHeader from './ConversationHeader';
 import WhatsAppTab from './WhatsAppTab';
 import ChannelTab from './ChannelTab';
@@ -74,7 +72,6 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
   const handleSendMessage = (message: string) => {
     if (!message.trim()) return;
     
-    // Adiciona a mensagem do usuário
     const newMessage = {
       id: Date.now().toString(),
       content: message,
@@ -85,7 +82,6 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
     
     setMessages(prev => [...prev, newMessage]);
     
-    // Simula uma resposta automática após um pequeno delay
     if (isAiMode) {
       setTimeout(() => {
         const aiResponse = {
@@ -121,7 +117,6 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
     phone: string;
     course: string;
   }) => {
-    // Limpar as mensagens atuais e criar uma nova conversa
     const initialMessage: Message = {
       id: uuidv4(),
       content: `Olá ${data.name}! Sou a assistente virtual da instituição. Como posso ajudar você hoje em relação ao curso de ${data.course}?`,
@@ -133,6 +128,11 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
     setMessages([initialMessage]);
     setNewConversationOpen(false);
     toast.success("Nova conversa iniciada com sucesso!");
+  };
+
+  const handleEndConversation = () => {
+    toast.success(`Atendimento com ${leadName} encerrado com sucesso!`);
+    setMessages([]);
   };
 
   return (
@@ -171,6 +171,7 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
             onSendMessage={handleSendMessage}
             onOpenSettings={handleStartNewConversation}
             isSelectedLead={true}
+            onEndConversation={handleEndConversation}
           />
           
           <ChannelTab 
