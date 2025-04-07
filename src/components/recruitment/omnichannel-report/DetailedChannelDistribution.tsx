@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Phone, PhoneCall, Mail, MessagesSquare, User, Robot } from 'lucide-react';
+import { Phone, PhoneCall, Mail, MessagesSquare, User, Bot } from 'lucide-react';
 import { OmnichannelReportData } from './data/types';
 import { 
   Table, 
@@ -157,7 +157,7 @@ const DetailedChannelDistribution: React.FC<DetailedChannelDistributionProps> = 
                   </TableHead>
                   <TableHead className="text-center">
                     <div className="flex items-center justify-center">
-                      <Robot className="h-4 w-4 mr-1" />
+                      <Bot className="h-4 w-4 mr-1" />
                       <span>IA</span>
                     </div>
                   </TableHead>
