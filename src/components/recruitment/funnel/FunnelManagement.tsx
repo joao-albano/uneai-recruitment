@@ -1,32 +1,17 @@
 
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import FunnelHeader from './FunnelHeader';
-import FunnelVisualizationCard from './FunnelVisualizationCard';
-import ConversionAnalysisCard from './ConversionAnalysisCard';
-import FunnelDialogs from './FunnelDialogs';
 import FunnelSelector from './FunnelSelector';
+import FunnelVisualizationCard from './FunnelVisualizationCard';
+import CreateFunnelDialog from './CreateFunnelDialog';
+import FunnelStageDialog from './FunnelStageDialog';
+import FunnelConfigDialog from './FunnelConfigDialog';
+import FunnelStageEditDialog from './FunnelStageEditDialog';
 import AiSuggestions from './AiSuggestions';
-import { useFunnelStages } from './hooks/useFunnelStages';
+import ConversionAnalysisCard from './ConversionAnalysisCard';
 import { useFunnels } from './hooks/useFunnels';
 
 const FunnelManagement: React.FC = () => {
-  const {
-    funnelStages,
-    setFunnelStages,
-    selectedStage,
-    editDialogOpen,
-    setEditDialogOpen,
-    configDialogOpen,
-    setConfigDialogOpen,
-    newStageDialogOpen,
-    setNewStageDialogOpen,
-    handleEditClick,
-    handleSaveStage,
-    handleAddNewStage,
-    handleSaveConfig,
-    addSubStage,
-  } = useFunnelStages();
-
   const {
     funnels,
     selectedFunnel,
@@ -34,60 +19,154 @@ const FunnelManagement: React.FC = () => {
     createFunnelDialogOpen,
     setCreateFunnelDialogOpen,
     handleCreateFunnel,
+    updateFunnelStages
   } = useFunnels();
-
-  // Update the funnel stages when the selected funnel changes
-  useEffect(() => {
-    if (selectedFunnel) {
-      setFunnelStages(selectedFunnel.stages || []);
-    }
-  }, [selectedFunnel, setFunnelStages]);
+  
+  const [configDialogOpen, setConfigDialogOpen] = useState(false);
+  const [stageDialogOpen, setStageDialogOpen] = useState(false);
+  const [editStageDialogOpen, setEditStageDialogOpen] = useState(false);
+  const [stageToEdit, setStageToEdit] = useState(null);
+  const [parentStageId, setParentStageId] = useState<string | null>(null);
+  
+  const handleConfigClick = () => {
+    setConfigDialogOpen(true);
+  };
+  
+  const handleNewStageClick = () => {
+    setParentStageId(null);
+    setStageDialogOpen(true);
+  };
+  
+  const handleNewFunnelClick = () => {
+    setCreateFunnelDialogOpen(true);
+  };
+  
+  const handleEditStage = (stage) => {
+    setStageToEdit(stage);
+    setEditStageDialogOpen(true);
+  };
+  
+  const handleAddSubStage = (stageId) => {
+    setParentStageId(stageId);
+    setStageDialogOpen(true);
+  };
+  
+  const stages = selectedFunnel?.stages || [];
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto py-6 space-y-6">
       <FunnelHeader 
-        onConfigClick={() => setConfigDialogOpen(true)}
-        onNewStageClick={() => setNewStageDialogOpen(true)}
-        onNewFunnelClick={() => setCreateFunnelDialogOpen(true)}
+        onConfigClick={handleConfigClick}
+        onNewStageClick={handleNewStageClick}
+        onNewFunnelClick={handleNewFunnelClick}
       />
-
-      <div className="grid gap-6 md:grid-cols-12">
-        <div className="md:col-span-4">
-          <FunnelSelector 
-            funnels={funnels} 
-            selectedFunnel={selectedFunnel} 
-            onSelectFunnel={setSelectedFunnel}
-            onCreateFunnel={() => setCreateFunnelDialogOpen(true)}
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-2">
+          <FunnelVisualizationCard 
+            stages={stages}
+            onEditStage={handleEditStage}
+            onAddSubStage={handleAddSubStage}
           />
         </div>
         
-        <div className="md:col-span-8">
-          <FunnelVisualizationCard 
-            stages={funnelStages} 
-            onEditStage={handleEditClick}
-            onAddSubStage={addSubStage}
+        <div className="space-y-6">
+          <FunnelSelector 
+            funnels={funnels}
+            selectedFunnel={selectedFunnel}
+            onSelectFunnel={setSelectedFunnel}
+            onCreateFunnel={handleNewFunnelClick}
+          />
+          
+          <AiSuggestions 
+            funnel={selectedFunnel}
+            stages={stages}
+          />
+          
+          <ConversionAnalysisCard 
+            funnel={selectedFunnel}
+            stages={stages}
           />
         </div>
       </div>
       
-      <AiSuggestions funnel={selectedFunnel} stages={funnelStages} />
-      
-      <ConversionAnalysisCard stages={funnelStages} />
-      
-      <FunnelDialogs
-        editDialogOpen={editDialogOpen}
-        setEditDialogOpen={setEditDialogOpen}
-        selectedStage={selectedStage}
-        onSaveStage={handleSaveStage}
-        configDialogOpen={configDialogOpen}
-        setConfigDialogOpen={setConfigDialogOpen}
-        onSaveConfig={handleSaveConfig}
-        newStageDialogOpen={newStageDialogOpen}
-        setNewStageDialogOpen={setNewStageDialogOpen}
-        onSaveNewStage={handleAddNewStage}
-        createFunnelDialogOpen={createFunnelDialogOpen}
-        setCreateFunnelDialogOpen={setCreateFunnelDialogOpen}
+      {/* Dialogs */}
+      <CreateFunnelDialog 
+        open={createFunnelDialogOpen}
+        onOpenChange={setCreateFunnelDialogOpen}
         onCreateFunnel={handleCreateFunnel}
+      />
+      
+      <FunnelStageDialog 
+        open={stageDialogOpen}
+        onOpenChange={setStageDialogOpen}
+        funnelId={selectedFunnel?.id}
+        parentStageId={parentStageId}
+        stages={stages}
+        onAddStage={(newStage) => {
+          if (selectedFunnel) {
+            let updatedStages;
+            
+            if (parentStageId) {
+              // Adding sub-stage
+              updatedStages = stages.map(stage => {
+                if (stage.id === parentStageId) {
+                  return {
+                    ...stage,
+                    subStages: [...(stage.subStages || []), newStage]
+                  };
+                }
+                return stage;
+              });
+            } else {
+              // Adding main stage
+              updatedStages = [...stages, newStage];
+            }
+            
+            updateFunnelStages(selectedFunnel.id, updatedStages);
+          }
+        }}
+      />
+      
+      <FunnelConfigDialog 
+        open={configDialogOpen}
+        onOpenChange={setConfigDialogOpen}
+        funnel={selectedFunnel}
+      />
+      
+      <FunnelStageEditDialog 
+        open={editStageDialogOpen}
+        onOpenChange={setEditStageDialogOpen}
+        stage={stageToEdit}
+        onUpdateStage={(updatedStage) => {
+          if (selectedFunnel && updatedStage) {
+            const isSubStage = updatedStage.parentId !== undefined;
+            
+            let updatedStages;
+            
+            if (isSubStage) {
+              // Updating a sub-stage
+              updatedStages = stages.map(stage => {
+                if (stage.subStages) {
+                  return {
+                    ...stage,
+                    subStages: stage.subStages.map(subStage => 
+                      subStage.id === updatedStage.id ? updatedStage : subStage
+                    )
+                  };
+                }
+                return stage;
+              });
+            } else {
+              // Updating a main stage
+              updatedStages = stages.map(stage => 
+                stage.id === updatedStage.id ? updatedStage : stage
+              );
+            }
+            
+            updateFunnelStages(selectedFunnel.id, updatedStages);
+          }
+        }}
       />
     </div>
   );
