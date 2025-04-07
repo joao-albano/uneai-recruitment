@@ -19,29 +19,28 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Plus, X } from 'lucide-react';
-
-// Tipo para etapa do funil
-interface FunnelStage {
-  id: string;
-  name: string;
-  color: string;
-  icon: React.ReactNode;
-  actions: string[];
-  order: number;
-}
+import { FunnelStage } from '@/types/recruitment';
 
 interface FunnelStageDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  stage: FunnelStage | null;
-  onSave: (stage: FunnelStage) => void;
+  stage?: FunnelStage | null;
+  funnelId?: string | null;
+  parentStageId?: string | null;
+  stages?: FunnelStage[];
+  onSave?: (stage: FunnelStage) => void;
+  onAddStage?: (newStage: FunnelStage) => void;
 }
 
 const FunnelStageDialog: React.FC<FunnelStageDialogProps> = ({
   open,
   onOpenChange,
-  stage,
+  stage = null,
+  funnelId = null,
+  parentStageId = null,
+  stages = [],
   onSave,
+  onAddStage
 }) => {
   // Estado inicial do formulário
   const [formState, setFormState] = React.useState<Partial<FunnelStage>>({
@@ -117,9 +116,20 @@ const FunnelStageDialog: React.FC<FunnelStageDialogProps> = ({
       icon: formState.icon || null,
       actions: filteredActions,
       order: formState.order || 0,
+      isActive: true,
+      leadCount: 0,
+      expectedDuration: 1,
     };
     
-    onSave(stageData);
+    if (onSave) {
+      onSave(stageData);
+    }
+    
+    if (onAddStage) {
+      onAddStage(stageData);
+    }
+    
+    onOpenChange(false);
   };
   
   return (

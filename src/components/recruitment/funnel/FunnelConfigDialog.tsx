@@ -6,11 +6,13 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
+import { Funnel } from '@/types/recruitment';
 
 interface FunnelConfigDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (config: {
+  funnel: Funnel | null;
+  onSave?: (config: {
     autoMoveLeads: boolean;
     notifyStaleLeads: boolean;
     staleDays: number;
@@ -20,7 +22,8 @@ interface FunnelConfigDialogProps {
 const FunnelConfigDialog: React.FC<FunnelConfigDialogProps> = ({
   open,
   onOpenChange,
-  onSave
+  funnel,
+  onSave = () => {}
 }) => {
   const { toast } = useToast();
   const [autoMoveLeads, setAutoMoveLeads] = React.useState(false);
@@ -38,6 +41,8 @@ const FunnelConfigDialog: React.FC<FunnelConfigDialogProps> = ({
       title: "Configuração salva",
       description: "As configurações do funil foram atualizadas com sucesso",
     });
+    
+    onOpenChange(false);
   };
 
   return (

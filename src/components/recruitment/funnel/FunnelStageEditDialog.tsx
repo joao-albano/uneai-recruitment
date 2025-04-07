@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,14 +19,14 @@ interface FunnelStageEditDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   stage: FunnelStage | null;
-  onSave: (updatedStage: FunnelStage) => void;
+  onUpdateStage: (updatedStage: FunnelStage) => void;
 }
 
 const FunnelStageEditDialog: React.FC<FunnelStageEditDialogProps> = ({
   open,
   onOpenChange,
   stage,
-  onSave,
+  onUpdateStage,
 }) => {
   const { toast } = useToast();
   const [formData, setFormData] = useState<Partial<FunnelStage>>({
@@ -67,7 +68,7 @@ const FunnelStageEditDialog: React.FC<FunnelStageEditDialogProps> = ({
       expectedDuration: formData.expectedDuration || stage.expectedDuration,
     };
 
-    onSave(updatedStage);
+    onUpdateStage(updatedStage);
     onOpenChange(false);
     
     toast({

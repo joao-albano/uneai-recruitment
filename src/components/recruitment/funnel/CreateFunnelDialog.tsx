@@ -10,13 +10,13 @@ import { useForm } from 'react-hook-form';
 interface CreateFunnelDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (data: { name: string; description: string }) => void;
+  onCreateFunnel: (data: { name: string; description: string }) => void;
 }
 
 const CreateFunnelDialog: React.FC<CreateFunnelDialogProps> = ({
   open,
   onOpenChange,
-  onSave
+  onCreateFunnel
 }) => {
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     defaultValues: {
@@ -26,7 +26,7 @@ const CreateFunnelDialog: React.FC<CreateFunnelDialogProps> = ({
   });
 
   const onSubmit = (data: { name: string; description: string }) => {
-    onSave(data);
+    onCreateFunnel(data);
     reset();
   };
 
