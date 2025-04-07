@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -7,9 +7,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Campus } from '@/types/recruitment/campus';
+import { Campus, Course } from '@/types/recruitment/campus';
 import { useCampus } from './hooks/useCampus';
 import { toast } from '@/hooks/use-toast';
+import CourseManager from './CourseManager';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Nome da unidade é obrigatório' }),
@@ -36,6 +37,7 @@ const CampusDialog: React.FC<CampusDialogProps> = ({
   mode 
 }) => {
   const { addCampus, updateCampus } = useCampus();
+  const [courses, setCourses] = useState<Course[]>(campus?.courses || []);
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -66,14 +68,18 @@ const CampusDialog: React.FC<CampusDialogProps> = ({
           city: values.city,
           state: values.state,
           zipCode: values.zipCode,
-          phone: values.phone
+          phone: values.phone,
+          courses: courses
         });
         toast({
           title: "Unidade criada",
           description: "A unidade foi criada com sucesso."
         });
       } else if (mode === 'edit' && campus) {
-        await updateCampus(campus.id, values);
+        await updateCampus(campus.id, {
+          ...values,
+          courses: courses
+        });
         toast({
           title: "Unidade atualizada",
           description: "As informações foram atualizadas com sucesso."
@@ -89,9 +95,13 @@ const CampusDialog: React.FC<CampusDialogProps> = ({
     }
   };
 
+  const handleCoursesChange = (updatedCourses: Course[]) => {
+    setCourses(updatedCourses);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[525px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>
             {mode === 'create' ? 'Cadastrar Nova Unidade' : 'Editar Unidade'}
@@ -185,6 +195,14 @@ const CampusDialog: React.FC<CampusDialogProps> = ({
                     <FormMessage />
                   </FormItem>
                 )}
+              />
+            </div>
+
+            <div className="border rounded-md p-4 mt-6">
+              <h3 className="text-lg font-medium mb-4">Cursos Disponíveis</h3>
+              <CourseManager 
+                courses={courses} 
+                onChange={handleCoursesChange} 
               />
             </div>
 

@@ -8,3 +8,4 @@ export * from './conversations';
 export * from './predictions';
 export * from './reengagement';
 export * from './opportunities';
+export * from './campus';

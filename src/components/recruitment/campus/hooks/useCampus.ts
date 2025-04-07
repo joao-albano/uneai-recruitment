@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Campus } from '@/types/recruitment/campus';
+import { Campus, CampusFormValues } from '@/types/recruitment/campus';
 import Papa from 'papaparse';
 
 // Mock de dados (em produção seria substituído por chamadas de API)
@@ -74,11 +74,11 @@ export const useCampus = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const addCampus = async (campusData: Omit<Campus, 'id' | 'createdAt' | 'updatedAt' | 'courses'>) => {
+  const addCampus = async (campusData: CampusFormValues) => {
     const newCampus: Campus = {
       ...campusData,
       id: uuidv4(),
-      courses: [],
+      courses: campusData.courses || [],
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -126,13 +126,13 @@ export const useCampus = () => {
 
           const importedCampuses: Campus[] = results.data.map((row: any) => ({
             id: uuidv4(),
-            name: row.nome,
-            address: row.endereco,
-            city: row.cidade,
-            state: row.estado,
-            zipCode: row.cep,
-            phone: row.telefone,
-            courses: [],
+            name: row.nome || '',
+            address: row.endereco || '',
+            city: row.cidade || '',
+            state: row.estado || '',
+            zipCode: row.cep || '',
+            phone: row.telefone || '',
+            courses: [], // Inicialmente sem cursos
             createdAt: new Date(),
             updatedAt: new Date()
           }));

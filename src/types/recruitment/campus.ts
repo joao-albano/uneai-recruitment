@@ -18,4 +18,4 @@ export type Campus = {
   updatedAt: Date;
 };
 
-export type CampusFormValues = Omit<Campus, 'id' | 'createdAt' | 'updatedAt' | 'courses'>;
+export type CampusFormValues = Omit<Campus, 'id' | 'createdAt' | 'updatedAt'>;
