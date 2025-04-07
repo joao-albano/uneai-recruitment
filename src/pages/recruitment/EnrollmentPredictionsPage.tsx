@@ -6,7 +6,7 @@ import EnrollmentPredictionEngine from '@/components/recruitment/predictions/Enr
 import StrategicDecisionDashboard from '@/components/recruitment/dashboard/StrategicDecisionDashboard';
 import ModelPerformanceMetrics from '@/components/recruitment/predictive/ModelPerformanceMetrics';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PieChart, BarChart3, PanelTop, LineChart } from 'lucide-react';
+import { PanelTop, LineChart, BarChart3 } from 'lucide-react';
 
 const EnrollmentPredictionsPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -48,10 +48,6 @@ const EnrollmentPredictionsPage: React.FC = () => {
               <LineChart className="h-4 w-4" />
               Métricas do Modelo
             </TabsTrigger>
-            <TabsTrigger value="distributions" className="gap-2">
-              <PieChart className="h-4 w-4" />
-              Distribuições
-            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="dashboard" className="m-0">
@@ -64,19 +60,6 @@ const EnrollmentPredictionsPage: React.FC = () => {
           
           <TabsContent value="metrics" className="m-0">
             <ModelPerformanceMetrics selectedPeriod={selectedPeriod} />
-          </TabsContent>
-          
-          <TabsContent value="distributions" className="m-0">
-            <div className="h-[600px] flex items-center justify-center border rounded-lg">
-              <div className="text-center p-8">
-                <PieChart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-medium">Análise de Distribuições</h3>
-                <p className="text-muted-foreground max-w-md mx-auto mt-2">
-                  Visualizações detalhadas de distribuição de leads por segmento, curso, canal e região 
-                  serão implementadas em breve.
-                </p>
-              </div>
-            </div>
           </TabsContent>
         </Tabs>
       </div>
