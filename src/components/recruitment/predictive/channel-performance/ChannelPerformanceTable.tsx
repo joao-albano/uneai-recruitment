@@ -30,7 +30,7 @@ const ChannelPerformanceTable: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {channelData.map((item: ChannelPerformance, index) => {
+              {channelData.map((item, index) => {
                 const percentage = item.targetEnrollment && item.predictedEnrollment 
                   ? (item.predictedEnrollment / item.targetEnrollment) * 100 
                   : 0;

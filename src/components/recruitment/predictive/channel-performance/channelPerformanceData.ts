@@ -12,7 +12,7 @@ export const channelData = [
     roi: 3.8,
     targetEnrollment: 90,
     predictedEnrollment: 78,
-    confidence: 'alta'
+    confidence: 'alta' as 'alta'
   },
   { 
     name: 'Facebook', 
@@ -24,7 +24,7 @@ export const channelData = [
     roi: 2.6,
     targetEnrollment: 65,
     predictedEnrollment: 52,
-    confidence: 'media'
+    confidence: 'media' as 'media'
   },
   { 
     name: 'Google', 
@@ -36,7 +36,7 @@ export const channelData = [
     roi: 2.9,
     targetEnrollment: 105,
     predictedEnrollment: 94,
-    confidence: 'alta'
+    confidence: 'alta' as 'alta'
   },
   { 
     name: 'Email', 
@@ -48,7 +48,7 @@ export const channelData = [
     roi: 4.2,
     targetEnrollment: 35,
     predictedEnrollment: 27,
-    confidence: 'baixa'
+    confidence: 'baixa' as 'baixa'
   },
   { 
     name: 'SMS', 
@@ -60,7 +60,7 @@ export const channelData = [
     roi: 3.7,
     targetEnrollment: 25,
     predictedEnrollment: 19,
-    confidence: 'baixa'
+    confidence: 'baixa' as 'baixa'
   },
   { 
     name: 'Eventos', 
@@ -72,7 +72,7 @@ export const channelData = [
     roi: 2.1,
     targetEnrollment: 80,
     predictedEnrollment: 71,
-    confidence: 'alta'
+    confidence: 'alta' as 'alta'
   },
 ];
 
