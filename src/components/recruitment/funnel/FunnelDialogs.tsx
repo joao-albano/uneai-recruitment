@@ -1,6 +1,6 @@
 
 import React from 'react';
-import FunnelStageEditDialog from './FunnelStageEditDialog';
+import FunnelStageDialog from './FunnelStageDialog';
 import FunnelConfigDialog from './FunnelConfigDialog';
 import NewStageDialog from './NewStageDialog';
 import CreateFunnelDialog from './CreateFunnelDialog';
@@ -41,11 +41,11 @@ const FunnelDialogs: React.FC<FunnelDialogsProps> = ({
 }) => {
   return (
     <>
-      <FunnelStageEditDialog 
+      <FunnelStageDialog 
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
         stage={selectedStage}
-        onUpdateStage={onSaveStage}
+        onSave={onSaveStage}
       />
       
       <FunnelConfigDialog 
