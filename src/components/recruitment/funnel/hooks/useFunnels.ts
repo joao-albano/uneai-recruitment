@@ -181,6 +181,19 @@ const initialFunnels: Funnel[] = [
   }
 ];
 
+// Default empty stage template to add to new funnels
+const defaultEmptyStage: FunnelStage = {
+  id: 'initial-stage',
+  name: 'Nova Etapa',
+  order: 1,
+  description: 'Configure esta etapa inicial do funil',
+  isActive: true,
+  leadCount: 0,
+  conversionRate: 0,
+  expectedDuration: 1,
+  subStages: []
+};
+
 export function useFunnels() {
   const { toast } = useToast();
   const [funnels, setFunnels] = useState<Funnel[]>(initialFunnels);
@@ -200,7 +213,8 @@ export function useFunnels() {
       name: funnelData.name,
       description: funnelData.description,
       isActive: true,
-      stages: [],
+      // Add a default empty stage to prevent errors in components expecting stages
+      stages: [{ ...defaultEmptyStage, id: `${Date.now()}-initial` }],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };

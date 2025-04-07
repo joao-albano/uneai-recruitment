@@ -70,6 +70,14 @@ const FunnelSelector: React.FC<FunnelSelectorProps> = ({
               <div className="mt-2 text-xs text-muted-foreground">
                 <span className="text-orange-500 font-medium">Ativo</span> • Criado em {new Date(selectedFunnel.createdAt).toLocaleDateString('pt-BR')}
               </div>
+              <div className="mt-2 text-xs">
+                <span className="font-medium">{selectedFunnel.stages.length} etapa{selectedFunnel.stages.length !== 1 ? 's' : ''}</span>
+                {selectedFunnel.stages.some(stage => stage.subStages && stage.subStages.length > 0) && (
+                  <span className="ml-2 bg-orange-50 text-orange-700 px-1.5 py-0.5 rounded-full text-[10px]">
+                    Com sub-etapas
+                  </span>
+                )}
+              </div>
             </div>
           )}
         </div>

@@ -2,8 +2,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FunnelStage, Funnel } from '@/types/recruitment';
-import { BrainCircuit, Lightbulb, Zap, BarChart, ChevronRight } from 'lucide-react';
+import { Lightbulb, ArrowRight, RefreshCw } from 'lucide-react';
+import { Funnel, FunnelStage } from '@/types/recruitment';
 
 interface AiSuggestionsProps {
   funnel: Funnel | null;
@@ -11,71 +11,109 @@ interface AiSuggestionsProps {
 }
 
 const AiSuggestions: React.FC<AiSuggestionsProps> = ({ funnel, stages }) => {
-  const suggestions = [
-    {
-      title: "Otimize seu primeiro contato",
-      description: "Sua taxa de conversão na etapa de primeiro contato está abaixo da média. Considere revisar seu script de abordagem.",
-      action: "Revisar script",
-      icon: <Zap className="h-5 w-5 text-yellow-500" />,
-      priority: "Alta"
-    },
-    {
-      title: "Aumente a velocidade de resposta",
-      description: "Leads que recebem resposta em até 5 minutos têm 21x mais chances de conversão. Seu tempo médio está em 45 minutos.",
-      action: "Configurar alertas",
-      icon: <BarChart className="h-5 w-5 text-blue-500" />,
-      priority: "Média"
-    },
-    {
-      title: "Adicione uma etapa de nutrição",
-      description: "Seu funil não possui uma etapa de nutrição de leads. Adicionar esta etapa pode aumentar suas conversões em até 25%.",
-      action: "Adicionar etapa",
-      icon: <Lightbulb className="h-5 w-5 text-green-500" />,
-      priority: "Média"
-    }
-  ];
-
+  // Safety check: if no funnel or stages are empty, show placeholder
   if (!funnel || stages.length === 0) {
-    return null;
+    return (
+      <Card className="bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-100 shadow-sm">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg font-medium flex items-center text-purple-800">
+            <Lightbulb className="h-5 w-5 mr-2 text-purple-500" />
+            <span>Sugestões da IA</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="bg-white/80 p-4 rounded-md border border-purple-100">
+            <p className="text-sm text-center text-muted-foreground">
+              Configure seu funil com etapas para receber sugestões inteligentes da IA.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
+  // Define some sample suggestions based on the funnel state
+  const getSuggestions = () => {
+    const hasSingleStage = stages.length === 1;
+    const hasLowConversion = stages.some(s => (s.conversionRate || 0) < 50);
+    const hasHighLeadCount = stages.some(s => s.leadCount > 300);
+    
+    const suggestions = [];
+    
+    if (hasSingleStage) {
+      suggestions.push({
+        id: 'add-stages',
+        title: 'Adicione mais etapas ao funil',
+        description: 'Um funil eficaz geralmente possui entre 3 e 5 etapas principais.',
+        action: 'Adicionar etapa'
+      });
+    }
+    
+    if (hasLowConversion) {
+      suggestions.push({
+        id: 'improve-conversion',
+        title: 'Aumente a taxa de conversão',
+        description: 'Algumas etapas estão com taxas de conversão abaixo de 50%. Considere revisar o processo dessas etapas.',
+        action: 'Ver sugestões detalhadas'
+      });
+    }
+    
+    if (hasHighLeadCount) {
+      suggestions.push({
+        id: 'lead-segmentation',
+        title: 'Segmentação de leads',
+        description: 'Você tem um grande volume de leads. A segmentação pode aumentar a eficácia do seu processo.',
+        action: 'Ver estratégias'
+      });
+    }
+    
+    // Default suggestion if none of the above apply
+    if (suggestions.length === 0) {
+      suggestions.push({
+        id: 'optimize-funnel',
+        title: 'Otimize seu funil',
+        description: 'Analise regularmente os dados de conversão para identificar oportunidades de melhoria.',
+        action: 'Ver dicas'
+      });
+    }
+    
+    return suggestions;
+  };
+
+  const suggestions = getSuggestions();
+
   return (
-    <Card className="shadow-sm border-blue-100">
-      <CardHeader className="pb-3 flex flex-row items-center justify-between bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
-        <div className="flex items-center">
-          <BrainCircuit className="h-5 w-5 text-blue-600 mr-2" />
-          <CardTitle className="text-lg text-blue-800">Sugestões da IA</CardTitle>
-        </div>
-        <Button variant="ghost" size="sm" className="text-blue-600 hover:bg-blue-50">
-          Ver todas
-          <ChevronRight className="h-4 w-4 ml-1" />
-        </Button>
+    <Card className="bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-100 shadow-sm">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg font-medium flex justify-between items-center text-purple-800">
+          <div className="flex items-center">
+            <Lightbulb className="h-5 w-5 mr-2 text-purple-500" />
+            <span>Sugestões da IA</span>
+          </div>
+          <Button 
+            size="sm" 
+            variant="ghost"
+            className="text-purple-600 hover:text-purple-800 hover:bg-purple-50"
+          >
+            <RefreshCw className="h-3.5 w-3.5 mr-1" />
+            Atualizar
+          </Button>
+        </CardTitle>
       </CardHeader>
-      <CardContent className="p-6 bg-white">
-        <div className="grid gap-4 md:grid-cols-3">
-          {suggestions.map((suggestion, i) => (
-            <div key={i} className="bg-white border border-blue-100 rounded-lg p-4 hover:shadow-md transition-all">
-              <div className="flex items-start">
-                <div className="bg-blue-50 p-2 rounded-full mr-3">
-                  {suggestion.icon}
-                </div>
-                <div>
-                  <div className="flex items-center">
-                    <h3 className="text-sm font-medium">{suggestion.title}</h3>
-                    <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${
-                      suggestion.priority === 'Alta' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
-                    }`}>
-                      {suggestion.priority}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-xs text-gray-600 line-clamp-3">
-                    {suggestion.description}
-                  </p>
-                  <Button variant="link" size="sm" className="mt-2 h-auto p-0 text-blue-600">
-                    {suggestion.action}
-                  </Button>
-                </div>
-              </div>
+      <CardContent>
+        <div className="space-y-3">
+          {suggestions.map((suggestion) => (
+            <div key={suggestion.id} className="bg-white/80 p-4 rounded-md border border-purple-100 hover:border-purple-200 transition-colors">
+              <h3 className="font-medium text-purple-800 mb-1">{suggestion.title}</h3>
+              <p className="text-sm text-muted-foreground mb-3">{suggestion.description}</p>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="bg-white border-purple-200 text-purple-700 hover:bg-purple-50"
+              >
+                {suggestion.action}
+                <ArrowRight className="h-3.5 w-3.5 ml-1" />
+              </Button>
             </div>
           ))}
         </div>
