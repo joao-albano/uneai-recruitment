@@ -55,9 +55,9 @@ const FunnelStageDialog: React.FC<FunnelStageDialogProps> = ({
       setFormState({
         id: stage.id,
         name: stage.name,
-        color: stage.color,
+        color: stage.color || 'bg-blue-500',
         icon: stage.icon,
-        actions: [...stage.actions],
+        actions: [...(stage.actions || [''])],
         order: stage.order,
       });
     } else {

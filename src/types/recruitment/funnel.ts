@@ -13,6 +13,9 @@ export type FunnelStage = {
   parentId?: string; // ID da etapa pai (se for uma sub-etapa)
   subStages?: FunnelStage[]; // Sub-etapas
   isSubStage?: boolean; // Indica se é uma sub-etapa
+  color?: string; // Cor da etapa
+  icon?: React.ReactNode | null; // Ícone da etapa
+  actions?: string[]; // Ações disponíveis na etapa
 };
 
 export type Funnel = {

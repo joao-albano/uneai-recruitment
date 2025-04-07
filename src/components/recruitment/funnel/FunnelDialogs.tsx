@@ -4,7 +4,7 @@ import FunnelStageEditDialog from './FunnelStageEditDialog';
 import FunnelConfigDialog from './FunnelConfigDialog';
 import NewStageDialog from './NewStageDialog';
 import CreateFunnelDialog from './CreateFunnelDialog';
-import { FunnelStage } from '@/types/recruitment';
+import { FunnelStage, Funnel } from '@/types/recruitment';
 
 interface FunnelDialogsProps {
   editDialogOpen: boolean;
@@ -13,6 +13,7 @@ interface FunnelDialogsProps {
   onSaveStage: (stage: FunnelStage) => void;
   configDialogOpen: boolean;
   setConfigDialogOpen: (open: boolean) => void;
+  selectedFunnel: Funnel | null;
   onSaveConfig: (config: any) => void;
   newStageDialogOpen: boolean;
   setNewStageDialogOpen: (open: boolean) => void;
@@ -29,6 +30,7 @@ const FunnelDialogs: React.FC<FunnelDialogsProps> = ({
   onSaveStage,
   configDialogOpen,
   setConfigDialogOpen,
+  selectedFunnel,
   onSaveConfig,
   newStageDialogOpen,
   setNewStageDialogOpen,
@@ -43,12 +45,13 @@ const FunnelDialogs: React.FC<FunnelDialogsProps> = ({
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
         stage={selectedStage}
-        onSave={onSaveStage}
+        onUpdateStage={onSaveStage}
       />
       
       <FunnelConfigDialog 
         open={configDialogOpen}
         onOpenChange={setConfigDialogOpen}
+        funnel={selectedFunnel}
         onSave={onSaveConfig}
       />
       
@@ -61,7 +64,7 @@ const FunnelDialogs: React.FC<FunnelDialogsProps> = ({
       <CreateFunnelDialog 
         open={createFunnelDialogOpen}
         onOpenChange={setCreateFunnelDialogOpen}
-        onSave={onCreateFunnel}
+        onCreateFunnel={onCreateFunnel}
       />
     </>
   );
