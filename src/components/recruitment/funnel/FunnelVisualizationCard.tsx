@@ -18,12 +18,12 @@ const FunnelVisualizationCard: React.FC<FunnelVisualizationCardProps> = ({
 }) => {
   const renderStage = (stage: FunnelStage, isSubStage = false, index = 0, total = 1) => {
     const stageColors = [
-      'border-l-orange-500 bg-orange-50',
       'border-l-blue-500 bg-blue-50',
-      'border-l-green-500 bg-green-50',
+      'border-l-indigo-500 bg-indigo-50',
+      'border-l-teal-500 bg-teal-50',
       'border-l-purple-500 bg-purple-50',
-      'border-l-yellow-500 bg-yellow-50',
-      'border-l-pink-500 bg-pink-50',
+      'border-l-cyan-500 bg-cyan-50',
+      'border-l-sky-500 bg-sky-50',
     ];
     
     const stageColor = stageColors[index % stageColors.length];
@@ -52,7 +52,7 @@ const FunnelVisualizationCard: React.FC<FunnelVisualizationCardProps> = ({
               
               <div className="grid grid-cols-3 gap-2 mb-3">
                 <div className="flex items-center text-sm text-gray-600 bg-white p-2 rounded border">
-                  <Users className="h-4 w-4 mr-2 text-orange-500" />
+                  <Users className="h-4 w-4 mr-2 text-blue-500" />
                   <div>
                     <div className="font-medium text-gray-800">{stage.leadCount}</div>
                     <div className="text-xs">leads</div>
@@ -60,7 +60,7 @@ const FunnelVisualizationCard: React.FC<FunnelVisualizationCardProps> = ({
                 </div>
                 
                 <div className="flex items-center text-sm text-gray-600 bg-white p-2 rounded border">
-                  <TrendingUp className="h-4 w-4 mr-2 text-green-500" />
+                  <TrendingUp className="h-4 w-4 mr-2 text-teal-500" />
                   <div>
                     <div className="font-medium text-gray-800">{stage.conversionRate}%</div>
                     <div className="text-xs">conversão</div>
@@ -68,7 +68,7 @@ const FunnelVisualizationCard: React.FC<FunnelVisualizationCardProps> = ({
                 </div>
                 
                 <div className="flex items-center text-sm text-gray-600 bg-white p-2 rounded border">
-                  <Calendar className="h-4 w-4 mr-2 text-blue-500" />
+                  <Calendar className="h-4 w-4 mr-2 text-indigo-500" />
                   <div>
                     <div className="font-medium text-gray-800">{stage.expectedDuration}</div>
                     <div className="text-xs">dias esperados</div>
@@ -77,7 +77,7 @@ const FunnelVisualizationCard: React.FC<FunnelVisualizationCardProps> = ({
               </div>
               
               <div className="w-full bg-gray-200 rounded-full h-1.5 mb-1">
-                <div className="bg-orange-500 h-1.5 rounded-full" style={{ width: progressWidth }}></div>
+                <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: progressWidth }}></div>
               </div>
             </div>
             
@@ -88,7 +88,7 @@ const FunnelVisualizationCard: React.FC<FunnelVisualizationCardProps> = ({
                   size="sm"
                   onClick={() => onAddSubStage(stage.id)}
                   title="Adicionar sub-etapa"
-                  className="border-orange-200 bg-white hover:bg-orange-50 text-orange-600"
+                  className="border-blue-200 bg-white hover:bg-blue-50 text-blue-600"
                 >
                   <Plus className="h-4 w-4 mr-1" />
                   Sub-etapa
@@ -124,9 +124,9 @@ const FunnelVisualizationCard: React.FC<FunnelVisualizationCardProps> = ({
   };
 
   return (
-    <Card className="shadow-sm border-orange-100">
-      <CardHeader className="pb-3 bg-gradient-to-r from-orange-50 to-white border-b border-orange-100">
-        <CardTitle className="text-lg text-orange-800">Visualização do Funil</CardTitle>
+    <Card className="shadow-sm border-blue-100">
+      <CardHeader className="pb-3 bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
+        <CardTitle className="text-lg text-blue-800">Visualização do Funil</CardTitle>
       </CardHeader>
       <CardContent className="p-6 bg-white">
         {stages.length === 0 ? (
@@ -136,7 +136,7 @@ const FunnelVisualizationCard: React.FC<FunnelVisualizationCardProps> = ({
               variant="outline" 
               size="sm"
               onClick={() => {}} 
-              className="mt-4 border-orange-200 bg-white hover:bg-orange-50 text-orange-600"
+              className="mt-4 border-blue-200 bg-white hover:bg-blue-50 text-blue-600"
             >
               <Plus className="h-4 w-4 mr-1" />
               Adicionar Primeira Etapa
