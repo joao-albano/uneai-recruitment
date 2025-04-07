@@ -20,7 +20,7 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({ funnel, stages }) => {
     return (
       <Card className="bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-100 shadow-sm">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-medium flex items-center text-purple-800">
+          <CardTitle className="text-lg font-medium flex items-center text-gray-900">
             <Lightbulb className="h-5 w-5 mr-2 text-purple-500" />
             <span>Sugestões da IA</span>
           </CardTitle>
@@ -118,7 +118,7 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({ funnel, stages }) => {
     <>
       <Card className="bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-100 shadow-sm">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-medium flex justify-between items-center text-purple-800">
+          <CardTitle className="text-lg font-medium flex justify-between items-center text-gray-900">
             <div className="flex items-center">
               <Lightbulb className="h-5 w-5 mr-2 text-purple-500" />
               <span>Sugestões da IA</span>
@@ -137,12 +137,12 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({ funnel, stages }) => {
           <div className="space-y-3">
             {suggestions.map((suggestion) => (
               <div key={suggestion.id} className="bg-white/80 p-4 rounded-md border border-purple-100 hover:border-purple-200 transition-colors">
-                <h3 className="font-medium text-purple-800 mb-1">{suggestion.title}</h3>
-                <p className="text-sm text-muted-foreground mb-3">{suggestion.description}</p>
+                <h3 className="font-medium text-gray-900 mb-1">{suggestion.title}</h3>
+                <p className="text-sm text-gray-600 mb-3">{suggestion.description}</p>
                 <Button 
                   size="sm" 
                   variant="outline"
-                  className="bg-white border-purple-200 text-purple-700 hover:bg-purple-50"
+                  className="bg-white border-purple-200 text-purple-700 hover:bg-purple-100 hover:text-purple-900"
                   onClick={() => handleSuggestionAction(suggestion.id, suggestion.actionType)}
                 >
                   {suggestion.action}
