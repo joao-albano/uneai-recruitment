@@ -1,37 +1,34 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Settings } from 'lucide-react';
+import { Settings, Plus, PlusCircle } from 'lucide-react';
 
 interface FunnelHeaderProps {
   onConfigClick: () => void;
   onNewStageClick: () => void;
+  onNewFunnelClick: () => void;
 }
 
-const FunnelHeader: React.FC<FunnelHeaderProps> = ({ onConfigClick, onNewStageClick }) => {
+const FunnelHeader: React.FC<FunnelHeaderProps> = ({ 
+  onConfigClick, 
+  onNewStageClick,
+  onNewFunnelClick
+}) => {
   return (
-    <div className="flex items-center justify-between">
-      <div>
-        <h1 className="text-3xl font-bold">Funil de Captação</h1>
-        <p className="text-muted-foreground">
-          Configure e monitore as etapas do processo de captação
-        </p>
-      </div>
-      <div className="flex gap-3">
-        <Button 
-          variant="outline" 
-          className="gap-2"
-          onClick={onConfigClick}
-        >
-          <Settings className="h-4 w-4" />
-          Configurar
+    <div className="flex justify-between items-center">
+      <h1 className="text-2xl font-bold tracking-tight">Funil de Captação</h1>
+      <div className="flex space-x-2">
+        <Button variant="outline" onClick={onNewFunnelClick}>
+          <PlusCircle className="h-4 w-4 mr-2" />
+          Novo Funil
         </Button>
-        <Button 
-          className="gap-2"
-          onClick={onNewStageClick}
-        >
-          <Plus className="h-4 w-4" />
+        <Button variant="outline" onClick={onNewStageClick}>
+          <Plus className="h-4 w-4 mr-2" />
           Nova Etapa
+        </Button>
+        <Button variant="outline" onClick={onConfigClick}>
+          <Settings className="h-4 w-4 mr-2" />
+          Configurações
         </Button>
       </div>
     </div>

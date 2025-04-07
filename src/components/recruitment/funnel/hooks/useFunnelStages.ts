@@ -1,10 +1,10 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FunnelStage } from '@/types/recruitment';
 import { useToast } from '@/hooks/use-toast';
 
 // Initial data for funnel stages
-const initialFunnelStages = [
+const initialFunnelStages: FunnelStage[] = [
   { 
     id: '1', 
     name: 'Lead Gerado', 
@@ -13,7 +13,8 @@ const initialFunnelStages = [
     leadCount: 520, 
     conversionRate: 75,
     expectedDuration: 2,
-    description: 'Lead captado através de diversos canais'
+    description: 'Lead captado através de diversos canais',
+    subStages: []
   },
   { 
     id: '2', 
@@ -23,7 +24,33 @@ const initialFunnelStages = [
     leadCount: 390, 
     conversionRate: 64,
     expectedDuration: 3,
-    description: 'Primeiro contato realizado com o lead'
+    description: 'Primeiro contato realizado com o lead',
+    subStages: [
+      {
+        id: '2.1',
+        name: 'Material Enviado',
+        order: 1,
+        isActive: true,
+        leadCount: 210,
+        conversionRate: 85,
+        expectedDuration: 1,
+        description: 'Material informativo enviado ao lead',
+        parentId: '2',
+        isSubStage: true
+      },
+      {
+        id: '2.2',
+        name: 'Analisando Proposta',
+        order: 2,
+        isActive: true,
+        leadCount: 180,
+        conversionRate: 78,
+        expectedDuration: 2,
+        description: 'Lead está analisando a proposta enviada',
+        parentId: '2',
+        isSubStage: true
+      }
+    ]
   },
   { 
     id: '3', 
@@ -33,7 +60,8 @@ const initialFunnelStages = [
     leadCount: 250, 
     conversionRate: 68,
     expectedDuration: 5,
-    description: 'Apresentação da instituição e cursos'
+    description: 'Apresentação da instituição e cursos',
+    subStages: []
   },
   { 
     id: '4', 
@@ -43,7 +71,8 @@ const initialFunnelStages = [
     leadCount: 170, 
     conversionRate: 65,
     expectedDuration: 7,
-    description: 'Visita agendada à instituição'
+    description: 'Visita agendada à instituição',
+    subStages: []
   },
   { 
     id: '5', 
@@ -53,7 +82,8 @@ const initialFunnelStages = [
     leadCount: 110, 
     conversionRate: 100,
     expectedDuration: 2,
-    description: 'Processo de matrícula concluído'
+    description: 'Processo de matrícula concluído',
+    subStages: []
   }
 ];
 
@@ -71,11 +101,27 @@ export function useFunnelStages() {
   };
 
   const handleSaveStage = (updatedStage: FunnelStage) => {
-    setFunnelStages(prevStages => 
-      prevStages.map(stage => 
-        stage.id === updatedStage.id ? updatedStage : stage
-      )
-    );
+    setFunnelStages(prevStages => {
+      // Function to recursively update stages
+      const updateStages = (stages: FunnelStage[]): FunnelStage[] => {
+        return stages.map(stage => {
+          if (stage.id === updatedStage.id) {
+            return { ...updatedStage };
+          }
+          
+          if (stage.subStages && stage.subStages.length > 0) {
+            return {
+              ...stage,
+              subStages: updateStages(stage.subStages)
+            };
+          }
+          
+          return stage;
+        });
+      };
+      
+      return updateStages(prevStages);
+    });
     
     toast({
       title: "Etapa atualizada",
@@ -88,7 +134,7 @@ export function useFunnelStages() {
     description: string;
     expectedDuration: number;
   }) => {
-    const newStageId = String(funnelStages.length + 1);
+    const newStageId = String(Math.random().toString(36).substr(2, 9));
     const newStageOrder = funnelStages.length + 1;
     
     const newStage: FunnelStage = {
@@ -99,16 +145,63 @@ export function useFunnelStages() {
       leadCount: 0,
       conversionRate: 0,
       expectedDuration: stageData.expectedDuration,
-      description: stageData.description
+      description: stageData.description,
+      subStages: []
     };
     
     setFunnelStages(prevStages => [...prevStages, newStage]);
-    setNewStageDialogOpen(false);
     
     toast({
       title: "Etapa criada",
       description: `A etapa "${stageData.name}" foi adicionada ao funil com sucesso.`,
     });
+    
+    setNewStageDialogOpen(false);
+  };
+
+  const addSubStage = (parentStageId: string) => {
+    // Find the parent stage
+    const parentStage = funnelStages.find(stage => stage.id === parentStageId);
+    
+    if (!parentStage) {
+      toast({
+        title: "Erro",
+        description: "Etapa pai não encontrada.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Create a new sub-stage
+    const newSubStage: FunnelStage = {
+      id: `${parentStageId}.${(parentStage.subStages?.length || 0) + 1}`,
+      name: `Nova sub-etapa de ${parentStage.name}`,
+      order: (parentStage.subStages?.length || 0) + 1,
+      isActive: true,
+      leadCount: 0,
+      conversionRate: 0,
+      expectedDuration: 1,
+      description: `Sub-etapa de ${parentStage.name}`,
+      parentId: parentStageId,
+      isSubStage: true
+    };
+    
+    // Update the funnel stages
+    setFunnelStages(prevStages => {
+      return prevStages.map(stage => {
+        if (stage.id === parentStageId) {
+          return {
+            ...stage,
+            subStages: [...(stage.subStages || []), newSubStage]
+          };
+        }
+        return stage;
+      });
+    });
+    
+    // Select the new sub-stage for editing
+    setSelectedStage(newSubStage);
+    setEditDialogOpen(true);
   };
 
   const handleSaveConfig = (config: {
@@ -132,6 +225,7 @@ export function useFunnelStages() {
     handleEditClick,
     handleSaveStage,
     handleAddNewStage,
-    handleSaveConfig
+    handleSaveConfig,
+    addSubStage
   };
 }
