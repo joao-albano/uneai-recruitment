@@ -1,3 +1,4 @@
+
 import { ReactNode } from "react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoutes";
 import { ProductGuard } from "@/components/auth/ProductGuard";
@@ -15,6 +16,7 @@ import RecruitmentAlertsPage from "@/pages/recruitment/RecruitmentAlertsPage";
 import RecruitmentSchedulePage from "@/pages/recruitment/RecruitmentSchedulePage";
 import DetailedAnalysisPage from "@/pages/recruitment/DetailedAnalysisPage";
 import VoiceConfigurationPage from "@/pages/VoiceConfigurationPage";
+import GeographicTargetingPage from "@/pages/recruitment/GeographicTargetingPage";
 
 interface RouteConfig {
   path: string;
@@ -133,6 +135,14 @@ export const recruitmentRoutes: RouteConfig[] = [
     element: (
       <ProtectedRoute>
         <PredictiveReportingPage />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/geographic-targeting",
+    element: (
+      <ProtectedRoute>
+        <GeographicTargetingPage />
       </ProtectedRoute>
     )
   }
