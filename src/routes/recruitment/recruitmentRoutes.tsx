@@ -16,6 +16,7 @@ import RecruitmentSchedulePage from "@/pages/recruitment/RecruitmentSchedulePage
 import DetailedAnalysisPage from "@/pages/recruitment/DetailedAnalysisPage";
 import VoiceConfigurationPage from "@/pages/VoiceConfigurationPage";
 import GeographicTargetingPage from "@/pages/recruitment/GeographicTargetingPage";
+import CampusManagementPage from "@/pages/recruitment/CampusManagementPage";
 
 interface RouteConfig {
   path: string;
@@ -134,6 +135,14 @@ export const recruitmentRoutes: RouteConfig[] = [
     element: (
       <ProtectedRoute>
         <GeographicTargetingPage />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/campus",
+    element: (
+      <ProtectedRoute>
+        <CampusManagementPage />
       </ProtectedRoute>
     )
   }

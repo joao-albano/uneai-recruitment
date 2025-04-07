@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell } from 'lucide-react';
+import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell, Building } from 'lucide-react';
 import SidebarNavLink from '../SidebarNavLink';
 
 interface RecruitmentNavLinksProps {
@@ -29,7 +29,7 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
         collapsed={collapsed}
       />
       <SidebarNavLink 
-        to="/upload" 
+        to="/recruitment/upload" 
         icon={Upload} 
         label="Upload" 
         collapsed={collapsed}
@@ -56,6 +56,12 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
         to="/recruitment/geographic-targeting" 
         icon={MapPin} 
         label="Direcionamento Geo" 
+        collapsed={collapsed}
+      />
+      <SidebarNavLink 
+        to="/recruitment/campus" 
+        icon={Building} 
+        label="Unidades" 
         collapsed={collapsed}
       />
       <SidebarNavLink 
