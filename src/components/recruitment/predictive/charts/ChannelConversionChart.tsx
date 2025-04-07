@@ -2,27 +2,16 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { channelData } from '../channel-performance/channelPerformanceData';
 
-// Prepare data with colors for the conversion chart
-const chartData = channelData.map((channel) => ({
-  name: channel.name,
-  conversionRate: channel.conversionRate,
-  color: getChannelColor(channel.name)
-}));
-
-// Function to get consistent colors for channels
-function getChannelColor(channelName: string): string {
-  switch (channelName) {
-    case 'WhatsApp': return '#25D366';
-    case 'Facebook': return '#1877F2';
-    case 'Google': return '#4285F4';
-    case 'Email': return '#DB4437';
-    case 'SMS': return '#7E8A97';
-    case 'Eventos': return '#8B5CF6';
-    default: return '#6B7280';
-  }
-}
+// Mock data for the conversion chart
+const conversionData = [
+  { name: 'WhatsApp', conversionRate: 24.5, color: '#25D366' },
+  { name: 'Facebook', conversionRate: 18.7, color: '#1877F2' },
+  { name: 'Google', conversionRate: 22.3, color: '#4285F4' },
+  { name: 'Email', conversionRate: 15.1, color: '#DB4437' },
+  { name: 'SMS', conversionRate: 12.8, color: '#7E8A97' },
+  { name: 'Eventos', conversionRate: 28.5, color: '#8B5CF6' },
+];
 
 export const ChannelConversionChart = () => {
   return (
@@ -36,7 +25,7 @@ export const ChannelConversionChart = () => {
         <BarChart
           width={500}
           height={300}
-          data={chartData}
+          data={conversionData}
           margin={{
             top: 20,
             right: 30,

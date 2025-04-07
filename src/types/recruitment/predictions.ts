@@ -20,3 +20,19 @@ export type EnrollmentPrediction = {
     convertionProbability: number;
   }[];
 };
+
+export type ChannelPerformance = {
+  name: string;
+  leads: number;
+  conversions: number;
+  conversionRate: number;
+  costPerLead: number;
+  totalCost: number;
+  roi: number;
+};
+
+export type ChannelDistribution = {
+  name: string;
+  value: number;
+  color: string;
+};

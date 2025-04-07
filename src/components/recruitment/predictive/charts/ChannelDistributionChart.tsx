@@ -2,27 +2,16 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { channelData } from '../channel-performance/channelPerformanceData';
 
-// Prepare data with colors for the distribution chart
-const chartData = channelData.map((channel, index) => ({
-  name: channel.name,
-  value: channel.leads,
-  color: getChannelColor(channel.name)
-}));
-
-// Function to get consistent colors for channels
-function getChannelColor(channelName: string): string {
-  switch (channelName) {
-    case 'WhatsApp': return '#25D366';
-    case 'Facebook': return '#1877F2';
-    case 'Google': return '#4285F4';
-    case 'Email': return '#DB4437';
-    case 'SMS': return '#7E8A97';
-    case 'Eventos': return '#8B5CF6';
-    default: return '#6B7280';
-  }
-}
+// Mock data for the distribution chart
+const distributionData = [
+  { name: 'WhatsApp', value: 320, color: '#25D366' },
+  { name: 'Facebook', value: 280, color: '#1877F2' },
+  { name: 'Google', value: 420, color: '#4285F4' },
+  { name: 'Email', value: 180, color: '#DB4437' },
+  { name: 'SMS', value: 150, color: '#7E8A97' },
+  { name: 'Eventos', value: 250, color: '#8B5CF6' },
+];
 
 export const ChannelDistributionChart = () => {
   return (
@@ -35,7 +24,7 @@ export const ChannelDistributionChart = () => {
       <ResponsiveContainer width="100%" height="100%">
         <PieChart width={400} height={400}>
           <Pie
-            data={chartData}
+            data={distributionData}
             cx="50%"
             cy="50%"
             labelLine={false}
@@ -44,7 +33,7 @@ export const ChannelDistributionChart = () => {
             dataKey="value"
             label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
           >
-            {chartData.map((entry, index) => (
+            {distributionData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.color} />
             ))}
           </Pie>
