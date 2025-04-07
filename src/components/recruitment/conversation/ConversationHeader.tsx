@@ -5,13 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, MoreVertical, Bot, UserCircle2, User, X } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { ChevronLeft, Bot, UserCircle2, User, X } from 'lucide-react';
 
 interface ConversationHeaderProps {
   leadName: string;
@@ -74,24 +68,17 @@ const ConversationHeader: React.FC<ConversationHeaderProps> = ({
             <Label htmlFor="attendance-mode" className="text-xs">Modo IA</Label>
           </div>
           
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {onEndConversation && (
-                <DropdownMenuItem 
-                  onClick={onEndConversation}
-                  className="text-destructive focus:text-destructive"
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Encerrar atendimento
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {onEndConversation && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={onEndConversation}
+              className="text-destructive border-destructive hover:bg-destructive/10 flex items-center gap-1"
+            >
+              <X className="h-3.5 w-3.5" />
+              Encerrar
+            </Button>
+          )}
         </div>
       </div>
       
@@ -118,18 +105,6 @@ const ConversationHeader: React.FC<ConversationHeaderProps> = ({
             <User className="h-3 w-3 mr-1" />
             <span>Atendente: Juliana Oliveira</span>
           </Badge>
-        )}
-
-        {onEndConversation && (
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={onEndConversation}
-            className="ml-auto text-destructive border-destructive hover:bg-destructive/10"
-          >
-            <X className="h-3 w-3 mr-1" />
-            Encerrar
-          </Button>
         )}
       </div>
     </CardHeader>

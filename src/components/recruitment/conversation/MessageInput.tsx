@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Bot, User, Loader2, SendHorizonal, X } from 'lucide-react';
+import { Bot, User, Loader2, SendHorizonal } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -55,18 +55,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
             </div>
           )}
         </Badge>
-        
-        {onEndConversation && (
-          <Button 
-            variant="destructive" 
-            size="sm" 
-            onClick={onEndConversation}
-            className="ml-auto text-xs h-7"
-          >
-            <X className="h-3 w-3 mr-1" />
-            Encerrar atendimento
-          </Button>
-        )}
       </div>
       
       <div className="flex items-end gap-2">

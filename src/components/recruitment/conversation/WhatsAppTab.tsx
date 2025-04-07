@@ -4,15 +4,10 @@ import { TabsContent } from '@/components/ui/tabs';
 import MessagesContainer from './MessagesContainer';
 import MessageInput from './MessageInput';
 import { Message } from './types';
-import { Settings, RefreshCw, MoreVertical, X } from 'lucide-react';
+import { RefreshCw, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-} from '@/components/ui/context-menu';
 import { toast } from "sonner";
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface WhatsAppTabProps {
   messages: Message[];
@@ -67,33 +62,16 @@ const WhatsAppTab: React.FC<WhatsAppTabProps> = ({
             <Settings className="h-4 w-4" />
           </Button>
         )}
-
-        <ContextMenu>
-          <ContextMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0"
-              title="Mais opções"
-            >
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </ContextMenuTrigger>
-          <ContextMenuContent className="w-48">
-            <ContextMenuItem onClick={handleEndConversation} className="text-destructive">
-              <X className="h-4 w-4 mr-2" />
-              Encerrar atendimento
-            </ContextMenuItem>
-          </ContextMenuContent>
-        </ContextMenu>
       </div>
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <MessagesContainer 
-          messages={messages}
-          showAnalytics={showAnalytics}
-          leadId={leadId}
-        />
+        <ScrollArea className="flex-1">
+          <MessagesContainer 
+            messages={messages}
+            showAnalytics={showAnalytics}
+            leadId={leadId}
+          />
+        </ScrollArea>
       </div>
       
       {isSelectedLead && (
