@@ -42,12 +42,12 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] overflow-hidden">
         <DialogHeader>
           <DialogTitle>Detalhes do Agendamento</DialogTitle>
         </DialogHeader>
         
-        <div className="py-4 space-y-4">
+        <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto pr-2">
           <div className="flex flex-col gap-2 p-4 bg-muted/50 rounded-lg">
             <div className="flex items-center gap-2">
               <User className="h-5 w-5 text-primary" />
@@ -124,34 +124,37 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
           )}
         </div>
         
-        <DialogFooter className="flex-col sm:flex-row gap-2">
+        <DialogFooter className="flex flex-col sm:flex-row sm:justify-end gap-2 mt-2">
           {schedule.status === 'scheduled' && (
             <>
               <Button 
                 variant="outline"
+                size="sm"
                 className="w-full sm:w-auto"
                 onClick={handleCancelSchedule}
               >
-                <XCircle className="mr-2 h-4 w-4" />
+                <XCircle className="h-4 w-4 mr-2" />
                 Cancelar Agendamento
               </Button>
               
               {onEdit && (
                 <Button 
                   variant="outline"
+                  size="sm"
                   className="w-full sm:w-auto"
                   onClick={handleEdit}
                 >
-                  <Edit className="mr-2 h-4 w-4" />
+                  <Edit className="h-4 w-4 mr-2" />
                   Editar
                 </Button>
               )}
               
               <Button 
+                size="sm"
                 className="w-full sm:w-auto"
                 onClick={handleMarkCompleted}
               >
-                <CheckCircle className="mr-2 h-4 w-4" />
+                <CheckCircle className="h-4 w-4 mr-2" />
                 Marcar como Concluído
               </Button>
             </>
@@ -162,15 +165,17 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
               {onEdit && (
                 <Button 
                   variant="outline"
+                  size="sm"
                   className="w-full sm:w-auto"
                   onClick={handleEdit}
                 >
-                  <Edit className="mr-2 h-4 w-4" />
+                  <Edit className="h-4 w-4 mr-2" />
                   Editar
                 </Button>
               )}
               
               <Button 
+                size="sm"
                 onClick={() => onOpenChange(false)}
                 className="w-full sm:w-auto"
               >
