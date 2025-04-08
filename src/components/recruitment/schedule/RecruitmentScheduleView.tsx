@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, CalendarPlus } from 'lucide-react';
 import { Schedule } from '@/types/schedule';
 import { ProductType } from '@/context/product/types';
 
@@ -30,6 +30,7 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
   const [selectedCampus, setSelectedCampus] = useState<string>("all");
   const [selectedUser, setSelectedUser] = useState<string>("all");
   const [viewMode, setViewMode] = useState<string>("month");
+  const [localShowAddDialog, setLocalShowAddDialog] = useState<boolean>(false);
   
   // Demo campuses and users for filtering
   const campuses = [
@@ -112,10 +113,13 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
     }
   }, [schedules.length, setSchedules, toast]);
 
+  // Use either the external or local state for dialogs
+  const effectiveShowAddDialog = showAddDialog !== undefined ? showAddDialog : localShowAddDialog;
+  const effectiveSetShowAddDialog = setShowAddDialog || setLocalShowAddDialog;
+
   const handleNewSchedule = () => {
-    if (setShowAddDialog) {
-      setShowAddDialog(true);
-    }
+    console.log("Novo agendamento button clicked");
+    effectiveSetShowAddDialog(true);
   };
 
   return (
@@ -129,7 +133,7 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
         </div>
         
         <Button className="flex items-center gap-2" onClick={handleNewSchedule}>
-          <Plus className="h-4 w-4" />
+          <CalendarPlus className="h-4 w-4" />
           Novo Agendamento
         </Button>
       </div>
@@ -187,8 +191,8 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
       <main className="flex-1 overflow-y-auto p-6 pointer-events-auto">
         <ScheduleView 
           productContext="recruitment" 
-          showAddDialog={showAddDialog}
-          setShowAddDialog={setShowAddDialog}
+          showAddDialog={effectiveShowAddDialog}
+          setShowAddDialog={effectiveSetShowAddDialog}
           leadId={leadId}
           viewMode={viewMode}
         />
