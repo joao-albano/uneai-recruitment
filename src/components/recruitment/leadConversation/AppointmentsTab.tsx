@@ -2,9 +2,17 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar } from 'lucide-react';
+import { Calendar, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const AppointmentsTab: React.FC = () => {
+  const navigate = useNavigate();
+  
+  const handleScheduleVisit = () => {
+    // Navigate to the schedule page with the lead ID as a parameter
+    navigate('/recruitment/schedule?action=new');
+  };
+  
   return (
     <Card>
       <CardHeader>
@@ -20,7 +28,10 @@ const AppointmentsTab: React.FC = () => {
           <p className="text-muted-foreground mb-4">
             Esse lead ainda não possui agendamentos.
           </p>
-          <Button>Agendar Visita</Button>
+          <Button onClick={handleScheduleVisit} className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Agendar Visita
+          </Button>
         </div>
       </CardContent>
     </Card>
