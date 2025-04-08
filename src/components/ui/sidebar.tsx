@@ -1,6 +1,7 @@
 
 import { cn } from "@/lib/utils"
 
+// Export all components from their respective files
 export {
   Sidebar,
   SidebarContent,
@@ -17,7 +18,7 @@ export {
   SidebarTrigger,
   useSidebar,
   SidebarProvider
-} from "./sidebar"
+} from "./sidebar/sidebar-components"
 
 export {
   SidebarMenu,
@@ -29,4 +30,4 @@ export {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem
-} from "./sidebar"
+} from "./sidebar/sidebar-menu"
