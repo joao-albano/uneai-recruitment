@@ -95,7 +95,12 @@ const ChannelsTab: React.FC = () => {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value, name) => [`${value} leads (${(value/totalLeads*100).toFixed(1)}%)`, name]} />
+                <Tooltip formatter={(value, name) => {
+                  // Convert values to numbers to ensure proper arithmetic operations
+                  const numericValue = Number(value);
+                  const percentage = (numericValue / totalLeads * 100).toFixed(1);
+                  return [`${numericValue} leads (${percentage}%)`, name];
+                }} />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
