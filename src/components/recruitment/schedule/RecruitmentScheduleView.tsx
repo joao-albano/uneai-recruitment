@@ -113,13 +113,22 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
     }
   }, [schedules.length, setSchedules, toast]);
 
-  // Use either the external or local state for dialogs
+  // Fix for dialog management - prevent immediate closing
   const effectiveShowAddDialog = showAddDialog !== undefined ? showAddDialog : localShowAddDialog;
-  const effectiveSetShowAddDialog = setShowAddDialog || setLocalShowAddDialog;
+  
+  // Create wrapped set function that doesn't immediately trigger state updates between components
+  const handleSetShowAddDialog = (show: boolean) => {
+    console.log("Setting show dialog to:", show);
+    if (setShowAddDialog) {
+      setShowAddDialog(show);
+    } else {
+      setLocalShowAddDialog(show);
+    }
+  };
 
   const handleNewSchedule = () => {
     console.log("Novo agendamento button clicked");
-    effectiveSetShowAddDialog(true);
+    handleSetShowAddDialog(true);
   };
 
   return (
@@ -192,7 +201,7 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
         <ScheduleView 
           productContext="recruitment" 
           showAddDialog={effectiveShowAddDialog}
-          setShowAddDialog={effectiveSetShowAddDialog}
+          setShowAddDialog={handleSetShowAddDialog}
           leadId={leadId}
           viewMode={viewMode}
         />

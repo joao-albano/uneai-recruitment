@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSchedules } from '@/context/schedules/SchedulesContext';
 import { useCalendarState } from '@/hooks/useCalendarState';
 import { useScheduleFilters } from '@/hooks/schedule/useScheduleFilters';
@@ -26,7 +25,7 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
   leadId,
   viewMode = "month"
 }) => {
-  const { visibleSchedules, updateScheduleStatus } = useSchedules();
+  const { visibleSchedules } = useSchedules();
   const { markCompleted, cancelSchedule } = useScheduleOperations();
   const today = new Date();
   const [dialogState, setDialogState] = useState({
@@ -40,9 +39,9 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
     editMode: false
   });
   
-  // Use external state if provided
   useEffect(() => {
     if (externalShowAddDialog !== undefined) {
+      console.log("External dialog state changed to:", externalShowAddDialog);
       setDialogState(prev => ({
         ...prev,
         scheduleDialogOpen: externalShowAddDialog
@@ -50,14 +49,20 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
     }
   }, [externalShowAddDialog]);
   
-  // Update external state when dialog closes
+  const updateExternalDialogState = useCallback((isOpen: boolean) => {
+    if (externalSetShowAddDialog) {
+      console.log("Updating external dialog state:", isOpen);
+      externalSetShowAddDialog(isOpen);
+    }
+  }, [externalSetShowAddDialog]);
+  
   useEffect(() => {
     if (!dialogState.scheduleDialogOpen && externalSetShowAddDialog && externalShowAddDialog) {
-      externalSetShowAddDialog(false);
+      console.log("Dialog closed, updating external state");
+      updateExternalDialogState(false);
     }
-  }, [dialogState.scheduleDialogOpen, externalSetShowAddDialog, externalShowAddDialog]);
+  }, [dialogState.scheduleDialogOpen, externalSetShowAddDialog, externalShowAddDialog, updateExternalDialogState]);
   
-  // Update preselected student ID when leadId changes
   useEffect(() => {
     if (leadId) {
       setDialogState(prev => ({
@@ -67,11 +72,9 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
     }
   }, [leadId]);
   
-  // Filter schedules based on product context if specified
   const filteredSchedules = productContext 
     ? visibleSchedules.filter(schedule => 
         (schedule.productContext === productContext) ||
-        // For backward compatibility with existing schedules that don't have productContext
         (!schedule.productContext && 
          ((productContext === 'retention' && !schedule.studentId.startsWith('lead-')) ||
           (productContext === 'recruitment' && schedule.studentId.startsWith('lead-'))))
@@ -95,12 +98,17 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
   };
   
   const handleNewSchedule = () => {
+    console.log("handleNewSchedule called - opening dialog");
     setDialogState(prev => ({
       ...prev,
       scheduleDialogOpen: true,
       editMode: false,
       selectedSchedule: null
     }));
+    
+    if (externalSetShowAddDialog) {
+      externalSetShowAddDialog(true);
+    }
   };
   
   const handleEditSchedule = (schedule) => {
@@ -120,14 +128,18 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
   };
   
   const handleOpenChange = (open: boolean) => {
+    console.log("handleOpenChange called with:", open);
+    
     setDialogState(prev => ({
       ...prev,
       scheduleDialogOpen: open
     }));
     
-    // Also update external state if provided
     if (externalSetShowAddDialog) {
-      externalSetShowAddDialog(open);
+      setTimeout(() => {
+        console.log("Delayed update of external state:", open);
+        externalSetShowAddDialog(open);
+      }, 50);
     }
   };
   
@@ -139,7 +151,6 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
     cancelSchedule(id);
   };
   
-  // Handle different view modes
   const renderCalendarByViewMode = () => {
     switch(viewMode) {
       case 'day':
@@ -155,7 +166,6 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
           </div>
         );
       case 'week':
-        // For simplicity, week view just shows today and upcoming schedules
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <TodaySchedules 
@@ -238,7 +248,7 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
       <ScheduleDialogs 
         dialogState={{
           ...dialogState,
-          scheduleDialogOpen: dialogState.scheduleDialogOpen || (externalShowAddDialog || false)
+          scheduleDialogOpen: dialogState.scheduleDialogOpen || Boolean(externalShowAddDialog)
         }}
         setDialogState={setDialogState}
         students={students}

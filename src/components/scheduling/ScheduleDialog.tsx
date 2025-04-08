@@ -48,6 +48,11 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
   
   const { handleScheduleSubmit, updateSchedule } = useScheduleOperations();
 
+  // Log dialog open state for debugging
+  useEffect(() => {
+    console.log("ScheduleDialog open state:", open);
+  }, [open]);
+
   // Populate form with schedule data when editing
   useEffect(() => {
     if (open && isEditMode && scheduleToEdit) {
@@ -109,6 +114,7 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Submitting schedule form");
     
     const formData = new FormData();
     formData.append('studentId', selectedStudent);
@@ -147,6 +153,8 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
       success = handleScheduleSubmit(formData);
     }
     
+    console.log("Form submission result:", success);
+    
     if (success) {
       // Reset form and close dialog
       onOpenChange(false);
@@ -169,8 +177,14 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
         (productContext === 'retention' && !String(student.id).startsWith('lead-')))
     : mergedStudents;
 
+  // Special handler to prevent dialog close on React Dialog unmount
+  const handleOpenChangeWrapper = (isOpen: boolean) => {
+    console.log("Dialog open change requested:", isOpen);
+    onOpenChange(isOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChangeWrapper}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>
@@ -321,16 +335,19 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
             </div>
           )}
           
-          <div className="space-y-2">
-            <Label htmlFor="agent">Responsável</Label>
-            <Input 
-              id="agent" 
-              type="text" 
-              placeholder="Nome do responsável"
-              value={agentName} 
-              onChange={(e) => setAgentName(e.target.value)}
-            />
-          </div>
+          {/* Only show "Responsável" field for basic education */}
+          {(productContext !== 'recruitment' || educationType === 'basic') && (
+            <div className="space-y-2">
+              <Label htmlFor="agent">Responsável</Label>
+              <Input 
+                id="agent" 
+                type="text" 
+                placeholder="Nome do responsável"
+                value={agentName} 
+                onChange={(e) => setAgentName(e.target.value)}
+              />
+            </div>
+          )}
           
           <div className="space-y-2">
             <Label htmlFor="notes">Observações</Label>
