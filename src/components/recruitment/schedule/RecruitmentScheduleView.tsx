@@ -8,8 +8,11 @@ import ScheduleView from '@/components/scheduling/ScheduleView';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { History } from 'lucide-react';
 import { Schedule } from '@/types/schedule';
 import { ProductType } from '@/context/product/types';
+import { useReminderSending } from '@/hooks/schedule/useReminderSending';
 
 interface RecruitmentScheduleViewProps {
   showAddDialog?: boolean;
@@ -29,6 +32,14 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
   const [selectedUser, setSelectedUser] = useState<string>("all");
   const [viewMode, setViewMode] = useState<string>("month");
   const [localShowAddDialog, setLocalShowAddDialog] = useState<boolean>(false);
+  const [showRemindersHistory, setShowRemindersHistory] = useState<boolean>(false);
+  
+  const filteredSchedules = visibleSchedules.filter(schedule => 
+    (schedule.productContext === 'recruitment') ||
+    (!schedule.productContext && schedule.studentId.startsWith('lead-'))
+  );
+  
+  const { isProcessing, handleSendReminders } = useReminderSending(filteredSchedules);
   
   // Demo campuses and users for filtering
   const campuses = [
@@ -123,6 +134,10 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
     setLocalShowAddDialog(show);
   };
 
+  const handleViewReminders = () => {
+    setShowRemindersHistory(true);
+  };
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <div className="flex justify-between items-center mb-4 mt-4 px-6">
@@ -132,6 +147,15 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
             Gerencie atendimentos e acompanhamentos de leads
           </p>
         </div>
+        
+        <Button 
+          variant="outline" 
+          className="flex items-center gap-2"
+          onClick={handleViewReminders}
+        >
+          <History className="h-4 w-4" />
+          Histórico de Lembretes
+        </Button>
       </div>
       
       <Card className="mx-6 mb-4">
@@ -191,6 +215,8 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
           setShowAddDialog={handleSetShowAddDialog}
           leadId={leadId}
           viewMode={viewMode}
+          showRemindersHistory={showRemindersHistory}
+          setShowRemindersHistory={setShowRemindersHistory}
         />
       </main>
     </div>

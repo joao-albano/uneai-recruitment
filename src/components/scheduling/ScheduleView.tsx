@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSchedules } from '@/context/schedules/SchedulesContext';
 import { useCalendarState } from '@/hooks/useCalendarState';
@@ -9,6 +10,9 @@ import ScheduleStats from './ScheduleStats';
 import ScheduleDialogs from './ScheduleDialogs';
 import { ProductType } from '@/context/product/types';
 import { useScheduleOperations } from '@/hooks/schedule/useScheduleOperations';
+import { useReminderSending } from '@/hooks/schedule/useReminderSending';
+import RemindersHistoryDialog from './RemindersHistoryDialog';
+import { useWhatsApp } from '@/context/whatsapp/WhatsAppContext';
 
 interface ScheduleViewProps {
   productContext?: ProductType;
@@ -16,6 +20,8 @@ interface ScheduleViewProps {
   setShowAddDialog?: (show: boolean) => void;
   leadId?: string | null;
   viewMode?: string;
+  showRemindersHistory?: boolean;
+  setShowRemindersHistory?: (show: boolean) => void;
 }
 
 const ScheduleView: React.FC<ScheduleViewProps> = ({ 
@@ -23,9 +29,12 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
   showAddDialog: externalShowAddDialog,
   setShowAddDialog: externalSetShowAddDialog,
   leadId,
-  viewMode = "month"
+  viewMode = "month",
+  showRemindersHistory: externalShowRemindersHistory,
+  setShowRemindersHistory: externalSetShowRemindersHistory
 }) => {
   const { visibleSchedules } = useSchedules();
+  const { whatsAppMessages } = useWhatsApp();
   const { markCompleted, cancelSchedule } = useScheduleOperations();
   const today = new Date();
   const [dialogState, setDialogState] = useState({
@@ -38,6 +47,25 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
     preselectedStudentId: leadId ? `lead-${leadId}` : undefined,
     editMode: false
   });
+  
+  // Handle external reminders history dialog state
+  useEffect(() => {
+    if (externalShowRemindersHistory !== undefined) {
+      setDialogState(prev => ({
+        ...prev,
+        remindersHistoryDialogOpen: externalShowRemindersHistory
+      }));
+    }
+  }, [externalShowRemindersHistory]);
+  
+  // Update external reminders history state when internal dialog closes
+  useEffect(() => {
+    if (dialogState.remindersHistoryDialogOpen === false && 
+        externalSetShowRemindersHistory && 
+        externalShowRemindersHistory === true) {
+      externalSetShowRemindersHistory(false);
+    }
+  }, [dialogState.remindersHistoryDialogOpen, externalSetShowRemindersHistory, externalShowRemindersHistory]);
   
   useEffect(() => {
     if (externalShowAddDialog !== undefined) {
@@ -84,6 +112,8 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
     studentsWithoutSchedules
   } = useScheduleFilters(filteredSchedules, today);
   
+  const { isProcessing, handleSendReminders } = useReminderSending(filteredSchedules);
+  
   const handleViewDetails = (schedule) => {
     setDialogState(prev => ({
       ...prev,
@@ -120,6 +150,23 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
       ...prev,
       remindersHistoryDialogOpen: true
     }));
+    
+    // Update external state if provided
+    if (externalSetShowRemindersHistory) {
+      externalSetShowRemindersHistory(true);
+    }
+  };
+  
+  const handleRemindersDialogOpenChange = (open: boolean) => {
+    setDialogState(prev => ({
+      ...prev,
+      remindersHistoryDialogOpen: open
+    }));
+    
+    // Update external state if provided
+    if (!open && externalSetShowRemindersHistory) {
+      externalSetShowRemindersHistory(false);
+    }
   };
   
   const handleOpenChange = (open: boolean) => {
@@ -248,6 +295,12 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
         productContext={productContext}
         onOpenChange={handleOpenChange}
         preselectedStudentId={dialogState.preselectedStudentId}
+      />
+      
+      <RemindersHistoryDialog
+        open={dialogState.remindersHistoryDialogOpen}
+        onOpenChange={handleRemindersDialogOpenChange}
+        messages={whatsAppMessages}
       />
     </div>
   );

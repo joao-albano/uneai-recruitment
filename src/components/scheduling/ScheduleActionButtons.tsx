@@ -24,6 +24,16 @@ const ScheduleActionButtons: React.FC<ScheduleActionButtonsProps> = ({
       <Button 
         variant="outline" 
         size="sm" 
+        onClick={onShowHistory}
+        className="flex items-center gap-2 w-full justify-start"
+      >
+        <History className="h-4 w-4" />
+        {language === 'pt-BR' ? 'Histórico de Lembretes' : 'Reminders History'}
+      </Button>
+      
+      <Button 
+        variant="outline" 
+        size="sm" 
         onClick={onSendReminders}
         disabled={isProcessing}
         className="flex items-center gap-2 w-full justify-start"
@@ -32,16 +42,6 @@ const ScheduleActionButtons: React.FC<ScheduleActionButtonsProps> = ({
         {isProcessing
           ? (language === 'pt-BR' ? 'Enviando...' : 'Sending...')
           : (language === 'pt-BR' ? 'Enviar Lembretes' : 'Send Reminders')}
-      </Button>
-      
-      <Button 
-        variant="outline" 
-        size="sm" 
-        onClick={onShowHistory}
-        className="flex items-center gap-2 w-full justify-start"
-      >
-        <History className="h-4 w-4" />
-        {language === 'pt-BR' ? 'Histórico de Lembretes' : 'Reminders History'}
       </Button>
     </div>
   );
