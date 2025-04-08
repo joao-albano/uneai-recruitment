@@ -38,6 +38,7 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
   const [notes, setNotes] = useState('');
   const [agentName, setAgentName] = useState('');
   const [educationType, setEducationType] = useState<'basic' | 'higher'>('basic');
+  const [selectedCampus, setSelectedCampus] = useState('');
   
   // Additional fields for different education types
   const [parentName, setParentName] = useState('');
@@ -47,6 +48,15 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
   const [course, setCourse] = useState('');
   
   const { handleScheduleSubmit, updateSchedule } = useScheduleOperations();
+
+  // Mock campus data - in a real app, this would come from an API or context
+  const campuses = [
+    { id: 'campus-1', name: 'Campus Centro' },
+    { id: 'campus-2', name: 'Campus Norte' },
+    { id: 'campus-3', name: 'Campus Sul' },
+    { id: 'campus-4', name: 'Campus Leste' },
+    { id: 'campus-5', name: 'Campus Oeste' }
+  ];
 
   // Log dialog open state for debugging
   useEffect(() => {
@@ -66,6 +76,10 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
       
       if (scheduleToEdit.educationType) {
         setEducationType(scheduleToEdit.educationType);
+      }
+      
+      if (scheduleToEdit.campusId) {
+        setSelectedCampus(scheduleToEdit.campusId);
       }
       
       // Set education type specific fields
@@ -102,6 +116,7 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
       setStudentEmail('');
       setCourse('');
       setEducationType('basic');
+      setSelectedCampus('');
     }
   }, [open, isEditMode, scheduleToEdit, preselectedStudentId]);
   
@@ -125,6 +140,11 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
     
     if (productContext) {
       formData.append('productContext', productContext);
+    }
+    
+    // Add campus selection
+    if (selectedCampus) {
+      formData.append('campusId', selectedCampus);
     }
     
     // Add education type specific fields
@@ -237,6 +257,29 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
               </SelectContent>
             </Select>
           </div>
+
+          {/* Add Campus selection for recruitment context */}
+          {productContext === 'recruitment' && (
+            <div className="space-y-2">
+              <Label htmlFor="campus">Unidade para Visita</Label>
+              <Select 
+                value={selectedCampus} 
+                onValueChange={setSelectedCampus}
+                required
+              >
+                <SelectTrigger id="campus">
+                  <SelectValue placeholder="Selecione a unidade" />
+                </SelectTrigger>
+                <SelectContent>
+                  {campuses.map((campus) => (
+                    <SelectItem key={campus.id} value={campus.id}>
+                      {campus.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           {productContext === 'recruitment' && (
             <div className="space-y-2">

@@ -17,6 +17,7 @@ export const useScheduleOperations = () => {
     const notes = formData.get('notes') as string;
     const agentName = formData.get('agentName') as string || userEmail;
     const productContext = formData.get('productContext') as ProductType | null;
+    const campusId = formData.get('campusId') as string;
     
     // Get education type specific fields
     const educationType = formData.get('educationType') as 'basic' | 'higher' | null;
@@ -50,6 +51,16 @@ export const useScheduleOperations = () => {
       }
     }
     
+    // Validate campus selection for recruitment context
+    if (productContext === 'recruitment' && !campusId) {
+      toast({
+        title: 'Unidade não selecionada',
+        description: 'Por favor, selecione a unidade para a visita.',
+        variant: 'destructive'
+      });
+      return false;
+    }
+    
     const [year, month, day] = date.split('-').map(Number);
     const [hours, minutes] = time.split(':').map(Number);
     const scheduleDate = new Date(year, month - 1, day, hours, minutes);
@@ -72,6 +83,9 @@ export const useScheduleOperations = () => {
       status: 'scheduled',
       notes,
       productContext,
+      
+      // Add campus ID if provided
+      ...(campusId && { campusId }),
       
       // Add education type specific fields
       educationType,
@@ -101,6 +115,7 @@ export const useScheduleOperations = () => {
     const agentName = formData.get('agentName') as string || userEmail;
     const productContext = formData.get('productContext') as ProductType | null;
     const status = formData.get('status') as 'scheduled' | 'completed' | 'canceled';
+    const campusId = formData.get('campusId') as string;
     
     // Get education type specific fields
     const educationType = formData.get('educationType') as 'basic' | 'higher' | null;
@@ -134,6 +149,16 @@ export const useScheduleOperations = () => {
       }
     }
     
+    // Validate campus selection for recruitment context
+    if (productContext === 'recruitment' && !campusId) {
+      toast({
+        title: 'Unidade não selecionada',
+        description: 'Por favor, selecione a unidade para a visita.',
+        variant: 'destructive'
+      });
+      return false;
+    }
+    
     const [year, month, day] = date.split('-').map(Number);
     const [hours, minutes] = time.split(':').map(Number);
     const scheduleDate = new Date(year, month - 1, day, hours, minutes);
@@ -153,6 +178,9 @@ export const useScheduleOperations = () => {
       status: status || 'scheduled',
       notes,
       productContext,
+      
+      // Add campus ID if provided
+      ...(campusId && { campusId }),
       
       // Add education type specific fields
       educationType,

@@ -10,6 +10,7 @@ export interface Schedule {
   status: 'scheduled' | 'completed' | 'canceled';
   notes?: string;
   productContext?: ProductType;
+  campusId?: string;
   
   // Additional fields for education context
   educationType?: 'basic' | 'higher';
