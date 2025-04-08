@@ -1,93 +1,143 @@
 
 import { useMemo, useState } from 'react';
 import { useSchedules } from '@/context/schedules/SchedulesContext';
-import { useCalendarState } from './useCalendarState';
-import { useScheduleOperations } from './schedule/useScheduleOperations';
-import { useScheduleFilters } from './schedule/useScheduleFilters';
-import { useAuth } from '@/context/auth';
 import { Schedule } from '@/types/schedule';
-
-export type { Schedule } from '@/types/schedule';
+import { format, startOfDay, endOfDay, addDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isSameDay, isWithinInterval } from 'date-fns';
 
 export const useScheduleData = () => {
+  // Estado para filtros e calendário
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const [viewMode, setViewMode] = useState<'day' | 'week' | 'month'>('day');
+  
+  // Estados para filtros
+  const [selectedCampus, setSelectedCampus] = useState<string>('');
+  const [selectedUser, setSelectedUser] = useState<string>('');
+  
   // Estado para controlar diálogos e detalhes
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showDayDialog, setShowDayDialog] = useState(false);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null);
   
-  // Basic state and data
+  // Get data from context
   const { schedules, visibleSchedules, updateScheduleStatus, updateSchedule } = useSchedules();
-  const { userEmail } = useAuth();
   
-  // Fixed value for today
+  // Fixed today value for reference
   const today = useMemo(() => new Date(), []);
   
-  // Load all sub-hooks
-  const calendarHooks = useCalendarState(visibleSchedules);
-  const scheduleOperations = useScheduleOperations();
-  const scheduleFilters = useScheduleFilters(visibleSchedules, today);
+  // Calculate week days for week view
+  const weekDays = useMemo(() => {
+    const start = startOfWeek(selectedDate, { weekStartsOn: 1 });
+    return Array.from({ length: 7 }, (_, i) => addDays(start, i));
+  }, [selectedDate]);
   
-  // Manipulação de detalhes do agendamento
-  const handleOpenDetails = (schedule: Schedule) => {
+  // Handle date navigation - previous/next day
+  const goToPreviousDay = () => setSelectedDate(prev => addDays(prev, -1));
+  const goToNextDay = () => setSelectedDate(prev => addDays(prev, 1));
+  
+  // Handle week navigation
+  const goToPreviousWeek = () => setSelectedDate(prev => addDays(prev, -7));
+  const goToNextWeek = () => setSelectedDate(prev => addDays(prev, 7));
+  
+  // Handle month navigation
+  const goToPreviousMonth = () => {
+    const prevMonth = new Date(currentMonth);
+    prevMonth.setMonth(prevMonth.getMonth() - 1);
+    setCurrentMonth(prevMonth);
+  };
+  
+  const goToNextMonth = () => {
+    const nextMonth = new Date(currentMonth);
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    setCurrentMonth(nextMonth);
+  };
+  
+  // Filter schedules by date range based on view mode
+  const filteredSchedulesByDate = useMemo(() => {
+    if (!visibleSchedules.length) return [];
+    
+    let start: Date, end: Date;
+    
+    switch (viewMode) {
+      case 'day':
+        start = startOfDay(selectedDate);
+        end = endOfDay(selectedDate);
+        break;
+      case 'week':
+        start = startOfWeek(selectedDate, { weekStartsOn: 1 });
+        end = endOfWeek(selectedDate, { weekStartsOn: 1 });
+        break;
+      case 'month':
+        start = startOfMonth(currentMonth);
+        end = endOfMonth(currentMonth);
+        break;
+      default:
+        start = startOfDay(today);
+        end = endOfDay(today);
+    }
+    
+    return visibleSchedules.filter(schedule => {
+      const scheduleDate = new Date(schedule.date);
+      return isWithinInterval(scheduleDate, { start, end });
+    });
+  }, [visibleSchedules, selectedDate, currentMonth, viewMode, today]);
+  
+  // Filter schedules by campus and user
+  const filteredSchedules = useMemo(() => {
+    let filtered = [...filteredSchedulesByDate];
+    
+    if (selectedCampus) {
+      // In a real implementation, we would filter by campus
+      // This is a placeholder for when real data is available
+      console.log(`Filtering by campus: ${selectedCampus}`);
+    }
+    
+    if (selectedUser) {
+      filtered = filtered.filter(schedule => 
+        schedule.agentName.includes(selectedUser)
+      );
+    }
+    
+    return filtered;
+  }, [filteredSchedulesByDate, selectedCampus, selectedUser]);
+  
+  // Get schedules for specific day
+  const getSchedulesForDay = (day: Date) => {
+    return filteredSchedules.filter(schedule => 
+      isSameDay(new Date(schedule.date), day)
+    );
+  };
+  
+  // Today's schedules
+  const todaySchedules = useMemo(() => 
+    getSchedulesForDay(today), 
+    [filteredSchedules, today]
+  );
+  
+  // Handle opening schedule details
+  const handleOpenScheduleDetails = (schedule: Schedule) => {
     setSelectedSchedule(schedule);
     setShowDetailsDialog(true);
   };
   
-  // Handle schedule submission - ensure this returns a boolean
-  const handleScheduleSubmit = (formData: FormData): boolean => {
-    return scheduleOperations.handleScheduleSubmit(formData);
+  // Handle updating schedule status
+  const handleUpdateScheduleStatus = (id: string, status: 'scheduled' | 'completed' | 'canceled') => {
+    updateScheduleStatus(id, status);
   };
-
-  // Computes schedules for the selected day
-  const schedulesForSelectedDay = useMemo(() => {
-    return visibleSchedules.filter(schedule => {
-      const scheduleDate = new Date(schedule.date);
-      return scheduleDate.getDate() === calendarHooks.selectedDate.getDate() &&
-             scheduleDate.getMonth() === calendarHooks.selectedDate.getMonth() &&
-             scheduleDate.getFullYear() === calendarHooks.selectedDate.getFullYear();
-    });
-  }, [visibleSchedules, calendarHooks.selectedDate]);
-
-  // Handle day click in the calendar
-  const handleDayClick = (day: number) => {
-    const newDate = new Date(calendarHooks.selectedDate);
-    newDate.setDate(day);
-    calendarHooks.selectedDate.setDate(day);
-    setShowDayDialog(true);
-  };
-
-  // Handle schedule status change - with support for updates
-  const handleUpdateScheduleStatus = (id: string, status: 'scheduled' | 'completed' | 'canceled', updatedSchedule?: Schedule) => {
-    if (updatedSchedule) {
-      updateSchedule(updatedSchedule);
-    } else {
-      updateScheduleStatus(id, status);
-    }
-  };
-
-  // Estatísticas adicionais
-  const stats = useMemo(() => {
-    return {
-      total: visibleSchedules.length,
-      scheduled: visibleSchedules.filter(s => s.status === 'scheduled').length,
-      completed: visibleSchedules.filter(s => s.status === 'completed').length,
-      canceled: visibleSchedules.filter(s => s.status === 'canceled').length
-    };
-  }, [visibleSchedules]);
-
-  // Return combined object with all needed properties and methods
+  
   return {
-    // Data
-    students: scheduleFilters.students,
-    studentsWithoutSchedules: scheduleFilters.studentsWithoutSchedules,
-    schedules,
-    visibleSchedules,
-    
-    // Calendar state
-    ...calendarHooks,
-    
-    // Dialog state
+    // State
+    selectedDate,
+    setSelectedDate,
+    currentMonth,
+    setCurrentMonth,
+    viewMode,
+    setViewMode,
+    selectedCampus,
+    setSelectedCampus,
+    selectedUser,
+    setSelectedUser,
     showAddDialog,
     setShowAddDialog,
     showDayDialog,
@@ -95,29 +145,28 @@ export const useScheduleData = () => {
     showDetailsDialog,
     setShowDetailsDialog,
     selectedSchedule,
+    setSelectedSchedule,
     
-    // Day handling
-    handleDayClick,
-    schedulesForSelectedDay,
+    // Data
+    schedules,
+    visibleSchedules,
+    filteredSchedules,
     
-    // Today and upcoming schedules
+    // Computed
+    weekDays,
     today,
-    todaySchedules: scheduleFilters.todaySchedules,
-    upcomingSchedules: scheduleFilters.upcomingSchedules,
-    completedSchedules: scheduleFilters.completedSchedules,
-    canceledSchedules: scheduleFilters.canceledSchedules,
+    todaySchedules,
     
-    // Estatísticas
-    stats,
-    schedulesByMonth: scheduleFilters.schedulesByMonth,
-    schedulesByAgent: scheduleFilters.schedulesByAgent,
-    
-    // Operations with arguments adjusted for composition
-    handleScheduleSubmit,
-    markCompleted: scheduleOperations.markCompleted,
-    cancelSchedule: scheduleOperations.cancelSchedule,
-    updateScheduleStatus: handleUpdateScheduleStatus,
-    updateSchedule,
-    handleOpenDetails
+    // Functions
+    goToPreviousDay,
+    goToNextDay,
+    goToPreviousWeek,
+    goToNextWeek,
+    goToPreviousMonth,
+    goToNextMonth,
+    getSchedulesForDay,
+    handleOpenScheduleDetails,
+    handleUpdateScheduleStatus,
+    updateSchedule
   };
 };
