@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Bell, CalendarClock } from 'lucide-react';
+import { Bell } from 'lucide-react';
 
 interface ScheduleStatsProps {
   onNewSchedule: () => void;
@@ -16,15 +16,6 @@ const ScheduleStats: React.FC<ScheduleStatsProps> = ({ onNewSchedule, onViewRemi
         <CardTitle className="text-lg">Ações</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Button 
-          variant="outline" 
-          className="w-full flex items-center justify-center gap-2"
-          onClick={onNewSchedule}
-        >
-          <Plus className="h-4 w-4" />
-          <span>Novo Agendamento</span>
-        </Button>
-        
         <Button 
           variant="outline" 
           className="w-full flex items-center justify-center gap-2"

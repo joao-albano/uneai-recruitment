@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, MessageSquare, History } from 'lucide-react';
+import { MessageSquare, History } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 
 interface ScheduleActionButtonsProps {
@@ -21,16 +21,6 @@ const ScheduleActionButtons: React.FC<ScheduleActionButtonsProps> = ({
   
   return (
     <div className="flex flex-col gap-2">
-      <Button 
-        variant="outline" 
-        size="sm" 
-        onClick={onNewAppointment}
-        className="flex items-center gap-2 w-full justify-start"
-      >
-        <Plus className="h-4 w-4" />
-        {language === 'pt-BR' ? 'Novo Atendimento' : 'New Appointment'}
-      </Button>
-      
       <Button 
         variant="outline" 
         size="sm" 

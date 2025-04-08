@@ -8,8 +8,6 @@ import ScheduleView from '@/components/scheduling/ScheduleView';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { CalendarPlus } from 'lucide-react';
 import { Schedule } from '@/types/schedule';
 import { ProductType } from '@/context/product/types';
 
@@ -125,11 +123,6 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
     setLocalShowAddDialog(show);
   };
 
-  const handleNewSchedule = () => {
-    console.log("Novo agendamento button clicked");
-    handleSetShowAddDialog(true);
-  };
-
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <div className="flex justify-between items-center mb-4 mt-4 px-6">
@@ -139,11 +132,6 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
             Gerencie atendimentos e acompanhamentos de leads
           </p>
         </div>
-        
-        <Button className="flex items-center gap-2" onClick={handleNewSchedule}>
-          <CalendarPlus className="h-4 w-4" />
-          Novo Agendamento
-        </Button>
       </div>
       
       <Card className="mx-6 mb-4">
