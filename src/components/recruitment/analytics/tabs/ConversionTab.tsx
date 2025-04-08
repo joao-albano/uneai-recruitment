@@ -1,53 +1,44 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { BarChart, LineChart, ResponsiveContainer, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell } from 'recharts';
-import { FunnelChart, Funnel, LabelList } from 'recharts';
 import { conversionData } from '../data/analyticsData';
+import EnhancedFunnelChart from '../components/EnhancedFunnelChart';
+import { Users, Check, Calendar, Building } from 'lucide-react';
 
 const ConversionTab: React.FC = () => {
+  // Prepara os dados para o componente de funil aprimorado
+  const funnelData = conversionData.funnelStages.map((stage, index) => {
+    const colors = ['#4F46E5', '#8B5CF6', '#EC4899', '#F59E0B', '#22C55E'];
+    const icons = [
+      <Users key="users" className="text-indigo-600" />,
+      <Check key="check" className="text-purple-600" />,
+      <Calendar key="calendar" className="text-pink-600" />,
+      <Users key="visit" className="text-amber-600" />,
+      <Building key="building" className="text-green-600" />
+    ];
+    
+    return {
+      ...stage,
+      color: colors[index % colors.length],
+      icon: icons[index % icons.length]
+    };
+  });
+
   return (
     <div className="space-y-6">
-      {/* Métricas de conversão do funil */}
+      {/* Funil de Conversão Aprimorado */}
       <Card>
         <CardHeader>
           <CardTitle>Funil de Conversão</CardTitle>
           <CardDescription>Taxa de conversão em cada etapa do processo de captação</CardDescription>
         </CardHeader>
-        <CardContent className="h-[400px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <FunnelChart>
-              <Tooltip formatter={(value) => [`${value} leads`, 'Quantidade']} />
-              <Funnel
-                dataKey="count"
-                data={conversionData.funnelStages}
-                nameKey="stage"
-                isAnimationActive
-              >
-                <LabelList 
-                  position="right"
-                  fill="#000"
-                  stroke="none"
-                  dataKey="stage"
-                  fontSize={12}
-                  fontWeight="bold"
-                />
-                <LabelList
-                  position="center"
-                  fill="#fff"
-                  stroke="none"
-                  dataKey="count"
-                  fontSize={16}
-                  fontWeight="bold"
-                />
-              </Funnel>
-            </FunnelChart>
-          </ResponsiveContainer>
+        <CardContent>
+          <EnhancedFunnelChart data={funnelData} />
         </CardContent>
       </Card>
       
-      {/* Gráficos */}
+      {/* Gráficos - mantendo os existentes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
