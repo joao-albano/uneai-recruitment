@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell, Building, Phone } from 'lucide-react';
+import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell, Building, Phone, Calendar } from 'lucide-react';
 import SidebarNavLink from '../SidebarNavLink';
 
 interface RecruitmentNavLinksProps {
@@ -44,6 +44,12 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
         to="/recruitment/campaigns" 
         icon={CalendarCheck} 
         label="Campanhas" 
+        collapsed={collapsed}
+      />
+      <SidebarNavLink 
+        to="/recruitment/schedule" 
+        icon={Calendar} 
+        label="Agenda" 
         collapsed={collapsed}
       />
       <SidebarNavLink 
