@@ -60,7 +60,7 @@ const ScheduleHistoryView: React.FC<ScheduleHistoryViewProps> = ({
           </div>
           <div className="flex items-center">
             {schedule.status === 'completed' ? (
-              <Badge variant="default" className="flex items-center bg-green-500 hover:bg-green-600">
+              <Badge variant="secondary" className="flex items-center bg-green-100 text-green-800 hover:bg-green-200">
                 <CheckCircle className="h-3 w-3 mr-1" />
                 Concluído
               </Badge>

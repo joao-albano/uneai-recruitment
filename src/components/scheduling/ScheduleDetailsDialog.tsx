@@ -42,12 +42,12 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] overflow-hidden">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle>Detalhes do Agendamento</DialogTitle>
         </DialogHeader>
         
-        <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+        <div className="py-4 space-y-4 max-h-[50vh] overflow-y-auto pr-2">
           <div className="flex flex-col gap-2 p-4 bg-muted/50 rounded-lg">
             <div className="flex items-center gap-2">
               <User className="h-5 w-5 text-primary" />
@@ -124,24 +124,24 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
           )}
         </div>
         
-        <DialogFooter className="flex flex-col sm:flex-row sm:justify-end gap-2 mt-2">
+        <DialogFooter className="flex flex-wrap sm:flex-row sm:justify-end gap-2 mt-4 pt-2 border-t">
           {schedule.status === 'scheduled' && (
             <>
               <Button 
                 variant="outline"
                 size="sm"
-                className="w-full sm:w-auto"
+                className="flex-1 sm:flex-none"
                 onClick={handleCancelSchedule}
               >
                 <XCircle className="h-4 w-4 mr-2" />
-                Cancelar Agendamento
+                Cancelar
               </Button>
               
               {onEdit && (
                 <Button 
                   variant="outline"
                   size="sm"
-                  className="w-full sm:w-auto"
+                  className="flex-1 sm:flex-none"
                   onClick={handleEdit}
                 >
                   <Edit className="h-4 w-4 mr-2" />
@@ -151,7 +151,7 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
               
               <Button 
                 size="sm"
-                className="w-full sm:w-auto"
+                className="flex-1 sm:flex-none"
                 onClick={handleMarkCompleted}
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
@@ -166,7 +166,7 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
                 <Button 
                   variant="outline"
                   size="sm"
-                  className="w-full sm:w-auto"
+                  className="flex-1 sm:flex-none"
                   onClick={handleEdit}
                 >
                   <Edit className="h-4 w-4 mr-2" />
@@ -177,7 +177,7 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
               <Button 
                 size="sm"
                 onClick={() => onOpenChange(false)}
-                className="w-full sm:w-auto"
+                className="flex-1 sm:flex-none"
               >
                 Fechar
               </Button>
