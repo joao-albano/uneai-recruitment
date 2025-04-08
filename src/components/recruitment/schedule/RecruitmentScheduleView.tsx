@@ -22,7 +22,6 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
   const [selectedUser, setSelectedUser] = useState<string>("all");
   const [viewMode, setViewMode] = useState<string>("month");
   const [localShowAddDialog, setLocalShowAddDialog] = useState<boolean>(false);
-  const [showRemindersHistory, setShowRemindersHistory] = useState<boolean>(false);
   
   // Load demo data
   useDemoScheduleData();
@@ -45,16 +44,9 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
     setLocalShowAddDialog(show);
   };
 
-  const handleViewReminders = () => {
-    console.log("Opening reminders history dialog");
-    setShowRemindersHistory(true);
-  };
-
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-      <RecruitmentScheduleHeader 
-        handleViewReminders={handleViewReminders}
-      />
+      <RecruitmentScheduleHeader />
       
       <RecruitmentFiltersPanel
         selectedCampus={selectedCampus}
@@ -72,8 +64,6 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
           setShowAddDialog={handleSetShowAddDialog}
           leadId={leadId}
           viewMode={viewMode}
-          showRemindersHistory={showRemindersHistory}
-          setShowRemindersHistory={setShowRemindersHistory}
         />
       </main>
     </div>

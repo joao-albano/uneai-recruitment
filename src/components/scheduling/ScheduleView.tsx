@@ -4,13 +4,11 @@ import { useSchedules } from '@/context/schedules/SchedulesContext';
 import { useCalendarState } from '@/hooks/useCalendarState';
 import { useScheduleFilters } from '@/hooks/schedule/useScheduleFilters';
 import { useScheduleOperations } from '@/hooks/schedule/useScheduleOperations';
-import { useReminderSending } from '@/hooks/schedule/useReminderSending';
 import { useScheduleDialogs } from '@/hooks/schedule/useScheduleDialogs';
 import { useWhatsApp } from '@/context/whatsapp/WhatsAppContext';
 import { ProductType } from '@/context/product/types';
 import ViewModeRenderer from './ViewModeRenderer';
 import ScheduleDialogs from './ScheduleDialogs';
-import RemindersHistoryDialog from './RemindersHistoryDialog';
 
 interface ScheduleViewProps {
   productContext?: ProductType;
@@ -18,8 +16,6 @@ interface ScheduleViewProps {
   setShowAddDialog?: (show: boolean) => void;
   leadId?: string | null;
   viewMode?: string;
-  showRemindersHistory?: boolean;
-  setShowRemindersHistory?: (show: boolean) => void;
 }
 
 const ScheduleView: React.FC<ScheduleViewProps> = ({ 
@@ -27,9 +23,7 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
   showAddDialog: externalShowAddDialog,
   setShowAddDialog: externalSetShowAddDialog,
   leadId,
-  viewMode = "month",
-  showRemindersHistory: externalShowRemindersHistory,
-  setShowRemindersHistory: externalSetShowRemindersHistory
+  viewMode = "month"
 }) => {
   const { visibleSchedules } = useSchedules();
   const { whatsAppMessages } = useWhatsApp();
@@ -43,14 +37,10 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
     handleViewDetails,
     handleNewSchedule,
     handleEditSchedule,
-    handleViewReminders,
-    handleRemindersDialogOpenChange,
     handleOpenChange
   } = useScheduleDialogs({
     externalShowAddDialog,
     externalSetShowAddDialog,
-    externalShowRemindersHistory,
-    externalSetShowRemindersHistory,
     leadId
   });
   
@@ -72,9 +62,6 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
     students,
     studentsWithoutSchedules
   } = useScheduleFilters(filteredSchedules, today);
-  
-  // Get reminder sending hooks
-  const { isProcessing, handleSendReminders } = useReminderSending(filteredSchedules);
   
   // Handle completed and canceled schedules
   const handleCompleted = (id: string) => {
@@ -98,7 +85,6 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
         handleCanceled={handleCanceled}
         handleEditSchedule={handleEditSchedule}
         handleNewSchedule={handleNewSchedule}
-        handleViewReminders={handleViewReminders}
         setDialogState={setDialogState}
       />
       
@@ -113,12 +99,6 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
         productContext={productContext}
         onOpenChange={handleOpenChange}
         preselectedStudentId={dialogState.preselectedStudentId}
-      />
-      
-      <RemindersHistoryDialog
-        open={dialogState.remindersHistoryDialogOpen}
-        onOpenChange={handleRemindersDialogOpenChange}
-        messages={whatsAppMessages || []}
       />
     </div>
   );

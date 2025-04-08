@@ -1,24 +1,7 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { History } from 'lucide-react';
 
-interface RecruitmentScheduleHeaderProps {
-  handleViewReminders: () => void;
-}
-
-const RecruitmentScheduleHeader: React.FC<RecruitmentScheduleHeaderProps> = ({
-  handleViewReminders
-}) => {
-  const handleRemindersClick = (e: React.MouseEvent) => {
-    // Prevent event propagation
-    e.preventDefault();
-    e.stopPropagation();
-    
-    // Call the handler
-    handleViewReminders();
-  };
-  
+const RecruitmentScheduleHeader: React.FC = () => {
   return (
     <div className="flex justify-between items-center mb-4 mt-4 px-6">
       <div>
@@ -27,15 +10,6 @@ const RecruitmentScheduleHeader: React.FC<RecruitmentScheduleHeaderProps> = ({
           Gerencie atendimentos e acompanhamentos de leads
         </p>
       </div>
-      
-      <Button 
-        variant="outline" 
-        className="flex items-center gap-2"
-        onClick={handleRemindersClick}
-      >
-        <History className="h-4 w-4" />
-        Histórico de Lembretes
-      </Button>
     </div>
   );
 };

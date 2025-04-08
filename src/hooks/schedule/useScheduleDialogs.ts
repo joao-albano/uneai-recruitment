@@ -6,7 +6,6 @@ interface DialogState {
   scheduleDialogOpen: boolean;
   detailsDialogOpen: boolean;
   daySchedulesDialogOpen: boolean;
-  remindersHistoryDialogOpen: boolean;
   selectedSchedule: Schedule | null;
   selectedDay: Date | null;
   preselectedStudentId?: string;
@@ -16,16 +15,12 @@ interface DialogState {
 interface UseScheduleDialogsProps {
   externalShowAddDialog?: boolean;
   externalSetShowAddDialog?: (show: boolean) => void;
-  externalShowRemindersHistory?: boolean;
-  externalSetShowRemindersHistory?: (show: boolean) => void;
   leadId?: string | null;
 }
 
 export const useScheduleDialogs = ({
   externalShowAddDialog,
   externalSetShowAddDialog,
-  externalShowRemindersHistory,
-  externalSetShowRemindersHistory,
   leadId
 }: UseScheduleDialogsProps) => {
   
@@ -33,33 +28,11 @@ export const useScheduleDialogs = ({
     scheduleDialogOpen: false,
     detailsDialogOpen: false,
     daySchedulesDialogOpen: false,
-    remindersHistoryDialogOpen: false,
     selectedSchedule: null,
     selectedDay: null,
     preselectedStudentId: leadId ? `lead-${leadId}` : undefined,
     editMode: false
   });
-  
-  // Handle external reminders history dialog state
-  useEffect(() => {
-    if (externalShowRemindersHistory !== undefined) {
-      console.log("External reminders history state changed to:", externalShowRemindersHistory);
-      setDialogState(prev => ({
-        ...prev,
-        remindersHistoryDialogOpen: externalShowRemindersHistory
-      }));
-    }
-  }, [externalShowRemindersHistory]);
-  
-  // Update external reminders history state when internal dialog closes
-  useEffect(() => {
-    if (dialogState.remindersHistoryDialogOpen === false && 
-        externalSetShowRemindersHistory && 
-        externalShowRemindersHistory === true) {
-      console.log("Reminders history dialog closed, updating external state");
-      externalSetShowRemindersHistory(false);
-    }
-  }, [dialogState.remindersHistoryDialogOpen, externalSetShowRemindersHistory, externalShowRemindersHistory]);
   
   // Handle external add dialog state
   useEffect(() => {
@@ -126,32 +99,6 @@ export const useScheduleDialogs = ({
     }));
   }, []);
   
-  // Handle view reminders
-  const handleViewReminders = useCallback(() => {
-    console.log("handleViewReminders called - opening dialog");
-    setDialogState(prev => ({
-      ...prev,
-      remindersHistoryDialogOpen: true
-    }));
-    
-    if (externalSetShowRemindersHistory) {
-      externalSetShowRemindersHistory(true);
-    }
-  }, [externalSetShowRemindersHistory]);
-  
-  // Handle reminders dialog open change
-  const handleRemindersDialogOpenChange = useCallback((open: boolean) => {
-    console.log("handleRemindersDialogOpenChange called with:", open);
-    setDialogState(prev => ({
-      ...prev,
-      remindersHistoryDialogOpen: open
-    }));
-    
-    if (externalSetShowRemindersHistory) {
-      externalSetShowRemindersHistory(open);
-    }
-  }, [externalSetShowRemindersHistory]);
-  
   // Handle open change
   const handleOpenChange = useCallback((open: boolean) => {
     console.log("handleOpenChange called with:", open);
@@ -172,8 +119,6 @@ export const useScheduleDialogs = ({
     handleViewDetails,
     handleNewSchedule,
     handleEditSchedule,
-    handleViewReminders,
-    handleRemindersDialogOpenChange,
     handleOpenChange
   };
 };
