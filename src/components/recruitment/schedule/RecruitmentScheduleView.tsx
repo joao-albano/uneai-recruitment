@@ -5,6 +5,8 @@ import ScheduleView from '@/components/scheduling/ScheduleView';
 import { useDemoScheduleData } from '@/hooks/schedule/useDemoScheduleData';
 import RecruitmentScheduleHeader from './RecruitmentScheduleHeader';
 import RecruitmentFiltersPanel from './RecruitmentFiltersPanel';
+import { Button } from '@/components/ui/button';
+import { CalendarPlus } from 'lucide-react';
 
 interface RecruitmentScheduleViewProps {
   showAddDialog?: boolean;
@@ -42,6 +44,11 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
       setShowAddDialog(show);
     }
     setLocalShowAddDialog(show);
+  };
+  
+  // Handle new appointment button click
+  const handleNewSchedule = () => {
+    handleSetShowAddDialog(true);
   };
 
   return (

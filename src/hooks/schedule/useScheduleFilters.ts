@@ -1,10 +1,9 @@
 
 import { useMemo } from 'react';
 import { Schedule } from '@/types/schedule';
-import { generateDemoStudents } from '@/data/demoStudents';
 
 export const useScheduleFilters = (schedules: Schedule[], today: Date) => {
-  // Calculate today's schedules
+  // Filter for today's schedules
   const todaySchedules = useMemo(() => {
     return schedules.filter(schedule => {
       const scheduleDate = new Date(schedule.date);
@@ -15,111 +14,107 @@ export const useScheduleFilters = (schedules: Schedule[], today: Date) => {
     }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [schedules, today]);
   
-  // Calculate upcoming schedules (não incluindo hoje)
+  // Filter for upcoming schedules (future dates)
   const upcomingSchedules = useMemo(() => {
     return schedules.filter(schedule => {
       const scheduleDate = new Date(schedule.date);
-      const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      const tomorrowStart = new Date(todayStart);
-      tomorrowStart.setDate(todayStart.getDate() + 1);
+      // Check if the date is in the future, but not today
+      const isAfterToday = 
+        (scheduleDate.getDate() > today.getDate() && 
+         scheduleDate.getMonth() === today.getMonth() && 
+         scheduleDate.getFullYear() === today.getFullYear()) ||
+        (scheduleDate.getMonth() > today.getMonth() && 
+         scheduleDate.getFullYear() === today.getFullYear()) ||
+        scheduleDate.getFullYear() > today.getFullYear();
       
-      return scheduleDate >= tomorrowStart &&
-             schedule.status === 'scheduled';
-    }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).slice(0, 5);
+      return isAfterToday && schedule.status === 'scheduled';
+    }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [schedules, today]);
-
-  // Calculate completed schedules
+  
+  // Filter for completed schedules
   const completedSchedules = useMemo(() => {
-    return schedules.filter(schedule => schedule.status === 'completed')
+    return schedules
+      .filter(schedule => schedule.status === 'completed')
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [schedules]);
-
-  // Calculate canceled schedules
+  
+  // Filter for canceled schedules
   const canceledSchedules = useMemo(() => {
-    return schedules.filter(schedule => schedule.status === 'canceled')
+    return schedules
+      .filter(schedule => schedule.status === 'canceled')
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [schedules]);
-
-  // Agrupar agendamentos por mês para estatísticas
-  const schedulesByMonth = useMemo(() => {
-    const months: Record<string, number> = {};
-    
-    schedules.forEach(schedule => {
-      const date = new Date(schedule.date);
-      const monthYear = `${date.getMonth()}-${date.getFullYear()}`;
-      
-      if (!months[monthYear]) {
-        months[monthYear] = 0;
-      }
-      
-      months[monthYear]++;
-    });
-    
-    return months;
+  
+  // Create a list of unique student IDs
+  const studentIds = useMemo(() => {
+    return [...new Set(schedules.map(schedule => schedule.studentId))];
   }, [schedules]);
-
-  // Get the complete list of students from the available demo data
+  
+  // Create a map of students with their names
   const students = useMemo(() => {
-    // Create a unique list of students from all schedules
-    const uniqueStudents = new Map();
-    
-    // Add students from demo data to ensure we always have a full list
-    generateDemoStudents().forEach(student => {
-      uniqueStudents.set(student.id, {
-        id: student.id,
-        name: student.name,
-        riskLevel: student.riskLevel
+    const studentMap = new Map();
+    schedules.forEach(schedule => {
+      studentMap.set(schedule.studentId, {
+        id: schedule.studentId,
+        name: schedule.studentName
       });
     });
-    
-    // Also add any students from schedules that might not be in demo data
-    schedules.forEach(s => {
-      if (!uniqueStudents.has(s.studentId)) {
-        uniqueStudents.set(s.studentId, {
-          id: s.studentId,
-          name: s.studentName
-        });
-      }
-    });
-    
-    return Array.from(uniqueStudents.values());
+    return Array.from(studentMap.values());
   }, [schedules]);
-
-  // Calculate students without active schedules
+  
+  // Create demo students without schedules
   const studentsWithoutSchedules = useMemo(() => {
-    return students.filter(student => {
-      // A student is available if they have NO active (scheduled) appointments
-      return !schedules.some(
-        schedule => 
-          schedule.studentId === student.id && 
-          schedule.status === 'scheduled'
-      );
-    });
-  }, [students, schedules]);
-
-  // Calcular o número de atendimentos por agente
-  const schedulesByAgent = useMemo(() => {
-    const agents: Record<string, number> = {};
+    // In a real app, you would fetch this from the API
+    const demoStudents = [
+      { id: 'student-1', name: 'Leonardo Marques' },
+      { id: 'student-2', name: 'Sofia Andrade' },
+      { id: 'student-3', name: 'Rafael Costa' },
+      { id: 'student-4', name: 'Mariana Oliveira' },
+      { id: 'student-5', name: 'Pedro Henrique' },
+      { id: 'lead-101', name: 'Lucas Ferreira (Lead)' },
+      { id: 'lead-102', name: 'Isabela Santos (Lead)' },
+      { id: 'lead-103', name: 'Marcos Almeida (Lead)' },
+      { id: 'lead-104', name: 'Juliana Ribeiro (Lead)' },
+      { id: 'lead-105', name: 'Thiago Mendes (Lead)' }
+    ];
     
+    // Filter out students that already have a scheduled appointment
+    const scheduledStudentIds = schedules
+      .filter(schedule => schedule.status === 'scheduled')
+      .map(schedule => schedule.studentId);
+    
+    return demoStudents.filter(student => !scheduledStudentIds.includes(student.id));
+  }, [schedules]);
+  
+  // Group schedules by month for analytics
+  const schedulesByMonth = useMemo(() => {
+    const months: { [key: string]: number } = {};
     schedules.forEach(schedule => {
-      if (!agents[schedule.agentName]) {
-        agents[schedule.agentName] = 0;
-      }
-      
-      agents[schedule.agentName]++;
+      const date = new Date(schedule.date);
+      const monthYear = `${date.getMonth() + 1}/${date.getFullYear()}`;
+      months[monthYear] = (months[monthYear] || 0) + 1;
     });
-    
+    return months;
+  }, [schedules]);
+  
+  // Group schedules by agent for analytics
+  const schedulesByAgent = useMemo(() => {
+    const agents: { [key: string]: number } = {};
+    schedules.forEach(schedule => {
+      const agent = schedule.agentName || 'Não definido';
+      agents[agent] = (agents[agent] || 0) + 1;
+    });
     return agents;
   }, [schedules]);
-
+  
   return {
     todaySchedules,
     upcomingSchedules,
     completedSchedules,
     canceledSchedules,
-    schedulesByMonth,
-    schedulesByAgent,
     students,
-    studentsWithoutSchedules
+    studentsWithoutSchedules,
+    schedulesByMonth,
+    schedulesByAgent
   };
 };

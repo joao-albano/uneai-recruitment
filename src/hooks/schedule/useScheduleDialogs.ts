@@ -6,7 +6,7 @@ interface DialogState {
   scheduleDialogOpen: boolean;
   detailsDialogOpen: boolean;
   daySchedulesDialogOpen: boolean;
-  remindersHistoryDialogOpen: boolean;  // Added this property
+  remindersHistoryDialogOpen: boolean;
   selectedSchedule: Schedule | null;
   selectedDay: Date | null;
   preselectedStudentId?: string;
@@ -29,7 +29,7 @@ export const useScheduleDialogs = ({
     scheduleDialogOpen: false,
     detailsDialogOpen: false,
     daySchedulesDialogOpen: false,
-    remindersHistoryDialogOpen: false,  // Initialize the new property
+    remindersHistoryDialogOpen: false,
     selectedSchedule: null,
     selectedDay: null,
     preselectedStudentId: leadId ? `lead-${leadId}` : undefined,
@@ -128,7 +128,7 @@ export const useScheduleDialogs = ({
     handleViewDetails,
     handleNewSchedule,
     handleEditSchedule,
-    handleViewReminders,  // Added stub function
+    handleViewReminders,
     handleOpenChange
   };
 };

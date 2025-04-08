@@ -4,7 +4,6 @@ import { Schedule } from '@/types/schedule';
 import CalendarView from './CalendarView';
 import TodaySchedules from './TodaySchedules';
 import UpcomingSchedules from './UpcomingSchedules';
-import ScheduleStats from './ScheduleStats';
 
 interface ViewModeRendererProps {
   viewMode: string;
@@ -114,8 +113,6 @@ const ViewModeRenderer: React.FC<ViewModeRendererProps> = ({
               onCanceled={handleCanceled}
               onEdit={handleEditSchedule}
             />
-            
-            {/* ScheduleStats component has been removed */}
           </div>
         </div>
       );
