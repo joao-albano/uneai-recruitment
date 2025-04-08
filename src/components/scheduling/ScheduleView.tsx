@@ -37,6 +37,7 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
     handleViewDetails,
     handleNewSchedule,
     handleEditSchedule,
+    handleViewReminders,
     handleOpenChange
   } = useScheduleDialogs({
     externalShowAddDialog,
@@ -85,13 +86,13 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
         handleCanceled={handleCanceled}
         handleEditSchedule={handleEditSchedule}
         handleNewSchedule={handleNewSchedule}
+        handleViewReminders={handleViewReminders}
         setDialogState={setDialogState}
       />
       
       <ScheduleDialogs 
         dialogState={{
-          ...dialogState,
-          scheduleDialogOpen: dialogState.scheduleDialogOpen
+          ...dialogState
         }}
         setDialogState={setDialogState}
         students={students}

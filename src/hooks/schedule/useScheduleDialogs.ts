@@ -6,6 +6,7 @@ interface DialogState {
   scheduleDialogOpen: boolean;
   detailsDialogOpen: boolean;
   daySchedulesDialogOpen: boolean;
+  remindersHistoryDialogOpen: boolean;  // Added this property
   selectedSchedule: Schedule | null;
   selectedDay: Date | null;
   preselectedStudentId?: string;
@@ -28,6 +29,7 @@ export const useScheduleDialogs = ({
     scheduleDialogOpen: false,
     detailsDialogOpen: false,
     daySchedulesDialogOpen: false,
+    remindersHistoryDialogOpen: false,  // Initialize the new property
     selectedSchedule: null,
     selectedDay: null,
     preselectedStudentId: leadId ? `lead-${leadId}` : undefined,
@@ -99,6 +101,13 @@ export const useScheduleDialogs = ({
     }));
   }, []);
   
+  // Handle view reminders (stub function to satisfy interface requirements)
+  const handleViewReminders = useCallback(() => {
+    console.log("View reminders handler (currently disabled)");
+    // This function is kept as a stub to satisfy interface requirements
+    // but doesn't actually open the reminders dialog anymore
+  }, []);
+  
   // Handle open change
   const handleOpenChange = useCallback((open: boolean) => {
     console.log("handleOpenChange called with:", open);
@@ -119,6 +128,7 @@ export const useScheduleDialogs = ({
     handleViewDetails,
     handleNewSchedule,
     handleEditSchedule,
+    handleViewReminders,  // Added stub function
     handleOpenChange
   };
 };
