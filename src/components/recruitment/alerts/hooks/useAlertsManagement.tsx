@@ -23,10 +23,12 @@ export const useAlertsManagement = () => {
   } | null>(null);
   
   useEffect(() => {
-    // Verificar se temos alertas, caso não, gerar dados demonstrativos
+    // Generate demo data if no alerts exist
     if (alerts.length === 0) {
-      console.log(`Carregando dados de demonstração para a lista de alertas de ${currentProduct === 'recruitment' ? 'captação' : 'retenção'}`);
+      console.log(`Generating demo data for ${currentProduct === 'recruitment' ? 'recruitment' : 'retention'} alerts`);
       generateDemoData();
+    } else {
+      console.log(`Found ${alerts.length} alerts in total`);
     }
   }, [alerts.length, generateDemoData, currentProduct]);
   
@@ -34,6 +36,12 @@ export const useAlertsManagement = () => {
   const filteredAlerts = currentProduct === 'recruitment' 
     ? filterRecruitmentAlerts(alerts, searchTerm)
     : filterRetentionAlerts(alerts, searchTerm);
+  
+  // Log the number of filtered alerts for debugging
+  useEffect(() => {
+    console.log(`Filtered alerts for ${currentProduct}: ${filteredAlerts.length}`);
+    console.log(`Alert types present:`, filteredAlerts.map(a => a.type));
+  }, [filteredAlerts, currentProduct]);
   
   // Divide alerts into unread and read
   const unreadAlerts = filteredAlerts.filter(alert => !alert.read);

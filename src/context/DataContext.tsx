@@ -1,4 +1,3 @@
-
 import React, { useContext, useCallback, createContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useStudents } from './students/StudentsContext';
@@ -10,6 +9,7 @@ import { useWhatsApp } from './whatsapp/WhatsAppContext';
 import { useAppState } from './app/AppStateContext';
 import { processSurveyForRisk } from '@/utils/riskCalculator';
 import { DataContextType, AlertItem, StudentData } from '@/types/data';
+import { generateDemoAlerts } from '@/data/demoAlerts';
 
 // Main context combining all sub-contexts
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -22,7 +22,22 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { surveys, addSurvey } = useSurveys();
   const { uploadHistory, addUploadRecord, clearUploadHistory } = useUploads();
   const { whatsAppConfig, whatsAppMessages, addWhatsAppMessage, sendWhatsAppSurvey } = useWhatsApp();
-  const { isLoading, generateDemoData } = useAppState();
+  const { isLoading, generateDemoData: appStateGenerateDemoData } = useAppState();
+
+  // Custom generateDemoData that ensures alerts are loaded
+  const generateDemoData = useCallback(() => {
+    console.log("Generating demo data including alerts...");
+    // Call the app state demo data generator
+    appStateGenerateDemoData();
+    
+    // Make sure we have alerts
+    if (alerts.length === 0) {
+      console.log("No alerts found, loading demo alerts");
+      const demoAlerts = generateDemoAlerts();
+      setAlerts(demoAlerts);
+      console.log(`Loaded ${demoAlerts.length} demo alerts`);
+    }
+  }, [alerts.length, appStateGenerateDemoData, setAlerts]);
 
   // Process survey with risk model
   const processSurveyWithRiskModel = useCallback((survey: any) => {

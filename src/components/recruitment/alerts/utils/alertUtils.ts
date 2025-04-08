@@ -1,3 +1,4 @@
+
 import { Alert } from '@/types/alert';
 
 export const getAlertTitle = (alert: Alert): string => {
@@ -63,16 +64,19 @@ export const getDefaultAlertMessage = (alert: Alert): string => {
 };
 
 export const filterRecruitmentAlerts = (alerts: Alert[], searchTerm: string) => {
-  const recruitmentAlertTypes = ['lead-opportunity', 'stage-change', 'campaign-performance', 'lead-assigned'];
+  // Include both recruitment-specific alert types and general info/error types
+  // Make sure 'info' and 'error' types are also included for recruitment
+  const recruitmentAlertTypes = ['lead-opportunity', 'stage-change', 'campaign-performance', 'lead-assigned', 'info', 'error'];
   
   return alerts.filter(alert => {
-    const isRecruitmentAlert = 
-      recruitmentAlertTypes.includes(alert.type) || 
-      ['info', 'error'].includes(alert.type);
+    // Check if this alert type is included in recruitment alerts
+    const isRecruitmentAlert = recruitmentAlertTypes.includes(alert.type);
     
-    const matchesSearch = 
+    // Check if the alert matches the search term
+    const matchesSearch = searchTerm ? (
       (alert.studentName && alert.studentName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (alert.message && alert.message.toLowerCase().includes(searchTerm.toLowerCase()));
+      (alert.message && alert.message.toLowerCase().includes(searchTerm.toLowerCase()))
+    ) : true; // If no search term, include all
     
     return isRecruitmentAlert && matchesSearch;
   });

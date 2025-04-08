@@ -34,6 +34,8 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
     setAlerts(demoAlerts);
     setSchedules(demoSchedules);
     
+    console.log(`Loaded ${demoAlerts.length} alerts`);
+    
     // Adicionar registro de upload fictício
     addUploadRecord({
       filename: 'demo_dados.csv',
@@ -49,9 +51,9 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
     }, 800);
   }, [setStudents, setAlerts, setSchedules, addUploadRecord]);
 
-  // Inicializar com dados de demonstração ao carregar o componente
+  // Initialize with demo data when component is loaded
   useEffect(() => {
-    console.log('AppStateProvider montado');
+    console.log('AppStateProvider mounted');
   }, []);
 
   const value = {
