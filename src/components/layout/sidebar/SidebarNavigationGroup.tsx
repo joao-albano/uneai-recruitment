@@ -13,7 +13,7 @@ interface SidebarNavigationGroupProps {
 const SidebarNavigationGroup: React.FC<SidebarNavigationGroupProps> = ({
   title,
   collapsed,
-  defaultOpen = false,
+  defaultOpen = true,
   children
 }) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
@@ -27,46 +27,24 @@ const SidebarNavigationGroup: React.FC<SidebarNavigationGroupProps> = ({
   return (
     <div className="py-2">
       {!collapsed ? (
-        <GroupHeader 
-          title={title} 
-          isOpen={isOpen} 
-          toggleOpen={toggleOpen} 
-        />
+        <button
+          onClick={toggleOpen}
+          className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium"
+        >
+          {title}
+          <ChevronDown
+            className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")}
+          />
+        </button>
       ) : null}
       
       {(isOpen || collapsed) && (
-        <GroupContent>{children}</GroupContent>
+        <div className="mt-1 space-y-1">
+          {children}
+        </div>
       )}
     </div>
   );
 };
-
-// Internal component for the group header with toggle functionality
-const GroupHeader = ({ 
-  title, 
-  isOpen, 
-  toggleOpen 
-}: { 
-  title: string; 
-  isOpen: boolean; 
-  toggleOpen: () => void;
-}) => (
-  <button
-    onClick={toggleOpen}
-    className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium"
-  >
-    {title}
-    <ChevronDown
-      className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")}
-    />
-  </button>
-);
-
-// Internal component for the group content
-const GroupContent = ({ children }: { children: React.ReactNode }) => (
-  <div className="mt-1 space-y-1">
-    {children}
-  </div>
-);
 
 export default SidebarNavigationGroup;

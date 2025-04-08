@@ -1,6 +1,5 @@
 
 import React from 'react';
-import SidebarNavigationGroup from './SidebarNavigationGroup';
 import { useProduct } from '@/context/product';
 
 // Import the individual navigation link components
@@ -25,10 +24,7 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
   console.log('SidebarNavigationSection - currentProduct:', currentProduct);
   
   return (
-    <SidebarNavigationGroup 
-      title="Navegação" 
-      collapsed={collapsed}
-    >
+    <div className="py-2">
       <CommonNavLinks collapsed={collapsed} />
       
       {/* Links específicos para o produto de retenção */}
@@ -70,7 +66,7 @@ const SidebarNavigationSection: React.FC<SidebarNavigationSectionProps> = ({ col
       {currentProduct === 'pedagogical' && (
         <PedagogicalNavLinks collapsed={collapsed} />
       )}
-    </SidebarNavigationGroup>
+    </div>
   );
 };
 
