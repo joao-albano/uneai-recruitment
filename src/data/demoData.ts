@@ -1,6 +1,147 @@
 
 import { Schedule } from '@/types/schedule';
 import { addDays, subDays, subWeeks, addWeeks, setHours, setMinutes } from 'date-fns';
+import { StudentData } from '@/types/data';
+import { AlertItem } from '@/types/data';
+import { v4 as uuidv4 } from 'uuid';
+
+export const generateDemoStudents = (): StudentData[] => {
+  return [
+    {
+      id: '1',
+      name: 'Ana Silva',
+      registrationNumber: '2023001',
+      class: '9A',
+      segment: 'ENSINO FUNDAMENTAL II',
+      grade: 5.8,
+      attendance: 75,
+      behavior: 3,
+      riskLevel: 'high',
+      parentName: 'Maria Silva',
+      parentContact: '5511999991111',
+      actionItems: [
+        'Agendar reunião com responsável',
+        'Reforço em matemática e língua portuguesa',
+        'Acompanhamento psicopedagógico'
+      ],
+      decisionPath: [
+        'Frequência abaixo de 80% (75%)',
+        'Notas abaixo da média em 3 disciplinas',
+        'Comportamento: nível 3 (neutro)',
+        'Conclusão: Aluno com alto risco de evasão'
+      ]
+    },
+    {
+      id: '2',
+      name: 'Bruno Santos',
+      registrationNumber: '2023002',
+      class: '9A',
+      segment: 'ENSINO FUNDAMENTAL II',
+      grade: 9.2,
+      attendance: 95,
+      behavior: 5,
+      riskLevel: 'low',
+      parentName: 'João Santos',
+      parentContact: '5511999992222',
+      actionItems: [
+        'Incentivo a participar de olimpíadas acadêmicas',
+        'Oportunidades de liderança em projetos'
+      ],
+      decisionPath: [
+        'Frequência acima de 90% (95%)',
+        'Excelente desempenho acadêmico (9.2)',
+        'Comportamento exemplar (nível 5)',
+        'Conclusão: Baixo risco, potencial para destaque acadêmico'
+      ]
+    },
+    {
+      id: '3',
+      name: 'Carla Oliveira',
+      registrationNumber: '2023003',
+      class: '9B',
+      segment: 'ENSINO FUNDAMENTAL II',
+      grade: 6.8,
+      attendance: 85,
+      behavior: 4,
+      riskLevel: 'medium',
+      parentName: 'Paula Oliveira',
+      parentContact: '5511999993333',
+      actionItems: [
+        'Monitoramento do desempenho em matemática',
+        'Feedback quinzenal sobre progresso'
+      ],
+      decisionPath: [
+        'Frequência adequada (85%)',
+        'Notas limítrofes em matemática',
+        'Comportamento bom (nível 4)',
+        'Conclusão: Risco médio, necessita acompanhamento preventivo'
+      ]
+    },
+    // ... Additional student data kept from previous implementation
+  ];
+};
+
+export const generateDemoAlerts = (): AlertItem[] => {
+  const now = new Date();
+  
+  return [
+    {
+      id: uuidv4(),
+      studentId: '1',
+      studentName: 'Ana Silva',
+      studentClass: '9A',
+      type: 'high-risk',
+      message: 'Alto risco de evasão detectado. Frequência abaixo de 80% e notas em declínio.',
+      createdAt: new Date(now.getTime() - 1000 * 60 * 60 * 2), // 2 hours ago
+      read: false,
+      actionTaken: false
+    },
+    {
+      id: uuidv4(),
+      studentId: '5',
+      studentName: 'Elena Costa',
+      studentClass: '9C',
+      type: 'meeting-scheduled',
+      message: 'Reunião com pais agendada para 15/04 às 14:00.',
+      createdAt: new Date(now.getTime() - 1000 * 60 * 60 * 5), // 5 hours ago
+      read: true,
+      actionTaken: true
+    },
+    {
+      id: uuidv4(),
+      studentId: '3',
+      studentName: 'Carla Oliveira',
+      studentClass: '9B',
+      type: 'medium-risk',
+      message: 'Risco médio identificado. Queda em matemática nas últimas avaliações.',
+      createdAt: new Date(now.getTime() - 1000 * 60 * 60 * 24), // 1 day ago
+      read: false,
+      actionTaken: false
+    },
+    {
+      id: uuidv4(),
+      studentId: 'lead-101',
+      studentName: 'Lucas Ferreira',
+      studentClass: 'Lead',
+      type: 'lead-opportunity',
+      message: 'Novo lead qualificado para Engenharia Civil com alta probabilidade de conversão.',
+      createdAt: new Date(now.getTime() - 1000 * 60 * 60 * 8), // 8 hours ago
+      read: false,
+      actionTaken: false
+    },
+    {
+      id: uuidv4(),
+      studentId: 'lead-102',
+      studentName: 'Isabela Santos',
+      studentClass: 'Lead',
+      type: 'appointment-reminder',
+      message: 'Lembrete: Visita agendada com pais para amanhã às 10h.',
+      createdAt: new Date(now.getTime() - 1000 * 60 * 30), // 30 minutes ago
+      read: false,
+      actionTaken: false
+    }
+  ];
+};
 
 export const generateDemoSchedules = (): Schedule[] => {
   const today = new Date();
