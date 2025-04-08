@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Campus } from '@/types/recruitment/campus';
 import CampusForm from './form/CampusForm';
 import { useCampusForm } from './hooks/useCampusForm';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface CampusDialogProps {
   open: boolean;
@@ -18,6 +19,8 @@ const CampusDialog: React.FC<CampusDialogProps> = ({
   campus, 
   mode 
 }) => {
+  const isMobile = useIsMobile();
+  
   const {
     courses,
     handleCoursesChange,
@@ -31,7 +34,10 @@ const CampusDialog: React.FC<CampusDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent 
+        className={`${isMobile ? 'w-[95vw] p-4' : 'sm:max-w-[95%] md:max-w-[80%] lg:max-w-[700px]'} 
+          max-h-[90vh] overflow-y-auto`}
+      >
         <DialogHeader>
           <DialogTitle>
             {mode === 'create' ? 'Cadastrar Nova Unidade' : 'Editar Unidade'}
