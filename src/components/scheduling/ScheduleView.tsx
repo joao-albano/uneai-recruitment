@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSchedules } from '@/context/schedules/SchedulesContext';
 import { useCalendarState } from '@/hooks/useCalendarState';
 import { useScheduleFilters } from '@/hooks/schedule/useScheduleFilters';
@@ -12,9 +12,17 @@ import { ProductType } from '@/context/product/types';
 
 interface ScheduleViewProps {
   productContext?: ProductType;
+  showAddDialog?: boolean;
+  setShowAddDialog?: (show: boolean) => void;
+  leadId?: string | null;
 }
 
-const ScheduleView: React.FC<ScheduleViewProps> = ({ productContext }) => {
+const ScheduleView: React.FC<ScheduleViewProps> = ({ 
+  productContext,
+  showAddDialog: externalShowAddDialog,
+  setShowAddDialog: externalSetShowAddDialog,
+  leadId
+}) => {
   const { visibleSchedules } = useSchedules();
   const today = new Date();
   const [dialogState, setDialogState] = useState({
@@ -23,8 +31,36 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ productContext }) => {
     daySchedulesDialogOpen: false,
     remindersHistoryDialogOpen: false,
     selectedSchedule: null,
-    selectedDay: null
+    selectedDay: null,
+    preselectedStudentId: leadId ? `lead-${leadId}` : undefined
   });
+  
+  // Use external state if provided
+  useEffect(() => {
+    if (externalShowAddDialog !== undefined) {
+      setDialogState(prev => ({
+        ...prev,
+        scheduleDialogOpen: externalShowAddDialog
+      }));
+    }
+  }, [externalShowAddDialog]);
+  
+  // Update external state when dialog closes
+  useEffect(() => {
+    if (!dialogState.scheduleDialogOpen && externalSetShowAddDialog && externalShowAddDialog) {
+      externalSetShowAddDialog(false);
+    }
+  }, [dialogState.scheduleDialogOpen, externalSetShowAddDialog, externalShowAddDialog]);
+  
+  // Update preselected student ID when leadId changes
+  useEffect(() => {
+    if (leadId) {
+      setDialogState(prev => ({
+        ...prev,
+        preselectedStudentId: `lead-${leadId}`
+      }));
+    }
+  }, [leadId]);
   
   // Filter schedules based on product context if specified
   const filteredSchedules = productContext 
@@ -65,6 +101,18 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ productContext }) => {
       ...prev,
       remindersHistoryDialogOpen: true
     }));
+  };
+  
+  const handleOpenChange = (open: boolean) => {
+    setDialogState(prev => ({
+      ...prev,
+      scheduleDialogOpen: open
+    }));
+    
+    // Also update external state if provided
+    if (externalSetShowAddDialog) {
+      externalSetShowAddDialog(open);
+    }
   };
   
   return (
@@ -119,11 +167,16 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ productContext }) => {
       </div>
       
       <ScheduleDialogs 
-        dialogState={dialogState}
+        dialogState={{
+          ...dialogState,
+          scheduleDialogOpen: dialogState.scheduleDialogOpen || (externalShowAddDialog || false)
+        }}
         setDialogState={setDialogState}
         students={students}
         availableStudents={studentsWithoutSchedules}
         productContext={productContext}
+        onOpenChange={handleOpenChange}
+        preselectedStudentId={dialogState.preselectedStudentId}
       />
     </div>
   );

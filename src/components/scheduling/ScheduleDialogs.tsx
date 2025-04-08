@@ -23,10 +23,13 @@ interface ScheduleDialogsProps {
     remindersHistoryDialogOpen: boolean;
     selectedSchedule: Schedule | null;
     selectedDay: Date | null;
+    preselectedStudentId?: string;
   }>>;
   students: any[];
   availableStudents: any[];
   productContext?: ProductType;
+  onOpenChange?: (open: boolean) => void;
+  preselectedStudentId?: string;
 }
 
 const ScheduleDialogs: React.FC<ScheduleDialogsProps> = ({
@@ -34,12 +37,28 @@ const ScheduleDialogs: React.FC<ScheduleDialogsProps> = ({
   setDialogState,
   students,
   availableStudents,
-  productContext
+  productContext,
+  onOpenChange,
+  preselectedStudentId
 }) => {
   // Function to handle schedule status changes
   const handleStatusChange = (id: string, status: 'scheduled' | 'completed' | 'canceled') => {
     // Update the status in context
     console.log(`Changing status for ${id} to ${status}`);
+  };
+  
+  // Handle opening/closing the schedule dialog
+  const handleScheduleDialogOpenChange = (open: boolean) => {
+    // Update internal state
+    setDialogState(prev => ({
+      ...prev,
+      scheduleDialogOpen: open
+    }));
+    
+    // Call external handler if provided
+    if (onOpenChange) {
+      onOpenChange(open);
+    }
   };
   
   // Mock messages for reminders history
@@ -49,14 +68,10 @@ const ScheduleDialogs: React.FC<ScheduleDialogsProps> = ({
     <>
       <ScheduleDialog
         open={dialogState.scheduleDialogOpen}
-        onOpenChange={(open) => {
-          setDialogState(prev => ({
-            ...prev,
-            scheduleDialogOpen: open
-          }));
-        }}
+        onOpenChange={handleScheduleDialogOpenChange}
         availableStudents={availableStudents}
         productContext={productContext}
+        preselectedStudentId={preselectedStudentId}
       />
       
       <ScheduleDetailsDialog

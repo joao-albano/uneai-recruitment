@@ -8,8 +8,20 @@ import ScheduleView from '@/components/scheduling/ScheduleView';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 
-const RecruitmentScheduleView: React.FC = () => {
+interface RecruitmentScheduleViewProps {
+  showAddDialog?: boolean;
+  setShowAddDialog?: (show: boolean) => void;
+  leadId?: string | null;
+}
+
+const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
+  showAddDialog,
+  setShowAddDialog,
+  leadId
+}) => {
   const { schedules, setSchedules, visibleSchedules } = useSchedules();
   const { toast } = useToast();
   const { currentProduct } = useProduct();
@@ -36,7 +48,60 @@ const RecruitmentScheduleView: React.FC = () => {
     // Load demo data if no schedules exist
     if (schedules.length === 0) {
       const demoSchedules = generateDemoSchedules();
-      setSchedules(demoSchedules);
+      
+      // Add some recruitment-specific schedules for demonstration
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      const nextWeek = new Date(today);
+      nextWeek.setDate(nextWeek.getDate() + 7);
+      
+      const recruitmentSchedules = [
+        {
+          id: `schedule-recruit-1`,
+          studentId: 'lead-101',
+          studentName: 'Lead Maria Silva',
+          date: today,
+          agentName: 'Coord. Renata',
+          status: 'scheduled',
+          notes: 'Interesse em matrícula para o próximo semestre',
+          productContext: 'recruitment',
+          educationType: 'higher',
+          studentPhone: '(11) 98765-4321',
+          studentEmail: 'maria.silva@email.com',
+          course: 'Administração'
+        },
+        {
+          id: `schedule-recruit-2`,
+          studentId: 'lead-102',
+          studentName: 'Lead João Santos',
+          date: tomorrow,
+          agentName: 'Prof. Ricardo',
+          status: 'scheduled',
+          notes: 'Pai interessado em conhecer a escola',
+          productContext: 'recruitment',
+          educationType: 'basic',
+          parentName: 'Roberto Santos',
+          parentPhone: '(11) 91234-5678'
+        },
+        {
+          id: `schedule-recruit-3`,
+          studentId: 'lead-103',
+          studentName: 'Lead Ana Costa',
+          date: nextWeek,
+          agentName: 'Coord. Mariana',
+          status: 'scheduled',
+          notes: 'Potencial transferência de outra universidade',
+          productContext: 'recruitment',
+          educationType: 'higher',
+          studentPhone: '(11) 97777-8888',
+          studentEmail: 'ana.costa@email.com',
+          course: 'Medicina'
+        }
+      ];
+      
+      setSchedules([...demoSchedules, ...recruitmentSchedules]);
       
       toast({
         title: "Dados de demonstração carregados",
@@ -44,6 +109,12 @@ const RecruitmentScheduleView: React.FC = () => {
       });
     }
   }, [schedules.length, setSchedules, toast]);
+
+  const handleNewSchedule = () => {
+    if (setShowAddDialog) {
+      setShowAddDialog(true);
+    }
+  };
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -54,6 +125,11 @@ const RecruitmentScheduleView: React.FC = () => {
             Gerencie atendimentos e acompanhamentos de leads
           </p>
         </div>
+        
+        <Button className="flex items-center gap-2" onClick={handleNewSchedule}>
+          <Plus className="h-4 w-4" />
+          Novo Agendamento
+        </Button>
       </div>
       
       <Card className="mx-6 mb-4">
@@ -107,7 +183,12 @@ const RecruitmentScheduleView: React.FC = () => {
       </Card>
       
       <main className="flex-1 overflow-y-auto p-6 pointer-events-auto">
-        <ScheduleView productContext="recruitment" />
+        <ScheduleView 
+          productContext="recruitment" 
+          showAddDialog={showAddDialog}
+          setShowAddDialog={setShowAddDialog}
+          leadId={leadId}
+        />
       </main>
     </div>
   );

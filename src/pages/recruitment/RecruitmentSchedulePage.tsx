@@ -11,6 +11,8 @@ const RecruitmentSchedulePage: React.FC = () => {
   const { setCurrentProduct } = useProduct();
   const [searchParams] = useSearchParams();
   const action = searchParams.get('action');
+  const leadId = searchParams.get('leadId');
+  const [showAddDialog, setShowAddDialog] = useState(false);
   
   // Set the current product to 'recruitment'
   useEffect(() => {
@@ -20,8 +22,18 @@ const RecruitmentSchedulePage: React.FC = () => {
     // If there's an action parameter, expand the sidebar for better context
     if (action) {
       setSidebarCollapsed(false);
+      
+      // If the action is 'new', show the add dialog
+      if (action === 'new') {
+        setShowAddDialog(true);
+        console.log('Opening new appointment dialog from URL parameter');
+        
+        if (leadId) {
+          console.log(`Lead ID passed: ${leadId}`);
+        }
+      }
     }
-  }, [setCurrentProduct, action]);
+  }, [setCurrentProduct, action, leadId]);
   
   return (
     <Layout
@@ -31,7 +43,11 @@ const RecruitmentSchedulePage: React.FC = () => {
       setSidebarCollapsed={setSidebarCollapsed}
     >
       <div className="container mx-auto py-6">
-        <RecruitmentScheduleView />
+        <RecruitmentScheduleView 
+          showAddDialog={showAddDialog}
+          setShowAddDialog={setShowAddDialog}
+          leadId={leadId}
+        />
       </div>
     </Layout>
   );

@@ -9,19 +9,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useScheduleOperations } from '@/hooks/schedule/useScheduleOperations';
 import { ProductType } from '@/context/product/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { mockLeadsData } from '@/components/recruitment/leads/data/mockLeadsData';
 
 interface ScheduleDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   availableStudents: any[];
   productContext?: ProductType;
+  preselectedStudentId?: string;
 }
 
 const ScheduleDialog: React.FC<ScheduleDialogProps> = ({ 
   open, 
   onOpenChange,
   availableStudents,
-  productContext
+  productContext,
+  preselectedStudentId
 }) => {
   const [selectedStudent, setSelectedStudent] = useState('');
   const [scheduleDate, setScheduleDate] = useState('');
@@ -39,12 +42,26 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
   
   const { handleScheduleSubmit } = useScheduleOperations();
   
-  // Reset form when dialog opens
+  // Reset form when dialog opens and set preselected student if provided
   useEffect(() => {
     if (open) {
-      setSelectedStudent('');
-      setScheduleDate('');
-      setScheduleTime('');
+      // Set current date and time
+      const now = new Date();
+      const dateString = now.toISOString().split('T')[0];
+      const timeString = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      
+      setScheduleDate(dateString);
+      setScheduleTime(timeString);
+      
+      // Use preselected student ID if provided
+      if (preselectedStudentId) {
+        setSelectedStudent(preselectedStudentId);
+        console.log(`Preselecting student: ${preselectedStudentId}`);
+      } else {
+        setSelectedStudent('');
+      }
+      
+      // Reset other fields
       setNotes('');
       setAgentName('');
       setParentName('');
@@ -54,7 +71,14 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
       setCourse('');
       setEducationType('basic');
     }
-  }, [open]);
+  }, [open, preselectedStudentId]);
+  
+  // Log available students for debugging
+  useEffect(() => {
+    if (productContext === 'recruitment' && open) {
+      console.log("Mock leads data for recruitment:", mockLeadsData);
+    }
+  }, [productContext, open]);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,12 +114,21 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
     }
   };
   
+  // Create a merged list of available students and mock leads for recruitment context
+  const mergedStudents = productContext === 'recruitment' 
+    ? [...availableStudents, ...mockLeadsData.map(lead => ({
+        id: `lead-${lead.id}`,
+        name: lead.name
+      }))]
+    : availableStudents;
+  
   // Filter students based on product context if specified
   const filteredStudents = productContext 
-    ? availableStudents.filter(student => 
-        (productContext === 'recruitment' && student.id.startsWith('lead-')) ||
-        (productContext === 'retention' && !student.id.startsWith('lead-')))
-    : availableStudents;
+    ? mergedStudents.filter(student => 
+        (productContext === 'recruitment' && 
+         (String(student.id).startsWith('lead-') || (typeof student.id === 'number' && `lead-${student.id}`.startsWith('lead-')))) ||
+        (productContext === 'retention' && !String(student.id).startsWith('lead-')))
+    : mergedStudents;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -129,7 +162,7 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
               </SelectTrigger>
               <SelectContent>
                 {filteredStudents.map((student) => (
-                  <SelectItem key={student.id} value={student.id}>
+                  <SelectItem key={student.id} value={String(student.id)}>
                     {student.name || `${productContext === 'recruitment' ? 'Lead' : 'Aluno'} ${student.id}`}
                   </SelectItem>
                 ))}
@@ -180,7 +213,7 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
             </div>
           </div>
           
-          {/* Education specific fields */}
+          {/* Display fields based on education type */}
           {productContext === 'recruitment' && educationType === 'basic' && (
             <div className="space-y-4">
               <div className="space-y-2">
