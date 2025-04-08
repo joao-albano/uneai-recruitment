@@ -9,8 +9,9 @@ import Layout from '@/components/layout/Layout';
 import FeatureCard from '@/components/recruitment/home/FeatureCard';
 
 const RecruitmentHomePage: React.FC = () => {
+  // Inicialize o sidebar fechado (sidebarOpen = false) e colapsado (sidebarCollapsed = true)
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(true);
   const { toast } = useToast();
   const { setCurrentProduct } = useProduct();
   
