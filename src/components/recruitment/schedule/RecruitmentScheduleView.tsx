@@ -46,6 +46,7 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
   };
 
   const handleViewReminders = () => {
+    console.log("Opening reminders history dialog");
     setShowRemindersHistory(true);
   };
 

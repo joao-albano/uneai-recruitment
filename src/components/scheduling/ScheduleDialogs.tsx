@@ -7,6 +7,7 @@ import RemindersHistoryDialog from './RemindersHistoryDialog';
 import { Schedule } from '@/types/schedule';
 import { ProductType } from '@/context/product/types';
 import { useScheduleOperations } from '@/hooks/schedule/useScheduleOperations';
+import { useWhatsApp } from '@/context/whatsapp/WhatsAppContext';
 
 interface ScheduleDialogsProps {
   dialogState: {
@@ -46,6 +47,7 @@ const ScheduleDialogs: React.FC<ScheduleDialogsProps> = ({
   preselectedStudentId
 }) => {
   const { markCompleted, cancelSchedule } = useScheduleOperations();
+  const { whatsAppMessages } = useWhatsApp();
   
   // Handle schedule status changes
   const handleStatusChange = (id: string, status: 'scheduled' | 'completed' | 'canceled') => {
@@ -64,6 +66,7 @@ const ScheduleDialogs: React.FC<ScheduleDialogsProps> = ({
   
   // Handle opening/closing the schedule dialog
   const handleScheduleDialogOpenChange = (open: boolean) => {
+    console.log("Schedule dialog open change:", open);
     // Update internal state
     setDialogState(prev => ({
       ...prev,
@@ -87,8 +90,14 @@ const ScheduleDialogs: React.FC<ScheduleDialogsProps> = ({
     }));
   };
   
-  // Mock messages for reminders history
-  const reminderMessages = [];
+  // Handle reminders history dialog open change
+  const handleRemindersHistoryDialogOpenChange = (open: boolean) => {
+    console.log("Reminders history dialog open change:", open);
+    setDialogState(prev => ({
+      ...prev,
+      remindersHistoryDialogOpen: open
+    }));
+  };
 
   return (
     <>
@@ -140,13 +149,8 @@ const ScheduleDialogs: React.FC<ScheduleDialogsProps> = ({
       
       <RemindersHistoryDialog
         open={dialogState.remindersHistoryDialogOpen}
-        onOpenChange={(open) => {
-          setDialogState(prev => ({
-            ...prev,
-            remindersHistoryDialogOpen: open
-          }));
-        }}
-        messages={reminderMessages}
+        onOpenChange={handleRemindersHistoryDialogOpenChange}
+        messages={whatsAppMessages}
       />
     </>
   );

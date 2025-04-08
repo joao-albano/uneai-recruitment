@@ -69,6 +69,18 @@ const RemindersHistoryDialog: React.FC<RemindersHistoryDialogProps> = ({
     }
   }, [open, messages]);
   
+  // Function to handle dialog open state changes
+  const handleDialogOpenChange = (newOpenState: boolean) => {
+    // If the dialog is being closed, let's handle it
+    if (!newOpenState) {
+      // First clear selected message if any
+      setSelectedMessage(null);
+    }
+    
+    // Call the parent's onOpenChange
+    onOpenChange(newOpenState);
+  };
+  
   // Filter only appointment reminder messages
   const reminderMessages = useMemo(() => {
     return displayMessages.filter(msg => 
@@ -102,9 +114,17 @@ const RemindersHistoryDialog: React.FC<RemindersHistoryDialogProps> = ({
     return format(new Date(date), 'dd/MM/yyyy HH:mm', { locale: dateLocale });
   };
   
+  // Prevent event propagation for dialog content clicks
+  const handleContentClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+  
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] flex flex-col">
+    <Dialog open={open} onOpenChange={handleDialogOpenChange}>
+      <DialogContent 
+        className="sm:max-w-[700px] max-h-[90vh] flex flex-col"
+        onClick={handleContentClick}
+      >
         <DialogHeader>
           <DialogTitle>
             {language === 'pt-BR' ? 'Histórico de Lembretes de Agendamento' : 'Appointment Reminders History'}
@@ -166,7 +186,10 @@ const RemindersHistoryDialog: React.FC<RemindersHistoryDialogProps> = ({
                           <Button 
                             variant="ghost" 
                             size="icon" 
-                            onClick={() => setSelectedMessage(message)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedMessage(message);
+                            }}
                             className="h-8 w-8"
                           >
                             <Info className="h-4 w-4" />
@@ -198,7 +221,10 @@ const RemindersHistoryDialog: React.FC<RemindersHistoryDialogProps> = ({
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => setSelectedMessage(null)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedMessage(null);
+              }}
               className="mt-2"
             >
               {language === 'pt-BR' ? 'Fechar detalhes' : 'Close details'}
@@ -207,7 +233,12 @@ const RemindersHistoryDialog: React.FC<RemindersHistoryDialogProps> = ({
         )}
         
         <DialogFooter className="mt-4">
-          <Button onClick={() => onOpenChange(false)}>
+          <Button 
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDialogOpenChange(false);
+            }}
+          >
             {language === 'pt-BR' ? 'Fechar' : 'Close'}
           </Button>
         </DialogFooter>

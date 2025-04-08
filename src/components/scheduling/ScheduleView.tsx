@@ -118,7 +118,7 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
       <RemindersHistoryDialog
         open={dialogState.remindersHistoryDialogOpen}
         onOpenChange={handleRemindersDialogOpenChange}
-        messages={whatsAppMessages}
+        messages={whatsAppMessages || []}
       />
     </div>
   );

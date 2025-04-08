@@ -10,6 +10,15 @@ interface RecruitmentScheduleHeaderProps {
 const RecruitmentScheduleHeader: React.FC<RecruitmentScheduleHeaderProps> = ({
   handleViewReminders
 }) => {
+  const handleRemindersClick = (e: React.MouseEvent) => {
+    // Prevent event propagation
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Call the handler
+    handleViewReminders();
+  };
+  
   return (
     <div className="flex justify-between items-center mb-4 mt-4 px-6">
       <div>
@@ -22,7 +31,7 @@ const RecruitmentScheduleHeader: React.FC<RecruitmentScheduleHeaderProps> = ({
       <Button 
         variant="outline" 
         className="flex items-center gap-2"
-        onClick={handleViewReminders}
+        onClick={handleRemindersClick}
       >
         <History className="h-4 w-4" />
         Histórico de Lembretes
