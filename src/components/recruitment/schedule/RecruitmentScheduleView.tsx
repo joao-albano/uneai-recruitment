@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { Schedule } from '@/types/schedule';
+import { ProductType } from '@/context/product/types';
 
 interface RecruitmentScheduleViewProps {
   showAddDialog?: boolean;
@@ -58,7 +59,7 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
       const nextWeek = new Date(today);
       nextWeek.setDate(nextWeek.getDate() + 7);
       
-      const recruitmentSchedules = [
+      const recruitmentSchedules: Schedule[] = [
         {
           id: `schedule-recruit-1`,
           studentId: 'lead-101',
@@ -67,7 +68,7 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
           agentName: 'Coord. Renata',
           status: 'scheduled' as const,
           notes: 'Interesse em matrícula para o próximo semestre',
-          productContext: 'recruitment',
+          productContext: 'recruitment' as ProductType,
           educationType: 'higher',
           studentPhone: '(11) 98765-4321',
           studentEmail: 'maria.silva@email.com',
@@ -81,7 +82,7 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
           agentName: 'Prof. Ricardo',
           status: 'scheduled' as const,
           notes: 'Pai interessado em conhecer a escola',
-          productContext: 'recruitment',
+          productContext: 'recruitment' as ProductType,
           educationType: 'basic',
           parentName: 'Roberto Santos',
           parentPhone: '(11) 91234-5678'
@@ -94,7 +95,7 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
           agentName: 'Coord. Mariana',
           status: 'scheduled' as const,
           notes: 'Potencial transferência de outra universidade',
-          productContext: 'recruitment',
+          productContext: 'recruitment' as ProductType,
           educationType: 'higher',
           studentPhone: '(11) 97777-8888',
           studentEmail: 'ana.costa@email.com',
