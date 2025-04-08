@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Plus, CalendarPlus } from 'lucide-react';
+import { CalendarPlus } from 'lucide-react';
 import { Schedule } from '@/types/schedule';
 import { ProductType } from '@/context/product/types';
 
@@ -121,9 +121,8 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
     console.log("Setting show dialog to:", show);
     if (setShowAddDialog) {
       setShowAddDialog(show);
-    } else {
-      setLocalShowAddDialog(show);
     }
+    setLocalShowAddDialog(show);
   };
 
   const handleNewSchedule = () => {

@@ -49,19 +49,14 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
     }
   }, [externalShowAddDialog]);
   
-  const updateExternalDialogState = useCallback((isOpen: boolean) => {
-    if (externalSetShowAddDialog) {
-      console.log("Updating external dialog state:", isOpen);
-      externalSetShowAddDialog(isOpen);
-    }
-  }, [externalSetShowAddDialog]);
-  
   useEffect(() => {
-    if (!dialogState.scheduleDialogOpen && externalSetShowAddDialog && externalShowAddDialog) {
+    if (dialogState.scheduleDialogOpen === false && 
+        externalSetShowAddDialog && 
+        externalShowAddDialog === true) {
       console.log("Dialog closed, updating external state");
-      updateExternalDialogState(false);
+      externalSetShowAddDialog(false);
     }
-  }, [dialogState.scheduleDialogOpen, externalSetShowAddDialog, externalShowAddDialog, updateExternalDialogState]);
+  }, [dialogState.scheduleDialogOpen, externalSetShowAddDialog, externalShowAddDialog]);
   
   useEffect(() => {
     if (leadId) {
@@ -136,10 +131,7 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
     }));
     
     if (externalSetShowAddDialog) {
-      setTimeout(() => {
-        console.log("Delayed update of external state:", open);
-        externalSetShowAddDialog(open);
-      }, 50);
+      externalSetShowAddDialog(open);
     }
   };
   
@@ -248,7 +240,7 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
       <ScheduleDialogs 
         dialogState={{
           ...dialogState,
-          scheduleDialogOpen: dialogState.scheduleDialogOpen || Boolean(externalShowAddDialog)
+          scheduleDialogOpen: dialogState.scheduleDialogOpen
         }}
         setDialogState={setDialogState}
         students={students}

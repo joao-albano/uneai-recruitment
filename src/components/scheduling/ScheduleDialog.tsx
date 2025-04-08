@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -156,8 +156,10 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
     console.log("Form submission result:", success);
     
     if (success) {
-      // Reset form and close dialog
-      onOpenChange(false);
+      // Reset form and close dialog after a brief delay to ensure data is saved
+      setTimeout(() => {
+        onOpenChange(false);
+      }, 100);
     }
   };
   
@@ -177,8 +179,15 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
         (productContext === 'retention' && !String(student.id).startsWith('lead-')))
     : mergedStudents;
 
-  // Special handler to prevent dialog close on React Dialog unmount
+  // Prevent the dialog from auto-closing when clicking outside or pressing escape
   const handleOpenChangeWrapper = (isOpen: boolean) => {
+    // Only allow closing through the buttons to prevent accidental closure
+    if (!isOpen) {
+      console.log("Dialog close requested through overlay/escape - ignoring");
+      // Do not close the dialog automatically
+      return;
+    }
+    
     console.log("Dialog open change requested:", isOpen);
     onOpenChange(isOpen);
   };
@@ -196,6 +205,9 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
                   ? 'Agendar Atendimento de Aluno'
                   : 'Agendar Atendimento'}
           </DialogTitle>
+          <DialogDescription>
+            Preencha os dados abaixo para agendar um novo atendimento.
+          </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
@@ -335,19 +347,17 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
             </div>
           )}
           
-          {/* Only show "Responsável" field for basic education */}
-          {(productContext !== 'recruitment' || educationType === 'basic') && (
-            <div className="space-y-2">
-              <Label htmlFor="agent">Responsável</Label>
-              <Input 
-                id="agent" 
-                type="text" 
-                placeholder="Nome do responsável"
-                value={agentName} 
-                onChange={(e) => setAgentName(e.target.value)}
-              />
-            </div>
-          )}
+          {/* Show "Responsável" field for all cases */}
+          <div className="space-y-2">
+            <Label htmlFor="agent">Responsável</Label>
+            <Input 
+              id="agent" 
+              type="text" 
+              placeholder="Nome do responsável"
+              value={agentName} 
+              onChange={(e) => setAgentName(e.target.value)}
+            />
+          </div>
           
           <div className="space-y-2">
             <Label htmlFor="notes">Observações</Label>
@@ -361,7 +371,11 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
           </div>
           
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => onOpenChange(false)}
+            >
               Cancelar
             </Button>
             <Button type="submit">
