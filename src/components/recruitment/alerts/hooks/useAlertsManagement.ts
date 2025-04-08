@@ -6,6 +6,7 @@ import { useData } from '@/context/DataContext';
 import { filterRecruitmentAlerts, filterRetentionAlerts } from '../utils/alertUtils';
 import { Alert } from '@/types/alert';
 import { useProduct } from '@/context/product';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 export const useAlertsManagement = () => {
   const { alerts, markAlertAsRead, markAlertActionTaken, addSchedule, generateDemoData } = useData();
@@ -14,6 +15,12 @@ export const useAlertsManagement = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { currentProduct } = useProduct();
+  const [showScheduleDialog, setShowScheduleDialog] = useState(false);
+  const [scheduledDetails, setScheduledDetails] = useState<{
+    alertId: string;
+    scheduleId: string;
+    leadName: string;
+  } | null>(null);
   
   useEffect(() => {
     // Verificar se temos alertas, caso não, gerar dados demonstrativos
@@ -52,14 +59,32 @@ export const useAlertsManagement = () => {
     
     markAlertActionTaken(alertId);
     
-    // Navegação baseada no produto atual
-    if (confirm('Deseja visualizar o agendamento criado na página de Agenda?')) {
-      if (currentProduct === 'recruitment') {
-        navigate('/recruitment/schedule?id=' + scheduleId);
-      } else {
-        navigate('/schedule?id=' + scheduleId);
-      }
+    // Em vez de usar confirm, usamos o estado para mostrar o AlertDialog
+    setScheduledDetails({
+      alertId,
+      scheduleId,
+      leadName
+    });
+    setShowScheduleDialog(true);
+  };
+  
+  const handleViewSchedule = () => {
+    if (scheduledDetails) {
+      const route = currentProduct === 'recruitment' 
+        ? `/recruitment/schedule?id=${scheduledDetails.scheduleId}`
+        : `/schedule?id=${scheduledDetails.scheduleId}`;
+      
+      navigate(route);
+      setShowScheduleDialog(false);
     }
+  };
+  
+  const handleCancelDialog = () => {
+    setShowScheduleDialog(false);
+    toast({
+      title: "Agendamento criado",
+      description: "Você pode visualizar o agendamento na página de Agenda mais tarde.",
+    });
   };
   
   const handleViewDetails = (alertId: string) => {
@@ -85,6 +110,34 @@ export const useAlertsManagement = () => {
     }
   };
 
+  // Componente de diálogo para confirmação de agendamento
+  const ScheduleConfirmationDialog = () => {
+    if (!showScheduleDialog || !scheduledDetails) return null;
+    
+    return (
+      <AlertDialog open={showScheduleDialog} onOpenChange={setShowScheduleDialog}>
+        <AlertDialogContent className="sm:max-w-[425px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-xl">Agendamento criado com sucesso</AlertDialogTitle>
+            <AlertDialogDescription className="text-base">
+              O agendamento para <span className="font-semibold">{scheduledDetails.leadName}</span> foi criado para amanhã às 10:00.
+              <br /><br />
+              Deseja visualizar este agendamento agora na página de Agenda?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex gap-2 mt-4">
+            <AlertDialogCancel onClick={handleCancelDialog} className="flex-1">
+              Fechar
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleViewSchedule} className="flex-1 bg-primary">
+              Ver agendamento
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    );
+  };
+
   return {
     searchTerm,
     setSearchTerm,
@@ -95,6 +148,7 @@ export const useAlertsManagement = () => {
     readAlerts,
     handleScheduleMeeting,
     handleViewDetails,
-    markAlertActionTaken
+    markAlertActionTaken,
+    ScheduleConfirmationDialog
   };
 };

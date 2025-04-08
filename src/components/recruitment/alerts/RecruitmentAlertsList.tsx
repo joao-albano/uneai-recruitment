@@ -1,13 +1,10 @@
 
-import React, { useState } from 'react';
-import AlertSearch from './components/AlertSearch';
-import AlertTabs from './components/AlertTabs';
+import React from 'react';
 import { useAlertsManagement } from './hooks/useAlertsManagement';
+import AlertCard from './components/AlertCard';
+import AlertTabs from './components/AlertTabs';
+import AlertSearch from './components/AlertSearch';
 import EmptyState from './components/EmptyState';
-import { Button } from '@/components/ui/button';
-import { Calendar } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
 
 const RecruitmentAlertsList: React.FC = () => {
   const {
@@ -20,58 +17,67 @@ const RecruitmentAlertsList: React.FC = () => {
     readAlerts,
     handleScheduleMeeting,
     handleViewDetails,
-    markAlertActionTaken
+    markAlertActionTaken,
+    ScheduleConfirmationDialog
   } = useAlertsManagement();
-  
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  
-  // Função para abrir a agenda de captação
-  const goToSchedule = () => {
-    navigate('/recruitment/schedule');
-    toast({
-      title: "Agenda de Captação",
-      description: "Aqui você pode visualizar e gerenciar todos os agendamentos de leads."
-    });
+
+  // Renderizar a lista de alertas baseado na aba ativa
+  const renderAlerts = () => {
+    const alertsToShow = activeTab === 'unread' 
+      ? unreadAlerts 
+      : activeTab === 'read' 
+        ? readAlerts 
+        : filteredAlerts;
+
+    if (alertsToShow.length === 0) {
+      return <EmptyState />;
+    }
+
+    return (
+      <div className="space-y-4">
+        {alertsToShow.map(alert => (
+          <AlertCard
+            key={alert.id}
+            alert={alert}
+            onViewDetails={handleViewDetails}
+            onScheduleMeeting={handleScheduleMeeting}
+            onMarkAsResolved={markAlertActionTaken}
+          />
+        ))}
+      </div>
+    );
   };
-  
-  if (filteredAlerts.length === 0 && !searchTerm) {
-    return <EmptyState />;
-  }
-  
+
   return (
-    <div className="container animate-fade-in">
+    <div className="animate-fade-in">
       <div className="mb-8">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Alertas de Captação</h1>
-            <p className="text-muted-foreground mt-1">
-              Gerencie e acompanhe os alertas relacionados aos leads
-            </p>
-          </div>
-          <Button onClick={goToSchedule} variant="outline">
-            <Calendar className="mr-2 h-4 w-4" />
-            Ver Agenda de Captação
-          </Button>
-        </div>
+        <h1 className="text-3xl font-bold tracking-tight">Alertas</h1>
+        <p className="text-muted-foreground mt-1">
+          Gerencie alertas de leads e oportunidades no processo de captação
+        </p>
       </div>
       
-      <AlertSearch 
-        searchTerm={searchTerm} 
-        setSearchTerm={setSearchTerm} 
-      />
+      <div className="mb-6">
+        <AlertSearch
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
+      </div>
       
       <AlertTabs 
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        unreadAlerts={unreadAlerts}
-        readAlerts={readAlerts}
-        filteredAlerts={filteredAlerts}
-        onViewDetails={handleViewDetails}
-        onScheduleMeeting={handleScheduleMeeting}
-        onMarkAsResolved={markAlertActionTaken}
-        searchTerm={searchTerm}
+        unreadCount={unreadAlerts.length}
+        readCount={readAlerts.length}
+        totalCount={filteredAlerts.length}
       />
+      
+      <div className="mt-6">
+        {renderAlerts()}
+      </div>
+      
+      {/* Renderizar o diálogo de confirmação */}
+      <ScheduleConfirmationDialog />
     </div>
   );
 };
