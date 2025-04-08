@@ -70,6 +70,7 @@ const RecruitmentAlertsList: React.FC = () => {
         unreadCount={unreadAlerts.length}
         readCount={readAlerts.length}
         totalCount={filteredAlerts.length}
+        searchTerm={searchTerm}
       />
       
       <div className="mt-6">
