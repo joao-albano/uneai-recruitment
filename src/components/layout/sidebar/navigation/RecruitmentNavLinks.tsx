@@ -1,52 +1,59 @@
 
 import React from 'react';
-import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell, Building, Phone, Calendar, Home } from 'lucide-react';
+import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell, Building, Phone, Calendar } from 'lucide-react';
 import SidebarNavLink from '../SidebarNavLink';
 import SidebarNavigationGroup from '../SidebarNavigationGroup';
+import { useLocation } from 'react-router-dom';
 
 interface RecruitmentNavLinksProps {
   collapsed: boolean;
 }
 
 const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) => {
+  const location = useLocation();
+  
+  // Check current path to determine which link should be active
+  const isDashboardActive = location.pathname === '/recruitment' || location.pathname === '/recruitment/dashboard';
+  const isAnalyticsActive = location.pathname === '/recruitment/analytics';
+  const isPredictionsActive = location.pathname === '/recruitment/predictions';
+  const isOmnichannelReportActive = location.pathname === '/recruitment/omnichannel-report';
+  
   return (
     <>
       {/* Grupo de Navegação */}
-      <SidebarNavigationGroup title="Navegação" collapsed={collapsed}>
-        <SidebarNavLink 
-          to="/recruitment" 
-          icon={Home} 
-          label="Início" 
-          collapsed={collapsed}
-        />
+      <SidebarNavigationGroup title="Navegação" collapsed={collapsed} defaultOpen={false}>
         <SidebarNavLink 
           to="/recruitment" 
           icon={BarChart} 
           label="Dashboard" 
           collapsed={collapsed}
+          isActive={isDashboardActive}
         />
         <SidebarNavLink 
           to="/recruitment/analytics" 
           icon={Users} 
           label="Analíticos" 
           collapsed={collapsed}
+          isActive={isAnalyticsActive}
         />
         <SidebarNavLink 
           to="/recruitment/predictions" 
           icon={LineChart} 
           label="Previsões" 
           collapsed={collapsed}
+          isActive={isPredictionsActive}
         />
         <SidebarNavLink 
           to="/recruitment/omnichannel-report" 
           icon={Phone} 
           label="Relatório Omnichannel" 
           collapsed={collapsed}
+          isActive={isOmnichannelReportActive}
         />
       </SidebarNavigationGroup>
       
       {/* Grupo de Gestão */}
-      <SidebarNavigationGroup title="Gestão" collapsed={collapsed}>
+      <SidebarNavigationGroup title="Gestão" collapsed={collapsed} defaultOpen={false}>
         <SidebarNavLink 
           to="/recruitment/leads" 
           icon={UserPlus} 
@@ -86,7 +93,7 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
       </SidebarNavigationGroup>
       
       {/* Grupo de Atendimento */}
-      <SidebarNavigationGroup title="Atendimento" collapsed={collapsed}>
+      <SidebarNavigationGroup title="Atendimento" collapsed={collapsed} defaultOpen={false}>
         <SidebarNavLink 
           to="/recruitment/alerts" 
           icon={Bell} 

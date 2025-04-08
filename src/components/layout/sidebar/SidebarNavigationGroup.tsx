@@ -13,7 +13,7 @@ interface SidebarNavigationGroupProps {
 const SidebarNavigationGroup: React.FC<SidebarNavigationGroupProps> = ({
   title,
   collapsed,
-  defaultOpen = true,
+  defaultOpen = false,
   children
 }) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
