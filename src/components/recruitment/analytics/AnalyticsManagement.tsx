@@ -1,7 +1,10 @@
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import OverviewTab from './tabs/OverviewTab';
+import LeadsTab from './tabs/LeadsTab';
+import ConversionTab from './tabs/ConversionTab';
+import ChannelsTab from './tabs/ChannelsTab';
 
 const AnalyticsManagement: React.FC = () => {
   return (
@@ -21,64 +24,16 @@ const AnalyticsManagement: React.FC = () => {
           <TabsTrigger value="channels">Canais</TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
-          <Card className="mt-4">
-            <CardHeader>
-              <CardTitle>Visão Geral da Captação</CardTitle>
-              <CardDescription>
-                Principais métricas e indicadores de desempenho
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="h-[300px] flex items-center justify-center">
-              <div className="text-center text-muted-foreground">
-                Gráficos e métricas serão exibidos aqui
-              </div>
-            </CardContent>
-          </Card>
+          <OverviewTab />
         </TabsContent>
         <TabsContent value="leads">
-          <Card className="mt-4">
-            <CardHeader>
-              <CardTitle>Análise de Leads</CardTitle>
-              <CardDescription>
-                Estatísticas detalhadas sobre seus leads
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="h-[300px] flex items-center justify-center">
-              <div className="text-center text-muted-foreground">
-                Análise de leads será exibida aqui
-              </div>
-            </CardContent>
-          </Card>
+          <LeadsTab />
         </TabsContent>
         <TabsContent value="conversion">
-          <Card className="mt-4">
-            <CardHeader>
-              <CardTitle>Taxas de Conversão</CardTitle>
-              <CardDescription>
-                Desempenho de conversão em cada etapa do funil
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="h-[300px] flex items-center justify-center">
-              <div className="text-center text-muted-foreground">
-                Taxas de conversão serão exibidas aqui
-              </div>
-            </CardContent>
-          </Card>
+          <ConversionTab />
         </TabsContent>
         <TabsContent value="channels">
-          <Card className="mt-4">
-            <CardHeader>
-              <CardTitle>Desempenho por Canal</CardTitle>
-              <CardDescription>
-                Comparação de efetividade entre diferentes canais
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="h-[300px] flex items-center justify-center">
-              <div className="text-center text-muted-foreground">
-                Análise de canais será exibida aqui
-              </div>
-            </CardContent>
-          </Card>
+          <ChannelsTab />
         </TabsContent>
       </Tabs>
     </div>
