@@ -1,18 +1,16 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import { useSchedules } from '@/context/schedules/SchedulesContext';
 import { useCalendarState } from '@/hooks/useCalendarState';
 import { useScheduleFilters } from '@/hooks/schedule/useScheduleFilters';
-import CalendarView from './CalendarView';
-import TodaySchedules from './TodaySchedules';
-import UpcomingSchedules from './UpcomingSchedules';
-import ScheduleStats from './ScheduleStats';
-import ScheduleDialogs from './ScheduleDialogs';
-import { ProductType } from '@/context/product/types';
 import { useScheduleOperations } from '@/hooks/schedule/useScheduleOperations';
 import { useReminderSending } from '@/hooks/schedule/useReminderSending';
-import RemindersHistoryDialog from './RemindersHistoryDialog';
+import { useScheduleDialogs } from '@/hooks/schedule/useScheduleDialogs';
 import { useWhatsApp } from '@/context/whatsapp/WhatsAppContext';
+import { ProductType } from '@/context/product/types';
+import ViewModeRenderer from './ViewModeRenderer';
+import ScheduleDialogs from './ScheduleDialogs';
+import RemindersHistoryDialog from './RemindersHistoryDialog';
 
 interface ScheduleViewProps {
   productContext?: ProductType;
@@ -37,64 +35,26 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
   const { whatsAppMessages } = useWhatsApp();
   const { markCompleted, cancelSchedule } = useScheduleOperations();
   const today = new Date();
-  const [dialogState, setDialogState] = useState({
-    scheduleDialogOpen: false,
-    detailsDialogOpen: false,
-    daySchedulesDialogOpen: false,
-    remindersHistoryDialogOpen: false,
-    selectedSchedule: null,
-    selectedDay: null,
-    preselectedStudentId: leadId ? `lead-${leadId}` : undefined,
-    editMode: false
+  
+  // Use the dialog hook to manage dialog state
+  const {
+    dialogState,
+    setDialogState,
+    handleViewDetails,
+    handleNewSchedule,
+    handleEditSchedule,
+    handleViewReminders,
+    handleRemindersDialogOpenChange,
+    handleOpenChange
+  } = useScheduleDialogs({
+    externalShowAddDialog,
+    externalSetShowAddDialog,
+    externalShowRemindersHistory,
+    externalSetShowRemindersHistory,
+    leadId
   });
   
-  // Handle external reminders history dialog state
-  useEffect(() => {
-    if (externalShowRemindersHistory !== undefined) {
-      setDialogState(prev => ({
-        ...prev,
-        remindersHistoryDialogOpen: externalShowRemindersHistory
-      }));
-    }
-  }, [externalShowRemindersHistory]);
-  
-  // Update external reminders history state when internal dialog closes
-  useEffect(() => {
-    if (dialogState.remindersHistoryDialogOpen === false && 
-        externalSetShowRemindersHistory && 
-        externalShowRemindersHistory === true) {
-      externalSetShowRemindersHistory(false);
-    }
-  }, [dialogState.remindersHistoryDialogOpen, externalSetShowRemindersHistory, externalShowRemindersHistory]);
-  
-  useEffect(() => {
-    if (externalShowAddDialog !== undefined) {
-      console.log("External dialog state changed to:", externalShowAddDialog);
-      setDialogState(prev => ({
-        ...prev,
-        scheduleDialogOpen: externalShowAddDialog
-      }));
-    }
-  }, [externalShowAddDialog]);
-  
-  useEffect(() => {
-    if (dialogState.scheduleDialogOpen === false && 
-        externalSetShowAddDialog && 
-        externalShowAddDialog === true) {
-      console.log("Dialog closed, updating external state");
-      externalSetShowAddDialog(false);
-    }
-  }, [dialogState.scheduleDialogOpen, externalSetShowAddDialog, externalShowAddDialog]);
-  
-  useEffect(() => {
-    if (leadId) {
-      setDialogState(prev => ({
-        ...prev,
-        preselectedStudentId: `lead-${leadId}`
-      }));
-    }
-  }, [leadId]);
-  
+  // Filter schedules based on product context
   const filteredSchedules = productContext 
     ? visibleSchedules.filter(schedule => 
         (schedule.productContext === productContext) ||
@@ -104,6 +64,7 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
       )
     : visibleSchedules;
   
+  // Get calendar state and schedule filters
   const calendarState = useCalendarState(filteredSchedules);
   const { 
     todaySchedules, 
@@ -112,76 +73,10 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
     studentsWithoutSchedules
   } = useScheduleFilters(filteredSchedules, today);
   
+  // Get reminder sending hooks
   const { isProcessing, handleSendReminders } = useReminderSending(filteredSchedules);
   
-  const handleViewDetails = (schedule) => {
-    setDialogState(prev => ({
-      ...prev,
-      detailsDialogOpen: true,
-      selectedSchedule: schedule
-    }));
-  };
-  
-  const handleNewSchedule = () => {
-    console.log("handleNewSchedule called - opening dialog");
-    setDialogState(prev => ({
-      ...prev,
-      scheduleDialogOpen: true,
-      editMode: false,
-      selectedSchedule: null
-    }));
-    
-    if (externalSetShowAddDialog) {
-      externalSetShowAddDialog(true);
-    }
-  };
-  
-  const handleEditSchedule = (schedule) => {
-    setDialogState(prev => ({
-      ...prev,
-      scheduleDialogOpen: true,
-      editMode: true,
-      selectedSchedule: schedule
-    }));
-  };
-  
-  const handleViewReminders = () => {
-    setDialogState(prev => ({
-      ...prev,
-      remindersHistoryDialogOpen: true
-    }));
-    
-    // Update external state if provided
-    if (externalSetShowRemindersHistory) {
-      externalSetShowRemindersHistory(true);
-    }
-  };
-  
-  const handleRemindersDialogOpenChange = (open: boolean) => {
-    setDialogState(prev => ({
-      ...prev,
-      remindersHistoryDialogOpen: open
-    }));
-    
-    // Update external state if provided
-    if (!open && externalSetShowRemindersHistory) {
-      externalSetShowRemindersHistory(false);
-    }
-  };
-  
-  const handleOpenChange = (open: boolean) => {
-    console.log("handleOpenChange called with:", open);
-    
-    setDialogState(prev => ({
-      ...prev,
-      scheduleDialogOpen: open
-    }));
-    
-    if (externalSetShowAddDialog) {
-      externalSetShowAddDialog(open);
-    }
-  };
-  
+  // Handle completed and canceled schedules
   const handleCompleted = (id: string) => {
     markCompleted(id);
   };
@@ -189,100 +84,23 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
   const handleCanceled = (id: string) => {
     cancelSchedule(id);
   };
-  
-  const renderCalendarByViewMode = () => {
-    switch(viewMode) {
-      case 'day':
-        return (
-          <div className="grid grid-cols-1 gap-8">
-            <TodaySchedules 
-              todaySchedules={todaySchedules}
-              onViewDetails={handleViewDetails}
-              onCompleted={handleCompleted}
-              onCanceled={handleCanceled}
-              onEdit={handleEditSchedule}
-            />
-          </div>
-        );
-      case 'week':
-        return (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <TodaySchedules 
-              todaySchedules={todaySchedules}
-              onViewDetails={handleViewDetails}
-              onCompleted={handleCompleted}
-              onCanceled={handleCanceled}
-              onEdit={handleEditSchedule}
-            />
-            <UpcomingSchedules 
-              upcomingSchedules={upcomingSchedules}
-              onViewDetails={handleViewDetails}
-              onCompleted={handleCompleted}
-              onCanceled={handleCanceled}
-              onEdit={handleEditSchedule}
-            />
-          </div>
-        );
-      case 'month':
-      default:
-        return (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-2">
-              <CalendarView 
-                formattedMonthYear={calendarState.formattedMonthYear}
-                firstDayOfMonth={calendarState.firstDayOfMonth}
-                daysInMonth={calendarState.daysInMonth}
-                today={today}
-                selectedDate={calendarState.selectedDate}
-                previousMonth={calendarState.previousMonth}
-                nextMonth={calendarState.nextMonth}
-                hasSchedulesOnDay={calendarState.hasSchedulesOnDay}
-                getScheduleCountForDay={calendarState.getScheduleCountForDay}
-                getScheduleStatusForDay={calendarState.getScheduleStatusForDay}
-                onDayClick={(day) => {
-                  setDialogState(prev => ({
-                    ...prev,
-                    daySchedulesDialogOpen: true,
-                    selectedDay: new Date(
-                      calendarState.selectedDate.getFullYear(),
-                      calendarState.selectedDate.getMonth(),
-                      day
-                    )
-                  }));
-                }}
-              />
-            </div>
-            
-            <div className="space-y-8">
-              <TodaySchedules 
-                todaySchedules={todaySchedules}
-                onViewDetails={handleViewDetails}
-                onCompleted={handleCompleted}
-                onCanceled={handleCanceled}
-                onEdit={handleEditSchedule}
-              />
-              
-              <UpcomingSchedules 
-                upcomingSchedules={upcomingSchedules}
-                onViewDetails={handleViewDetails}
-                onCompleted={handleCompleted}
-                onCanceled={handleCanceled}
-                onEdit={handleEditSchedule}
-              />
-              
-              <ScheduleStats 
-                onNewSchedule={handleNewSchedule}
-                onViewReminders={handleViewReminders}
-              />
-            </div>
-          </div>
-        );
-    }
-  };
 
   return (
     <div className="space-y-8">
-      {renderCalendarByViewMode()}
+      <ViewModeRenderer 
+        viewMode={viewMode}
+        todaySchedules={todaySchedules}
+        upcomingSchedules={upcomingSchedules}
+        calendarState={calendarState}
+        today={today}
+        handleViewDetails={handleViewDetails}
+        handleCompleted={handleCompleted}
+        handleCanceled={handleCanceled}
+        handleEditSchedule={handleEditSchedule}
+        handleNewSchedule={handleNewSchedule}
+        handleViewReminders={handleViewReminders}
+        setDialogState={setDialogState}
+      />
       
       <ScheduleDialogs 
         dialogState={{
