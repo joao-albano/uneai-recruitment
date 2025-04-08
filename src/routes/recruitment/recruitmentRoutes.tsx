@@ -1,4 +1,3 @@
-
 import { ReactNode } from "react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoutes";
 import { ProductGuard } from "@/components/auth/ProductGuard";

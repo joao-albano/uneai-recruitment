@@ -18,7 +18,6 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
   const isAnalyticsActive = location.pathname === '/recruitment/analytics';
   const isPredictionsActive = location.pathname === '/recruitment/predictions';
   const isOmnichannelReportActive = location.pathname === '/recruitment/omnichannel-report';
-  const isScheduleActive = location.pathname === '/recruitment/schedule';
   
   return (
     <>
@@ -120,7 +119,6 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
           icon={Calendar} 
           label="Agenda" 
           collapsed={collapsed}
-          isActive={isScheduleActive}
         />
       </SidebarNavigationGroup>
     </>
