@@ -17,6 +17,7 @@ import VoiceConfigurationPage from "@/pages/VoiceConfigurationPage";
 import GeographicTargetingPage from "@/pages/recruitment/GeographicTargetingPage";
 import CampusManagementPage from "@/pages/recruitment/CampusManagementPage";
 import OmnichannelReportPage from "@/pages/recruitment/OmnichannelReportPage";
+import RecruitmentUploadPage from "@/pages/recruitment/RecruitmentUploadPage";
 
 interface RouteConfig {
   path: string;
@@ -151,6 +152,16 @@ export const recruitmentRoutes: RouteConfig[] = [
     element: (
       <ProtectedRoute>
         <OmnichannelReportPage />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/upload",
+    element: (
+      <ProtectedRoute>
+        <ProductGuard allowedProduct="recruitment" redirectTo="/hub">
+          <RecruitmentUploadPage />
+        </ProductGuard>
       </ProtectedRoute>
     )
   }
