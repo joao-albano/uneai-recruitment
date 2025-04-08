@@ -10,6 +10,8 @@ import { useScheduleOperations } from '@/hooks/schedule/useScheduleOperations';
 import { ProductType } from '@/context/product/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { mockLeadsData } from '@/components/recruitment/leads/data/mockLeadsData';
+import { Schedule } from '@/types/schedule';
+import { format } from 'date-fns';
 
 interface ScheduleDialogProps {
   open: boolean;
@@ -17,6 +19,8 @@ interface ScheduleDialogProps {
   availableStudents: any[];
   productContext?: ProductType;
   preselectedStudentId?: string;
+  scheduleToEdit?: Schedule | null;
+  isEditMode?: boolean;
 }
 
 const ScheduleDialog: React.FC<ScheduleDialogProps> = ({ 
@@ -24,7 +28,9 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
   onOpenChange,
   availableStudents,
   productContext,
-  preselectedStudentId
+  preselectedStudentId,
+  scheduleToEdit,
+  isEditMode = false
 }) => {
   const [selectedStudent, setSelectedStudent] = useState('');
   const [scheduleDate, setScheduleDate] = useState('');
@@ -40,12 +46,33 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
   const [studentEmail, setStudentEmail] = useState('');
   const [course, setCourse] = useState('');
   
-  const { handleScheduleSubmit } = useScheduleOperations();
-  
-  // Reset form when dialog opens and set preselected student if provided
+  const { handleScheduleSubmit, updateSchedule } = useScheduleOperations();
+
+  // Populate form with schedule data when editing
   useEffect(() => {
-    if (open) {
-      // Set current date and time
+    if (open && isEditMode && scheduleToEdit) {
+      const scheduleDate = new Date(scheduleToEdit.date);
+      
+      setSelectedStudent(scheduleToEdit.studentId);
+      setScheduleDate(format(scheduleDate, 'yyyy-MM-dd'));
+      setScheduleTime(format(scheduleDate, 'HH:mm'));
+      setNotes(scheduleToEdit.notes || '');
+      setAgentName(scheduleToEdit.agentName || '');
+      
+      if (scheduleToEdit.educationType) {
+        setEducationType(scheduleToEdit.educationType);
+      }
+      
+      // Set education type specific fields
+      setParentName(scheduleToEdit.parentName || '');
+      setParentPhone(scheduleToEdit.parentPhone || '');
+      setStudentPhone(scheduleToEdit.studentPhone || '');
+      setStudentEmail(scheduleToEdit.studentEmail || '');
+      setCourse(scheduleToEdit.course || '');
+      
+      console.log('Editing schedule:', scheduleToEdit);
+    } else if (open && !isEditMode) {
+      // Set current date and time for new schedules
       const now = new Date();
       const dateString = now.toISOString().split('T')[0];
       const timeString = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
@@ -71,7 +98,7 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
       setCourse('');
       setEducationType('basic');
     }
-  }, [open, preselectedStudentId]);
+  }, [open, isEditMode, scheduleToEdit, preselectedStudentId]);
   
   // Log available students for debugging
   useEffect(() => {
@@ -106,7 +133,19 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
       formData.append('course', course);
     }
     
-    const success = handleScheduleSubmit(formData);
+    let success = false;
+    
+    if (isEditMode && scheduleToEdit) {
+      // If editing, include the ID
+      formData.append('id', scheduleToEdit.id);
+      formData.append('status', scheduleToEdit.status);
+      
+      // Use the update method instead
+      success = updateSchedule(formData);
+    } else {
+      // If creating new, use the standard method
+      success = handleScheduleSubmit(formData);
+    }
     
     if (success) {
       // Reset form and close dialog
@@ -135,11 +174,13 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>
-            {productContext === 'recruitment' 
-              ? 'Agendar Atendimento de Lead' 
-              : productContext === 'retention'
-                ? 'Agendar Atendimento de Aluno'
-                : 'Agendar Atendimento'}
+            {isEditMode 
+              ? 'Editar Agendamento' 
+              : productContext === 'recruitment' 
+                ? 'Agendar Atendimento de Lead' 
+                : productContext === 'retention'
+                  ? 'Agendar Atendimento de Aluno'
+                  : 'Agendar Atendimento'}
           </DialogTitle>
         </DialogHeader>
         
@@ -152,6 +193,7 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
               value={selectedStudent} 
               onValueChange={setSelectedStudent}
               required
+              disabled={isEditMode} // Disable student selection when editing
             >
               <SelectTrigger>
                 <SelectValue placeholder={
@@ -305,7 +347,9 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button type="submit">Agendar</Button>
+            <Button type="submit">
+              {isEditMode ? 'Salvar Alterações' : 'Agendar'}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

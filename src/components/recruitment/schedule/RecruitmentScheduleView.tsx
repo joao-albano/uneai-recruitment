@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { Schedule } from '@/types/schedule';
 
 interface RecruitmentScheduleViewProps {
   showAddDialog?: boolean;
@@ -64,7 +65,7 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
           studentName: 'Lead Maria Silva',
           date: today,
           agentName: 'Coord. Renata',
-          status: 'scheduled',
+          status: 'scheduled' as const,
           notes: 'Interesse em matrícula para o próximo semestre',
           productContext: 'recruitment',
           educationType: 'higher',
@@ -78,7 +79,7 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
           studentName: 'Lead João Santos',
           date: tomorrow,
           agentName: 'Prof. Ricardo',
-          status: 'scheduled',
+          status: 'scheduled' as const,
           notes: 'Pai interessado em conhecer a escola',
           productContext: 'recruitment',
           educationType: 'basic',
@@ -91,7 +92,7 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
           studentName: 'Lead Ana Costa',
           date: nextWeek,
           agentName: 'Coord. Mariana',
-          status: 'scheduled',
+          status: 'scheduled' as const,
           notes: 'Potencial transferência de outra universidade',
           productContext: 'recruitment',
           educationType: 'higher',
@@ -188,6 +189,7 @@ const RecruitmentScheduleView: React.FC<RecruitmentScheduleViewProps> = ({
           showAddDialog={showAddDialog}
           setShowAddDialog={setShowAddDialog}
           leadId={leadId}
+          viewMode={viewMode}
         />
       </main>
     </div>

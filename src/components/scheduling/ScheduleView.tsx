@@ -9,21 +9,25 @@ import UpcomingSchedules from './UpcomingSchedules';
 import ScheduleStats from './ScheduleStats';
 import ScheduleDialogs from './ScheduleDialogs';
 import { ProductType } from '@/context/product/types';
+import { useScheduleOperations } from '@/hooks/schedule/useScheduleOperations';
 
 interface ScheduleViewProps {
   productContext?: ProductType;
   showAddDialog?: boolean;
   setShowAddDialog?: (show: boolean) => void;
   leadId?: string | null;
+  viewMode?: string;
 }
 
 const ScheduleView: React.FC<ScheduleViewProps> = ({ 
   productContext,
   showAddDialog: externalShowAddDialog,
   setShowAddDialog: externalSetShowAddDialog,
-  leadId
+  leadId,
+  viewMode = "month"
 }) => {
-  const { visibleSchedules } = useSchedules();
+  const { visibleSchedules, updateScheduleStatus } = useSchedules();
+  const { markCompleted, cancelSchedule } = useScheduleOperations();
   const today = new Date();
   const [dialogState, setDialogState] = useState({
     scheduleDialogOpen: false,
@@ -32,7 +36,8 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
     remindersHistoryDialogOpen: false,
     selectedSchedule: null,
     selectedDay: null,
-    preselectedStudentId: leadId ? `lead-${leadId}` : undefined
+    preselectedStudentId: leadId ? `lead-${leadId}` : undefined,
+    editMode: false
   });
   
   // Use external state if provided
@@ -92,7 +97,18 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
   const handleNewSchedule = () => {
     setDialogState(prev => ({
       ...prev,
-      scheduleDialogOpen: true
+      scheduleDialogOpen: true,
+      editMode: false,
+      selectedSchedule: null
+    }));
+  };
+  
+  const handleEditSchedule = (schedule) => {
+    setDialogState(prev => ({
+      ...prev,
+      scheduleDialogOpen: true,
+      editMode: true,
+      selectedSchedule: schedule
     }));
   };
   
@@ -115,56 +131,109 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
     }
   };
   
+  const handleCompleted = (id: string) => {
+    markCompleted(id);
+  };
+  
+  const handleCanceled = (id: string) => {
+    cancelSchedule(id);
+  };
+  
+  // Handle different view modes
+  const renderCalendarByViewMode = () => {
+    switch(viewMode) {
+      case 'day':
+        return (
+          <div className="grid grid-cols-1 gap-8">
+            <TodaySchedules 
+              todaySchedules={todaySchedules}
+              onViewDetails={handleViewDetails}
+              onCompleted={handleCompleted}
+              onCanceled={handleCanceled}
+              onEdit={handleEditSchedule}
+            />
+          </div>
+        );
+      case 'week':
+        // For simplicity, week view just shows today and upcoming schedules
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <TodaySchedules 
+              todaySchedules={todaySchedules}
+              onViewDetails={handleViewDetails}
+              onCompleted={handleCompleted}
+              onCanceled={handleCanceled}
+              onEdit={handleEditSchedule}
+            />
+            <UpcomingSchedules 
+              upcomingSchedules={upcomingSchedules}
+              onViewDetails={handleViewDetails}
+              onCompleted={handleCompleted}
+              onCanceled={handleCanceled}
+              onEdit={handleEditSchedule}
+            />
+          </div>
+        );
+      case 'month':
+      default:
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="md:col-span-2">
+              <CalendarView 
+                formattedMonthYear={calendarState.formattedMonthYear}
+                firstDayOfMonth={calendarState.firstDayOfMonth}
+                daysInMonth={calendarState.daysInMonth}
+                today={today}
+                selectedDate={calendarState.selectedDate}
+                previousMonth={calendarState.previousMonth}
+                nextMonth={calendarState.nextMonth}
+                hasSchedulesOnDay={calendarState.hasSchedulesOnDay}
+                getScheduleCountForDay={calendarState.getScheduleCountForDay}
+                getScheduleStatusForDay={calendarState.getScheduleStatusForDay}
+                onDayClick={(day) => {
+                  setDialogState(prev => ({
+                    ...prev,
+                    daySchedulesDialogOpen: true,
+                    selectedDay: new Date(
+                      calendarState.selectedDate.getFullYear(),
+                      calendarState.selectedDate.getMonth(),
+                      day
+                    )
+                  }));
+                }}
+              />
+            </div>
+            
+            <div className="space-y-8">
+              <TodaySchedules 
+                todaySchedules={todaySchedules}
+                onViewDetails={handleViewDetails}
+                onCompleted={handleCompleted}
+                onCanceled={handleCanceled}
+                onEdit={handleEditSchedule}
+              />
+              
+              <UpcomingSchedules 
+                upcomingSchedules={upcomingSchedules}
+                onViewDetails={handleViewDetails}
+                onCompleted={handleCompleted}
+                onCanceled={handleCanceled}
+                onEdit={handleEditSchedule}
+              />
+              
+              <ScheduleStats 
+                onNewSchedule={handleNewSchedule}
+                onViewReminders={handleViewReminders}
+              />
+            </div>
+          </div>
+        );
+    }
+  };
+
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="md:col-span-2">
-          <CalendarView 
-            formattedMonthYear={calendarState.formattedMonthYear}
-            firstDayOfMonth={calendarState.firstDayOfMonth}
-            daysInMonth={calendarState.daysInMonth}
-            today={today}
-            selectedDate={calendarState.selectedDate}
-            previousMonth={calendarState.previousMonth}
-            nextMonth={calendarState.nextMonth}
-            hasSchedulesOnDay={calendarState.hasSchedulesOnDay}
-            getScheduleCountForDay={calendarState.getScheduleCountForDay}
-            getScheduleStatusForDay={calendarState.getScheduleStatusForDay}
-            onDayClick={(day) => {
-              setDialogState(prev => ({
-                ...prev,
-                daySchedulesDialogOpen: true,
-                selectedDay: new Date(
-                  calendarState.selectedDate.getFullYear(),
-                  calendarState.selectedDate.getMonth(),
-                  day
-                )
-              }));
-            }}
-          />
-        </div>
-        
-        <div className="space-y-8">
-          <TodaySchedules 
-            todaySchedules={todaySchedules}
-            onViewDetails={handleViewDetails}
-            onCompleted={(id) => console.log('Completed', id)}
-            onCanceled={(id) => console.log('Canceled', id)}
-          />
-          
-          <UpcomingSchedules 
-            upcomingSchedules={upcomingSchedules}
-            onViewDetails={handleViewDetails}
-            onCompleted={(id) => console.log('Completed', id)}
-            onCanceled={(id) => console.log('Canceled', id)}
-          />
-          
-          <ScheduleStats 
-            onNewSchedule={handleNewSchedule}
-            onViewReminders={handleViewReminders}
-          />
-        </div>
-      </div>
+      {renderCalendarByViewMode()}
       
       <ScheduleDialogs 
         dialogState={{

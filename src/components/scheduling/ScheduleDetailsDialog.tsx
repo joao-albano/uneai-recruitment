@@ -4,20 +4,22 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Schedule } from '@/types/schedule';
 import { formatDateForDisplay, formatTimeForDisplay } from '@/data/schedules/scheduleUtils';
-import { Calendar, User, FileText, CheckCircle, XCircle } from 'lucide-react';
+import { Calendar, User, FileText, CheckCircle, XCircle, Edit } from 'lucide-react';
 
 interface ScheduleDetailsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   schedule: Schedule | null;
   onStatusChange: (id: string, status: 'scheduled' | 'completed' | 'canceled') => void;
+  onEdit?: (schedule: Schedule) => void;
 }
 
 const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
   open,
   onOpenChange,
   schedule,
-  onStatusChange
+  onStatusChange,
+  onEdit
 }) => {
   if (!schedule) return null;
   
@@ -26,12 +28,16 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
   
   const handleMarkCompleted = () => {
     onStatusChange(schedule.id, 'completed');
-    onOpenChange(false);
   };
   
   const handleCancelSchedule = () => {
     onStatusChange(schedule.id, 'canceled');
-    onOpenChange(false);
+  };
+  
+  const handleEdit = () => {
+    if (onEdit) {
+      onEdit(schedule);
+    }
   };
 
   return (
@@ -129,6 +135,18 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
                 <XCircle className="mr-2 h-4 w-4" />
                 Cancelar Agendamento
               </Button>
+              
+              {onEdit && (
+                <Button 
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                  onClick={handleEdit}
+                >
+                  <Edit className="mr-2 h-4 w-4" />
+                  Editar
+                </Button>
+              )}
+              
               <Button 
                 className="w-full sm:w-auto"
                 onClick={handleMarkCompleted}
@@ -140,12 +158,25 @@ const ScheduleDetailsDialog: React.FC<ScheduleDetailsDialogProps> = ({
           )}
           
           {schedule.status !== 'scheduled' && (
-            <Button 
-              onClick={() => onOpenChange(false)}
-              className="w-full sm:w-auto"
-            >
-              Fechar
-            </Button>
+            <>
+              {onEdit && (
+                <Button 
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                  onClick={handleEdit}
+                >
+                  <Edit className="mr-2 h-4 w-4" />
+                  Editar
+                </Button>
+              )}
+              
+              <Button 
+                onClick={() => onOpenChange(false)}
+                className="w-full sm:w-auto"
+              >
+                Fechar
+              </Button>
+            </>
           )}
         </DialogFooter>
       </DialogContent>

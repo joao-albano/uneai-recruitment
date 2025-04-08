@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Check, Calendar, X, User, Clock, FileText, ExternalLink } from 'lucide-react';
+import { Check, Calendar, X, User, Clock, FileText, ExternalLink, Edit } from 'lucide-react';
 import { formatDateForDisplay, formatTimeForDisplay } from '@/data/schedules/scheduleUtils';
 import { Schedule } from '@/types/schedule';
 
@@ -15,6 +15,7 @@ interface ScheduleItemProps {
   onMarkCompleted?: (id: string) => void;
   onCancelSchedule?: (id: string) => void;
   onDetailsClick?: () => void;
+  onEdit?: () => void;
   showActions?: boolean;
 }
 
@@ -28,6 +29,7 @@ const ScheduleItem: React.FC<ScheduleItemProps> = ({
   onMarkCompleted,
   onCancelSchedule,
   onDetailsClick,
+  onEdit,
   showActions = true
 }) => {
   const formattedDate = formatDateForDisplay(date);
@@ -91,8 +93,23 @@ const ScheduleItem: React.FC<ScheduleItemProps> = ({
         )}
       </div>
       
-      {status === 'scheduled' && (
+      {status === 'scheduled' && showActions && (
         <div className="flex justify-between gap-2 mt-2">
+          {onEdit && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="flex items-center gap-1 text-xs flex-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+            >
+              <Edit className="h-3 w-3" />
+              <span>Editar</span>
+            </Button>
+          )}
+          
           {onMarkCompleted && (
             <Button 
               variant="outline" 
@@ -125,19 +142,36 @@ const ScheduleItem: React.FC<ScheduleItemProps> = ({
         </div>
       )}
       
-      {(status === 'completed' || status === 'canceled') && onDetailsClick && (
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full text-xs mt-1 flex items-center justify-center gap-1"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDetailsClick();
-          }}
-        >
-          <ExternalLink className="h-3 w-3" />
-          <span>Detalhes</span>
-        </Button>
+      {(status === 'completed' || status === 'canceled') && onDetailsClick && showActions && (
+        <div className="flex gap-2">
+          {onEdit && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="flex items-center gap-1 text-xs flex-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+            >
+              <Edit className="h-3 w-3" />
+              <span>Editar</span>
+            </Button>
+          )}
+          
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex-1 text-xs flex items-center justify-center gap-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDetailsClick();
+            }}
+          >
+            <ExternalLink className="h-3 w-3" />
+            <span>Detalhes</span>
+          </Button>
+        </div>
       )}
     </div>
   );

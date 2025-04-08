@@ -6,6 +6,7 @@ import DaySchedulesDialog from './DaySchedulesDialog';
 import RemindersHistoryDialog from './RemindersHistoryDialog';
 import { Schedule } from '@/types/schedule';
 import { ProductType } from '@/context/product/types';
+import { useScheduleOperations } from '@/hooks/schedule/useScheduleOperations';
 
 interface ScheduleDialogsProps {
   dialogState: {
@@ -15,6 +16,8 @@ interface ScheduleDialogsProps {
     remindersHistoryDialogOpen: boolean;
     selectedSchedule: Schedule | null;
     selectedDay: Date | null;
+    editMode?: boolean;
+    preselectedStudentId?: string;
   };
   setDialogState: React.Dispatch<React.SetStateAction<{
     scheduleDialogOpen: boolean;
@@ -23,6 +26,7 @@ interface ScheduleDialogsProps {
     remindersHistoryDialogOpen: boolean;
     selectedSchedule: Schedule | null;
     selectedDay: Date | null;
+    editMode?: boolean;
     preselectedStudentId?: string;
   }>>;
   students: any[];
@@ -41,10 +45,21 @@ const ScheduleDialogs: React.FC<ScheduleDialogsProps> = ({
   onOpenChange,
   preselectedStudentId
 }) => {
-  // Function to handle schedule status changes
+  const { markCompleted, cancelSchedule } = useScheduleOperations();
+  
+  // Handle schedule status changes
   const handleStatusChange = (id: string, status: 'scheduled' | 'completed' | 'canceled') => {
-    // Update the status in context
-    console.log(`Changing status for ${id} to ${status}`);
+    if (status === 'completed') {
+      markCompleted(id);
+    } else if (status === 'canceled') {
+      cancelSchedule(id);
+    }
+    
+    // Close the dialog after changing status
+    setDialogState(prev => ({
+      ...prev,
+      detailsDialogOpen: false
+    }));
   };
   
   // Handle opening/closing the schedule dialog
@@ -61,6 +76,17 @@ const ScheduleDialogs: React.FC<ScheduleDialogsProps> = ({
     }
   };
   
+  // Handle editing a schedule
+  const handleEditSchedule = (scheduleToEdit: Schedule) => {
+    setDialogState(prev => ({
+      ...prev,
+      detailsDialogOpen: false,
+      scheduleDialogOpen: true,
+      selectedSchedule: scheduleToEdit,
+      editMode: true
+    }));
+  };
+  
   // Mock messages for reminders history
   const reminderMessages = [];
 
@@ -72,6 +98,8 @@ const ScheduleDialogs: React.FC<ScheduleDialogsProps> = ({
         availableStudents={availableStudents}
         productContext={productContext}
         preselectedStudentId={preselectedStudentId}
+        scheduleToEdit={dialogState.editMode ? dialogState.selectedSchedule : null}
+        isEditMode={dialogState.editMode}
       />
       
       <ScheduleDetailsDialog
@@ -84,6 +112,7 @@ const ScheduleDialogs: React.FC<ScheduleDialogsProps> = ({
         }}
         schedule={dialogState.selectedSchedule}
         onStatusChange={handleStatusChange}
+        onEdit={handleEditSchedule}
       />
       
       <DaySchedulesDialog
@@ -96,6 +125,17 @@ const ScheduleDialogs: React.FC<ScheduleDialogsProps> = ({
         }}
         day={dialogState.selectedDay}
         productContext={productContext}
+        onViewDetails={(schedule) => {
+          setDialogState(prev => ({
+            ...prev,
+            daySchedulesDialogOpen: false,
+            detailsDialogOpen: true,
+            selectedSchedule: schedule
+          }));
+        }}
+        onCompleted={markCompleted}
+        onCanceled={cancelSchedule}
+        onEdit={handleEditSchedule}
       />
       
       <RemindersHistoryDialog

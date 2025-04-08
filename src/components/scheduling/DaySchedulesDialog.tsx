@@ -1,75 +1,67 @@
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Schedule } from '@/types/schedule';
-import { useSchedules } from '@/context/schedules/SchedulesContext';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import ScheduleItem from './ScheduleItem';
-import EmptyScheduleState from './EmptyScheduleState';
+import { useSchedules } from '@/context/schedules/SchedulesContext';
 import { ProductType } from '@/context/product/types';
+import { Schedule } from '@/types/schedule';
+import { Calendar } from 'lucide-react';
 
 interface DaySchedulesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   day: Date | null;
   productContext?: ProductType;
+  onViewDetails?: (schedule: Schedule) => void;
+  onCompleted?: (id: string) => void;
+  onCanceled?: (id: string) => void;
+  onEdit?: (schedule: Schedule) => void;
 }
 
-const DaySchedulesDialog: React.FC<DaySchedulesDialogProps> = ({ 
-  open, 
+const DaySchedulesDialog: React.FC<DaySchedulesDialogProps> = ({
+  open,
   onOpenChange,
   day,
-  productContext
+  productContext,
+  onViewDetails,
+  onCompleted,
+  onCanceled,
+  onEdit
 }) => {
-  const { schedules } = useSchedules();
+  const { visibleSchedules } = useSchedules();
+
+  if (!day) return null;
   
-  const daySchedules = useMemo(() => {
-    if (!day) return [];
-    
-    let filteredSchedules = schedules.filter(schedule => {
-      const scheduleDate = new Date(schedule.date);
-      return scheduleDate.getDate() === day.getDate() &&
-             scheduleDate.getMonth() === day.getMonth() &&
-             scheduleDate.getFullYear() === day.getFullYear();
-    });
-    
-    // Further filter by product context if specified
-    if (productContext) {
-      filteredSchedules = filteredSchedules.filter(schedule => 
-        (schedule.productContext === productContext) ||
-        // For backward compatibility with existing schedules that don't have productContext
-        (!schedule.productContext && 
-         ((productContext === 'retention' && !schedule.studentId.startsWith('lead-')) ||
-          (productContext === 'recruitment' && schedule.studentId.startsWith('lead-'))))
-      );
-    }
-    
-    return filteredSchedules.sort((a, b) => 
-      new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
-  }, [day, schedules, productContext]);
+  const formattedDate = format(day, "EEEE, d 'de' MMMM 'de' yyyy", { locale: ptBR });
   
-  const formattedDate = day 
-    ? day.toLocaleDateString('pt-BR', { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      })
-    : '';
-  
+  // Filter schedules for the selected day
+  const schedulesForDay = visibleSchedules.filter(schedule => {
+    const scheduleDate = new Date(schedule.date);
+    return scheduleDate.getDate() === day.getDate() &&
+           scheduleDate.getMonth() === day.getMonth() &&
+           scheduleDate.getFullYear() === day.getFullYear() &&
+           // Filter by product context if provided
+           (!productContext || schedule.productContext === productContext ||
+            // For backward compatibility
+            (!schedule.productContext && 
+             ((productContext === 'retention' && !schedule.studentId.startsWith('lead-')) ||
+              (productContext === 'recruitment' && schedule.studentId.startsWith('lead-'))))
+           );
+  }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[550px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="capitalize">
-            Agendamentos para {formattedDate}
-          </DialogTitle>
+          <DialogTitle className="capitalize">{formattedDate}</DialogTitle>
         </DialogHeader>
         
-        <div className="py-4 max-h-[500px] overflow-y-auto">
-          {daySchedules.length > 0 ? (
-            <div className="space-y-4">
-              {daySchedules.map(schedule => (
+        <div className="py-4">
+          {schedulesForDay.length > 0 ? (
+            <div className="space-y-3">
+              {schedulesForDay.map(schedule => (
                 <ScheduleItem
                   key={schedule.id}
                   id={schedule.id}
@@ -78,16 +70,18 @@ const DaySchedulesDialog: React.FC<DaySchedulesDialogProps> = ({
                   agentName={schedule.agentName}
                   notes={schedule.notes}
                   status={schedule.status}
-                  showActions={true}
+                  onMarkCompleted={onCompleted}
+                  onCancelSchedule={onCanceled}
+                  onDetailsClick={() => onViewDetails && onViewDetails(schedule)}
+                  onEdit={() => onEdit && onEdit(schedule)}
                 />
               ))}
             </div>
           ) : (
-            <EmptyScheduleState
-              message={`Não há agendamentos para ${formattedDate}`}
-              icon="calendar"
-              showButton={false}
-            />
+            <div className="text-center py-8 text-muted-foreground">
+              <Calendar className="mx-auto h-10 w-10 mb-2 opacity-20" />
+              <p>Nenhum agendamento para este dia</p>
+            </div>
           )}
         </div>
       </DialogContent>
