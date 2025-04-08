@@ -12,6 +12,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { mockLeadsData } from '@/components/recruitment/leads/data/mockLeadsData';
 import { Schedule } from '@/types/schedule';
 import { format } from 'date-fns';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ScheduleDialogProps {
   open: boolean;
@@ -48,6 +49,7 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
   const [course, setCourse] = useState('');
   
   const { handleScheduleSubmit, updateSchedule } = useScheduleOperations();
+  const isMobile = useIsMobile();
 
   // Mock campus data - in a real app, this would come from an API or context
   const campuses = [
@@ -214,8 +216,8 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChangeWrapper}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+      <DialogContent className={`${isMobile ? 'w-[95%]' : 'sm:max-w-[550px]'} max-h-[90vh] overflow-y-auto`}>
+        <DialogHeader className="sticky top-0 bg-background z-10 pb-4">
           <DialogTitle>
             {isEditMode 
               ? 'Editar Agendamento' 
@@ -230,7 +232,7 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+        <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           <div className="space-y-2">
             <Label htmlFor="student">
               {productContext === 'recruitment' ? 'Lead' : 'Aluno'}
@@ -248,7 +250,7 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
                     : 'Selecione um aluno'
                 } />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-[200px] overflow-y-auto">
                 {filteredStudents.map((student) => (
                   <SelectItem key={student.id} value={String(student.id)}>
                     {student.name || `${productContext === 'recruitment' ? 'Lead' : 'Aluno'} ${student.id}`}
@@ -270,7 +272,7 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
                 <SelectTrigger id="campus">
                   <SelectValue placeholder="Selecione a unidade" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[200px] overflow-y-auto">
                   {campuses.map((campus) => (
                     <SelectItem key={campus.id} value={campus.id}>
                       {campus.name}
@@ -287,7 +289,7 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
               <RadioGroup 
                 value={educationType} 
                 onValueChange={(value: 'basic' | 'higher') => setEducationType(value)}
-                className="flex space-x-4"
+                className="flex flex-wrap gap-4"
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="basic" id="basic" />
@@ -301,7 +303,7 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
             </div>
           )}
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-4`}>
             <div className="space-y-2">
               <Label htmlFor="date">Data</Label>
               <Input 
@@ -413,15 +415,16 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
             />
           </div>
           
-          <DialogFooter>
+          <DialogFooter className={`mt-6 ${isMobile ? 'flex-col space-y-2' : ''} sticky bottom-0 pt-2 bg-background`}>
             <Button 
               type="button" 
               variant="outline" 
               onClick={() => onOpenChange(false)}
+              className={isMobile ? 'w-full' : ''}
             >
               Cancelar
             </Button>
-            <Button type="submit">
+            <Button type="submit" className={isMobile ? 'w-full' : ''}>
               {isEditMode ? 'Salvar Alterações' : 'Agendar'}
             </Button>
           </DialogFooter>
