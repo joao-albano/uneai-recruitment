@@ -115,10 +115,7 @@ const ViewModeRenderer: React.FC<ViewModeRendererProps> = ({
               onEdit={handleEditSchedule}
             />
             
-            <ScheduleStats 
-              onNewSchedule={handleNewSchedule}
-              onViewReminders={handleViewReminders}
-            />
+            {/* ScheduleStats component has been removed */}
           </div>
         </div>
       );
