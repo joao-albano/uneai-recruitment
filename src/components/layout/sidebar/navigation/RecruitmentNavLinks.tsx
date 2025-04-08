@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell, Building, Phone, Calendar } from 'lucide-react';
+import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell, Building, Phone, Calendar, Home } from 'lucide-react';
 import SidebarNavLink from '../SidebarNavLink';
 import SidebarNavigationGroup from '../SidebarNavigationGroup';
 import { useLocation } from 'react-router-dom';
@@ -13,6 +13,7 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
   const location = useLocation();
   
   // Check current path to determine which link should be active
+  const isHomeActive = location.pathname === '/recruitment/home';
   const isDashboardActive = location.pathname === '/recruitment' || location.pathname === '/recruitment/dashboard';
   const isAnalyticsActive = location.pathname === '/recruitment/analytics';
   const isPredictionsActive = location.pathname === '/recruitment/predictions';
@@ -22,6 +23,13 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
     <>
       {/* Grupo de Navegação */}
       <SidebarNavigationGroup title="Navegação" collapsed={collapsed} defaultOpen={false}>
+        <SidebarNavLink 
+          to="/recruitment/home" 
+          icon={Home} 
+          label="Início" 
+          collapsed={collapsed}
+          isActive={isHomeActive}
+        />
         <SidebarNavLink 
           to="/recruitment" 
           icon={BarChart} 
