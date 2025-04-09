@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell, Building, Phone, Calendar, Home, Settings, PhoneCall } from 'lucide-react';
+import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell, Building, Phone, Calendar, Home, Settings, PhoneCall, Target, CalendarDays } from 'lucide-react';
 import SidebarNavLink from '../SidebarNavLink';
 import SidebarNavigationGroup from '../SidebarNavigationGroup';
 import { useLocation } from 'react-router-dom';
@@ -19,6 +19,8 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
   const isPredictionsActive = location.pathname === '/recruitment/predictions';
   const isOmnichannelReportActive = location.pathname === '/recruitment/omnichannel-report';
   const isDialingRulesActive = location.pathname === '/recruitment/rules/dialing';
+  const isGoalsConfigActive = location.pathname === '/recruitment/rules/goals';
+  const isPeriodsConfigActive = location.pathname === '/recruitment/rules/periods';
   
   return (
     <>
@@ -123,7 +125,7 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
         />
       </SidebarNavigationGroup>
 
-      {/* Novo Grupo de Regras */}
+      {/* Grupo de Regras */}
       <SidebarNavigationGroup title="Regras" collapsed={collapsed} defaultOpen={false}>
         <SidebarNavLink 
           to="/recruitment/rules/dialing" 
@@ -132,7 +134,20 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
           collapsed={collapsed}
           isActive={isDialingRulesActive}
         />
-        {/* Outros tipos de regras podem ser adicionados aqui no futuro */}
+        <SidebarNavLink 
+          to="/recruitment/rules/goals" 
+          icon={Target} 
+          label="Metas" 
+          collapsed={collapsed}
+          isActive={isGoalsConfigActive}
+        />
+        <SidebarNavLink 
+          to="/recruitment/rules/periods" 
+          icon={CalendarDays} 
+          label="Períodos" 
+          collapsed={collapsed}
+          isActive={isPeriodsConfigActive}
+        />
       </SidebarNavigationGroup>
     </>
   );

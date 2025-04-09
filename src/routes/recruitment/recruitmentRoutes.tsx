@@ -20,6 +20,8 @@ import CampusManagementPage from "@/pages/recruitment/CampusManagementPage";
 import OmnichannelReportPage from "@/pages/recruitment/OmnichannelReportPage";
 import RecruitmentUploadPage from "@/pages/recruitment/RecruitmentUploadPage";
 import DialingRulesPage from "@/pages/recruitment/DialingRulesPage";
+import GoalsConfigPage from "@/pages/recruitment/GoalsConfigPage";
+import PeriodsConfigPage from "@/pages/recruitment/PeriodsConfigPage";
 
 interface RouteConfig {
   path: string;
@@ -173,6 +175,26 @@ export const recruitmentRoutes: RouteConfig[] = [
       <ProtectedRoute>
         <ProductGuard allowedProduct="recruitment" redirectTo="/hub">
           <DialingRulesPage />
+        </ProductGuard>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/rules/goals",
+    element: (
+      <ProtectedRoute>
+        <ProductGuard allowedProduct="recruitment" redirectTo="/hub">
+          <GoalsConfigPage />
+        </ProductGuard>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/rules/periods",
+    element: (
+      <ProtectedRoute>
+        <ProductGuard allowedProduct="recruitment" redirectTo="/hub">
+          <PeriodsConfigPage />
         </ProductGuard>
       </ProtectedRoute>
     )
