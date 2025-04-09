@@ -1,3 +1,4 @@
+
 import { ReactNode } from "react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoutes";
 import { ProductGuard } from "@/components/auth/ProductGuard";
@@ -18,6 +19,7 @@ import GeographicTargetingPage from "@/pages/recruitment/GeographicTargetingPage
 import CampusManagementPage from "@/pages/recruitment/CampusManagementPage";
 import OmnichannelReportPage from "@/pages/recruitment/OmnichannelReportPage";
 import RecruitmentUploadPage from "@/pages/recruitment/RecruitmentUploadPage";
+import DialingRulesPage from "@/pages/recruitment/DialingRulesPage";
 
 interface RouteConfig {
   path: string;
@@ -161,6 +163,16 @@ export const recruitmentRoutes: RouteConfig[] = [
       <ProtectedRoute>
         <ProductGuard allowedProduct="recruitment" redirectTo="/hub">
           <RecruitmentUploadPage />
+        </ProductGuard>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/rules/dialing",
+    element: (
+      <ProtectedRoute>
+        <ProductGuard allowedProduct="recruitment" redirectTo="/hub">
+          <DialingRulesPage />
         </ProductGuard>
       </ProtectedRoute>
     )

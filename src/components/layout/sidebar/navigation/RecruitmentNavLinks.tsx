@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell, Building, Phone, Calendar, Home } from 'lucide-react';
+import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell, Building, Phone, Calendar, Home, Settings, PhoneCall } from 'lucide-react';
 import SidebarNavLink from '../SidebarNavLink';
 import SidebarNavigationGroup from '../SidebarNavigationGroup';
 import { useLocation } from 'react-router-dom';
@@ -18,6 +18,7 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
   const isAnalyticsActive = location.pathname === '/recruitment/analytics';
   const isPredictionsActive = location.pathname === '/recruitment/predictions';
   const isOmnichannelReportActive = location.pathname === '/recruitment/omnichannel-report';
+  const isDialingRulesActive = location.pathname === '/recruitment/rules/dialing';
   
   return (
     <>
@@ -120,6 +121,18 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
           label="Agenda" 
           collapsed={collapsed}
         />
+      </SidebarNavigationGroup>
+
+      {/* Novo Grupo de Regras */}
+      <SidebarNavigationGroup title="Regras" collapsed={collapsed} defaultOpen={false}>
+        <SidebarNavLink 
+          to="/recruitment/rules/dialing" 
+          icon={PhoneCall} 
+          label="Discagem" 
+          collapsed={collapsed}
+          isActive={isDialingRulesActive}
+        />
+        {/* Outros tipos de regras podem ser adicionados aqui no futuro */}
       </SidebarNavigationGroup>
     </>
   );
