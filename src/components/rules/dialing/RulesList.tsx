@@ -1,0 +1,93 @@
+
+import React from 'react';
+import { Edit, Trash2, MoreHorizontal, Power, PowerOff } from 'lucide-react';
+import { DialingRule } from '@/types/voicecall';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { format } from 'date-fns';
+
+interface RulesListProps {
+  rules: DialingRule[];
+  isMobile: boolean;
+  onEditRule: (rule: DialingRule) => void;
+  onDeleteRule: (rule: DialingRule) => void;
+  onToggleStatus: (rule: DialingRule) => void;
+}
+
+const RulesList: React.FC<RulesListProps> = ({
+  rules,
+  isMobile,
+  onEditRule,
+  onDeleteRule,
+  onToggleStatus
+}) => {
+  return (
+    <ScrollArea className={isMobile ? "h-[450px]" : "max-h-[600px]"}>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-1/4">Nome</TableHead>
+            <TableHead className="w-1/6">Status</TableHead>
+            <TableHead className="w-1/6">Canais</TableHead>
+            <TableHead className="w-1/6">Horário</TableHead>
+            <TableHead className="w-1/6">Criação</TableHead>
+            <TableHead className="w-1/12 text-right">Ações</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rules.map((rule) => (
+            <TableRow key={rule.id}>
+              <TableCell className="font-medium">{rule.name}</TableCell>
+              <TableCell>
+                <Badge variant={rule.enabled ? "secondary" : "outline"} className={rule.enabled ? "bg-green-500 hover:bg-green-600 text-white" : ""}>
+                  {rule.enabled ? 'Ativo' : 'Inativo'}
+                </Badge>
+              </TableCell>
+              <TableCell>{rule.simultaneousChannels}</TableCell>
+              <TableCell>{`${rule.startTime} - ${rule.endTime}`}</TableCell>
+              <TableCell>{format(new Date(rule.createdAt), 'dd/MM/yyyy')}</TableCell>
+              <TableCell className="text-right">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <MoreHorizontal className="h-4 w-4" />
+                      <span className="sr-only">Ações</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => onEditRule(rule)}>
+                      <Edit className="mr-2 h-4 w-4" />
+                      Editar
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onToggleStatus(rule)}>
+                      {rule.enabled ? (
+                        <>
+                          <PowerOff className="mr-2 h-4 w-4" />
+                          Desativar
+                        </>
+                      ) : (
+                        <>
+                          <Power className="mr-2 h-4 w-4" />
+                          Ativar
+                        </>
+                      )}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onDeleteRule(rule)} className="text-destructive">
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Excluir
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </ScrollArea>
+  );
+};
+
+export default RulesList;
