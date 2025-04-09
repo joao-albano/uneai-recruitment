@@ -11,6 +11,7 @@ import RulesList from './RulesList';
 import EmptyRulesState from './EmptyRulesState';
 import RulesHeader from './RulesHeader';
 import RulesInfo from './RulesInfo';
+import { useToast } from '@/hooks/use-toast';
 
 const DialingRulesManagement: React.FC = () => {
   const { rules, loading, addRule, updateRule, deleteRule, toggleRuleStatus, defaultRedialIntervals } = useDialingRules();
@@ -20,47 +21,91 @@ const DialingRulesManagement: React.FC = () => {
   const [selectedRule, setSelectedRule] = useState<DialingRule | null>(null);
   const [processingAction, setProcessingAction] = useState(false);
   const isMobile = useIsMobile();
+  const { toast } = useToast();
+
+  // Combine global loading and local processing state
+  const isLoading = loading || processingAction;
 
   const handleAddRule = async (rule: Omit<DialingRule, 'id' | 'createdAt' | 'updatedAt'>) => {
-    setProcessingAction(true);
-    const success = await addRule(rule);
-    setProcessingAction(false);
-    
-    if (success) {
-      setIsAddDialogOpen(false);
+    try {
+      setProcessingAction(true);
+      const success = await addRule(rule);
+      
+      if (success) {
+        setIsAddDialogOpen(false);
+      }
+    } catch (error) {
+      console.error('Error adding rule:', error);
+      toast({
+        title: 'Erro ao criar regra',
+        description: 'Ocorreu um erro ao criar a regra. Tente novamente.',
+        variant: 'destructive'
+      });
+    } finally {
+      setProcessingAction(false);
     }
   };
 
   const handleEditRule = async (rule: Omit<DialingRule, 'id' | 'createdAt' | 'updatedAt'>) => {
-    if (selectedRule) {
+    if (!selectedRule) return;
+    
+    try {
       setProcessingAction(true);
       const success = await updateRule(selectedRule.id, rule);
-      setProcessingAction(false);
       
       if (success) {
         setIsEditDialogOpen(false);
         setSelectedRule(null);
       }
+    } catch (error) {
+      console.error('Error updating rule:', error);
+      toast({
+        title: 'Erro ao atualizar regra',
+        description: 'Ocorreu um erro ao atualizar a regra. Tente novamente.',
+        variant: 'destructive'
+      });
+    } finally {
+      setProcessingAction(false);
     }
   };
 
   const handleDeleteRule = async () => {
-    if (selectedRule) {
+    if (!selectedRule) return;
+    
+    try {
       setProcessingAction(true);
       const success = await deleteRule(selectedRule.id);
-      setProcessingAction(false);
       
       if (success) {
         setIsDeleteDialogOpen(false);
         setSelectedRule(null);
       }
+    } catch (error) {
+      console.error('Error deleting rule:', error);
+      toast({
+        title: 'Erro ao excluir regra',
+        description: 'Ocorreu um erro ao excluir a regra. Tente novamente.',
+        variant: 'destructive'
+      });
+    } finally {
+      setProcessingAction(false);
     }
   };
 
   const handleToggleStatus = async (rule: DialingRule) => {
-    setProcessingAction(true);
-    await toggleRuleStatus(rule.id);
-    setProcessingAction(false);
+    try {
+      setProcessingAction(true);
+      await toggleRuleStatus(rule.id);
+    } catch (error) {
+      console.error('Error toggling rule status:', error);
+      toast({
+        title: 'Erro ao alterar status da regra',
+        description: 'Ocorreu um erro ao alterar o status da regra. Tente novamente.',
+        variant: 'destructive'
+      });
+    } finally {
+      setProcessingAction(false);
+    }
   };
 
   const openEditDialog = (rule: DialingRule) => {
@@ -71,6 +116,26 @@ const DialingRulesManagement: React.FC = () => {
   const openDeleteDialog = (rule: DialingRule) => {
     setSelectedRule(rule);
     setIsDeleteDialogOpen(true);
+  };
+
+  const closeAddDialog = () => {
+    if (!processingAction) {
+      setIsAddDialogOpen(false);
+    }
+  };
+
+  const closeEditDialog = () => {
+    if (!processingAction) {
+      setIsEditDialogOpen(false);
+      setSelectedRule(null);
+    }
+  };
+
+  const closeDeleteDialog = () => {
+    if (!processingAction) {
+      setIsDeleteDialogOpen(false);
+      setSelectedRule(null);
+    }
   };
 
   return (
@@ -87,7 +152,7 @@ const DialingRulesManagement: React.FC = () => {
             onEditRule={openEditDialog}
             onDeleteRule={openDeleteDialog}
             onToggleStatus={handleToggleStatus}
-            isLoading={processingAction || loading}
+            isLoading={isLoading}
           />
         </Card>
       )}
@@ -95,7 +160,7 @@ const DialingRulesManagement: React.FC = () => {
       <RulesInfo />
 
       {/* Add Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={(open) => !processingAction && setIsAddDialogOpen(open)}>
+      <Dialog open={isAddDialogOpen} onOpenChange={closeAddDialog}>
         <DialogContent className={`${isMobile ? 'w-[95%] max-h-[90vh] overflow-y-auto' : 'max-w-3xl max-h-[90vh] overflow-y-auto'}`}>
           <DialogHeader>
             <DialogTitle>Nova Regra de Discagem</DialogTitle>
@@ -105,7 +170,7 @@ const DialingRulesManagement: React.FC = () => {
           </DialogHeader>
           <DialingRuleForm 
             onSubmit={handleAddRule} 
-            onCancel={() => !processingAction && setIsAddDialogOpen(false)}
+            onCancel={closeAddDialog}
             defaultRedialIntervals={defaultRedialIntervals}
             isSubmitting={processingAction}
           />
@@ -113,7 +178,7 @@ const DialingRulesManagement: React.FC = () => {
       </Dialog>
 
       {/* Edit Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={(open) => !processingAction && setIsEditDialogOpen(open)}>
+      <Dialog open={isEditDialogOpen} onOpenChange={closeEditDialog}>
         <DialogContent className={`${isMobile ? 'w-[95%] max-h-[90vh] overflow-y-auto' : 'max-w-3xl max-h-[90vh] overflow-y-auto'}`}>
           <DialogHeader>
             <DialogTitle>Editar Regra de Discagem</DialogTitle>
@@ -125,7 +190,7 @@ const DialingRulesManagement: React.FC = () => {
             <DialingRuleForm 
               initialData={selectedRule}
               onSubmit={handleEditRule} 
-              onCancel={() => !processingAction && setIsEditDialogOpen(false)}
+              onCancel={closeEditDialog}
               defaultRedialIntervals={defaultRedialIntervals}
               isSubmitting={processingAction}
             />
@@ -136,7 +201,7 @@ const DialingRulesManagement: React.FC = () => {
       {/* Delete Confirmation Dialog */}
       <DeleteRuleDialog
         open={isDeleteDialogOpen}
-        onOpenChange={(open) => !processingAction && setIsDeleteDialogOpen(open)}
+        onOpenChange={closeDeleteDialog}
         onConfirm={handleDeleteRule}
         ruleName={selectedRule?.name || ''}
         isDeleting={processingAction}

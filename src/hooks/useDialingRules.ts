@@ -68,154 +68,151 @@ export const useDialingRules = () => {
     }
   }, [rules]);
 
-  const addRule = (rule: Omit<DialingRule, 'id' | 'createdAt' | 'updatedAt'>) => {
+  // Adicionando um pequeno atraso artificial para simular operações de API
+  const simulateApiDelay = () => new Promise(resolve => setTimeout(resolve, 500));
+
+  const addRule = async (rule: Omit<DialingRule, 'id' | 'createdAt' | 'updatedAt'>) => {
     setLoading(true);
     
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        try {
-          const newRule: DialingRule = {
-            ...rule,
-            id: uuidv4(),
-            createdAt: new Date(),
-            updatedAt: new Date()
-          };
-          
-          setRules(prevRules => [...prevRules, newRule]);
-          
-          toast({
-            title: 'Regra criada com sucesso',
-            description: `A regra "${rule.name}" foi criada com sucesso.`
-          });
-          
-          setLoading(false);
-          resolve(true);
-        } catch (error) {
-          console.error('Error adding rule:', error);
-          
-          toast({
-            title: 'Erro ao criar regra',
-            description: 'Ocorreu um erro ao criar a regra. Tente novamente.',
-            variant: 'destructive'
-          });
-          
-          setLoading(false);
-          resolve(false);
-        }
-      }, 100); // Pequeno delay para evitar congelamento da UI
-    });
+    try {
+      await simulateApiDelay();
+      
+      const newRule: DialingRule = {
+        ...rule,
+        id: uuidv4(),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      
+      setRules(prevRules => [...prevRules, newRule]);
+      
+      toast({
+        title: 'Regra criada com sucesso',
+        description: `A regra "${rule.name}" foi criada com sucesso.`
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Error adding rule:', error);
+      
+      toast({
+        title: 'Erro ao criar regra',
+        description: 'Ocorreu um erro ao criar a regra. Tente novamente.',
+        variant: 'destructive'
+      });
+      
+      return false;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const updateRule = (id: string, updatedRule: Partial<Omit<DialingRule, 'id' | 'createdAt' | 'updatedAt'>>) => {
+  const updateRule = async (id: string, updatedRule: Partial<Omit<DialingRule, 'id' | 'createdAt' | 'updatedAt'>>) => {
     setLoading(true);
     
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        try {
-          setRules(prevRules => 
-            prevRules.map(rule => 
-              rule.id === id 
-                ? { 
-                    ...rule, 
-                    ...updatedRule, 
-                    updatedAt: new Date() 
-                  } 
-                : rule
-            )
-          );
-          
-          toast({
-            title: 'Regra atualizada com sucesso',
-            description: `A regra foi atualizada com sucesso.`
-          });
-          
-          setLoading(false);
-          resolve(true);
-        } catch (error) {
-          console.error('Error updating rule:', error);
-          
-          toast({
-            title: 'Erro ao atualizar regra',
-            description: 'Ocorreu um erro ao atualizar a regra. Tente novamente.',
-            variant: 'destructive'
-          });
-          
-          setLoading(false);
-          resolve(false);
-        }
-      }, 100); // Pequeno delay para evitar congelamento da UI
-    });
+    try {
+      await simulateApiDelay();
+      
+      setRules(prevRules => 
+        prevRules.map(rule => 
+          rule.id === id 
+            ? { 
+                ...rule, 
+                ...updatedRule, 
+                updatedAt: new Date() 
+              } 
+            : rule
+        )
+      );
+      
+      toast({
+        title: 'Regra atualizada com sucesso',
+        description: `A regra foi atualizada com sucesso.`
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Error updating rule:', error);
+      
+      toast({
+        title: 'Erro ao atualizar regra',
+        description: 'Ocorreu um erro ao atualizar a regra. Tente novamente.',
+        variant: 'destructive'
+      });
+      
+      return false;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const deleteRule = (id: string) => {
+  const deleteRule = async (id: string) => {
     setLoading(true);
     
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        try {
-          setRules(prevRules => prevRules.filter(rule => rule.id !== id));
-          
-          toast({
-            title: 'Regra excluída com sucesso',
-            description: `A regra foi excluída com sucesso.`
-          });
-          
-          setLoading(false);
-          resolve(true);
-        } catch (error) {
-          console.error('Error deleting rule:', error);
-          
-          toast({
-            title: 'Erro ao excluir regra',
-            description: 'Ocorreu um erro ao excluir a regra. Tente novamente.',
-            variant: 'destructive'
-          });
-          
-          setLoading(false);
-          resolve(false);
-        }
-      }, 100); // Pequeno delay para evitar congelamento da UI
-    });
+    try {
+      await simulateApiDelay();
+      
+      setRules(prevRules => prevRules.filter(rule => rule.id !== id));
+      
+      toast({
+        title: 'Regra excluída com sucesso',
+        description: `A regra foi excluída com sucesso.`
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Error deleting rule:', error);
+      
+      toast({
+        title: 'Erro ao excluir regra',
+        description: 'Ocorreu um erro ao excluir a regra. Tente novamente.',
+        variant: 'destructive'
+      });
+      
+      return false;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const toggleRuleStatus = (id: string) => {
+  const toggleRuleStatus = async (id: string) => {
     setLoading(true);
     
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        try {
-          setRules(prevRules => 
-            prevRules.map(rule => 
-              rule.id === id 
-                ? { ...rule, enabled: !rule.enabled, updatedAt: new Date() } 
-                : rule
-            )
-          );
-          
-          const rule = rules.find(r => r.id === id);
-          const statusText = rule?.enabled ? 'desativada' : 'ativada';
-          
-          toast({
-            title: `Regra ${statusText}`,
-            description: `A regra foi ${statusText} com sucesso.`
-          });
-          
-          setLoading(false);
-          resolve(true);
-        } catch (error) {
-          console.error('Error toggling rule status:', error);
-          
-          toast({
-            title: 'Erro ao alterar status da regra',
-            description: 'Ocorreu um erro ao alterar o status da regra. Tente novamente.',
-            variant: 'destructive'
-          });
-          
-          setLoading(false);
-          resolve(false);
-        }
-      }, 100); // Pequeno delay para evitar congelamento da UI
-    });
+    try {
+      await simulateApiDelay();
+      
+      const rule = rules.find(r => r.id === id);
+      const newStatus = rule ? !rule.enabled : false;
+      
+      setRules(prevRules => 
+        prevRules.map(rule => 
+          rule.id === id 
+            ? { ...rule, enabled: newStatus, updatedAt: new Date() } 
+            : rule
+        )
+      );
+      
+      const statusText = newStatus ? 'ativada' : 'desativada';
+      
+      toast({
+        title: `Regra ${statusText}`,
+        description: `A regra foi ${statusText} com sucesso.`
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Error toggling rule status:', error);
+      
+      toast({
+        title: 'Erro ao alterar status da regra',
+        description: 'Ocorreu um erro ao alterar o status da regra. Tente novamente.',
+        variant: 'destructive'
+      });
+      
+      return false;
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {
