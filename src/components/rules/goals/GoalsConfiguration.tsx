@@ -11,9 +11,14 @@ import GoalsHeader from './GoalsHeader';
 const GoalsConfiguration: React.FC = () => {
   const [activeTab, setActiveTab] = useState('general');
   
+  const handleAddGoal = () => {
+    // This will be implemented later with the goal creation dialog
+    console.log('Add new goal clicked');
+  };
+  
   return (
     <div className="space-y-6">
-      <GoalsHeader />
+      <GoalsHeader onAddGoal={handleAddGoal} />
       
       <Alert variant="default" className="bg-primary/5 border-primary/20">
         <InfoIcon className="h-4 w-4 text-primary" />
@@ -40,10 +45,7 @@ const GoalsConfiguration: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="py-6 text-center text-muted-foreground">
-                <p>Esta funcionalidade estará disponível em breve.</p>
-                <p className="mt-2">Aqui você poderá definir metas totais de captação e acompanhar métricas globais.</p>
-              </div>
+              <GoalsList />
             </CardContent>
           </Card>
         </TabsContent>
@@ -57,10 +59,7 @@ const GoalsConfiguration: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="py-6 text-center text-muted-foreground">
-                <p>Esta funcionalidade estará disponível em breve.</p>
-                <p className="mt-2">Aqui você poderá definir metas de captação para cada curso e turno.</p>
-              </div>
+              <GoalsList />
             </CardContent>
           </Card>
         </TabsContent>
@@ -74,10 +73,7 @@ const GoalsConfiguration: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="py-6 text-center text-muted-foreground">
-                <p>Esta funcionalidade estará disponível em breve.</p>
-                <p className="mt-2">Aqui você poderá definir metas de captação para cada unidade da instituição.</p>
-              </div>
+              <GoalsList />
             </CardContent>
           </Card>
         </TabsContent>
