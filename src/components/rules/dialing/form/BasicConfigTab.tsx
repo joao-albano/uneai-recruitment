@@ -5,11 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
+import { DatePicker } from '@/components/ui/date-picker';
 
 interface BasicConfigTabProps {
   name: string;
@@ -144,27 +140,11 @@ const BasicConfigTab: React.FC<BasicConfigTabProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label>Data de Início</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    className={cn(
-                      "w-full flex h-10 items-center justify-start rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
-                      !startDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, "PPP") : "Selecione uma data"}
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={startDate}
-                    onSelect={setStartDate}
-                  />
-                </PopoverContent>
-              </Popover>
+              <DatePicker 
+                date={startDate} 
+                setDate={setStartDate}
+                placeholder="Selecione a data de início"
+              />
             </div>
             
             <div className="space-y-2">
@@ -179,28 +159,12 @@ const BasicConfigTab: React.FC<BasicConfigTabProps> = ({
             
             <div className="space-y-2">
               <Label>Data de Término (opcional)</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    className={cn(
-                      "w-full flex h-10 items-center justify-start rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
-                      !endDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {endDate ? format(endDate, "PPP") : "Selecione uma data"}
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={endDate}
-                    onSelect={setEndDate}
-                    disabled={(date) => startDate ? date < startDate : false}
-                  />
-                </PopoverContent>
-              </Popover>
+              <DatePicker 
+                date={endDate} 
+                setDate={setEndDate}
+                fromDate={startDate}
+                placeholder="Selecione a data de término"
+              />
             </div>
             
             <div className="space-y-2">
