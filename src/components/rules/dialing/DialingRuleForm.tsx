@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface DialingRuleFormProps {
@@ -20,6 +20,7 @@ interface DialingRuleFormProps {
   onSubmit: (data: Omit<DialingRule, 'id' | 'createdAt' | 'updatedAt'>) => void;
   onCancel: () => void;
   defaultRedialIntervals: RedialInterval[];
+  isSubmitting?: boolean;
 }
 
 const failureTypeLabels: Record<DialingFailureType, string> = {
@@ -35,7 +36,8 @@ const DialingRuleForm: React.FC<DialingRuleFormProps> = ({
   initialData,
   onSubmit,
   onCancel,
-  defaultRedialIntervals
+  defaultRedialIntervals,
+  isSubmitting = false
 }) => {
   const [name, setName] = useState(initialData?.name || '');
   const [enabled, setEnabled] = useState(initialData?.enabled ?? true);
@@ -313,11 +315,26 @@ const DialingRuleForm: React.FC<DialingRuleFormProps> = ({
       </Tabs>
       
       <div className="flex justify-end space-x-4 mt-6">
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={onCancel}
+          disabled={isSubmitting}
+        >
           Cancelar
         </Button>
-        <Button type="submit">
-          {initialData?.id ? 'Atualizar Regra' : 'Criar Regra'}
+        <Button 
+          type="submit"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {initialData?.id ? 'Atualizando...' : 'Criando...'}
+            </>
+          ) : (
+            initialData?.id ? 'Atualizar Regra' : 'Criar Regra'
+          )}
         </Button>
       </div>
     </form>

@@ -61,122 +61,160 @@ export const useDialingRules = () => {
 
   // Save rules to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('dialing_rules', JSON.stringify(rules));
+    try {
+      localStorage.setItem('dialing_rules', JSON.stringify(rules));
+    } catch (e) {
+      console.error('Error saving dialing rules to localStorage:', e);
+    }
   }, [rules]);
 
   const addRule = (rule: Omit<DialingRule, 'id' | 'createdAt' | 'updatedAt'>) => {
     setLoading(true);
     
-    try {
-      const newRule: DialingRule = {
-        ...rule,
-        id: uuidv4(),
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      
-      setRules(prevRules => [...prevRules, newRule]);
-      
-      toast({
-        title: 'Regra criada com sucesso',
-        description: `A regra "${rule.name}" foi criada com sucesso.`
-      });
-      
-      return true;
-    } catch (error) {
-      console.error('Error adding rule:', error);
-      
-      toast({
-        title: 'Erro ao criar regra',
-        description: 'Ocorreu um erro ao criar a regra. Tente novamente.',
-        variant: 'destructive'
-      });
-      
-      return false;
-    } finally {
-      setLoading(false);
-    }
+    return new Promise<boolean>((resolve) => {
+      setTimeout(() => {
+        try {
+          const newRule: DialingRule = {
+            ...rule,
+            id: uuidv4(),
+            createdAt: new Date(),
+            updatedAt: new Date()
+          };
+          
+          setRules(prevRules => [...prevRules, newRule]);
+          
+          toast({
+            title: 'Regra criada com sucesso',
+            description: `A regra "${rule.name}" foi criada com sucesso.`
+          });
+          
+          setLoading(false);
+          resolve(true);
+        } catch (error) {
+          console.error('Error adding rule:', error);
+          
+          toast({
+            title: 'Erro ao criar regra',
+            description: 'Ocorreu um erro ao criar a regra. Tente novamente.',
+            variant: 'destructive'
+          });
+          
+          setLoading(false);
+          resolve(false);
+        }
+      }, 100); // Pequeno delay para evitar congelamento da UI
+    });
   };
 
   const updateRule = (id: string, updatedRule: Partial<Omit<DialingRule, 'id' | 'createdAt' | 'updatedAt'>>) => {
     setLoading(true);
     
-    try {
-      setRules(prevRules => 
-        prevRules.map(rule => 
-          rule.id === id 
-            ? { 
-                ...rule, 
-                ...updatedRule, 
-                updatedAt: new Date() 
-              } 
-            : rule
-        )
-      );
-      
-      toast({
-        title: 'Regra atualizada com sucesso',
-        description: `A regra foi atualizada com sucesso.`
-      });
-      
-      return true;
-    } catch (error) {
-      console.error('Error updating rule:', error);
-      
-      toast({
-        title: 'Erro ao atualizar regra',
-        description: 'Ocorreu um erro ao atualizar a regra. Tente novamente.',
-        variant: 'destructive'
-      });
-      
-      return false;
-    } finally {
-      setLoading(false);
-    }
+    return new Promise<boolean>((resolve) => {
+      setTimeout(() => {
+        try {
+          setRules(prevRules => 
+            prevRules.map(rule => 
+              rule.id === id 
+                ? { 
+                    ...rule, 
+                    ...updatedRule, 
+                    updatedAt: new Date() 
+                  } 
+                : rule
+            )
+          );
+          
+          toast({
+            title: 'Regra atualizada com sucesso',
+            description: `A regra foi atualizada com sucesso.`
+          });
+          
+          setLoading(false);
+          resolve(true);
+        } catch (error) {
+          console.error('Error updating rule:', error);
+          
+          toast({
+            title: 'Erro ao atualizar regra',
+            description: 'Ocorreu um erro ao atualizar a regra. Tente novamente.',
+            variant: 'destructive'
+          });
+          
+          setLoading(false);
+          resolve(false);
+        }
+      }, 100); // Pequeno delay para evitar congelamento da UI
+    });
   };
 
   const deleteRule = (id: string) => {
     setLoading(true);
     
-    try {
-      setRules(prevRules => prevRules.filter(rule => rule.id !== id));
-      
-      toast({
-        title: 'Regra excluída com sucesso',
-        description: `A regra foi excluída com sucesso.`
-      });
-      
-      return true;
-    } catch (error) {
-      console.error('Error deleting rule:', error);
-      
-      toast({
-        title: 'Erro ao excluir regra',
-        description: 'Ocorreu um erro ao excluir a regra. Tente novamente.',
-        variant: 'destructive'
-      });
-      
-      return false;
-    } finally {
-      setLoading(false);
-    }
+    return new Promise<boolean>((resolve) => {
+      setTimeout(() => {
+        try {
+          setRules(prevRules => prevRules.filter(rule => rule.id !== id));
+          
+          toast({
+            title: 'Regra excluída com sucesso',
+            description: `A regra foi excluída com sucesso.`
+          });
+          
+          setLoading(false);
+          resolve(true);
+        } catch (error) {
+          console.error('Error deleting rule:', error);
+          
+          toast({
+            title: 'Erro ao excluir regra',
+            description: 'Ocorreu um erro ao excluir a regra. Tente novamente.',
+            variant: 'destructive'
+          });
+          
+          setLoading(false);
+          resolve(false);
+        }
+      }, 100); // Pequeno delay para evitar congelamento da UI
+    });
   };
 
   const toggleRuleStatus = (id: string) => {
-    setRules(prevRules => 
-      prevRules.map(rule => 
-        rule.id === id 
-          ? { ...rule, enabled: !rule.enabled, updatedAt: new Date() } 
-          : rule
-      )
-    );
+    setLoading(true);
     
-    const rule = rules.find(r => r.id === id);
-    const statusText = rule?.enabled ? 'desativada' : 'ativada';
-    
-    toast({
-      title: `Regra ${statusText}`,
-      description: `A regra foi ${statusText} com sucesso.`
+    return new Promise<boolean>((resolve) => {
+      setTimeout(() => {
+        try {
+          setRules(prevRules => 
+            prevRules.map(rule => 
+              rule.id === id 
+                ? { ...rule, enabled: !rule.enabled, updatedAt: new Date() } 
+                : rule
+            )
+          );
+          
+          const rule = rules.find(r => r.id === id);
+          const statusText = rule?.enabled ? 'desativada' : 'ativada';
+          
+          toast({
+            title: `Regra ${statusText}`,
+            description: `A regra foi ${statusText} com sucesso.`
+          });
+          
+          setLoading(false);
+          resolve(true);
+        } catch (error) {
+          console.error('Error toggling rule status:', error);
+          
+          toast({
+            title: 'Erro ao alterar status da regra',
+            description: 'Ocorreu um erro ao alterar o status da regra. Tente novamente.',
+            variant: 'destructive'
+          });
+          
+          setLoading(false);
+          resolve(false);
+        }
+      }, 100); // Pequeno delay para evitar congelamento da UI
     });
   };
 

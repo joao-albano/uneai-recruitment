@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Edit, Trash2, MoreHorizontal, Power, PowerOff } from 'lucide-react';
+import { Edit, Trash2, MoreHorizontal, Power, PowerOff, Loader2 } from 'lucide-react';
 import { DialingRule } from '@/types/voicecall';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,7 @@ interface RulesListProps {
   onEditRule: (rule: DialingRule) => void;
   onDeleteRule: (rule: DialingRule) => void;
   onToggleStatus: (rule: DialingRule) => void;
+  isLoading?: boolean;
 }
 
 const RulesList: React.FC<RulesListProps> = ({
@@ -22,10 +23,19 @@ const RulesList: React.FC<RulesListProps> = ({
   isMobile,
   onEditRule,
   onDeleteRule,
-  onToggleStatus
+  onToggleStatus,
+  isLoading = false
 }) => {
   return (
     <ScrollArea className={isMobile ? "h-[450px]" : "max-h-[600px]"}>
+      {isLoading && (
+        <div className="absolute inset-0 bg-background/50 z-10 flex items-center justify-center">
+          <div className="flex items-center space-x-2">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <span>Processando...</span>
+          </div>
+        </div>
+      )}
       <Table>
         <TableHeader>
           <TableRow>
@@ -51,18 +61,18 @@ const RulesList: React.FC<RulesListProps> = ({
               <TableCell>{format(new Date(rule.createdAt), 'dd/MM/yyyy')}</TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                  <DropdownMenuTrigger asChild disabled={isLoading}>
                     <Button variant="ghost" size="icon">
                       <MoreHorizontal className="h-4 w-4" />
                       <span className="sr-only">Ações</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onEditRule(rule)}>
+                    <DropdownMenuItem onClick={() => onEditRule(rule)} disabled={isLoading}>
                       <Edit className="mr-2 h-4 w-4" />
                       Editar
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onToggleStatus(rule)}>
+                    <DropdownMenuItem onClick={() => onToggleStatus(rule)} disabled={isLoading}>
                       {rule.enabled ? (
                         <>
                           <PowerOff className="mr-2 h-4 w-4" />
@@ -75,7 +85,7 @@ const RulesList: React.FC<RulesListProps> = ({
                         </>
                       )}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onDeleteRule(rule)} className="text-destructive">
+                    <DropdownMenuItem onClick={() => onDeleteRule(rule)} className="text-destructive" disabled={isLoading}>
                       <Trash2 className="mr-2 h-4 w-4" />
                       Excluir
                     </DropdownMenuItem>
