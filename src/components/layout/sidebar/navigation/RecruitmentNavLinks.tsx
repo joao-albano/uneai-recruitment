@@ -91,8 +91,8 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
         />
         <SidebarNavLink 
           to="/recruitment/geographic-targeting" 
-          icon={MapPin} 
-          label="Direcionamento Geo" 
+          icon={Phone} 
+          label="Orquestração" 
           collapsed={collapsed}
         />
         <SidebarNavLink 
