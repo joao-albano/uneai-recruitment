@@ -111,7 +111,7 @@ const DialingRulesManagement: React.FC = () => {
                     <TableRow key={rule.id}>
                       <TableCell className="font-medium">{rule.name}</TableCell>
                       <TableCell>
-                        <Badge variant={rule.enabled ? "success" : "secondary"}>
+                        <Badge variant={rule.enabled ? "secondary" : "outline"} className={rule.enabled ? "bg-green-500 hover:bg-green-600 text-white" : ""}>
                           {rule.enabled ? 'Ativo' : 'Inativo'}
                         </Badge>
                       </TableCell>
