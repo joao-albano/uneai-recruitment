@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,8 @@ import {
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import CourseDetailsDialog from './CourseDetailsDialog';
+import { useToast } from '@/components/ui/use-toast';
 
 // Dados fictícios de demonstração
 const coursePredictions = [
@@ -118,6 +119,9 @@ const overallStats = {
 
 const StrategicDecisionDashboard: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = React.useState('2024.2');
+  const [selectedCourse, setSelectedCourse] = React.useState<any | null>(null);
+  const [detailsDialogOpen, setDetailsDialogOpen] = React.useState(false);
+  const { toast } = useToast();
   
   const getProgressColor = (percent: number) => {
     if (percent >= 95) return 'bg-green-500';
@@ -164,6 +168,11 @@ const StrategicDecisionDashboard: React.FC = () => {
       default:
         return <Badge variant="outline">Desconhecido</Badge>;
     }
+  };
+
+  const handleViewDetails = (course: any) => {
+    setSelectedCourse(course);
+    setDetailsDialogOpen(true);
   };
   
   return (
@@ -326,7 +335,12 @@ const StrategicDecisionDashboard: React.FC = () => {
                       {course.predicted} de {course.target} matrículas previstas ({((course.predicted / course.target) * 100).toFixed(1)}%)
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-1">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="gap-1"
+                    onClick={() => handleViewDetails(course)}
+                  >
                     <span>Detalhes</span>
                     <ChevronRight className="h-4 w-4" />
                   </Button>
@@ -407,6 +421,13 @@ const StrategicDecisionDashboard: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Course Details Dialog */}
+      <CourseDetailsDialog 
+        open={detailsDialogOpen} 
+        onOpenChange={setDetailsDialogOpen} 
+        course={selectedCourse} 
+      />
     </div>
   );
 };

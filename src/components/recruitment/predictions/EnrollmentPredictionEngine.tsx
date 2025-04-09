@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,8 +8,8 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import CourseDetailDialog from './CourseDetailDialog';
 
-// Mock data for the prediction engine
 const mockCoursePredictions = [
   {
     id: '1',
@@ -88,6 +87,7 @@ const mockCoursePredictions = [
 
 const EnrollmentPredictionEngine: React.FC = () => {
   const [selectedCourse, setSelectedCourse] = useState(mockCoursePredictions[0]);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   
   const getRiskColor = (risk: string) => {
     switch(risk) {
@@ -111,6 +111,11 @@ const EnrollmentPredictionEngine: React.FC = () => {
     if (percent >= 85) return 'bg-green-400';
     if (percent >= 70) return 'bg-amber-500';
     return 'bg-red-500';
+  };
+
+  const handleViewDetails = (course: any) => {
+    setSelectedCourse(course);
+    setDetailsDialogOpen(true);
   };
   
   return (
@@ -233,7 +238,17 @@ const EnrollmentPredictionEngine: React.FC = () => {
                     </div>
                     <div className="flex items-center">
                       {getTrendIcon(course.trend)}
-                      <ChevronRight className="h-4 w-4 ml-1 opacity-50" />
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleViewDetails(course);
+                        }}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                   
@@ -391,6 +406,12 @@ const EnrollmentPredictionEngine: React.FC = () => {
           </Card>
         </div>
       </div>
+      
+      <CourseDetailDialog 
+        open={detailsDialogOpen} 
+        onOpenChange={setDetailsDialogOpen} 
+        course={selectedCourse} 
+      />
     </div>
   );
 };
