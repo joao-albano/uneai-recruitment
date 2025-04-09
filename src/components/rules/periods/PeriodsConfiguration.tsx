@@ -13,11 +13,14 @@ import PeriodsInfo from './PeriodsInfo';
 const PeriodsConfiguration: React.FC = () => {
   const [activeTab, setActiveTab] = useState('academic');
   const { toast } = useToast();
+  const [periods, setPeriods] = useState<any[]>([]);
 
-  const handleAddPeriod = () => {
+  const handleAddPeriod = (newPeriod: any) => {
+    setPeriods(prevPeriods => [...prevPeriods, newPeriod]);
+    
     toast({
-      title: "Funcionalidade em desenvolvimento",
-      description: "A criação de novos períodos estará disponível em breve.",
+      title: "Período adicionado",
+      description: "O novo período foi adicionado com sucesso.",
       duration: 3000,
     });
   };
@@ -67,10 +70,6 @@ const PeriodsConfiguration: React.FC = () => {
                   Configure os períodos letivos para planejamento de captação
                 </CardDescription>
               </div>
-              <Button onClick={handleAddPeriod} className="flex items-center gap-2">
-                <CalendarPlus className="h-4 w-4" />
-                <span>Novo Período</span>
-              </Button>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -169,6 +168,44 @@ const PeriodsConfiguration: React.FC = () => {
                     </div>
                   </CardContent>
                 </Card>
+                
+                {/* Add newly created periods */}
+                {periods.filter(p => p.type === 'academic').map((period) => (
+                  <Card key={period.id} className="border shadow-sm">
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="flex items-center mb-2">
+                            <CalendarDays className="h-5 w-5 text-primary mr-2" />
+                            <h3 className="font-semibold text-base">{period.name}</h3>
+                            <Badge className="ml-2 bg-green-100 text-green-800 hover:bg-green-200">
+                              {period.status === 'active' && 'Ativo'}
+                              {period.status === 'inProgress' && 'Em andamento'}
+                              {period.status === 'completed' && 'Concluído'}
+                            </Badge>
+                          </div>
+                          <div className="text-sm mb-1">
+                            <span className="font-medium">Início:</span> {new Date(period.startDate).toLocaleDateString('pt-BR')}
+                          </div>
+                          <div className="text-sm mb-1">
+                            <span className="font-medium">Fim:</span> {new Date(period.endDate).toLocaleDateString('pt-BR')}
+                          </div>
+                          <div className="text-sm">
+                            <span className="font-medium">Captação:</span> {new Date(period.recruitmentStartDate).toLocaleDateString('pt-BR')} até {new Date(period.recruitmentEndDate).toLocaleDateString('pt-BR')}
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </CardContent>
           </Card>
@@ -183,10 +220,6 @@ const PeriodsConfiguration: React.FC = () => {
                   Defina datas críticas para o processo de captação
                 </CardDescription>
               </div>
-              <Button onClick={handleAddPeriod} className="flex items-center gap-2">
-                <CalendarPlus className="h-4 w-4" />
-                <span>Novo Marco</span>
-              </Button>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -282,6 +315,43 @@ const PeriodsConfiguration: React.FC = () => {
                     </div>
                   </CardContent>
                 </Card>
+                
+                {/* Add newly created milestones */}
+                {periods.filter(p => p.type === 'milestone').map((milestone) => (
+                  <Card key={milestone.id} className="border shadow-sm">
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="flex items-center mb-2">
+                            <h3 className="font-semibold text-base">{milestone.name}</h3>
+                            <Badge className="ml-2 bg-indigo-100 text-indigo-800 hover:bg-indigo-200">
+                              {milestone.status === 'planned' && 'Planejado'}
+                              {milestone.status === 'completed' && 'Concluído'}
+                              {milestone.status === 'delayed' && 'Atrasado'}
+                            </Badge>
+                          </div>
+                          <div className="text-sm mb-1">
+                            <span className="font-medium">Data:</span> {new Date(milestone.date).toLocaleDateString('pt-BR')}
+                          </div>
+                          <div className="text-sm mb-1">
+                            <span className="font-medium">Período:</span> {milestone.period}
+                          </div>
+                          <div className="text-sm">
+                            <span className="font-medium">Descrição:</span> {milestone.description || 'Sem descrição'}
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </CardContent>
           </Card>
@@ -296,10 +366,6 @@ const PeriodsConfiguration: React.FC = () => {
                   Configure os intervalos para análise de previsões
                 </CardDescription>
               </div>
-              <Button onClick={handleAddPeriod} className="flex items-center gap-2">
-                <CalendarPlus className="h-4 w-4" />
-                <span>Novo Período</span>
-              </Button>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -364,6 +430,43 @@ const PeriodsConfiguration: React.FC = () => {
                     </div>
                   </CardContent>
                 </Card>
+                
+                {/* Add newly created analysis periods */}
+                {periods.filter(p => p.type === 'analysis').map((analysis) => (
+                  <Card key={analysis.id} className="border shadow-sm">
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="flex items-center mb-2">
+                            <h3 className="font-semibold text-base">{analysis.name}</h3>
+                            <Badge className="ml-2 bg-blue-100 text-blue-800 hover:bg-blue-200">
+                              {analysis.status === 'planned' && 'Planejado'}
+                              {analysis.status === 'inProgress' && 'Em andamento'}
+                              {analysis.status === 'completed' && 'Concluído'}
+                            </Badge>
+                          </div>
+                          <div className="text-sm mb-1">
+                            <span className="font-medium">Início:</span> {new Date(analysis.startDate).toLocaleDateString('pt-BR')}
+                          </div>
+                          <div className="text-sm mb-1">
+                            <span className="font-medium">Fim:</span> {new Date(analysis.endDate).toLocaleDateString('pt-BR')}
+                          </div>
+                          <div className="text-sm">
+                            <span className="font-medium">Descrição:</span> {analysis.description || 'Sem descrição'}
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </CardContent>
           </Card>

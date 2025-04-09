@@ -99,6 +99,21 @@ const GoalsList: React.FC<GoalsListProps> = ({ goals = [], isLoading = false, ca
     }
   ]);
 
+  // Update localGoals when external goals are added
+  React.useEffect(() => {
+    if (goals && goals.length > 0) {
+      // Add new goals from props to the localGoals, without duplicates
+      const updatedGoals = [...localGoals];
+      goals.forEach(goal => {
+        if (!updatedGoals.some(g => g.id === goal.id)) {
+          updatedGoals.push(goal);
+        }
+      });
+      
+      setLocalGoals(updatedGoals);
+    }
+  }, [goals]);
+
   const handleEdit = (goal: Goal) => {
     toast({
       title: "Edição em desenvolvimento",
@@ -125,9 +140,7 @@ const GoalsList: React.FC<GoalsListProps> = ({ goals = [], isLoading = false, ca
     }
   };
 
-  const displayGoals = goals.length > 0 
-    ? goals.filter(g => g.category === category) 
-    : localGoals.filter(g => g.category === category);
+  const displayGoals = localGoals.filter(g => g.category === category);
 
   if (isLoading) {
     return (

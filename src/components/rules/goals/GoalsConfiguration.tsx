@@ -12,13 +12,10 @@ import { useToast } from '@/components/ui/use-toast';
 const GoalsConfiguration: React.FC = () => {
   const [activeTab, setActiveTab] = useState('general');
   const { toast } = useToast();
+  const [goals, setGoals] = useState<any[]>([]);
   
-  const handleAddGoal = () => {
-    toast({
-      title: "Funcionalidade em desenvolvimento",
-      description: "A criação de novas metas estará disponível em breve.",
-      duration: 3000,
-    });
+  const handleAddGoal = (newGoal: any) => {
+    setGoals(prevGoals => [...prevGoals, newGoal]);
   };
   
   return (
@@ -50,7 +47,7 @@ const GoalsConfiguration: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <GoalsList category="general" />
+              <GoalsList category="general" goals={goals} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -64,7 +61,7 @@ const GoalsConfiguration: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <GoalsList category="course" />
+              <GoalsList category="course" goals={goals} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -78,7 +75,7 @@ const GoalsConfiguration: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <GoalsList category="campus" />
+              <GoalsList category="campus" goals={goals} />
             </CardContent>
           </Card>
         </TabsContent>
