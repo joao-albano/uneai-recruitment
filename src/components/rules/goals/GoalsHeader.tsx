@@ -6,11 +6,11 @@ import NewGoalDialog from './NewGoalDialog';
 
 interface GoalsHeaderProps {
   onAddGoal?: (goal: any) => void;
+  activeCategory: string;
 }
 
-const GoalsHeader: React.FC<GoalsHeaderProps> = ({ onAddGoal }) => {
+const GoalsHeader: React.FC<GoalsHeaderProps> = ({ onAddGoal, activeCategory }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState('general');
 
   const handleGoalCreated = (goal: any) => {
     if (onAddGoal) {

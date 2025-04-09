@@ -20,7 +20,7 @@ const GoalsConfiguration: React.FC = () => {
   
   return (
     <div className="space-y-6">
-      <GoalsHeader onAddGoal={handleAddGoal} />
+      <GoalsHeader onAddGoal={handleAddGoal} activeCategory={activeTab} />
       
       <Alert variant="default" className="bg-primary/5 border-primary/20">
         <InfoIcon className="h-4 w-4 text-primary" />
