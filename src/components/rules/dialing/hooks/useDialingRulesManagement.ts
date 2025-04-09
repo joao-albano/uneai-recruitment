@@ -36,7 +36,10 @@ export const useDialingRulesManagement = () => {
         variant: 'destructive'
       });
     } finally {
-      setProcessingAction(false);
+      // Small delay to ensure UI updates correctly
+      setTimeout(() => {
+        setProcessingAction(false);
+      }, 100);
     }
   };
 
@@ -63,7 +66,10 @@ export const useDialingRulesManagement = () => {
         variant: 'destructive'
       });
     } finally {
-      setProcessingAction(false);
+      // Small delay to ensure UI updates correctly
+      setTimeout(() => {
+        setProcessingAction(false);
+      }, 100);
     }
   };
 
@@ -90,7 +96,10 @@ export const useDialingRulesManagement = () => {
         variant: 'destructive'
       });
     } finally {
-      setProcessingAction(false);
+      // Small delay to ensure UI updates correctly
+      setTimeout(() => {
+        setProcessingAction(false);
+      }, 100);
     }
   };
 
@@ -110,7 +119,10 @@ export const useDialingRulesManagement = () => {
         variant: 'destructive'
       });
     } finally {
-      setProcessingAction(false);
+      // Small delay to ensure UI updates correctly
+      setTimeout(() => {
+        setProcessingAction(false);
+      }, 100);
     }
   };
 

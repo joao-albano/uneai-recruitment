@@ -55,7 +55,7 @@ const RulesList: React.FC<RulesListProps> = ({
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild disabled={isLoading}>
-                      <Button variant="ghost" size="icon">
+                      <Button variant="ghost" size="icon" className={isLoading ? "cursor-not-allowed opacity-50" : ""}>
                         <MoreHorizontal className="h-4 w-4" />
                         <span className="sr-only">Ações</span>
                       </Button>

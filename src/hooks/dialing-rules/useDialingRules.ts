@@ -38,7 +38,10 @@ export const useDialingRules = () => {
       console.error('Error in addRule:', error);
       return false;
     } finally {
-      setLoading(false);
+      // Small delay to ensure UI updates correctly
+      setTimeout(() => {
+        setLoading(false);
+      }, 100);
     }
   };
 
@@ -67,7 +70,10 @@ export const useDialingRules = () => {
       console.error('Error in updateRule:', error);
       return false;
     } finally {
-      setLoading(false);
+      // Small delay to ensure UI updates correctly
+      setTimeout(() => {
+        setLoading(false);
+      }, 100);
     }
   };
 
@@ -86,7 +92,10 @@ export const useDialingRules = () => {
       console.error('Error in deleteRule:', error);
       return false;
     } finally {
-      setLoading(false);
+      // Small delay to ensure UI updates correctly
+      setTimeout(() => {
+        setLoading(false);
+      }, 100);
     }
   };
 
@@ -111,7 +120,10 @@ export const useDialingRules = () => {
       console.error('Error in toggleRuleStatus:', error);
       return false;
     } finally {
-      setLoading(false);
+      // Small delay to ensure UI updates correctly
+      setTimeout(() => {
+        setLoading(false);
+      }, 100);
     }
   };
 
