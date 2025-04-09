@@ -25,12 +25,12 @@ const RulesContent: React.FC<RulesContentProps> = ({
 }) => {
   const isMobile = useIsMobile();
 
-  if (rules.length === 0) {
+  if (rules.length === 0 && !isLoading) {
     return <EmptyRulesState onAddRule={onAddRule} />;
   }
 
   return (
-    <Card>
+    <Card className="relative">
       <RulesList
         rules={rules}
         isMobile={isMobile}

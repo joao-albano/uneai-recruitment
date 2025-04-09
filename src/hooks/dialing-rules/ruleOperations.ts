@@ -20,11 +20,6 @@ export const addRuleOperation = async (
       updatedAt: new Date()
     };
     
-    toast({
-      title: 'Regra criada com sucesso',
-      description: `A regra "${rule.name}" foi criada com sucesso.`
-    });
-    
     return { success: true, rule: newRule };
   } catch (error) {
     console.error('Error adding rule:', error);
@@ -53,11 +48,6 @@ export const updateRuleOperation = async (
       throw new Error(`Rule with ID ${id} not found`);
     }
     
-    toast({
-      title: 'Regra atualizada com sucesso',
-      description: `A regra foi atualizada com sucesso.`
-    });
-    
     return { success: true };
   } catch (error) {
     console.error('Error updating rule:', error);
@@ -84,11 +74,6 @@ export const deleteRuleOperation = async (
     if (!ruleExists) {
       throw new Error(`Rule with ID ${id} not found`);
     }
-    
-    toast({
-      title: 'Regra excluída com sucesso',
-      description: `A regra foi excluída com sucesso.`
-    });
     
     return { success: true };
   } catch (error) {
@@ -118,12 +103,6 @@ export const toggleRuleStatusOperation = async (
     }
     
     const newStatus = !rule.enabled;
-    const statusText = newStatus ? 'ativada' : 'desativada';
-    
-    toast({
-      title: `Regra ${statusText}`,
-      description: `A regra foi ${statusText} com sucesso.`
-    });
     
     return { success: true, newStatus };
   } catch (error) {

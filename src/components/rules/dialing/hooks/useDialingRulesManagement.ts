@@ -23,6 +23,10 @@ export const useDialingRulesManagement = () => {
       
       if (success) {
         setIsAddDialogOpen(false);
+        toast({
+          title: 'Regra criada com sucesso',
+          description: 'A regra foi criada com sucesso.'
+        });
       }
     } catch (error) {
       console.error('Error adding rule:', error);
@@ -44,6 +48,10 @@ export const useDialingRulesManagement = () => {
       const success = await updateRule(selectedRule.id, rule);
       
       if (success) {
+        toast({
+          title: 'Regra atualizada com sucesso',
+          description: 'A regra foi atualizada com sucesso.'
+        });
         setIsEditDialogOpen(false);
         setSelectedRule(null);
       }
@@ -67,6 +75,10 @@ export const useDialingRulesManagement = () => {
       const success = await deleteRule(selectedRule.id);
       
       if (success) {
+        toast({
+          title: 'Regra excluída com sucesso',
+          description: 'A regra foi excluída com sucesso.'
+        });
         setIsDeleteDialogOpen(false);
         setSelectedRule(null);
       }
@@ -86,6 +98,10 @@ export const useDialingRulesManagement = () => {
     try {
       setProcessingAction(true);
       await toggleRuleStatus(rule.id);
+      toast({
+        title: `Regra ${rule.enabled ? 'desativada' : 'ativada'}`,
+        description: `A regra foi ${rule.enabled ? 'desativada' : 'ativada'} com sucesso.`
+      });
     } catch (error) {
       console.error('Error toggling rule status:', error);
       toast({

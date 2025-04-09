@@ -27,7 +27,70 @@ const RulesList: React.FC<RulesListProps> = ({
   isLoading = false
 }) => {
   return (
-    <ScrollArea className={isMobile ? "h-[450px]" : "max-h-[600px]"}>
+    <div className="relative">
+      <ScrollArea className={isMobile ? "h-[450px]" : "max-h-[600px]"}>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-1/4">Nome</TableHead>
+              <TableHead className="w-1/6">Status</TableHead>
+              <TableHead className="w-1/6">Canais</TableHead>
+              <TableHead className="w-1/6">Horário</TableHead>
+              <TableHead className="w-1/6">Criação</TableHead>
+              <TableHead className="w-1/12 text-right">Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rules.map((rule) => (
+              <TableRow key={rule.id}>
+                <TableCell className="font-medium">{rule.name}</TableCell>
+                <TableCell>
+                  <Badge variant={rule.enabled ? "secondary" : "outline"} className={rule.enabled ? "bg-green-500 hover:bg-green-600 text-white" : ""}>
+                    {rule.enabled ? 'Ativo' : 'Inativo'}
+                  </Badge>
+                </TableCell>
+                <TableCell>{rule.simultaneousChannels}</TableCell>
+                <TableCell>{`${rule.startTime} - ${rule.endTime}`}</TableCell>
+                <TableCell>{format(new Date(rule.createdAt), 'dd/MM/yyyy')}</TableCell>
+                <TableCell className="text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild disabled={isLoading}>
+                      <Button variant="ghost" size="icon">
+                        <MoreHorizontal className="h-4 w-4" />
+                        <span className="sr-only">Ações</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => onEditRule(rule)} disabled={isLoading}>
+                        <Edit className="mr-2 h-4 w-4" />
+                        Editar
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onToggleStatus(rule)} disabled={isLoading}>
+                        {rule.enabled ? (
+                          <>
+                            <PowerOff className="mr-2 h-4 w-4" />
+                            Desativar
+                          </>
+                        ) : (
+                          <>
+                            <Power className="mr-2 h-4 w-4" />
+                            Ativar
+                          </>
+                        )}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onDeleteRule(rule)} className="text-destructive" disabled={isLoading}>
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Excluir
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </ScrollArea>
+      
       {isLoading && (
         <div className="absolute inset-0 bg-background/50 z-10 flex items-center justify-center">
           <div className="flex items-center space-x-2">
@@ -36,67 +99,7 @@ const RulesList: React.FC<RulesListProps> = ({
           </div>
         </div>
       )}
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-1/4">Nome</TableHead>
-            <TableHead className="w-1/6">Status</TableHead>
-            <TableHead className="w-1/6">Canais</TableHead>
-            <TableHead className="w-1/6">Horário</TableHead>
-            <TableHead className="w-1/6">Criação</TableHead>
-            <TableHead className="w-1/12 text-right">Ações</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {rules.map((rule) => (
-            <TableRow key={rule.id}>
-              <TableCell className="font-medium">{rule.name}</TableCell>
-              <TableCell>
-                <Badge variant={rule.enabled ? "secondary" : "outline"} className={rule.enabled ? "bg-green-500 hover:bg-green-600 text-white" : ""}>
-                  {rule.enabled ? 'Ativo' : 'Inativo'}
-                </Badge>
-              </TableCell>
-              <TableCell>{rule.simultaneousChannels}</TableCell>
-              <TableCell>{`${rule.startTime} - ${rule.endTime}`}</TableCell>
-              <TableCell>{format(new Date(rule.createdAt), 'dd/MM/yyyy')}</TableCell>
-              <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild disabled={isLoading}>
-                    <Button variant="ghost" size="icon">
-                      <MoreHorizontal className="h-4 w-4" />
-                      <span className="sr-only">Ações</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onEditRule(rule)} disabled={isLoading}>
-                      <Edit className="mr-2 h-4 w-4" />
-                      Editar
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onToggleStatus(rule)} disabled={isLoading}>
-                      {rule.enabled ? (
-                        <>
-                          <PowerOff className="mr-2 h-4 w-4" />
-                          Desativar
-                        </>
-                      ) : (
-                        <>
-                          <Power className="mr-2 h-4 w-4" />
-                          Ativar
-                        </>
-                      )}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onDeleteRule(rule)} className="text-destructive" disabled={isLoading}>
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Excluir
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </ScrollArea>
+    </div>
   );
 };
 

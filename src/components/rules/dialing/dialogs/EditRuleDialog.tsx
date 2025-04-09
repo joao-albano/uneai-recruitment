@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import DialingRuleForm from '../DialingRuleForm';
 import { DialingRule, RedialInterval } from '@/types/voicecall';
@@ -24,10 +24,24 @@ const EditRuleDialog: React.FC<EditRuleDialogProps> = ({
 }) => {
   const isMobile = useIsMobile();
 
+  // Reset state when dialog closes
+  useEffect(() => {
+    if (!open) {
+      // Dialog is closed, no need to do anything special
+    }
+  }, [open]);
+
   if (!rule) return null;
 
+  // Use onOpenChange to handle dialog closing
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen && !isSubmitting) {
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className={`${isMobile ? 'w-[95%] max-h-[90vh] overflow-y-auto' : 'max-w-3xl max-h-[90vh] overflow-y-auto'}`}>
         <DialogHeader>
           <DialogTitle>Editar Regra de Discagem</DialogTitle>
