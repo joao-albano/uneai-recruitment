@@ -1,5 +1,5 @@
 
-import { DialingFailureType, DialingRule, RedialInterval } from '@/types/voicecall';
+import { DialingFailureType, DialingRule, RedialInterval, RuleSegmentation } from '@/types/voicecall';
 
 export interface AddRuleParams extends Omit<DialingRule, 'id' | 'createdAt' | 'updatedAt'> {}
 

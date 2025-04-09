@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
-import { DialingRule, RedialInterval, DialingFailureType } from '@/types/voicecall';
+import { DialingRule, RedialInterval, DialingFailureType, RuleSegmentation } from '@/types/voicecall';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import BasicConfigTab from './form/BasicConfigTab';
 import RedialIntervalsTab from './form/RedialIntervalsTab';
+import SegmentationTab from './form/SegmentationTab';
 import FormActions from './form/FormActions';
 
 interface DialingRuleFormProps {
@@ -35,6 +36,10 @@ const DialingRuleForm: React.FC<DialingRuleFormProps> = ({
     initialData?.redialIntervals || [...defaultRedialIntervals]
   );
 
+  const [segmentation, setSegmentation] = useState<RuleSegmentation>(
+    initialData?.segmentation || { courseIds: [], funnelIds: [], funnelStageIds: [] }
+  );
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -53,7 +58,8 @@ const DialingRuleForm: React.FC<DialingRuleFormProps> = ({
       endTime,
       maxAttemptsPerLead: maxAttempts,
       timeBetweenCalls,
-      redialIntervals
+      redialIntervals,
+      segmentation
     };
     
     onSubmit(formData);
@@ -69,14 +75,25 @@ const DialingRuleForm: React.FC<DialingRuleFormProps> = ({
     );
   };
 
+  const updateSegmentation = (
+    field: keyof RuleSegmentation, 
+    value: string[] | undefined
+  ) => {
+    setSegmentation(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   const isEditing = Boolean(initialData?.id);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <Tabs defaultValue="basic" className="w-full">
-        <TabsList className="grid grid-cols-2 mb-6">
+        <TabsList className="grid grid-cols-3 mb-6">
           <TabsTrigger value="basic">Configuração Básica</TabsTrigger>
           <TabsTrigger value="redial">Intervalos de Rediscagem</TabsTrigger>
+          <TabsTrigger value="segmentation">Segmentação</TabsTrigger>
         </TabsList>
         
         <TabsContent value="basic">
@@ -106,6 +123,13 @@ const DialingRuleForm: React.FC<DialingRuleFormProps> = ({
           <RedialIntervalsTab 
             redialIntervals={redialIntervals}
             updateRedialInterval={updateRedialInterval}
+          />
+        </TabsContent>
+
+        <TabsContent value="segmentation">
+          <SegmentationTab 
+            segmentation={segmentation}
+            updateSegmentation={updateSegmentation}
           />
         </TabsContent>
       </Tabs>

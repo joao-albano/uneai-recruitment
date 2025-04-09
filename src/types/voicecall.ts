@@ -38,6 +38,13 @@ export interface DialingRule {
   createdAt: Date;
   updatedAt: Date;
   redialIntervals: RedialInterval[];
+  segmentation?: RuleSegmentation; // Nova propriedade de segmentação
+}
+
+export interface RuleSegmentation {
+  courseIds?: string[];
+  funnelIds?: string[];
+  funnelStageIds?: string[];
 }
 
 export interface RedialInterval {
@@ -55,4 +62,3 @@ export interface FollowUpSchedule {
   notes: string | null;
   completed: boolean;
 }
-

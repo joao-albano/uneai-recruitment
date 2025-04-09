@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Edit, Trash2, MoreHorizontal, Power, PowerOff, Loader2 } from 'lucide-react';
+import { Edit, Trash2, MoreHorizontal, Power, PowerOff, Loader2, Layers } from 'lucide-react';
 import { DialingRule } from '@/types/voicecall';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { format } from 'date-fns';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface RulesListProps {
   rules: DialingRule[];
@@ -26,6 +27,48 @@ const RulesList: React.FC<RulesListProps> = ({
   onToggleStatus,
   isLoading = false
 }) => {
+  // Função para renderizar o ícone de segmentação e tooltip
+  const renderSegmentationBadge = (rule: DialingRule) => {
+    const hasSegmentation = rule.segmentation && (
+      (rule.segmentation.courseIds && rule.segmentation.courseIds.length > 0) ||
+      (rule.segmentation.funnelIds && rule.segmentation.funnelIds.length > 0) ||
+      (rule.segmentation.funnelStageIds && rule.segmentation.funnelStageIds.length > 0)
+    );
+
+    if (!hasSegmentation) return null;
+
+    // Contar itens de segmentação para o badge
+    const coursesCount = rule.segmentation?.courseIds?.length || 0;
+    const funnelsCount = rule.segmentation?.funnelIds?.length || 0;
+    const stagesCount = rule.segmentation?.funnelStageIds?.length || 0;
+    
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge variant="outline" className="ml-2 cursor-help">
+              <Layers className="h-3 w-3 mr-1" />
+              <span>Segmentada</span>
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent>
+            <div className="text-xs">
+              {coursesCount > 0 && (
+                <div>Cursos: {coursesCount}</div>
+              )}
+              {funnelsCount > 0 && (
+                <div>Funis: {funnelsCount}</div>
+              )}
+              {stagesCount > 0 && (
+                <div>Etapas: {stagesCount}</div>
+              )}
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
+
   return (
     <div className="relative">
       <ScrollArea className={isMobile ? "h-[450px]" : "max-h-[600px]"}>
@@ -43,7 +86,12 @@ const RulesList: React.FC<RulesListProps> = ({
           <TableBody>
             {rules.map((rule) => (
               <TableRow key={rule.id}>
-                <TableCell className="font-medium">{rule.name}</TableCell>
+                <TableCell className="font-medium">
+                  <div className="flex items-center">
+                    {rule.name}
+                    {renderSegmentationBadge(rule)}
+                  </div>
+                </TableCell>
                 <TableCell>
                   <Badge variant={rule.enabled ? "secondary" : "outline"} className={rule.enabled ? "bg-green-500 hover:bg-green-600 text-white" : ""}>
                     {rule.enabled ? 'Ativo' : 'Inativo'}
