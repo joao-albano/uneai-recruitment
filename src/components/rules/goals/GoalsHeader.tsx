@@ -17,7 +17,7 @@ const GoalsHeader: React.FC<GoalsHeaderProps> = ({ onAddGoal }) => {
         </p>
       </div>
       
-      <Button onClick={onAddGoal} disabled={!onAddGoal} className="flex items-center gap-2">
+      <Button onClick={onAddGoal} className="flex items-center gap-2">
         <PlusCircle className="h-4 w-4" />
         <span>Nova Meta</span>
       </Button>

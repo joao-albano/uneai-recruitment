@@ -3,16 +3,44 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { InfoIcon } from 'lucide-react';
+import { InfoIcon, CalendarDays, CalendarPlus, Edit, Trash } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/components/ui/use-toast';
 import PeriodsHeader from './PeriodsHeader';
 import PeriodsInfo from './PeriodsInfo';
 
 const PeriodsConfiguration: React.FC = () => {
   const [activeTab, setActiveTab] = useState('academic');
+  const { toast } = useToast();
+
+  const handleAddPeriod = () => {
+    toast({
+      title: "Funcionalidade em desenvolvimento",
+      description: "A criação de novos períodos estará disponível em breve.",
+      duration: 3000,
+    });
+  };
+
+  const handleEditPeriod = () => {
+    toast({
+      title: "Edição em desenvolvimento",
+      description: "A edição de períodos estará disponível em breve.",
+      duration: 3000,
+    });
+  };
+
+  const handleDeletePeriod = () => {
+    toast({
+      title: "Exclusão em desenvolvimento",
+      description: "A exclusão de períodos estará disponível em breve.",
+      duration: 3000,
+    });
+  };
 
   return (
     <div className="space-y-6">
-      <PeriodsHeader />
+      <PeriodsHeader onAddPeriod={handleAddPeriod} />
       
       <Alert variant="default" className="bg-primary/5 border-primary/20">
         <InfoIcon className="h-4 w-4 text-primary" />
@@ -32,16 +60,115 @@ const PeriodsConfiguration: React.FC = () => {
         
         <TabsContent value="academic" className="space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle>Períodos Acadêmicos</CardTitle>
-              <CardDescription>
-                Configure os períodos letivos para planejamento de captação
-              </CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <div>
+                <CardTitle>Períodos Acadêmicos</CardTitle>
+                <CardDescription>
+                  Configure os períodos letivos para planejamento de captação
+                </CardDescription>
+              </div>
+              <Button onClick={handleAddPeriod} className="flex items-center gap-2">
+                <CalendarPlus className="h-4 w-4" />
+                <span>Novo Período</span>
+              </Button>
             </CardHeader>
             <CardContent>
-              <div className="py-6 text-center text-muted-foreground">
-                <p>Esta funcionalidade estará disponível em breve.</p>
-                <p className="mt-2">Aqui você poderá definir os períodos acadêmicos (semestres/anos) para captação.</p>
+              <div className="space-y-4">
+                {/* Período 1 */}
+                <Card className="border shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center mb-2">
+                          <CalendarDays className="h-5 w-5 text-primary mr-2" />
+                          <h3 className="font-semibold text-base">2025.1</h3>
+                          <Badge className="ml-2 bg-green-100 text-green-800 hover:bg-green-200">Ativo</Badge>
+                        </div>
+                        <div className="text-sm mb-1">
+                          <span className="font-medium">Início:</span> 01/02/2025
+                        </div>
+                        <div className="text-sm mb-1">
+                          <span className="font-medium">Fim:</span> 30/06/2025
+                        </div>
+                        <div className="text-sm">
+                          <span className="font-medium">Captação:</span> 01/10/2024 até 28/02/2025
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Período 2 */}
+                <Card className="border shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center mb-2">
+                          <CalendarDays className="h-5 w-5 text-primary mr-2" />
+                          <h3 className="font-semibold text-base">2024.2</h3>
+                          <Badge className="ml-2 bg-amber-100 text-amber-800 hover:bg-amber-200">Em andamento</Badge>
+                        </div>
+                        <div className="text-sm mb-1">
+                          <span className="font-medium">Início:</span> 01/08/2024
+                        </div>
+                        <div className="text-sm mb-1">
+                          <span className="font-medium">Fim:</span> 15/12/2024
+                        </div>
+                        <div className="text-sm">
+                          <span className="font-medium">Captação:</span> 15/05/2024 até 15/08/2024
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Período 3 */}
+                <Card className="border shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center mb-2">
+                          <CalendarDays className="h-5 w-5 text-primary mr-2" />
+                          <h3 className="font-semibold text-base">2024.1</h3>
+                          <Badge className="ml-2 bg-slate-100 text-slate-800 hover:bg-slate-200">Concluído</Badge>
+                        </div>
+                        <div className="text-sm mb-1">
+                          <span className="font-medium">Início:</span> 05/02/2024
+                        </div>
+                        <div className="text-sm mb-1">
+                          <span className="font-medium">Fim:</span> 30/06/2024
+                        </div>
+                        <div className="text-sm">
+                          <span className="font-medium">Captação:</span> 01/10/2023 até 28/02/2024
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </CardContent>
           </Card>
@@ -49,16 +176,112 @@ const PeriodsConfiguration: React.FC = () => {
         
         <TabsContent value="milestones" className="space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle>Marcos Importantes</CardTitle>
-              <CardDescription>
-                Defina datas críticas para o processo de captação
-              </CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <div>
+                <CardTitle>Marcos Importantes</CardTitle>
+                <CardDescription>
+                  Defina datas críticas para o processo de captação
+                </CardDescription>
+              </div>
+              <Button onClick={handleAddPeriod} className="flex items-center gap-2">
+                <CalendarPlus className="h-4 w-4" />
+                <span>Novo Marco</span>
+              </Button>
             </CardHeader>
             <CardContent>
-              <div className="py-6 text-center text-muted-foreground">
-                <p>Esta funcionalidade estará disponível em breve.</p>
-                <p className="mt-2">Aqui você poderá configurar datas importantes como início e fim de inscrições, matrículas, etc.</p>
+              <div className="space-y-4">
+                {/* Marco 1 */}
+                <Card className="border shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center mb-2">
+                          <h3 className="font-semibold text-base">Vestibular 2025.1</h3>
+                          <Badge className="ml-2 bg-indigo-100 text-indigo-800 hover:bg-indigo-200">Planejado</Badge>
+                        </div>
+                        <div className="text-sm mb-1">
+                          <span className="font-medium">Data:</span> 10/12/2024
+                        </div>
+                        <div className="text-sm mb-1">
+                          <span className="font-medium">Período:</span> 2025.1
+                        </div>
+                        <div className="text-sm">
+                          <span className="font-medium">Descrição:</span> Prova principal do vestibular para ingressos em 2025.1
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Marco 2 */}
+                <Card className="border shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center mb-2">
+                          <h3 className="font-semibold text-base">Matrículas 2025.1</h3>
+                          <Badge className="ml-2 bg-indigo-100 text-indigo-800 hover:bg-indigo-200">Planejado</Badge>
+                        </div>
+                        <div className="text-sm mb-1">
+                          <span className="font-medium">Início:</span> 05/01/2025
+                        </div>
+                        <div className="text-sm mb-1">
+                          <span className="font-medium">Fim:</span> 31/01/2025
+                        </div>
+                        <div className="text-sm">
+                          <span className="font-medium">Descrição:</span> Período de matrículas para calouros do primeiro semestre
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Marco 3 */}
+                <Card className="border shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center mb-2">
+                          <h3 className="font-semibold text-base">Início das aulas 2025.1</h3>
+                          <Badge className="ml-2 bg-indigo-100 text-indigo-800 hover:bg-indigo-200">Planejado</Badge>
+                        </div>
+                        <div className="text-sm mb-1">
+                          <span className="font-medium">Data:</span> 03/02/2025
+                        </div>
+                        <div className="text-sm mb-1">
+                          <span className="font-medium">Período:</span> 2025.1
+                        </div>
+                        <div className="text-sm">
+                          <span className="font-medium">Descrição:</span> Primeiro dia de aulas do período 2025.1
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </CardContent>
           </Card>
@@ -66,16 +289,81 @@ const PeriodsConfiguration: React.FC = () => {
         
         <TabsContent value="analysis" className="space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle>Períodos de Análise</CardTitle>
-              <CardDescription>
-                Configure os intervalos para análise de previsões
-              </CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <div>
+                <CardTitle>Períodos de Análise</CardTitle>
+                <CardDescription>
+                  Configure os intervalos para análise de previsões
+                </CardDescription>
+              </div>
+              <Button onClick={handleAddPeriod} className="flex items-center gap-2">
+                <CalendarPlus className="h-4 w-4" />
+                <span>Novo Período</span>
+              </Button>
             </CardHeader>
             <CardContent>
-              <div className="py-6 text-center text-muted-foreground">
-                <p>Esta funcionalidade estará disponível em breve.</p>
-                <p className="mt-2">Aqui você poderá definir os períodos para análise de dados e previsões.</p>
+              <div className="space-y-4">
+                {/* Análise 1 */}
+                <Card className="border shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center mb-2">
+                          <h3 className="font-semibold text-base">Análise de Captação 2025.1</h3>
+                          <Badge className="ml-2 bg-blue-100 text-blue-800 hover:bg-blue-200">Em andamento</Badge>
+                        </div>
+                        <div className="text-sm mb-1">
+                          <span className="font-medium">Início:</span> 01/10/2024
+                        </div>
+                        <div className="text-sm mb-1">
+                          <span className="font-medium">Fim:</span> 28/02/2025
+                        </div>
+                        <div className="text-sm">
+                          <span className="font-medium">Descrição:</span> Análise de captação para o período 2025.1
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Análise 2 */}
+                <Card className="border shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center mb-2">
+                          <h3 className="font-semibold text-base">Revisão Semestral 2024.2</h3>
+                          <Badge className="ml-2 bg-slate-100 text-slate-800 hover:bg-slate-200">Concluído</Badge>
+                        </div>
+                        <div className="text-sm mb-1">
+                          <span className="font-medium">Início:</span> 15/05/2024
+                        </div>
+                        <div className="text-sm mb-1">
+                          <span className="font-medium">Fim:</span> 15/08/2024
+                        </div>
+                        <div className="text-sm">
+                          <span className="font-medium">Descrição:</span> Revisão da captação para o período 2024.2
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </CardContent>
           </Card>

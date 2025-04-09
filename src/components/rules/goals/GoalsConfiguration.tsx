@@ -7,13 +7,18 @@ import { InfoIcon } from 'lucide-react';
 import GoalsInfo from './GoalsInfo';
 import GoalsList from './GoalsList';
 import GoalsHeader from './GoalsHeader';
+import { useToast } from '@/components/ui/use-toast';
 
 const GoalsConfiguration: React.FC = () => {
   const [activeTab, setActiveTab] = useState('general');
+  const { toast } = useToast();
   
   const handleAddGoal = () => {
-    // This will be implemented later with the goal creation dialog
-    console.log('Add new goal clicked');
+    toast({
+      title: "Funcionalidade em desenvolvimento",
+      description: "A criação de novas metas estará disponível em breve.",
+      duration: 3000,
+    });
   };
   
   return (
@@ -45,7 +50,7 @@ const GoalsConfiguration: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <GoalsList />
+              <GoalsList category="general" />
             </CardContent>
           </Card>
         </TabsContent>
@@ -59,7 +64,7 @@ const GoalsConfiguration: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <GoalsList />
+              <GoalsList category="course" />
             </CardContent>
           </Card>
         </TabsContent>
@@ -73,7 +78,7 @@ const GoalsConfiguration: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <GoalsList />
+              <GoalsList category="campus" />
             </CardContent>
           </Card>
         </TabsContent>

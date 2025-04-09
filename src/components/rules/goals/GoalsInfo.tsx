@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Target, BarChart, CalendarClock, BriefcaseIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Target, BarChart3, Clock, Calendar } from 'lucide-react';
 
 const GoalsInfo: React.FC = () => {
   return (
@@ -12,9 +12,9 @@ const GoalsInfo: React.FC = () => {
             <Target className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h3 className="font-medium">Metas Globais</h3>
+            <h3 className="font-medium">Metas de Captação</h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Configure metas gerais de captação para toda a instituição.
+              Defina objetivos para a quantidade de matrículas a serem alcançadas.
             </p>
           </div>
         </CardContent>
@@ -23,12 +23,12 @@ const GoalsInfo: React.FC = () => {
       <Card>
         <CardContent className="p-4 flex items-start space-x-4">
           <div className="bg-primary/10 p-2 rounded-lg">
-            <BarChart className="h-6 w-6 text-primary" />
+            <Calendar className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h3 className="font-medium">Metas por Curso</h3>
+            <h3 className="font-medium">Períodos Acadêmicos</h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Defina expectativas específicas para cada curso conforme demanda e capacidade.
+              Relacione metas a períodos específicos para melhor planejamento.
             </p>
           </div>
         </CardContent>
@@ -37,12 +37,12 @@ const GoalsInfo: React.FC = () => {
       <Card>
         <CardContent className="p-4 flex items-start space-x-4">
           <div className="bg-primary/10 p-2 rounded-lg">
-            <CalendarClock className="h-6 w-6 text-primary" />
+            <Clock className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h3 className="font-medium">Prazos e Períodos</h3>
+            <h3 className="font-medium">Acompanhamento</h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Estabeleça prazos e defina períodos para monitoramento eficiente.
+              Monitore o progresso em tempo real em comparação com as metas estabelecidas.
             </p>
           </div>
         </CardContent>
@@ -51,12 +51,12 @@ const GoalsInfo: React.FC = () => {
       <Card>
         <CardContent className="p-4 flex items-start space-x-4">
           <div className="bg-primary/10 p-2 rounded-lg">
-            <BriefcaseIcon className="h-6 w-6 text-primary" />
+            <BarChart3 className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h3 className="font-medium">Metas por Unidade</h3>
+            <h3 className="font-medium">Análise de Performance</h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Configure metas específicas para cada campus ou unidade da instituição.
+              Analise o desempenho das estratégias de captação em relação às metas.
             </p>
           </div>
         </CardContent>
