@@ -47,6 +47,10 @@ const DialingRulesManagement: React.FC = () => {
     }
   };
 
+  const handleToggleStatus = (rule: DialingRule) => {
+    toggleRuleStatus(rule.id);
+  };
+
   const openEditDialog = (rule: DialingRule) => {
     setSelectedRule(rule);
     setIsEditDialogOpen(true);
@@ -70,7 +74,7 @@ const DialingRulesManagement: React.FC = () => {
             isMobile={isMobile}
             onEditRule={openEditDialog}
             onDeleteRule={openDeleteDialog}
-            onToggleStatus={toggleRuleStatus}
+            onToggleStatus={handleToggleStatus}
           />
         </Card>
       )}
