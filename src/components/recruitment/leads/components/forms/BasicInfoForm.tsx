@@ -141,21 +141,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
             )}
           />
           
-          {isBasicEducation && (
-            <FormField
-              control={form.control}
-              name="studentName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs md:text-sm">Nome do Aluno</FormLabel>
-                  <FormControl>
-                    <Input className="text-xs md:text-sm" placeholder="Nome do aluno" {...field} />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-          )}
+          {/* Removed student name field for basic education */}
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
             <FormField
