@@ -17,7 +17,7 @@ const defaultValues: LeadFormValues = {
   enrollmentIntention: "",
   contactTime: "",
   requiresChildrenInfo: false,
-  institutionType: "school", // Changed from string to literal "school"
+  institutionType: "school",
   
   // Novos campos
   studentName: "",
@@ -29,6 +29,7 @@ const defaultValues: LeadFormValues = {
   campus: "",
   modality: "",
   period: "",
+  cep: "", // Adicionando valor padrão para o campo CEP
 };
 
 export const useLeadForm = () => {
@@ -98,6 +99,7 @@ export const useLeadForm = () => {
       campus: data.campus || "",
       modality: data.modality || "",
       period: data.period || "",
+      cep: data.cep || "", // Adicionando o campo CEP para salvar
     };
     
     // Add to mock data

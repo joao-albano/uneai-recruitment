@@ -25,6 +25,7 @@ export const leadFormSchema = z.object({
   modality: z.string().optional(),
   period: z.string().optional(),
   cpf: z.string().optional(),
+  cep: z.string().optional(), // Adicionando o campo CEP
   
   // Separar campos de aluno e responsável para maior claridade
   studentName: z.string().optional(), // Nome do aluno (para educação básica)

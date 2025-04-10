@@ -216,7 +216,10 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
               name="cep"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>CEP</FormLabel>
+                  <FormLabel className="flex items-center gap-1">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    CEP
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="00000-000" {...field} />
                   </FormControl>
