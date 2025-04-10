@@ -5,7 +5,7 @@ import { leadFormSchema, LeadFormValues } from '../types/leadForm';
 import { useCallback } from 'react';
 import { mockLeadsData } from '../data/mockLeadsData';
 
-const defaultValues = {
+const defaultValues: LeadFormValues = {
   parentName: "",
   email: "",
   phone: "",
@@ -17,7 +17,7 @@ const defaultValues = {
   enrollmentIntention: "",
   contactTime: "",
   requiresChildrenInfo: false,
-  institutionType: "school",
+  institutionType: "school", // Changed from string to literal "school"
   
   // Novos campos
   studentName: "",
