@@ -9,6 +9,7 @@ import SidebarSettingsSection from './SidebarSettingsSection';
 import SidebarAdminSection from './SidebarAdminSection';
 import SidebarBillingSection from './SidebarBillingSection';
 import SidebarMonitoringSection from './SidebarMonitoringSection';
+import SidebarSystemSection from './SidebarSystemSection';
 import { useProduct } from '@/context/product';
 import { useAuth } from '@/context/auth';
 import { AlertTriangle } from 'lucide-react';
@@ -75,6 +76,9 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
           <>
             {/* Navegação - sempre renderizado */}
             <SidebarNavigationSection collapsed={collapsed} />
+            
+            {/* Sistema - Mostrar para todos os produtos */}
+            <SidebarSystemSection collapsed={collapsed} />
             
             {/* Monitoramento - mostrar para retenção ou quando não houver produto selecionado */}
             {(isRetentionProduct || !currentProduct || isSuperAdmin) && !isRecruitmentProduct && !isFinanceProduct && (

@@ -2,8 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, ListChecks, Zap, RadarIcon, BookOpen } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Plus, ListChecks, Zap, RadarIcon } from 'lucide-react';
 import CampaignsList from './list/CampaignsList';
 import SuggestedActions from './radar/SuggestedActions';
 import OpportunityRadar from './OpportunityRadar';
@@ -48,12 +47,6 @@ const CampaignsManagement: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-2">
-          <Link to="/recruitment/documentation">
-            <Button variant="outline" className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4" />
-              Documentação
-            </Button>
-          </Link>
           <Button onClick={() => setCreateDialogOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
             Nova Campanha
