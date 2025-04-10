@@ -251,6 +251,28 @@ export function useFunnels() {
     }
   }, [selectedFunnel]);
 
+  // Nova função para ativar/desativar o funil
+  const toggleFunnelActive = useCallback((funnelId: string, isActive: boolean) => {
+    setFunnels(prevFunnels => 
+      prevFunnels.map(funnel => 
+        funnel.id === funnelId 
+          ? { 
+              ...funnel, 
+              isActive,
+              updatedAt: new Date().toISOString()
+            } 
+          : funnel
+      )
+    );
+    
+    // Also update the selected funnel if it's the one being modified
+    if (selectedFunnel?.id === funnelId) {
+      setSelectedFunnel(prev => 
+        prev ? { ...prev, isActive, updatedAt: new Date().toISOString() } : prev
+      );
+    }
+  }, [selectedFunnel]);
+
   return {
     funnels,
     selectedFunnel,
@@ -258,6 +280,7 @@ export function useFunnels() {
     createFunnelDialogOpen,
     setCreateFunnelDialogOpen,
     handleCreateFunnel,
-    updateFunnelStages
+    updateFunnelStages,
+    toggleFunnelActive
   };
 }

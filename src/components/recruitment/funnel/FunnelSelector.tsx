@@ -9,22 +9,41 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, ChevronDown } from 'lucide-react';
+import { Plus, Power } from 'lucide-react';
 import { Funnel } from '@/types/recruitment';
+import { Switch } from '@/components/ui/switch';
+import { useToast } from '@/hooks/use-toast';
 
 interface FunnelSelectorProps {
   funnels: Funnel[];
   selectedFunnel: Funnel | null;
   onSelectFunnel: (funnel: Funnel) => void;
   onCreateFunnel: () => void;
+  onToggleFunnelActive: (funnelId: string, isActive: boolean) => void;
 }
 
 const FunnelSelector: React.FC<FunnelSelectorProps> = ({
   funnels,
   selectedFunnel,
   onSelectFunnel,
-  onCreateFunnel
+  onCreateFunnel,
+  onToggleFunnelActive
 }) => {
+  const { toast } = useToast();
+
+  const handleToggleActive = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (!selectedFunnel) return;
+    
+    const newActiveState = !selectedFunnel.isActive;
+    onToggleFunnelActive(selectedFunnel.id, newActiveState);
+    
+    toast({
+      title: newActiveState ? "Funil ativado" : "Funil desativado",
+      description: `O funil "${selectedFunnel.name}" foi ${newActiveState ? "ativado" : "desativado"} com sucesso.`,
+    });
+  };
+
   return (
     <Card className="bg-gradient-to-r from-white to-blue-50 border-blue-100 shadow-sm">
       <CardHeader className="pb-3">
@@ -63,12 +82,24 @@ const FunnelSelector: React.FC<FunnelSelectorProps> = ({
           </Select>
           {selectedFunnel && (
             <div className="bg-white p-3 rounded-md border border-blue-100">
-              <h3 className="font-medium text-gray-900">{selectedFunnel.name}</h3>
+              <div className="flex justify-between items-start">
+                <h3 className="font-medium text-gray-900">{selectedFunnel.name}</h3>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-500">{selectedFunnel.isActive ? "Ativo" : "Inativo"}</span>
+                  <Switch 
+                    checked={selectedFunnel.isActive}
+                    onClick={handleToggleActive}
+                    className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-gray-300"
+                  />
+                </div>
+              </div>
               <p className="mt-1 text-sm text-muted-foreground">
                 {selectedFunnel.description || "Sem descrição"}
               </p>
               <div className="mt-2 text-xs text-muted-foreground">
-                <span className="text-blue-500 font-medium">Ativo</span> • Criado em {new Date(selectedFunnel.createdAt).toLocaleDateString('pt-BR')}
+                <span className={`font-medium ${selectedFunnel.isActive ? "text-blue-500" : "text-gray-500"}`}>
+                  {selectedFunnel.isActive ? "Ativo" : "Inativo"}
+                </span> • Criado em {new Date(selectedFunnel.createdAt).toLocaleDateString('pt-BR')}
               </div>
               <div className="mt-2 text-xs">
                 <span className="font-medium">{selectedFunnel.stages.length} etapa{selectedFunnel.stages.length !== 1 ? 's' : ''}</span>

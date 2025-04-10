@@ -19,7 +19,8 @@ const FunnelManagement: React.FC = () => {
     createFunnelDialogOpen,
     setCreateFunnelDialogOpen,
     handleCreateFunnel,
-    updateFunnelStages
+    updateFunnelStages,
+    toggleFunnelActive
   } = useFunnels();
   
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
@@ -76,6 +77,7 @@ const FunnelManagement: React.FC = () => {
             selectedFunnel={selectedFunnel}
             onSelectFunnel={setSelectedFunnel}
             onCreateFunnel={handleNewFunnelClick}
+            onToggleFunnelActive={toggleFunnelActive}
           />
           
           <AiSuggestions 
