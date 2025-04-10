@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Check, Users, Tag, Target, Filter } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 interface SegmentationStrategiesDialogProps {
   open: boolean;
@@ -22,6 +23,42 @@ const SegmentationStrategiesDialog: React.FC<SegmentationStrategiesDialogProps> 
   open,
   onOpenChange,
 }) => {
+  const { toast } = useToast();
+  const [selectedTab, setSelectedTab] = useState('demographic');
+  const [isApplying, setIsApplying] = useState(false);
+  
+  const handleTabChange = (value: string) => {
+    setSelectedTab(value);
+  };
+  
+  const handleApplyStrategies = () => {
+    setIsApplying(true);
+    
+    // Simulando um processamento
+    setTimeout(() => {
+      setIsApplying(false);
+      
+      // Mostrar notificação de sucesso
+      toast({
+        title: "Estratégias aplicadas com sucesso",
+        description: `As estratégias de segmentação ${getTabTitle(selectedTab)} foram aplicadas ao funil.`,
+      });
+      
+      // Fechar o diálogo
+      onOpenChange(false);
+    }, 1000);
+  };
+  
+  const getTabTitle = (tabValue: string): string => {
+    switch (tabValue) {
+      case 'demographic': return 'Demográficas';
+      case 'behavioral': return 'Comportamentais';
+      case 'interest': return 'Por Interesse';
+      case 'engagement': return 'Por Engajamento';
+      default: return '';
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl">
@@ -35,7 +72,7 @@ const SegmentationStrategiesDialog: React.FC<SegmentationStrategiesDialogProps> 
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs defaultValue="demographic" className="w-full">
+        <Tabs defaultValue="demographic" value={selectedTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="w-full grid grid-cols-4">
             <TabsTrigger value="demographic">Demográfica</TabsTrigger>
             <TabsTrigger value="behavioral">Comportamental</TabsTrigger>
@@ -184,8 +221,24 @@ const SegmentationStrategiesDialog: React.FC<SegmentationStrategiesDialogProps> 
           >
             Fechar
           </Button>
-          <Button onClick={() => onOpenChange(false)}>
-            Aplicar Estratégias
+          <Button 
+            onClick={handleApplyStrategies}
+            disabled={isApplying}
+            className="relative"
+          >
+            {isApplying ? (
+              <>
+                <span className="opacity-0">Aplicar Estratégias</span>
+                <span className="absolute inset-0 flex items-center justify-center">
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </span>
+              </>
+            ) : (
+              "Aplicar Estratégias"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
