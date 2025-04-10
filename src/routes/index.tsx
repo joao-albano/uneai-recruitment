@@ -5,6 +5,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import { publicRoutes } from './publicRoutes';
 import { protectedRoutes } from './protectedRoutes';
 import { adminRoutes } from './adminRoutes';
+import recruitmentRoutes from './recruitmentRoutes';
 import NotFound from '@/pages/NotFound';
 import Index from '@/pages/Index';
 
@@ -17,6 +18,7 @@ const allRoutes = [
   ...publicRoutes,
   ...protectedRoutes,
   ...adminRoutes,
+  ...recruitmentRoutes,
   {
     path: '*',
     element: <NotFound />

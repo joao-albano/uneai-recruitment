@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
-import { useProduct } from '@/context/ProductContext';
+import { useProduct } from '@/context/product';
 import DeveloperDocumentation from '@/components/recruitment/docs/DeveloperDocumentation';
 
 const RecruitmentDocumentationPage: React.FC = () => {
