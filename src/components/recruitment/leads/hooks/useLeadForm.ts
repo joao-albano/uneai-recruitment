@@ -17,6 +17,18 @@ const defaultValues = {
   enrollmentIntention: "",
   contactTime: "",
   requiresChildrenInfo: false,
+  institutionType: "school",
+  
+  // Novos campos
+  studentName: "",
+  studentPhone: "",
+  studentEmail: "",
+  parentCPF: "",
+  parentEmail: "",
+  cpf: "",
+  campus: "",
+  modality: "",
+  period: "",
 };
 
 export const useLeadForm = () => {
@@ -48,27 +60,44 @@ export const useLeadForm = () => {
     
     // Make sure each child has all required properties
     const childrenData = data.children?.map(child => ({
-      name: child.name || '',   // Ensure required properties have default values
+      name: child.name || '',
       age: child.age || '',
       grade: child.grade || '',
     })) || [];
     
+    // Determine which name field to use
+    const displayName = data.institutionType === 'school' 
+      ? (data.studentName || data.parentName) // For school: student name or parent name
+      : data.parentName; // For university: parent name (which is the interested person)
+    
     // Update the mock data array - fixing by adding the missing required properties
     const newLead = {
       id: result.id,
-      name: result.parentName,
-      email: result.email,
-      phone: result.phone,
-      course: result.course,
+      name: displayName,
+      email: data.email,
+      phone: data.phone,
+      course: data.course,
       children: childrenData.length || 0,
-      _childrenData: childrenData, // Now properly typed with required fields
-      channel: result.channel,
+      _childrenData: childrenData,
+      channel: data.channel,
       stage: "Contato Inicial",
       status: "Novo",
-      createdAt: createdAt, // Use consistent ISO format for dates
-      notes: result.observations || "",
-      enrollmentIntention: result.enrollmentIntention || "",
-      contactTime: result.contactTime || ""
+      createdAt: createdAt,
+      notes: data.observations || "",
+      enrollmentIntention: data.enrollmentIntention || "",
+      contactTime: data.contactTime || "",
+      
+      // Novos campos para upload
+      institutionType: data.institutionType,
+      studentName: data.studentName || "",
+      studentPhone: data.studentPhone || "",
+      studentEmail: data.studentEmail || "",
+      parentCPF: data.parentCPF || "",
+      parentEmail: data.parentEmail || "",
+      cpf: data.cpf || "",
+      campus: data.campus || "",
+      modality: data.modality || "",
+      period: data.period || "",
     };
     
     // Add to mock data

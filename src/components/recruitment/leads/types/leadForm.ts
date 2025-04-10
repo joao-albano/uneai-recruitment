@@ -19,6 +19,21 @@ export const leadFormSchema = z.object({
     required_error: "Selecione um curso",
   }),
   status: z.string().default("Novo"),
+  
+  // Campos adicionais para controle de importação
+  campus: z.string().optional(),
+  modality: z.string().optional(),
+  period: z.string().optional(),
+  cpf: z.string().optional(),
+  
+  // Separar campos de aluno e responsável para maior claridade
+  studentName: z.string().optional(), // Nome do aluno (para educação básica)
+  studentPhone: z.string().optional(), // Telefone do aluno (para ensino superior)
+  studentEmail: z.string().optional(), // Email do aluno (para ensino superior)
+  parentCPF: z.string().optional(), // CPF do responsável (para educação básica)
+  parentEmail: z.string().optional(), // Email alternativo do responsável
+
+  // Campos existentes
   children: z.array(
     z.object({
       name: z.string().min(1, { message: "Nome do filho é obrigatório" }),
@@ -26,12 +41,13 @@ export const leadFormSchema = z.object({
       grade: z.string().min(1, { message: "Série pretendida é obrigatória" }),
     })
   ).optional().default([]),
-  // Campos adicionais
   observations: z.string().optional(),
   enrollmentIntention: z.string().optional(),
   contactTime: z.string().optional(),
-  // Novo campo para indicar se o curso requer informações de filhos
   requiresChildrenInfo: z.boolean().default(false),
+  
+  // Campo para indicar o tipo de instituição
+  institutionType: z.enum(['school', 'university']).default('school'),
 });
 
 export type LeadFormValues = z.infer<typeof leadFormSchema>;
