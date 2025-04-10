@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -65,6 +66,7 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
     if (open && isEditMode && scheduleToEdit) {
       const scheduleDate = new Date(scheduleToEdit.date);
       
+      // Set the student ID for editing
       setSelectedStudent(scheduleToEdit.studentId);
       setScheduleDate(format(scheduleDate, 'yyyy-MM-dd'));
       setScheduleTime(format(scheduleDate, 'HH:mm'));
@@ -222,7 +224,7 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
               value={selectedStudent} 
               onValueChange={setSelectedStudent}
               required
-              disabled={isEditMode}
+              disabled={false} // Changed from 'disabled={isEditMode}' to always allow selection
             >
               <SelectTrigger>
                 <SelectValue placeholder={

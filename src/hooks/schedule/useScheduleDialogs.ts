@@ -101,7 +101,9 @@ export const useScheduleDialogs = ({
       ...prev,
       scheduleDialogOpen: true,
       editMode: true,
-      selectedSchedule: scheduleCopy
+      selectedSchedule: scheduleCopy,
+      // When editing, set the preselectedStudentId to match the schedule's studentId
+      preselectedStudentId: scheduleCopy.studentId
     }));
   }, []);
   
