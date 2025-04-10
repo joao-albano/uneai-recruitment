@@ -2,14 +2,15 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, ListChecks, Zap, RadarIcon } from 'lucide-react';
+import { Plus, ListChecks, Zap, RadarIcon, BookOpen } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import CampaignsList from './list/CampaignsList';
 import SuggestedActions from './radar/SuggestedActions';
 import OpportunityRadar from './OpportunityRadar';
 import AutomatedReengagement from './AutomatedReengagement';
 import CampaignCreationDialog from './CampaignCreationDialog';
 import CampaignDetailsDialog from './CampaignDetailsDialog';
-import CampaignEditDialog from './CampaignEditDialog';
+import CampaignEditDialog from './edit/CampaignEditDialog';
 import { useCampaigns } from '@/hooks/recruitment/useCampaigns';
 import { Campaign } from '@/types/recruitment';
 import { useOpportunityRadar } from './radar/hooks/useOpportunityRadar';
@@ -46,10 +47,18 @@ const CampaignsManagement: React.FC = () => {
             Gerencie suas campanhas para captação de novos alunos
           </p>
         </div>
-        <Button onClick={() => setCreateDialogOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Nova Campanha
-        </Button>
+        <div className="flex gap-2">
+          <Link to="/recruitment/documentation">
+            <Button variant="outline" className="flex items-center gap-2">
+              <BookOpen className="h-4 w-4" />
+              Documentação
+            </Button>
+          </Link>
+          <Button onClick={() => setCreateDialogOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Nova Campanha
+          </Button>
+        </div>
       </div>
       
       <Tabs defaultValue="campanhas" className="w-full">
