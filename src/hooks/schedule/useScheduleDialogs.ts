@@ -93,11 +93,15 @@ export const useScheduleDialogs = ({
   
   // Handle edit schedule
   const handleEditSchedule = useCallback((schedule: Schedule) => {
+    console.log("Editing schedule:", schedule);
+    // Make a deep copy of the schedule to avoid unintended mutations
+    const scheduleCopy = JSON.parse(JSON.stringify(schedule));
+    
     setDialogState(prev => ({
       ...prev,
       scheduleDialogOpen: true,
       editMode: true,
-      selectedSchedule: schedule
+      selectedSchedule: scheduleCopy
     }));
   }, []);
   
