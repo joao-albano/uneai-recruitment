@@ -3,7 +3,7 @@ import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UseFormReturn } from 'react-hook-form';
 import { LeadFormValues } from '../types/leadForm';
-import BasicInfoForm from './forms/BasicInfoForm';
+import BasicInfoForm from './forms/basic-info';
 import ChildrenForm from './forms/ChildrenForm';
 import AdditionalInfoForm from './forms/AdditionalInfoForm';
 
