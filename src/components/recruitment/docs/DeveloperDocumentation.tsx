@@ -15,11 +15,12 @@ const DeveloperDocumentation: React.FC = () => {
       </div>
 
       <Tabs defaultValue="architecture" className="w-full">
-        <TabsList className="grid grid-cols-6 w-full mb-6">
+        <TabsList className="grid grid-cols-7 w-full mb-6">
           <TabsTrigger value="architecture">Arquitetura</TabsTrigger>
           <TabsTrigger value="funnels">Funis</TabsTrigger>
           <TabsTrigger value="campaigns">Campanhas</TabsTrigger>
           <TabsTrigger value="leads">Leads</TabsTrigger>
+          <TabsTrigger value="attendance">Atendimento</TabsTrigger>
           <TabsTrigger value="predictions">Previsões</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
@@ -232,6 +233,109 @@ const DeveloperDocumentation: React.FC = () => {
                   <li><code>react-hook-form</code> para gerenciamento de formulários</li>
                   <li><code>zod</code> para esquemas de validação</li>
                   <li>Validação adaptativa baseada no tipo de instituição</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="attendance" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Módulo de Atendimento</CardTitle>
+              <CardDescription>Implementação e estrutura do sistema de atendimento multicanal</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h3 className="text-lg font-medium">Arquivos Principais</h3>
+                <ul className="mt-2 space-y-2 list-disc pl-5">
+                  <li><code>ConversationalAI.tsx</code> - Componente principal do sistema de conversação</li>
+                  <li><code>ConversationInterface.tsx</code> - Interface de chat com lead/candidato</li>
+                  <li><code>ConversationChatArea.tsx</code> - Área de mensagens e interação</li>
+                  <li><code>WhatsAppTab.tsx</code> - Interface do canal WhatsApp</li>
+                  <li><code>MessageBubble.tsx</code> - Componente de exibição de mensagens</li>
+                  <li><code>MessageInput.tsx</code> - Entrada de texto para envio de mensagens</li>
+                  <li><code>ConversationHeader.tsx</code> - Cabeçalho com informações do atendimento</li>
+                  <li><code>ConversationSidebar.tsx</code> - Barra lateral para gerenciamento de conversas</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium">Estrutura de Dados</h3>
+                <p className="text-muted-foreground mt-1">
+                  O modelo de dados de conversações inclui:
+                </p>
+                <ul className="mt-2 space-y-1 list-disc pl-5">
+                  <li><code>Conversation</code> - Dados da conversa (lead, canal, status, etc)</li>
+                  <li><code>ConversationMessage</code> - Mensagens individuais trocadas</li>
+                  <li><code>ActiveConversation</code> - Representação de conversas ativas</li>
+                  <li><code>Message</code> - Formato interno de mensagens com análise</li>
+                  <li><code>Agent</code> - Dados dos atendentes disponíveis</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium">Múltiplos Canais</h3>
+                <p className="text-muted-foreground mt-1">
+                  O sistema suporta atendimento nos seguintes canais:
+                </p>
+                <ul className="mt-2 space-y-1 list-disc pl-5">
+                  <li><strong>WhatsApp:</strong> Principal canal de comunicação com leads</li>
+                  <li><strong>Email:</strong> Comunicação formal com candidatos</li>
+                  <li><strong>Voz:</strong> Chamadas telefônicas para atendimento personalizado</li>
+                  <li><strong>Omnichannel:</strong> Módulo orquestrador de canais em <code>OmnichannelOrchestration.tsx</code></li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium">Inteligência Artificial</h3>
+                <p className="text-muted-foreground mt-1">
+                  O sistema integra IA para:
+                </p>
+                <ul className="mt-2 space-y-1 list-disc pl-5">
+                  <li><strong>Análise de Emoções:</strong> Detecção do estado emocional do lead</li>
+                  <li><strong>Análise de Intenções:</strong> Identificação do objetivo do lead</li>
+                  <li><strong>Detecção de Objeções:</strong> Reconhecimento de barreiras para conversão</li>
+                  <li><strong>Sugestões de Resposta:</strong> Geração de respostas contextuais</li>
+                  <li><strong>Atendimento Automatizado:</strong> Bots para primeiro atendimento</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium">Agendamentos</h3>
+                <p className="text-muted-foreground mt-1">
+                  Integração com sistema de agendamentos:
+                </p>
+                <ul className="mt-2 space-y-1 list-disc pl-5">
+                  <li><code>useScheduleData.ts</code> - Hook principal para dados de agendamentos</li>
+                  <li><code>useScheduleManagement.ts</code> - Hook para gerenciamento de agendamentos</li>
+                  <li><code>useScheduleOperations.ts</code> - Operações de CRUD em agendamentos</li>
+                  <li><code>ScheduleView.tsx</code> - Visualização de agendamentos</li>
+                  <li><code>ScheduleDialogs.tsx</code> - Diálogos para criação e edição</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium">Integração com APIs Externas</h3>
+                <p className="text-muted-foreground mt-1">
+                  O sistema se integra com:
+                </p>
+                <ul className="mt-2 space-y-1 list-disc pl-5">
+                  <li><code>useWhatsAppHistory.ts</code> - Integração com API de WhatsApp</li>
+                  <li><code>useVoiceCallHistory.ts</code> - Integração com API de chamadas</li>
+                  <li><code>useVoiceCallConfig.ts</code> - Configuração de integrações de voz</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium">Rotas e Páginas</h3>
+                <p className="text-muted-foreground mt-1">
+                  Páginas relacionadas a atendimento:
+                </p>
+                <ul className="mt-2 space-y-1 list-disc pl-5">
+                  <li><code>ConversationPage.tsx</code> - Página principal de conversações</li>
+                  <li><code>ConversationalAIPage.tsx</code> - Página de atendimento com IA</li>
+                  <li><code>LeadConversationPage.tsx</code> - Página de conversa com lead específico</li>
                 </ul>
               </div>
             </CardContent>
