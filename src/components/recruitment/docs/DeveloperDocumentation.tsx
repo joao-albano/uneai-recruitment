@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,11 +15,13 @@ const DeveloperDocumentation: React.FC = () => {
       </div>
 
       <Tabs defaultValue="architecture" className="w-full">
-        <TabsList className="grid grid-cols-4 w-full mb-6">
+        <TabsList className="grid grid-cols-6 w-full mb-6">
           <TabsTrigger value="architecture">Arquitetura</TabsTrigger>
           <TabsTrigger value="funnels">Funis</TabsTrigger>
           <TabsTrigger value="campaigns">Campanhas</TabsTrigger>
           <TabsTrigger value="leads">Leads</TabsTrigger>
+          <TabsTrigger value="predictions">Previsões</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
         
         <TabsContent value="architecture" className="space-y-6">
@@ -40,6 +41,8 @@ const DeveloperDocumentation: React.FC = () => {
                   <li><code>/components/recruitment/funnel/</code> - Componentes relacionados aos funis de captação</li>
                   <li><code>/components/recruitment/campaigns/</code> - Componentes de gerenciamento de campanhas</li>
                   <li><code>/components/recruitment/leads/</code> - Componentes de gerenciamento de leads</li>
+                  <li><code>/components/recruitment/predictive/</code> - Componentes para análise preditiva e ML</li>
+                  <li><code>/components/recruitment/analytics/</code> - Componentes de análise e relatórios</li>
                   <li><code>/hooks/recruitment/</code> - Hooks personalizados para o módulo de recrutamento</li>
                   <li><code>/types/recruitment</code> - Definições de tipos para o módulo de recrutamento</li>
                 </ul>
@@ -229,6 +232,128 @@ const DeveloperDocumentation: React.FC = () => {
                   <li><code>react-hook-form</code> para gerenciamento de formulários</li>
                   <li><code>zod</code> para esquemas de validação</li>
                   <li>Validação adaptativa baseada no tipo de instituição</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="predictions" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Módulo de Previsões</CardTitle>
+              <CardDescription>Sistema de previsão de matrículas e análise preditiva</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h3 className="text-lg font-medium">Arquivos Principais</h3>
+                <ul className="mt-2 space-y-2 list-disc pl-5">
+                  <li><code>EnrollmentPredictionsPage.tsx</code> - Página principal de previsões de matrículas</li>
+                  <li><code>PredictiveReportingPage.tsx</code> - Página de relatórios preditivos</li>
+                  <li><code>EnrollmentPredictionEngine.tsx</code> - Componente principal do motor de previsão</li>
+                  <li><code>EnrollmentPredictionDashboard.tsx</code> - Dashboard com gráficos e métricas de previsão</li>
+                  <li><code>ModelPerformanceMetrics.tsx</code> - Métricas de desempenho do modelo preditivo</li>
+                  <li><code>ChannelPerformancePrediction.tsx</code> - Previsões de desempenho por canal</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium">Estrutura de Dados</h3>
+                <p className="text-muted-foreground mt-1">
+                  O modelo de dados de previsões inclui:
+                </p>
+                <ul className="mt-2 space-y-1 list-disc pl-5">
+                  <li><code>EnrollmentPrediction</code> - Previsões de matrículas para cada curso</li>
+                  <li><code>ChannelPerformance</code> - Dados de desempenho por canal</li>
+                  <li><code>ChannelDistribution</code> - Distribuição de leads entre canais</li>
+                  <li>Métricas de confiança e risco para cada previsão</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium">Algoritmos e Modelos</h3>
+                <p className="text-muted-foreground mt-1">
+                  O sistema de previsão utiliza os seguintes algoritmos:
+                </p>
+                <ul className="mt-2 space-y-1 list-disc pl-5">
+                  <li><strong>Ensemble Learning:</strong> Combinação de múltiplos algoritmos (XGBoost, Random Forest)</li>
+                  <li><strong>Séries Temporais:</strong> Para análise de tendências históricas</li>
+                  <li><strong>Modelos de Regressão:</strong> Para prever quantidade de matrículas</li>
+                  <li><strong>Análise de Sentimento:</strong> Para avaliar intenção de leads com base em interações</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium">Integração com AI</h3>
+                <p className="text-muted-foreground mt-1">
+                  O módulo se integra com serviços de AI:
+                </p>
+                <ul className="mt-2 space-y-1 list-disc pl-5">
+                  <li>Função <code>analyzeStudentBehavior</code> em <code>aiAnalysis.ts</code> para análise comportamental</li>
+                  <li>Configuração via <code>getOpenAIConfig</code> para personalizar modelo e parâmetros</li>
+                  <li>Sugestões de ações com base em análise preditiva</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="analytics" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Módulo de Analytics</CardTitle>
+              <CardDescription>Análise de dados e visualizações para tomada de decisão</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h3 className="text-lg font-medium">Arquivos Principais</h3>
+                <ul className="mt-2 space-y-2 list-disc pl-5">
+                  <li><code>AnalyticsManagement.tsx</code> - Componente principal de analytics</li>
+                  <li><code>ChannelConversionChart.tsx</code> - Gráfico de conversão por canal</li>
+                  <li><code>ChannelDistributionChart.tsx</code> - Gráfico de distribuição por canal</li>
+                  <li><code>AnalyticsTab.tsx</code> - Componente de análise na conversação de leads</li>
+                  <li><code>EnhancedFunnelChart.tsx</code> - Gráfico avançado de funil</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium">Métricas Principais</h3>
+                <p className="text-muted-foreground mt-1">
+                  O sistema de analytics rastreia as seguintes métricas:
+                </p>
+                <ul className="mt-2 space-y-1 list-disc pl-5">
+                  <li><strong>Conversão por Estágio:</strong> Taxa de conversão em cada estágio do funil</li>
+                  <li><strong>ROI por Canal:</strong> Retorno sobre investimento em cada canal</li>
+                  <li><strong>Custo por Lead:</strong> Custo médio de aquisição por canal</li>
+                  <li><strong>Tempo de Conversão:</strong> Ciclo médio desde o primeiro contato até a matrícula</li>
+                  <li><strong>Distribuição Geográfica:</strong> Origem geográfica dos leads</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium">Visualizações</h3>
+                <p className="text-muted-foreground mt-1">
+                  O módulo inclui as seguintes visualizações:
+                </p>
+                <ul className="mt-2 space-y-1 list-disc pl-5">
+                  <li>Gráficos de funil para análise de estágios</li>
+                  <li>Gráficos de barras para comparação entre canais</li>
+                  <li>Gráficos de linha para análise temporal</li>
+                  <li>Gráficos de pizza para distribuição</li>
+                  <li>Tabelas interativas para análise detalhada</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium">Exportação de Dados</h3>
+                <p className="text-muted-foreground mt-1">
+                  Funcionalidades de exportação:
+                </p>
+                <ul className="mt-2 space-y-1 list-disc pl-5">
+                  <li>Exportação para CSV via <code>papaparse</code></li>
+                  <li>Exportação para XLSX via <code>xlsx</code></li>
+                  <li>Geração de relatórios PDF via <code>jspdf</code></li>
+                  <li>Filtros personalizáveis pré-exportação</li>
                 </ul>
               </div>
             </CardContent>
