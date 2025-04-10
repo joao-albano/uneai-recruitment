@@ -87,16 +87,16 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
   const isBasicEducation = institutionType === 'school';
 
   return (
-    <div className="space-y-4 overflow-hidden">
+    <div className="space-y-4 overflow-y-auto">
       {/* Tipo de Instituição */}
       <Card className="overflow-hidden">
-        <CardHeader className="p-4 md:p-6">
-          <CardTitle className="text-base md:text-lg flex items-center gap-2">
-            <Building2 className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+        <CardHeader className="p-3 md:p-4">
+          <CardTitle className="text-sm md:text-base flex items-center gap-2">
+            <Building2 className="h-3 w-3 md:h-4 md:w-4 text-primary" />
             Tipo de Instituição
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-4 md:p-6 pt-0">
+        <CardContent className="p-3 md:p-4 pt-0">
           <RadioGroup
             value={institutionType}
             onValueChange={(value) => {
@@ -108,11 +108,11 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
           >
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="school" id="school" />
-              <FormLabel htmlFor="school" className="font-normal text-sm">Educação Básica</FormLabel>
+              <FormLabel htmlFor="school" className="font-normal text-xs md:text-sm">Educação Básica</FormLabel>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="university" id="university" />
-              <FormLabel htmlFor="university" className="font-normal text-sm">Ensino Superior</FormLabel>
+              <FormLabel htmlFor="university" className="font-normal text-xs md:text-sm">Ensino Superior</FormLabel>
             </div>
           </RadioGroup>
         </CardContent>
@@ -120,23 +120,23 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
 
       {/* Informações Pessoais */}
       <Card className="overflow-hidden">
-        <CardHeader className="p-4 md:p-6">
-          <CardTitle className="text-base md:text-lg flex items-center gap-2">
-            <UserCircle className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+        <CardHeader className="p-3 md:p-4">
+          <CardTitle className="text-sm md:text-base flex items-center gap-2">
+            <UserCircle className="h-3 w-3 md:h-4 md:w-4 text-primary" />
             Informações Pessoais
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-4 md:p-6 pt-0 space-y-4">
+        <CardContent className="p-3 md:p-4 pt-0 space-y-3 md:space-y-4">
           <FormField
             control={form.control}
             name="parentName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{isBasicEducation ? 'Nome do Responsável' : 'Nome do Interessado'}</FormLabel>
+                <FormLabel className="text-xs md:text-sm">{isBasicEducation ? 'Nome do Responsável' : 'Nome do Interessado'}</FormLabel>
                 <FormControl>
-                  <Input placeholder={isBasicEducation ? "Nome do responsável" : "Nome do interessado"} {...field} />
+                  <Input className="text-xs md:text-sm" placeholder={isBasicEducation ? "Nome do responsável" : "Nome do interessado"} {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-xs" />
               </FormItem>
             )}
           />
@@ -147,30 +147,30 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
               name="studentName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome do Aluno</FormLabel>
+                  <FormLabel className="text-xs md:text-sm">Nome do Aluno</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nome do aluno" {...field} />
+                    <Input className="text-xs md:text-sm" placeholder="Nome do aluno" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />
           )}
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center gap-1">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
+                  <FormLabel className="flex items-center gap-1 text-xs md:text-sm">
+                    <Mail className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
                     E-mail {isBasicEducation ? 'do Responsável' : ''}
                   </FormLabel>
                   <FormControl>
-                    <Input placeholder="email@exemplo.com" {...field} />
+                    <Input className="text-xs md:text-sm" placeholder="email@exemplo.com" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />
@@ -180,14 +180,14 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center gap-1">
-                    <Phone className="h-4 w-4 text-muted-foreground" />
+                  <FormLabel className="flex items-center gap-1 text-xs md:text-sm">
+                    <Phone className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
                     Telefone {isBasicEducation ? 'do Responsável' : ''}
                   </FormLabel>
                   <FormControl>
-                    <Input placeholder="(00) 00000-0000" {...field} />
+                    <Input className="text-xs md:text-sm" placeholder="(00) 00000-0000" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />
@@ -198,14 +198,14 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
             name={isBasicEducation ? "parentCPF" : "cpf"}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex items-center gap-1">
-                  <CreditCard className="h-4 w-4 text-muted-foreground" />
+                <FormLabel className="flex items-center gap-1 text-xs md:text-sm">
+                  <CreditCard className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
                   CPF {isBasicEducation ? 'do Responsável' : ''}
                 </FormLabel>
                 <FormControl>
-                  <Input placeholder="000.000.000-00" {...field} />
+                  <Input className="text-xs md:text-sm" placeholder="000.000.000-00" {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-xs" />
               </FormItem>
             )}
           />
@@ -216,34 +216,34 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
               name="cep"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center gap-1">
-                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                  <FormLabel className="flex items-center gap-1 text-xs md:text-sm">
+                    <MapPin className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
                     CEP
                   </FormLabel>
                   <FormControl>
-                    <Input placeholder="00000-000" {...field} />
+                    <Input className="text-xs md:text-sm" placeholder="00000-000" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />
           )}
           
           {!isBasicEducation && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
               <FormField
                 control={form.control}
                 name="studentPhone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center gap-1">
-                      <Phone className="h-4 w-4 text-muted-foreground" />
+                    <FormLabel className="flex items-center gap-1 text-xs md:text-sm">
+                      <Phone className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
                       Telefone Alternativo
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="(00) 00000-0000" {...field} />
+                      <Input className="text-xs md:text-sm" placeholder="(00) 00000-0000" {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -253,14 +253,14 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
                 name="studentEmail"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center gap-1">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
+                    <FormLabel className="flex items-center gap-1 text-xs md:text-sm">
+                      <Mail className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
                       E-mail Alternativo
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="email.alternativo@exemplo.com" {...field} />
+                      <Input className="text-xs md:text-sm" placeholder="email.alternativo@exemplo.com" {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -271,21 +271,21 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
       
       {/* Informações Acadêmicas */}
       <Card className="overflow-hidden">
-        <CardHeader className="p-4 md:p-6">
-          <CardTitle className="text-base md:text-lg flex items-center gap-2">
-            <BookOpen className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+        <CardHeader className="p-3 md:p-4">
+          <CardTitle className="text-sm md:text-base flex items-center gap-2">
+            <BookOpen className="h-3 w-3 md:h-4 md:w-4 text-primary" />
             Informações Acadêmicas
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-4 md:p-6 pt-0 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent className="p-3 md:p-4 pt-0 space-y-3 md:space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
             <FormField
               control={form.control}
               name="course"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center gap-1">
-                    <Book className="h-4 w-4 text-muted-foreground" />
+                  <FormLabel className="flex items-center gap-1 text-xs md:text-sm">
+                    <Book className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
                     Curso de Interesse
                   </FormLabel>
                   <Select 
@@ -294,7 +294,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
                     value={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="text-xs md:text-sm">
                         <SelectValue placeholder="Selecione um curso" />
                       </SelectTrigger>
                     </FormControl>
@@ -321,7 +321,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
                       )}
                     </SelectContent>
                   </Select>
-                  <FormMessage />
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />
@@ -331,14 +331,14 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
               name="channel"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Canal</FormLabel>
+                  <FormLabel className="text-xs md:text-sm">Canal</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value}
                     value={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="text-xs md:text-sm">
                         <SelectValue placeholder="Selecione um canal" />
                       </SelectTrigger>
                     </FormControl>
@@ -351,7 +351,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
                       <SelectItem value="Indicação">Indicação</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormMessage />
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />
@@ -362,8 +362,8 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
             name="campus"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex items-center gap-1">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
+                <FormLabel className="flex items-center gap-1 text-xs md:text-sm">
+                  <MapPin className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
                   Unidade/Campus
                 </FormLabel>
                 <Select 
@@ -372,7 +372,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
                   value={field.value || ""}
                 >
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm">
                       <SelectValue placeholder="Selecione uma unidade" />
                     </SelectTrigger>
                   </FormControl>
@@ -382,25 +382,25 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
                     ))}
                   </SelectContent>
                 </Select>
-                <FormMessage />
+                <FormMessage className="text-xs" />
               </FormItem>
             )}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
             <FormField
               control={form.control}
               name="modality"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Modalidade</FormLabel>
+                  <FormLabel className="text-xs md:text-sm">Modalidade</FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value}
                     value={field.value || ""}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="text-xs md:text-sm">
                         <SelectValue placeholder="Selecione uma modalidade" />
                       </SelectTrigger>
                     </FormControl>
@@ -410,7 +410,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage />
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />
@@ -420,8 +420,8 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
               name="period"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center gap-1">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
+                  <FormLabel className="flex items-center gap-1 text-xs md:text-sm">
+                    <Clock className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
                     Período
                   </FormLabel>
                   <Select 
@@ -430,7 +430,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
                     value={field.value || ""}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="text-xs md:text-sm">
                         <SelectValue placeholder="Selecione um período" />
                       </SelectTrigger>
                     </FormControl>
@@ -440,7 +440,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ form }) => {
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage />
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />

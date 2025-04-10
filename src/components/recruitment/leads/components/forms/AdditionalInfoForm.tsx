@@ -15,13 +15,13 @@ interface AdditionalInfoFormProps {
 const AdditionalInfoForm: React.FC<AdditionalInfoFormProps> = ({ form }) => {
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="p-4 md:p-6">
-        <CardTitle className="text-base md:text-lg flex items-center gap-2">
-          <MessageSquare className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+      <CardHeader className="p-3 md:p-4">
+        <CardTitle className="text-sm md:text-base flex items-center gap-2">
+          <MessageSquare className="h-3 w-3 md:h-4 md:w-4 text-primary" />
           Informações Adicionais
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 md:p-6 pt-0 space-y-4">
+      <CardContent className="p-3 md:p-4 pt-0 space-y-3 md:space-y-4">
         <FormField
           control={form.control}
           name="observations"
@@ -30,7 +30,7 @@ const AdditionalInfoForm: React.FC<AdditionalInfoFormProps> = ({ form }) => {
               <FormLabel className="text-xs md:text-sm">Observações</FormLabel>
               <FormControl>
                 <Textarea 
-                  className="w-full resize-y h-20 md:h-24 text-xs md:text-sm"
+                  className="w-full resize-y h-16 md:h-20 text-xs md:text-sm"
                   placeholder="Informações adicionais sobre o lead..."
                   {...field}
                 />
@@ -40,19 +40,19 @@ const AdditionalInfoForm: React.FC<AdditionalInfoFormProps> = ({ form }) => {
           )}
         />
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
           <FormField
             control={form.control}
             name="enrollmentIntention"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-1 text-xs md:text-sm">
-                  <Gauge className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
+                  <Gauge className="h-3 w-3 text-muted-foreground" />
                   Intenção de Matrícula
                 </FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select onValueChange={field.onChange} value={field.value || ""}>
                   <FormControl>
-                    <SelectTrigger className="text-xs md:text-sm">
+                    <SelectTrigger className="text-xs md:text-sm h-8 md:h-10">
                       <SelectValue placeholder="Selecione a intenção" />
                     </SelectTrigger>
                   </FormControl>
@@ -74,12 +74,12 @@ const AdditionalInfoForm: React.FC<AdditionalInfoFormProps> = ({ form }) => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-1 text-xs md:text-sm">
-                  <Clock className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
+                  <Clock className="h-3 w-3 text-muted-foreground" />
                   Melhor Horário para Contato
                 </FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select onValueChange={field.onChange} value={field.value || ""}>
                   <FormControl>
-                    <SelectTrigger className="text-xs md:text-sm">
+                    <SelectTrigger className="text-xs md:text-sm h-8 md:h-10">
                       <SelectValue placeholder="Selecione o horário" />
                     </SelectTrigger>
                   </FormControl>

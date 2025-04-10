@@ -10,21 +10,21 @@ interface LeadFormActionsProps {
 
 const LeadFormActions: React.FC<LeadFormActionsProps> = ({ onCancel }) => {
   return (
-    <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4 sm:justify-end">
+    <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-3 md:mt-4 sm:justify-end">
       <Button 
         type="button" 
         variant="outline" 
         onClick={onCancel} 
-        className="w-full sm:w-auto gap-2 text-xs md:text-sm"
+        className="w-full sm:w-auto gap-1 text-xs h-8 md:h-10"
       >
-        <X className="h-3 w-3 md:h-4 md:w-4" />
+        <X className="h-3 w-3" />
         Cancelar
       </Button>
       <Button 
         type="submit" 
-        className="w-full sm:w-auto gap-2 text-xs md:text-sm"
+        className="w-full sm:w-auto gap-1 text-xs h-8 md:h-10"
       >
-        <Save className="h-3 w-3 md:h-4 md:w-4" />
+        <Save className="h-3 w-3" />
         Salvar Lead
       </Button>
     </DialogFooter>
