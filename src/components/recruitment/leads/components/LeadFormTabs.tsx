@@ -14,21 +14,21 @@ interface LeadFormTabsProps {
 const LeadFormTabs: React.FC<LeadFormTabsProps> = ({ form }) => {
   return (
     <Tabs defaultValue="basic" className="w-full">
-      <TabsList className="grid w-full grid-cols-3">
-        <TabsTrigger value="basic">Informações Básicas</TabsTrigger>
-        <TabsTrigger value="children">Filhos</TabsTrigger>
-        <TabsTrigger value="additional">Informações Adicionais</TabsTrigger>
+      <TabsList className="w-full grid grid-cols-3 mb-4">
+        <TabsTrigger value="basic" className="text-xs sm:text-sm">Informações Básicas</TabsTrigger>
+        <TabsTrigger value="children" className="text-xs sm:text-sm">Filhos</TabsTrigger>
+        <TabsTrigger value="additional" className="text-xs sm:text-sm">Informações Adicionais</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="basic" className="space-y-4 py-4">
+      <TabsContent value="basic" className="space-y-4 py-2">
         <BasicInfoForm form={form} />
       </TabsContent>
 
-      <TabsContent value="children" className="py-4">
+      <TabsContent value="children" className="py-2">
         <ChildrenForm form={form} />
       </TabsContent>
 
-      <TabsContent value="additional" className="py-4">
+      <TabsContent value="additional" className="py-2">
         <AdditionalInfoForm form={form} />
       </TabsContent>
     </Tabs>

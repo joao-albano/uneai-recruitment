@@ -50,17 +50,17 @@ const ChildrenForm: React.FC<ChildrenFormProps> = ({ form }) => {
   if (!requiresChildrenInfo) {
     return (
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Users className="h-5 w-5 text-primary" />
+        <CardHeader className="p-4 md:p-6">
+          <CardTitle className="text-base md:text-lg flex items-center gap-2">
+            <Users className="h-4 w-4 md:h-5 md:w-5 text-primary" />
             Informações de Filhos
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 md:p-6 pt-0">
           <Alert className="bg-blue-50 border-blue-200">
-            <Info className="h-5 w-5 text-blue-500" />
-            <AlertTitle>Informação</AlertTitle>
-            <AlertDescription>
+            <Info className="h-4 w-4 md:h-5 md:w-5 text-blue-500" />
+            <AlertTitle className="text-sm md:text-base">Informação</AlertTitle>
+            <AlertDescription className="text-xs md:text-sm">
               O curso selecionado não requer informações de filhos.
               As informações de filhos são necessárias apenas para cursos de educação básica.
             </AlertDescription>
@@ -72,40 +72,41 @@ const ChildrenForm: React.FC<ChildrenFormProps> = ({ form }) => {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="text-lg flex items-center gap-2">
-          <Users className="h-5 w-5 text-primary" />
+      <CardHeader className="p-4 md:p-6">
+        <CardTitle className="text-base md:text-lg flex items-center gap-2">
+          <Users className="h-4 w-4 md:h-5 md:w-5 text-primary" />
           Informações de Filhos
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="p-4 md:p-6 pt-0 space-y-4">
         {(children || []).map((_, index) => (
-          <div key={index} className="border rounded-md p-4 relative bg-gray-50">
-            <div className="absolute right-2 top-2">
+          <div key={index} className="border rounded-md p-3 md:p-4 relative bg-gray-50">
+            <div className="absolute right-1 top-1 md:right-2 md:top-2">
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
                 onClick={() => removeChild(index)}
                 disabled={children.length <= 1 && requiresChildrenInfo}
+                className="h-7 w-7 md:h-8 md:w-8"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
               </Button>
             </div>
             
-            <h3 className="font-medium mb-3">Filho {index + 1}</h3>
+            <h3 className="font-medium mb-3 text-sm md:text-base">Filho {index + 1}</h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
               <FormField
                 control={form.control}
                 name={`children.${index}.name`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nome</FormLabel>
+                    <FormLabel className="text-xs md:text-sm">Nome</FormLabel>
                     <FormControl>
-                      <Input placeholder="Nome do filho" {...field} />
+                      <Input placeholder="Nome do filho" {...field} className="text-xs md:text-sm" />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -115,11 +116,11 @@ const ChildrenForm: React.FC<ChildrenFormProps> = ({ form }) => {
                 name={`children.${index}.age`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Idade</FormLabel>
+                    <FormLabel className="text-xs md:text-sm">Idade</FormLabel>
                     <FormControl>
-                      <Input placeholder="Idade" {...field} />
+                      <Input placeholder="Idade" {...field} className="text-xs md:text-sm" />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -129,11 +130,11 @@ const ChildrenForm: React.FC<ChildrenFormProps> = ({ form }) => {
                 name={`children.${index}.grade`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Série Pretendida</FormLabel>
+                    <FormLabel className="text-xs md:text-sm">Série Pretendida</FormLabel>
                     <FormControl>
-                      <Input placeholder="Série pretendida" {...field} />
+                      <Input placeholder="Série pretendida" {...field} className="text-xs md:text-sm" />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -141,14 +142,14 @@ const ChildrenForm: React.FC<ChildrenFormProps> = ({ form }) => {
           </div>
         ))}
       </CardContent>
-      <CardFooter>
+      <CardFooter className="p-4 md:p-6 pt-0">
         <Button
           type="button"
           variant="outline"
           onClick={addChild}
-          className="w-full gap-2"
+          className="w-full gap-2 text-xs md:text-sm"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-3 w-3 md:h-4 md:w-4" />
           <span>Adicionar Filho</span>
         </Button>
       </CardFooter>
