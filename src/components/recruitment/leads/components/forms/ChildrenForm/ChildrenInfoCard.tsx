@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   FormField,
   FormItem,
@@ -11,16 +11,16 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2, Users, Info } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
-import { LeadFormValues } from '../../types/leadForm';
+import { LeadFormValues } from '../../../types/leadForm';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardHeader, CardContent, CardTitle, CardFooter } from '@/components/ui/card';
 
-interface ChildrenFormProps {
+interface ChildrenInfoCardProps {
   form: UseFormReturn<LeadFormValues>;
+  requiresChildrenInfo: boolean;
 }
 
-const ChildrenForm: React.FC<ChildrenFormProps> = ({ form }) => {
-  const requiresChildrenInfo = form.watch('requiresChildrenInfo');
+const ChildrenInfoCard: React.FC<ChildrenInfoCardProps> = ({ form, requiresChildrenInfo }) => {
   const children = form.watch('children');
 
   // Add a new child to the form
@@ -41,7 +41,7 @@ const ChildrenForm: React.FC<ChildrenFormProps> = ({ form }) => {
   };
 
   // Ensure at least one child for courses requiring children
-  React.useEffect(() => {
+  useEffect(() => {
     if (requiresChildrenInfo && (!children || children.length === 0)) {
       addChild();
     }
@@ -157,4 +157,4 @@ const ChildrenForm: React.FC<ChildrenFormProps> = ({ form }) => {
   );
 };
 
-export default ChildrenForm;
+export default ChildrenInfoCard;
