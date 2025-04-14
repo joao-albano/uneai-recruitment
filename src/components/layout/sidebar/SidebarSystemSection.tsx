@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { FileText, Database, Server } from 'lucide-react';
+import { FileText, Layers } from 'lucide-react';
 import SidebarNavigationGroup from './SidebarNavigationGroup';
 import SidebarNavLink from './SidebarNavLink';
 
@@ -15,6 +15,12 @@ const SidebarSystemSection: React.FC<SidebarSystemSectionProps> = ({ collapsed }
         to="/recruitment/documentation" 
         icon={FileText} 
         label="Documentação" 
+        collapsed={collapsed}
+      />
+      <SidebarNavLink 
+        to="/recruitment/architecture" 
+        icon={Layers} 
+        label="Arquitetura" 
         collapsed={collapsed}
       />
     </SidebarNavigationGroup>
