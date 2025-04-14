@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import SidebarHeader from './SidebarHeader';
@@ -77,8 +77,10 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
             {/* Navegação - sempre renderizado */}
             <SidebarNavigationSection collapsed={collapsed} />
             
-            {/* Sistema - Mostrar para todos os produtos */}
-            <SidebarSystemSection collapsed={collapsed} />
+            {/* Sistema - Mostrar APENAS para o produto de recrutamento */}
+            {isRecruitmentProduct && (
+              <SidebarSystemSection collapsed={collapsed} />
+            )}
             
             {/* Monitoramento - mostrar para retenção ou quando não houver produto selecionado */}
             {(isRetentionProduct || !currentProduct || isSuperAdmin) && !isRecruitmentProduct && !isFinanceProduct && (
