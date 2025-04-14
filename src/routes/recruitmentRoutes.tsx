@@ -1,3 +1,4 @@
+
 import { ReactNode } from "react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoutes";
 import { ProductGuard } from "@/components/auth/ProductGuard";
@@ -23,6 +24,7 @@ import GoalsConfigPage from "@/pages/recruitment/GoalsConfigPage";
 import PeriodsConfigPage from "@/pages/recruitment/PeriodsConfigPage";
 import RecruitmentDocumentationPage from "@/pages/RecruitmentDocumentationPage";
 import RecruitmentArchitecturePage from "@/pages/RecruitmentArchitecturePage";
+import RecruitmentApiDocsPage from "@/pages/RecruitmentApiDocsPage";
 
 interface RouteConfig {
   path: string;
@@ -54,6 +56,16 @@ export const recruitmentRoutes: RouteConfig[] = [
       <ProtectedRoute>
         <ProductGuard allowedProduct="recruitment" redirectTo="/hub">
           <RecruitmentArchitecturePage />
+        </ProductGuard>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: '/recruitment/api-docs',
+    element: (
+      <ProtectedRoute>
+        <ProductGuard allowedProduct="recruitment" redirectTo="/hub">
+          <RecruitmentApiDocsPage />
         </ProductGuard>
       </ProtectedRoute>
     )
