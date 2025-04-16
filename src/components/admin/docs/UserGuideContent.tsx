@@ -10,21 +10,12 @@ import { useGuideSectionsData } from './data/guideSectionsData';
 
 const UserGuideContent: React.FC = () => {
   const [selectedSection, setSelectedSection] = useState<string | null>("dashboard");
-  const [searchQuery, setSearchQuery] = useState("");
   
   const guideSections = useGuideSectionsData();
-  
-  const filteredSections = searchQuery 
-    ? guideSections.filter(section => 
-        section.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        section.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        section.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-      )
-    : guideSections;
 
   return (
     <div className="container mx-auto py-8 max-w-5xl">
-      <SearchHeader searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <SearchHeader />
       
       <div className="grid md:grid-cols-[280px_1fr] gap-6">
         {/* Navigation Menu */}
