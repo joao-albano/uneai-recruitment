@@ -1,11 +1,11 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useData } from '@/context/DataContext';
-import { filterRecruitmentAlerts, filterRetentionAlerts } from '../utils/alertUtils';
+import { filterRecruitmentAlerts, filterRetentionAlerts, getAlertTitle, getDefaultAlertMessage } from '../utils/alertUtils';
 import { Alert } from '@/types/alert';
 import { useProduct } from '@/context/product';
+import AlertIcon from '@/components/alerts/AlertIcon';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 export const useAlertsManagement = () => {
@@ -25,7 +25,6 @@ export const useAlertsManagement = () => {
   } | null>(null);
   
   useEffect(() => {
-    // Generate demo data if no alerts exist
     if (alerts.length === 0) {
       console.log(`Generating demo data for ${currentProduct === 'recruitment' ? 'recruitment' : 'retention'} alerts`);
       generateDemoData();
@@ -34,18 +33,15 @@ export const useAlertsManagement = () => {
     }
   }, [alerts.length, generateDemoData, currentProduct]);
   
-  // Filter alerts based on search term and product type
   const filteredAlerts = currentProduct === 'recruitment' 
     ? filterRecruitmentAlerts(alerts, searchTerm)
     : filterRetentionAlerts(alerts, searchTerm);
   
-  // Log the number of filtered alerts for debugging
   useEffect(() => {
     console.log(`Filtered alerts for ${currentProduct}: ${filteredAlerts.length}`);
     console.log(`Alert types present:`, filteredAlerts.map(a => a.type));
   }, [filteredAlerts, currentProduct]);
   
-  // Divide alerts into unread and read
   const unreadAlerts = filteredAlerts.filter(alert => !alert.read);
   const readAlerts = filteredAlerts.filter(alert => alert.read);
   
@@ -69,7 +65,6 @@ export const useAlertsManagement = () => {
     
     markAlertActionTaken(alertId);
     
-    // Em vez de usar confirm, usamos o estado para mostrar o AlertDialog
     setScheduledDetails({
       alertId,
       scheduleId,
@@ -100,7 +95,6 @@ export const useAlertsManagement = () => {
   const handleViewDetails = (alertId: string) => {
     markAlertAsRead(alertId);
     
-    // Encontrar o alerta correspondente
     const alertToView = alerts.find(a => a.id === alertId);
     
     if (alertToView) {
@@ -128,7 +122,6 @@ export const useAlertsManagement = () => {
     }
   };
 
-  // Componente de diálogo para confirmação de agendamento
   const ScheduleConfirmationDialog = () => {
     if (!showScheduleDialog || !scheduledDetails) return null;
     
@@ -155,12 +148,10 @@ export const useAlertsManagement = () => {
       </AlertDialog>
     );
   };
-  
-  // Componente de diálogo para exibição de detalhes do alerta
+
   const AlertDetailsDialog = () => {
     if (!showDetailsDialog || !selectedAlert) return null;
     
-    // Determinar conteúdo específico com base no tipo de alerta
     const getAlertTypeSpecificDetails = () => {
       switch (selectedAlert.type) {
         case 'campaign-performance':
