@@ -11,11 +11,30 @@ import {
   MessageCircle, 
   Calendar, 
   Upload, 
-  Settings 
+  Settings,
+  Search,
+  ChevronRight,
+  CheckCircle2,
+  HelpCircle,
+  ArrowRight,
+  Lightbulb
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { 
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 interface GuideSection {
   id: string;
@@ -23,302 +42,377 @@ interface GuideSection {
   description: string;
   icon: React.ElementType;
   action?: () => void;
+  features?: string[];
+  steps?: string[];
+  tips?: string[];
+  benefits?: string[];
+  useCases?: string[];
+  tags?: string[];
 }
 
 const UserGuideContent: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedSection, setSelectedSection] = useState<string | null>(null);
+  const [selectedSection, setSelectedSection] = useState<string | null>("dashboard");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const guideSections: GuideSection[] = [
     {
       id: 'dashboard',
       title: 'Dashboard Inteligente',
-      description: 'Visualize métricas e indicadores de performance em tempo real',
+      description: 'Centro de comando para visualizar e analisar métricas e indicadores de performance em tempo real, permitindo tomar decisões estratégicas baseadas em dados.',
       icon: BarChart2,
-      action: () => navigate('/recruitment')
+      action: () => navigate('/recruitment'),
+      features: [
+        'Visão consolidada de conversão por etapas do funil',
+        'Análise de desempenho por canal de captação',
+        'Indicadores de performance por curso',
+        'Comparativos temporais e tendências',
+        'Exportação de relatórios personalizados'
+      ],
+      steps: [
+        'Acesse a aba "Visão Geral" para métricas principais',
+        'Utilize os filtros de data para análises por período',
+        'Navegue entre abas para análises específicas',
+        'Identifique gargalos no processo de captação',
+        'Exporte dados para apresentações'
+      ],
+      tips: [
+        'Verifique o dashboard diariamente para acompanhar tendências',
+        'Compare períodos semelhantes (mesmo mês em anos diferentes)',
+        'Observe as métricas após campanhas para avaliar impacto'
+      ],
+      tags: ['análise', 'métricas', 'desempenho', 'relatórios']
     },
     {
       id: 'leads',
       title: 'Gestão de Leads',
-      description: 'Acompanhe e gerencie leads de forma organizada e eficiente',
+      description: 'Sistema completo para organizar, classificar e gerenciar todos os potenciais alunos no pipeline de captação, desde o primeiro contato até a matrícula.',
       icon: Users,
-      action: () => navigate('/recruitment/leads')
+      action: () => navigate('/recruitment/leads'),
+      features: [
+        'Visualização em lista ou kanban de todos os leads',
+        'Filtros avançados por origem, curso, status e etapa',
+        'Atribuição de responsáveis para acompanhamento',
+        'Histórico completo de interações e eventos',
+        'Segmentação por potencial de conversão'
+      ],
+      steps: [
+        'Utilize a barra de pesquisa para localizar leads específicos',
+        'Aplique filtros combinados para segmentação estratégica',
+        'Clique em um lead para acessar detalhes e histórico',
+        'Use ações rápidas para agendar contatos ou enviar mensagens',
+        'Movimente leads entre etapas do funil conforme progresso'
+      ],
+      tips: [
+        'Priorize leads com maior score de conversão',
+        'Mantenha anotações detalhadas após cada interação',
+        'Estabeleça prazos para follow-up de cada lead'
+      ],
+      tags: ['captação', 'prospecção', 'conversão', 'potenciais alunos']
     },
     {
       id: 'funnel',
       title: 'Funil de Captação',
-      description: 'Visualize e otimize cada etapa do processo de captação',
+      description: 'Visualização intuitiva e gerenciamento do fluxo de potenciais alunos através das etapas do processo de captação, com análises de conversão e identificação de oportunidades.',
       icon: Filter,
-      action: () => navigate('/recruitment/funnel')
+      action: () => navigate('/recruitment/funnel'),
+      features: [
+        'Visualização Kanban das etapas do processo',
+        'Análise de taxas de conversão entre etapas',
+        'Identificação de gargalos no funil',
+        'Movimentação manual ou automática de leads',
+        'Configuração personalizada de estágios do funil'
+      ],
+      steps: [
+        'Arraste leads entre colunas para atualizar status',
+        'Utilize filtros para visualizar segmentos específicos',
+        'Analise os indicadores de conversão entre etapas',
+        'Configure regras de automação para movimentação',
+        'Personalize as etapas do funil conforme seu processo'
+      ],
+      tips: [
+        'Mantenha o olhar atento às etapas com baixa conversão',
+        'Estabeleça tempos máximos para cada etapa do funil',
+        'Analise periodicamente o comportamento geral do funil'
+      ],
+      tags: ['conversão', 'processo', 'captação', 'etapas']
     },
     {
       id: 'campaigns',
       title: 'Campanhas',
-      description: 'Crie e gerencie campanhas de captação automatizadas',
+      description: 'Plataforma para criação, execução e análise de campanhas de captação automatizadas em múltiplos canais, maximizando o alcance e eficiência do processo.',
       icon: Megaphone,
-      action: () => navigate('/recruitment/campaigns')
+      action: () => navigate('/recruitment/campaigns'),
+      features: [
+        'Criação de campanhas multi-canal segmentadas',
+        'Agendamento e automação de envios',
+        'Métricas detalhadas de performance e ROI',
+        'Testes A/B para otimização de conteúdo',
+        'Integração com WhatsApp, email e SMS'
+      ],
+      steps: [
+        'Inicie com "Nova Campanha" e defina objetivo',
+        'Segmente seu público-alvo com precisão',
+        'Configure conteúdo personalizado por canal',
+        'Defina cronograma e acionadores automáticos',
+        'Acompanhe resultados e otimize continuamente'
+      ],
+      tips: [
+        'Personalize as mensagens com dados do perfil do lead',
+        'Teste diferentes horários para maximizar engajamento',
+        'Crie campanhas específicas para leads inativos'
+      ],
+      tags: ['marketing', 'automação', 'comunicação', 'multicanal']
     },
     {
       id: 'schedule',
       title: 'Agenda de Atendimentos',
-      description: 'Organize e acompanhe agendamentos com potenciais alunos',
+      description: 'Central completa para gerenciar todos os agendamentos com potenciais alunos, incluindo entrevistas, visitas ao campus e atendimentos virtuais ou presenciais.',
       icon: Calendar,
-      action: () => navigate('/recruitment/schedule')
+      action: () => navigate('/recruitment/schedule'),
+      features: [
+        'Visualização por dia, semana e mês',
+        'Agendamento com seleção de responsável',
+        'Lembretes automáticos via WhatsApp/email',
+        'Registro de resultados pós-atendimento',
+        'Integração com calendários externos (Google, Outlook)'
+      ],
+      steps: [
+        'Navegue pelo calendário para visualizar compromissos',
+        'Clique em uma data para adicionar novo agendamento',
+        'Configure lembretes automáticos para reduzir faltas',
+        'Registre o resultado após cada atendimento',
+        'Visualize histórico de interações anteriores'
+      ],
+      tips: [
+        'Confirme agendamentos com 24h de antecedência',
+        'Reserve slots específicos para atendimentos prioritários',
+        'Analise horários com maior taxa de comparecimento'
+      ],
+      tags: ['agendamentos', 'atendimento', 'calendário', 'reuniões']
     },
     {
       id: 'alerts',
       title: 'Alertas e Notificações',
-      description: 'Receba alertas sobre oportunidades e tarefas pendentes',
+      description: 'Sistema inteligente de notificações que mantém sua equipe informada sobre oportunidades, tarefas pendentes e eventos críticos no processo de captação.',
       icon: Bell,
-      action: () => navigate('/recruitment/alerts')
+      action: () => navigate('/recruitment/alerts'),
+      features: [
+        'Alertas de leads com alto potencial',
+        'Notificações de tarefas e agendamentos',
+        'Avisos sobre gargalos no funil',
+        'Insights de IA para otimização',
+        'Alertas personalizáveis por usuário'
+      ],
+      steps: [
+        'Verifique o ícone de sino para notificações não lidas',
+        'Filtre alertas por tipo, urgência ou origem',
+        'Marque como "lidos" ou "resolvidos" após ação',
+        'Configure suas preferências de notificação',
+        'Delegue alertas para outros membros da equipe'
+      ],
+      tips: [
+        'Priorize alertas de leads com maior score de conversão',
+        'Configure notificações mobile para alertas urgentes',
+        'Estabeleça rotina diária para processamento de alertas'
+      ],
+      tags: ['monitoramento', 'priorização', 'notificações', 'oportunidades']
     },
     {
       id: 'conversations',
       title: 'Conversas e Mensagens',
-      description: 'Gerencie comunicações com potenciais alunos em diferentes canais',
+      description: 'Hub centralizado para toda comunicação com potenciais alunos em diferentes canais, permitindo acompanhamento completo e gestão eficiente das interações.',
       icon: MessageCircle,
-      action: () => navigate('/recruitment/conversation')
+      action: () => navigate('/recruitment/conversation'),
+      features: [
+        'Interface unificada para WhatsApp, email e chat',
+        'Histórico completo de conversas por lead',
+        'Modelos de mensagem personalizáveis',
+        'Assistente de IA para sugestão de respostas',
+        'Automação de mensagens de follow-up'
+      ],
+      steps: [
+        'Selecione um lead para visualizar histórico completo',
+        'Utilize a barra de mensagem para novas comunicações',
+        'Alterne entre os diferentes canais disponíveis',
+        'Use templates pré-definidos para respostas comuns',
+        'Aproveite sugestões da IA para respostas eficientes'
+      ],
+      tips: [
+        'Responda todas as mensagens em até 15 minutos',
+        'Personalize as mensagens com informações do perfil',
+        'Utilize tom amigável mas profissional nas comunicações'
+      ],
+      tags: ['comunicação', 'mensagens', 'atendimento', 'whatsapp']
     },
     {
       id: 'upload',
       title: 'Upload de Dados',
-      description: 'Importe listas de leads e dados para o sistema',
+      description: 'Ferramenta robusta para importação e integração de listas de leads, históricos e outras informações externas para alimentar o sistema de captação.',
       icon: Upload,
-      action: () => navigate('/recruitment/upload')
+      action: () => navigate('/recruitment/upload'),
+      features: [
+        'Importação de arquivos CSV, Excel e outros formatos',
+        'Mapeamento inteligente de campos',
+        'Validação e limpeza automática de dados',
+        'Detecção de duplicidades e conflitos',
+        'Histórico completo de importações realizadas'
+      ],
+      steps: [
+        'Prepare seu arquivo seguindo os modelos disponíveis',
+        'Faça upload na área designada ou via drag-and-drop',
+        'Verifique o mapeamento automático de campos',
+        'Ajuste configurações de importação conforme necessário',
+        'Confirme a importação após validação preliminar'
+      ],
+      tips: [
+        'Padronize seus arquivos antes da importação',
+        'Verifique dados sensíveis como telefone e email',
+        'Importe em horários de menor utilização do sistema'
+      ],
+      tags: ['importação', 'dados', 'integração', 'listas']
     },
     {
       id: 'rules',
       title: 'Regras e Configurações',
-      description: 'Configure regras de discagem, metas e períodos do sistema',
-      icon: Settings
+      description: 'Central de configurações avançadas para personalizar o funcionamento do sistema de captação conforme as necessidades específicas da sua instituição.',
+      icon: Settings,
+      features: [
+        'Configuração de regras de discagem',
+        'Definição de metas por curso, período e canal',
+        'Configuração de períodos acadêmicos',
+        'Personalização de fluxos de automação',
+        'Gestão de integrações com outros sistemas'
+      ],
+      steps: [
+        'Navegue pelas categorias de configuração disponíveis',
+        'Ajuste regras de discagem e tentativas de contato',
+        'Defina metas de captação por período e equipe',
+        'Configure o calendário acadêmico e prazos',
+        'Personalize automações conforme seu processo'
+      ],
+      tips: [
+        'Revise as configurações a cada novo período letivo',
+        'Documente as regras definidas para referência da equipe',
+        'Ajuste configurações gradualmente, medindo impacto'
+      ],
+      tags: ['configuração', 'automação', 'personalização', 'metas']
     }
   ];
 
-  const renderSectionDetails = (section: GuideSection) => {
-    // Conteúdo detalhado para cada seção
-    const detailedContent = {
-      dashboard: (
-        <div className="space-y-4">
-          <p>O Dashboard Inteligente oferece uma visão consolidada do seu processo de captação, com gráficos interativos e métricas em tempo real.</p>
-          
-          <h3 className="text-lg font-medium mt-4">Principais recursos:</h3>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>Visão geral de conversão por etapas do funil</li>
-            <li>Estatísticas de desempenho por canal de captação</li>
-            <li>Indicadores de performance por curso</li>
-            <li>Análise de tendências e comparativos temporais</li>
-          </ul>
-          
-          <h3 className="text-lg font-medium mt-4">Como usar:</h3>
-          <ol className="list-decimal pl-5 space-y-1">
-            <li>Acesse a aba "Visão Geral" para métricas principais</li>
-            <li>Utilize os filtros de data para analisar períodos específicos</li>
-            <li>Navegue entre as abas para análises detalhadas por canal ou curso</li>
-            <li>Exporte relatórios para apresentações ou análises complementares</li>
-          </ol>
-        </div>
-      ),
-      leads: (
-        <div className="space-y-4">
-          <p>O módulo de Gestão de Leads permite organizar, segmentar e acompanhar todos os potenciais alunos em seu pipeline de captação.</p>
-          
-          <h3 className="text-lg font-medium mt-4">Principais recursos:</h3>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>Visualização em lista ou tabela de todos os leads</li>
-            <li>Filtros avançados por origem, curso, status, etapa do funil, etc.</li>
-            <li>Atribuição de responsáveis para acompanhamento</li>
-            <li>Histórico de interações com cada lead</li>
-          </ul>
-          
-          <h3 className="text-lg font-medium mt-4">Como usar:</h3>
-          <ol className="list-decimal pl-5 space-y-1">
-            <li>Utilize a barra de pesquisa para encontrar leads específicos</li>
-            <li>Aplique filtros combinados para segmentar sua base</li>
-            <li>Clique em um lead para visualizar detalhes e histórico</li>
-            <li>Use as ações rápidas para agendar contatos ou enviar mensagens</li>
-          </ol>
-        </div>
-      ),
-      funnel: (
-        <div className="space-y-4">
-          <p>O Funil de Captação permite visualizar e gerenciar o fluxo de potenciais alunos através das etapas do processo de matrícula.</p>
-          
-          <h3 className="text-lg font-medium mt-4">Principais recursos:</h3>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>Visualização Kanban das etapas do funil</li>
-            <li>Análise de conversão entre etapas</li>
-            <li>Identificação de gargalos no processo</li>
-            <li>Movimentação manual ou automática de leads entre etapas</li>
-          </ul>
-          
-          <h3 className="text-lg font-medium mt-4">Como usar:</h3>
-          <ol className="list-decimal pl-5 space-y-1">
-            <li>Arraste leads entre colunas para atualizar seu status</li>
-            <li>Utilize filtros para visualizar leads específicos no funil</li>
-            <li>Analise os indicadores de conversão entre etapas</li>
-            <li>Configure regras de automação para movimentação automática</li>
-          </ol>
-        </div>
-      ),
-      campaigns: (
-        <div className="space-y-4">
-          <p>O módulo de Campanhas permite criar, gerenciar e analisar estratégias de captação automatizadas em diversos canais.</p>
-          
-          <h3 className="text-lg font-medium mt-4">Principais recursos:</h3>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>Criação de campanhas segmentadas</li>
-            <li>Agendamento de envios automáticos</li>
-            <li>Acompanhamento de desempenho e conversão</li>
-            <li>Integração com múltiplos canais (email, WhatsApp, SMS)</li>
-          </ul>
-          
-          <h3 className="text-lg font-medium mt-4">Como usar:</h3>
-          <ol className="list-decimal pl-5 space-y-1">
-            <li>Clique em "Nova Campanha" para iniciar a configuração</li>
-            <li>Defina público-alvo, canais e conteúdo da campanha</li>
-            <li>Configure cronograma de envio e gatilhos automáticos</li>
-            <li>Acompanhe os resultados na aba de desempenho</li>
-          </ol>
-        </div>
-      ),
-      schedule: (
-        <div className="space-y-4">
-          <p>A Agenda de Atendimentos permite organizar e acompanhar todos os agendamentos com potenciais alunos, otimizando o processo de conversão.</p>
-          
-          <h3 className="text-lg font-medium mt-4">Principais recursos:</h3>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>Visualização em calendário de todos os atendimentos</li>
-            <li>Agendamento rápido com seleção de agente responsável</li>
-            <li>Lembretes automáticos via WhatsApp ou email</li>
-            <li>Registro de resultados e próximos passos após atendimento</li>
-          </ul>
-          
-          <h3 className="text-lg font-medium mt-4">Como usar:</h3>
-          <ol className="list-decimal pl-5 space-y-1">
-            <li>Clique em uma data no calendário para visualizar ou adicionar agendamentos</li>
-            <li>Utilize o botão "Novo Agendamento" para criar rapidamente</li>
-            <li>Após o atendimento, registre o status (realizado, cancelado, etc.)</li>
-            <li>Configure lembretes para reduzir taxas de não comparecimento</li>
-          </ol>
-        </div>
-      ),
-      alerts: (
-        <div className="space-y-4">
-          <p>O sistema de Alertas e Notificações mantém você informado sobre oportunidades, tarefas e eventos importantes no processo de captação.</p>
-          
-          <h3 className="text-lg font-medium mt-4">Principais recursos:</h3>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>Alertas de leads com alto potencial de conversão</li>
-            <li>Notificações de tarefas pendentes e agendamentos próximos</li>
-            <li>Avisos sobre gargalos no funil de captação</li>
-            <li>Insights de IA para otimização de estratégias</li>
-          </ul>
-          
-          <h3 className="text-lg font-medium mt-4">Como usar:</h3>
-          <ol className="list-decimal pl-5 space-y-1">
-            <li>Verifique regularmente o ícone de sino para notificações não lidas</li>
-            <li>Utilize filtros para priorizar alertas mais relevantes</li>
-            <li>Marque alertas como "lidos" ou "resolvidos" após tomar ação</li>
-            <li>Configure suas preferências de notificação nas configurações</li>
-          </ol>
-        </div>
-      ),
-      conversations: (
-        <div className="space-y-4">
-          <p>O módulo de Conversas e Mensagens centraliza a comunicação com potenciais alunos em diferentes canais, facilitando o acompanhamento e a gestão de interações.</p>
-          
-          <h3 className="text-lg font-medium mt-4">Principais recursos:</h3>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>Interface unificada para WhatsApp, email e chat</li>
-            <li>Histórico completo de conversas por lead</li>
-            <li>Modelos de mensagem pré-configurados</li>
-            <li>Assistente de IA para sugestão de respostas</li>
-          </ul>
-          
-          <h3 className="text-lg font-medium mt-4">Como usar:</h3>
-          <ol className="list-decimal pl-5 space-y-1">
-            <li>Selecione um lead na lista para visualizar o histórico de conversas</li>
-            <li>Utilize a barra de mensagem para enviar novas comunicações</li>
-            <li>Alterne entre os canais disponíveis para cada lead</li>
-            <li>Aproveite as sugestões da IA para respostas mais eficientes</li>
-          </ol>
-        </div>
-      ),
-      upload: (
-        <div className="space-y-4">
-          <p>O sistema de Upload de Dados permite importar listas de leads, histórico de interações e outras informações para alimentar seu processo de captação.</p>
-          
-          <h3 className="text-lg font-medium mt-4">Principais recursos:</h3>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>Importação de arquivos CSV, Excel e outros formatos</li>
-            <li>Mapeamento inteligente de campos</li>
-            <li>Validação e limpeza automática de dados</li>
-            <li>Histórico de uploads realizados</li>
-          </ul>
-          
-          <h3 className="text-lg font-medium mt-4">Como usar:</h3>
-          <ol className="list-decimal pl-5 space-y-1">
-            <li>Prepare seu arquivo seguindo os modelos disponíveis</li>
-            <li>Arraste o arquivo para a área de upload ou use o seletor</li>
-            <li>Verifique o mapeamento de campos e faça ajustes se necessário</li>
-            <li>Confirme a importação e aguarde a validação dos dados</li>
-          </ol>
-        </div>
-      ),
-      rules: (
-        <div className="space-y-4">
-          <p>O módulo de Regras e Configurações permite personalizar o funcionamento do sistema de captação de acordo com suas necessidades específicas.</p>
-          
-          <h3 className="text-lg font-medium mt-4">Principais recursos:</h3>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>Configuração de regras de discagem automática</li>
-            <li>Definição de metas por curso, período e canal</li>
-            <li>Configuração de períodos acadêmicos e prazos</li>
-            <li>Personalização de fluxos de automação</li>
-          </ul>
-          
-          <h3 className="text-lg font-medium mt-4">Como usar:</h3>
-          <ol className="list-decimal pl-5 space-y-1">
-            <li>Acesse as subseções específicas para cada tipo de configuração</li>
-            <li>Regras de Discagem: configure horários, tentativas e intervalos</li>
-            <li>Metas: defina objetivos por período, curso e equipe</li>
-            <li>Períodos: configure calendário acadêmico e prazos de matrículas</li>
-          </ol>
-          
-          <div className="flex flex-wrap gap-2 mt-4">
-            <Button size="sm" variant="outline" onClick={() => navigate('/recruitment/rules/dialing')}>
-              Regras de Discagem
-            </Button>
-            <Button size="sm" variant="outline" onClick={() => navigate('/recruitment/rules/goals')}>
-              Configuração de Metas
-            </Button>
-            <Button size="sm" variant="outline" onClick={() => navigate('/recruitment/rules/periods')}>
-              Períodos Acadêmicos
-            </Button>
-          </div>
-        </div>
+  const filteredSections = searchQuery 
+    ? guideSections.filter(section => 
+        section.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        section.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        section.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
       )
-    };
-    
+    : guideSections;
+
+  const renderSectionDetails = (section: GuideSection) => {
     return (
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <section.icon className="mr-2" />
+      <Card className="w-full border-l-4 border-l-primary shadow-md">
+        <CardHeader className="bg-muted/30">
+          <CardTitle className="flex items-center text-primary">
+            <section.icon className="mr-3 h-6 w-6" />
             {section.title}
           </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-muted-foreground mb-4">
+          <CardDescription className="text-base mt-2">
             {section.description}
-          </div>
-          
-          {/* Conteúdo detalhado específico para cada seção */}
-          {detailedContent[section.id as keyof typeof detailedContent]}
-          
+          </CardDescription>
+          {section.tags && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {section.tags.map(tag => (
+                <Badge key={tag} variant="outline" className="bg-primary/10">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </CardHeader>
+        <CardContent className="pt-6">
+          <Tabs defaultValue="features" className="w-full">
+            <TabsList className="w-full justify-start mb-4">
+              <TabsTrigger value="features">Recursos</TabsTrigger>
+              <TabsTrigger value="steps">Como Usar</TabsTrigger>
+              {section.tips && <TabsTrigger value="tips">Dicas</TabsTrigger>}
+              {section.useCases && <TabsTrigger value="useCases">Casos de Uso</TabsTrigger>}
+            </TabsList>
+
+            <TabsContent value="features" className="mt-0">
+              {section.features && (
+                <div className="space-y-2">
+                  <h3 className="text-lg font-medium mb-3">Principais recursos:</h3>
+                  <ul className="space-y-3">
+                    {section.features.map((feature, index) => (
+                      <li key={index} className="flex items-start">
+                        <CheckCircle2 className="h-5 w-5 text-primary mr-2 mt-0.5 flex-shrink-0" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="steps" className="mt-0">
+              {section.steps && (
+                <div className="space-y-2">
+                  <h3 className="text-lg font-medium mb-3">Passo a passo:</h3>
+                  <ol className="space-y-3">
+                    {section.steps.map((step, index) => (
+                      <li key={index} className="flex items-start">
+                        <div className="h-6 w-6 rounded-full bg-primary/20 text-primary flex items-center justify-center mr-3 flex-shrink-0">
+                          {index + 1}
+                        </div>
+                        <span>{step}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="tips" className="mt-0">
+              {section.tips && (
+                <div className="space-y-2">
+                  <h3 className="text-lg font-medium mb-3">Dicas de especialista:</h3>
+                  <ul className="space-y-3">
+                    {section.tips.map((tip, index) => (
+                      <li key={index} className="flex items-start">
+                        <Lightbulb className="h-5 w-5 text-amber-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span>{tip}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="useCases" className="mt-0">
+              {section.useCases && (
+                <div className="space-y-2">
+                  <h3 className="text-lg font-medium mb-3">Aplicações práticas:</h3>
+                  <ul className="space-y-3">
+                    {section.useCases.map((useCase, index) => (
+                      <li key={index} className="flex items-start">
+                        <ArrowRight className="h-5 w-5 text-primary mr-2 mt-0.5 flex-shrink-0" />
+                        <span>{useCase}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+
           {section.action && (
-            <Button onClick={section.action} className="mt-4">
+            <Button 
+              onClick={section.action} 
+              className="mt-6 w-full sm:w-auto"
+              size="lg"
+            >
               Acessar {section.title}
+              <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
           )}
         </CardContent>
@@ -327,23 +421,58 @@ const UserGuideContent: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto py-6 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-6">Guia do Usuário - Sistema de Captação</h1>
+    <div className="container mx-auto py-8 max-w-5xl">
+      <div className="bg-gradient-to-r from-primary/20 to-primary/5 p-6 rounded-lg mb-8">
+        <h1 className="text-3xl font-bold mb-2">Guia do Usuário - Sistema de Captação</h1>
+        <p className="text-muted-foreground text-lg">
+          Explore nosso guia completo para aproveitar ao máximo todas as funcionalidades do Sistema de Captação de Alunos.
+        </p>
+        
+        <div className="mt-4 relative">
+          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Input 
+            type="search" 
+            placeholder="Buscar por funcionalidade ou palavra-chave..." 
+            className="pl-10 w-full md:w-2/3 lg:w-1/2" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      </div>
       
-      <div className="grid md:grid-cols-[250px_1fr] gap-6">
-        {/* Sidebar Navigation */}
-        <div className="space-y-2">
-          {guideSections.map((section) => (
-            <Button
-              key={section.id}
-              variant={selectedSection === section.id ? 'default' : 'outline'}
-              className="w-full justify-start"
-              onClick={() => setSelectedSection(section.id)}
-            >
-              <section.icon className="mr-2" />
-              {section.title}
-            </Button>
-          ))}
+      <div className="grid md:grid-cols-[280px_1fr] gap-6">
+        {/* Navigation Menu */}
+        <div className="space-y-2 bg-card rounded-lg p-4 shadow-sm border h-fit sticky top-6">
+          <h2 className="font-semibold mb-4 px-2 flex items-center">
+            <Book className="mr-2 h-5 w-5 text-primary" />
+            Navegação Rápida
+          </h2>
+          
+          <div className="space-y-1">
+            {guideSections.map((section) => (
+              <Button
+                key={section.id}
+                variant={selectedSection === section.id ? 'default' : 'ghost'}
+                className="w-full justify-start"
+                onClick={() => setSelectedSection(section.id)}
+              >
+                <section.icon className="mr-2 h-5 w-5" />
+                <span className="truncate">{section.title}</span>
+              </Button>
+            ))}
+          </div>
+          
+          <Separator className="my-4" />
+          
+          <div className="p-3 bg-amber-50 dark:bg-amber-950/20 rounded-md">
+            <h3 className="font-medium flex items-center text-amber-700 dark:text-amber-400">
+              <HelpCircle className="h-4 w-4 mr-2" />
+              Precisa de ajuda?
+            </h3>
+            <p className="text-sm mt-2 text-amber-800/70 dark:text-amber-300/70">
+              Entre em contato com nosso suporte técnico para orientações adicionais sobre o sistema.
+            </p>
+          </div>
         </div>
 
         {/* Section Details */}
@@ -361,17 +490,83 @@ const UserGuideContent: React.FC = () => {
               </CardContent>
             </Card>
           )}
+          
+          {/* Related Sections */}
+          {selectedSection && (
+            <div className="mt-6">
+              <h3 className="text-lg font-medium mb-4">Funcionalidades relacionadas</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {guideSections
+                  .filter(s => s.id !== selectedSection)
+                  .slice(0, 3)
+                  .map(section => (
+                    <Card 
+                      key={section.id} 
+                      className="cursor-pointer hover:border-primary/50 transition-all"
+                      onClick={() => setSelectedSection(section.id)}
+                    >
+                      <CardContent className="p-4 flex items-start">
+                        <section.icon className="h-5 w-5 mr-3 text-primary mt-0.5" />
+                        <div>
+                          <h4 className="font-medium">{section.title}</h4>
+                          <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                            {section.description}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                }
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Bottom Section */}
-      <div className="mt-8 bg-muted p-6 rounded-lg">
-        <h2 className="text-xl font-semibold mb-4">Dica para Iniciantes</h2>
-        <p>
-          Comece importando seus leads pela seção de Upload, depois configure seu Funil de Captação 
-          com as etapas que refletem seu processo atual, e então utilize o Dashboard para acompanhar 
-          os resultados.
+      {/* Quick Start Guide */}
+      <div className="mt-12 bg-primary/5 p-6 rounded-lg border border-primary/20">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="bg-primary/20 p-2 rounded-full">
+            <Lightbulb className="h-6 w-6 text-primary" />
+          </div>
+          <h2 className="text-xl font-semibold">Guia Rápido para Iniciantes</h2>
+        </div>
+        
+        <p className="mb-4">
+          Novo no sistema? Aqui está um passo a passo rápido para começar a usar o Sistema de Captação com eficiência:
         </p>
+        
+        <div className="grid md:grid-cols-3 gap-6">
+          <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm">
+            <div className="flex items-center mb-3">
+              <div className="bg-primary/15 text-primary font-medium rounded-full w-8 h-8 flex items-center justify-center mr-3">1</div>
+              <h3 className="font-medium">Importe seus leads</h3>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Comece pelo Upload de Dados para importar sua base de leads existente ou iniciar a captação do zero.
+            </p>
+          </div>
+          
+          <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm">
+            <div className="flex items-center mb-3">
+              <div className="bg-primary/15 text-primary font-medium rounded-full w-8 h-8 flex items-center justify-center mr-3">2</div>
+              <h3 className="font-medium">Configure seu funil</h3>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Personalize as etapas do Funil de Captação para refletir seu processo de conversão atual.
+            </p>
+          </div>
+          
+          <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm">
+            <div className="flex items-center mb-3">
+              <div className="bg-primary/15 text-primary font-medium rounded-full w-8 h-8 flex items-center justify-center mr-3">3</div>
+              <h3 className="font-medium">Monitore resultados</h3>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Utilize o Dashboard para acompanhar métricas e otimizar continuamente seu processo de captação.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
