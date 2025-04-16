@@ -15,6 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import EditGoalDialog from './EditGoalDialog';
 
 interface Goal {
   id: string;
@@ -38,6 +39,8 @@ const GoalsList: React.FC<GoalsListProps> = ({ goals = [], isLoading = false, ca
   const { toast } = useToast();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState<Goal | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [goalToEdit, setGoalToEdit] = useState<Goal | null>(null);
   const [localGoals, setLocalGoals] = useState<Goal[]>([
     {
       id: '1',
@@ -115,11 +118,8 @@ const GoalsList: React.FC<GoalsListProps> = ({ goals = [], isLoading = false, ca
   }, [goals]);
 
   const handleEdit = (goal: Goal) => {
-    toast({
-      title: "Edição em desenvolvimento",
-      description: `A edição da meta "${goal.name}" estará disponível em breve.`,
-      duration: 3000,
-    });
+    setGoalToEdit(goal);
+    setEditDialogOpen(true);
   };
 
   const handleDelete = (goal: Goal) => {
@@ -138,6 +138,12 @@ const GoalsList: React.FC<GoalsListProps> = ({ goals = [], isLoading = false, ca
       setDeleteDialogOpen(false);
       setGoalToDelete(null);
     }
+  };
+
+  const handleSaveGoal = (updatedGoal: Goal) => {
+    setLocalGoals(prev =>
+      prev.map(goal => (goal.id === updatedGoal.id ? updatedGoal : goal))
+    );
   };
 
   const displayGoals = localGoals.filter(g => g.category === category);
@@ -251,6 +257,13 @@ const GoalsList: React.FC<GoalsListProps> = ({ goals = [], isLoading = false, ca
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <EditGoalDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        goal={goalToEdit}
+        onSave={handleSaveGoal}
+      />
     </>
   );
 };
