@@ -5,13 +5,59 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
 import { LeadData } from '@/types/recruitment/leads';
-import { Loader2 } from "lucide-react";
+import { Loader2, History } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 
 interface SegmentationStrategiesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
+
+// Interface para o histórico de estratégias aplicadas
+export interface StrategyHistoryRecord {
+  id: string;
+  date: Date;
+  strategyType: 'demographic' | 'behavioral' | 'interest' | 'engagement';
+  strategyName: string;
+  leadsProcessed: number;
+  hotLeadsCount?: number;
+  coldLeadsCount?: number;
+  notes?: string;
+  funnelName?: string;
+  funnelStageStats?: Record<string, number>;
+}
+
+// Histórico de estratégias (simulado para demonstração)
+const initialHistory: StrategyHistoryRecord[] = [
+  {
+    id: '1',
+    date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 dias atrás
+    strategyType: 'engagement',
+    strategyName: 'Segmentação por Nível de Engajamento',
+    leadsProcessed: 45,
+    hotLeadsCount: 18,
+    coldLeadsCount: 27,
+    notes: 'Foco em reativação de leads frios do último mês',
+    funnelName: 'Funil Principal',
+    funnelStageStats: {
+      'Lead Gerado': 15,
+      'Primeiro Contato': 12,
+      'Apresentação': 10,
+      'Visita': 5,
+      'Matrícula': 3
+    }
+  },
+  {
+    id: '2',
+    date: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000), // 14 dias atrás
+    strategyType: 'demographic',
+    strategyName: 'Segmentação Geográfica',
+    leadsProcessed: 67,
+    notes: 'Segmentação por bairros da zona sul',
+    funnelName: 'Funil de Captação'
+  }
+];
 
 // Função para processar estratégias de engajamento
 const processEngagementStrategies = (leads: LeadData[]) => {
@@ -37,13 +83,15 @@ const processEngagementStrategies = (leads: LeadData[]) => {
   return { hotLeads, coldLeads, leadsByStage };
 };
 
-const SegmentationStrategiesDialog: React.FC<SegmentationStrategiesDialogProps> = ({
+export const SegmentationStrategiesDialog: React.FC<SegmentationStrategiesDialogProps> = ({
   open,
   onOpenChange
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [activeTab, setActiveTab] = useState("demographic");
   const [notes, setNotes] = useState("");
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [strategyHistory, setStrategyHistory] = useState<StrategyHistoryRecord[]>(initialHistory);
 
   const handleApplyStrategies = () => {
     setIsProcessing(true);
@@ -119,8 +167,26 @@ const SegmentationStrategiesDialog: React.FC<SegmentationStrategiesDialogProps> 
         }
       ];
       
+      // Criar novo registro de histórico
+      const newHistoryRecord: StrategyHistoryRecord = {
+        id: Date.now().toString(),
+        date: new Date(),
+        strategyType: activeTab as any,
+        strategyName: getStrategyName(activeTab),
+        leadsProcessed: mockLeads.length,
+        notes: notes || undefined,
+        funnelName: 'Funil Principal'
+      };
+      
       if (activeTab === "engagement") {
         const { hotLeads, coldLeads, leadsByStage } = processEngagementStrategies(mockLeads);
+
+        // Adicionar estatísticas específicas para estratégia de engajamento
+        newHistoryRecord.hotLeadsCount = hotLeads.length;
+        newHistoryRecord.coldLeadsCount = coldLeads.length;
+        newHistoryRecord.funnelStageStats = Object.fromEntries(
+          Object.entries(leadsByStage).map(([stage, leads]) => [stage, leads.length])
+        );
 
         // Executar ações baseadas nas estratégias
         hotLeads.forEach(lead => {
@@ -154,6 +220,9 @@ const SegmentationStrategiesDialog: React.FC<SegmentationStrategiesDialogProps> 
         });
       }
       
+      // Adicionar ao histórico
+      setStrategyHistory(prev => [newHistoryRecord, ...prev]);
+      
       setIsProcessing(false);
       onOpenChange(false);
     }, 1500);
@@ -168,13 +237,104 @@ const SegmentationStrategiesDialog: React.FC<SegmentationStrategiesDialogProps> 
       default: return "";
     }
   };
+  
+  const getStrategyName = (tabId: string): string => {
+    switch (tabId) {
+      case "demographic": return "Segmentação Geográfica";
+      case "behavioral": return "Segmentação por Urgência";
+      case "interest": return "Segmentação por Curso de Interesse";
+      case "engagement": return "Segmentação por Nível de Engajamento";
+      default: return "";
+    }
+  };
+
+  // Formatar data para exibição
+  const formatDate = (date: Date): string => {
+    return date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">
-            Estratégias de Segmentação de Leads
+          <DialogTitle className="text-xl font-semibold flex justify-between items-center">
+            <span>Estratégias de Segmentação de Leads</span>
+            <Popover open={historyOpen} onOpenChange={setHistoryOpen}>
+              <PopoverTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  className="flex items-center gap-1"
+                  onClick={() => setHistoryOpen(true)}
+                >
+                  <History className="h-4 w-4 mr-1" />
+                  <span>Histórico</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-96 max-h-[50vh] overflow-y-auto p-0" align="end">
+                <div className="p-4 border-b">
+                  <h3 className="font-medium text-lg">Histórico de Estratégias</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Estratégias aplicadas anteriormente
+                  </p>
+                </div>
+                {strategyHistory.length > 0 ? (
+                  <div className="divide-y">
+                    {strategyHistory.map((record) => (
+                      <div key={record.id} className="p-4 hover:bg-muted/50">
+                        <div className="flex justify-between mb-1">
+                          <span className="font-medium">{record.strategyName}</span>
+                          <span className="text-sm text-muted-foreground">{formatDate(record.date)}</span>
+                        </div>
+                        <div className="text-sm space-y-1">
+                          <p><span className="text-muted-foreground">Tipo:</span> {getTabTitle(record.strategyType)}</p>
+                          <p><span className="text-muted-foreground">Leads processados:</span> {record.leadsProcessed}</p>
+                          
+                          {record.hotLeadsCount !== undefined && (
+                            <p><span className="text-muted-foreground">Leads quentes:</span> {record.hotLeadsCount}</p>
+                          )}
+                          
+                          {record.coldLeadsCount !== undefined && (
+                            <p><span className="text-muted-foreground">Leads frios:</span> {record.coldLeadsCount}</p>
+                          )}
+                          
+                          {record.funnelName && (
+                            <p><span className="text-muted-foreground">Funil:</span> {record.funnelName}</p>
+                          )}
+                          
+                          {record.notes && (
+                            <p><span className="text-muted-foreground">Observações:</span> {record.notes}</p>
+                          )}
+                          
+                          {record.funnelStageStats && Object.keys(record.funnelStageStats).length > 0 && (
+                            <div className="mt-2">
+                              <p className="text-muted-foreground mb-1">Distribuição por estágio:</p>
+                              <div className="grid grid-cols-2 gap-1 text-xs">
+                                {Object.entries(record.funnelStageStats).map(([stage, count]) => (
+                                  <div key={stage} className="flex justify-between">
+                                    <span>{stage}:</span>
+                                    <span>{count}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-4 text-center text-muted-foreground">
+                    Nenhuma estratégia aplicada anteriormente.
+                  </div>
+                )}
+              </PopoverContent>
+            </Popover>
           </DialogTitle>
         </DialogHeader>
         
