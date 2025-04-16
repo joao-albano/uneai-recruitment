@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
+import { Goal } from './types';
 
 // Schema para validação do formulário
 const formSchema = z.object({
@@ -25,7 +26,7 @@ type FormValues = z.infer<typeof formSchema>;
 interface NewGoalDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onGoalCreated: (goal: any) => void;
+  onGoalCreated: (goal: Goal) => void;
   category: string;
 }
 
@@ -74,7 +75,7 @@ const NewGoalDialog: React.FC<NewGoalDialogProps> = ({
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Criar objeto da meta
-      const newGoal = {
+      const newGoal: Goal = {
         id: `goal-${Date.now()}`, // ID temporário
         name: data.name,
         period: data.period,

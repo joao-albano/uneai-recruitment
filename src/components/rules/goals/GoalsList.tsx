@@ -1,33 +1,12 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Edit, Trash, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import { 
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import EditGoalDialog from './EditGoalDialog';
-
-interface Goal {
-  id: string;
-  name: string;
-  period: string;
-  course?: string;
-  campus?: string;
-  target: number;
-  current: number;
-  status: 'active' | 'completed' | 'pending';
-  category: 'general' | 'course' | 'campus';
-}
+import GoalCard from './GoalCard';
+import EmptyGoalState from './EmptyGoalState';
+import LoadingGoalState from './LoadingGoalState';
+import DeleteGoalDialog from './DeleteGoalDialog';
+import { Goal } from './types';
 
 interface GoalsListProps {
   goals?: Goal[];
@@ -149,114 +128,32 @@ const GoalsList: React.FC<GoalsListProps> = ({ goals = [], isLoading = false, ca
   const displayGoals = localGoals.filter(g => g.category === category);
 
   if (isLoading) {
-    return (
-      <Card className="w-full">
-        <CardContent className="py-6">
-          <div className="flex items-center justify-center h-40">
-            <p className="text-muted-foreground">Carregando metas...</p>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return <LoadingGoalState />;
   }
 
   if (displayGoals.length === 0) {
-    return (
-      <Card className="w-full">
-        <CardContent className="py-6">
-          <div className="flex flex-col items-center justify-center h-40 text-center">
-            <AlertTriangle className="h-10 w-10 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground mb-2">Nenhuma meta encontrada nesta categoria</p>
-            <p className="text-xs text-muted-foreground">
-              Utilize o botão "Nova Meta" para adicionar sua primeira meta.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return <EmptyGoalState />;
   }
 
   return (
     <>
       <div className="space-y-4">
         {displayGoals.map((goal) => (
-          <Card key={goal.id} className="w-full">
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-lg font-medium">{goal.name}</CardTitle>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="outline" className="text-xs">
-                      Período: {goal.period}
-                    </Badge>
-                    {goal.course && (
-                      <Badge variant="outline" className="text-xs">
-                        Curso: {goal.course}
-                      </Badge>
-                    )}
-                    {goal.campus && (
-                      <Badge variant="outline" className="text-xs">
-                        Unidade: {goal.campus}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-8 w-8"
-                    onClick={() => handleEdit(goal)}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-8 w-8 text-destructive"
-                    onClick={() => handleDelete(goal)}
-                  >
-                    <Trash className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="mt-2">
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium">Progresso: {Math.round((goal.current / goal.target) * 100)}%</span>
-                  <span className="text-sm text-muted-foreground">
-                    {goal.current} / {goal.target}
-                  </span>
-                </div>
-                <div className="w-full bg-muted rounded-full h-2.5">
-                  <div 
-                    className="bg-primary h-2.5 rounded-full" 
-                    style={{ width: `${Math.min(Math.round((goal.current / goal.target) * 100), 100)}%` }}
-                  ></div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <GoalCard 
+            key={goal.id} 
+            goal={goal} 
+            onEdit={handleEdit} 
+            onDelete={handleDelete} 
+          />
         ))}
       </div>
 
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja excluir a meta "{goalToDelete?.name}"? Esta ação não pode ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Excluir
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteGoalDialog 
+        open={deleteDialogOpen} 
+        onOpenChange={setDeleteDialogOpen} 
+        goalName={goalToDelete?.name} 
+        onConfirm={confirmDelete} 
+      />
 
       <EditGoalDialog
         open={editDialogOpen}

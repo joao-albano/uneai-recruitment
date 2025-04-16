@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
+import { Goal } from './types';
 
 // Define o schema de validação
 const formSchema = z.object({
@@ -26,18 +27,6 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
-
-interface Goal {
-  id: string;
-  name: string;
-  period: string;
-  course?: string;
-  campus?: string;
-  target: number;
-  current: number;
-  status: 'active' | 'completed' | 'pending';
-  category: 'general' | 'course' | 'campus';
-}
 
 interface EditGoalDialogProps {
   open: boolean;

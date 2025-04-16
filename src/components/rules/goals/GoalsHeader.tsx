@@ -3,16 +3,17 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import NewGoalDialog from './NewGoalDialog';
+import { Goal } from './types';
 
 interface GoalsHeaderProps {
-  onAddGoal?: (goal: any) => void;
+  onAddGoal?: (goal: Goal) => void;
   activeCategory: string;
 }
 
 const GoalsHeader: React.FC<GoalsHeaderProps> = ({ onAddGoal, activeCategory }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const handleGoalCreated = (goal: any) => {
+  const handleGoalCreated = (goal: Goal) => {
     if (onAddGoal) {
       onAddGoal(goal);
     }
