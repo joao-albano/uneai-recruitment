@@ -1,19 +1,20 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { InfoIcon, CalendarDays, CalendarPlus, Edit, Trash } from 'lucide-react';
+import { CalendarDays, CalendarPlus, Edit, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import PeriodsHeader from './PeriodsHeader';
 import PeriodsInfo from './PeriodsInfo';
+import EditPeriodDialog from './EditPeriodDialog';
 
 const PeriodsConfiguration: React.FC = () => {
   const [activeTab, setActiveTab] = useState('academic');
   const { toast } = useToast();
   const [periods, setPeriods] = useState<any[]>([]);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [currentPeriod, setCurrentPeriod] = useState<any>(null);
 
   const handleAddPeriod = (newPeriod: any) => {
     setPeriods(prevPeriods => [...prevPeriods, newPeriod]);
@@ -25,10 +26,21 @@ const PeriodsConfiguration: React.FC = () => {
     });
   };
 
-  const handleEditPeriod = () => {
+  const handleEditPeriod = (period: any) => {
+    setCurrentPeriod(period);
+    setEditDialogOpen(true);
+  };
+
+  const handleUpdatePeriod = (updatedPeriod: any) => {
+    setPeriods(prevPeriods => 
+      prevPeriods.map(p => 
+        p.id === updatedPeriod.id ? updatedPeriod : p
+      )
+    );
+    
     toast({
-      title: "Edição em desenvolvimento",
-      description: "A edição de períodos estará disponível em breve.",
+      title: "Período atualizado",
+      description: "As informações do período foram atualizadas com sucesso.",
       duration: 3000,
     });
   };
@@ -44,15 +56,6 @@ const PeriodsConfiguration: React.FC = () => {
   return (
     <div className="space-y-6">
       <PeriodsHeader onAddPeriod={handleAddPeriod} />
-      
-      <Alert variant="default" className="bg-primary/5 border-primary/20">
-        <InfoIcon className="h-4 w-4 text-primary" />
-        <AlertTitle>Este recurso está em fase de implementação</AlertTitle>
-        <AlertDescription>
-          A configuração de períodos permitirá definir o calendário acadêmico, marcos importantes
-          para captação e períodos de análise para o sistema de previsão.
-        </AlertDescription>
-      </Alert>
       
       <Tabs defaultValue="academic" className="space-y-4" onValueChange={setActiveTab}>
         <TabsList>
@@ -94,7 +97,20 @@ const PeriodsConfiguration: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => handleEditPeriod({
+                            id: '1',
+                            name: '2025.1',
+                            status: 'active',
+                            startDate: '2025-02-01',
+                            endDate: '2025-06-30',
+                            recruitmentStartDate: '2024-10-01',
+                            recruitmentEndDate: '2025-02-28',
+                            type: 'academic'
+                          })}
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
@@ -126,7 +142,20 @@ const PeriodsConfiguration: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => handleEditPeriod({
+                            id: '2',
+                            name: '2024.2',
+                            status: 'inProgress',
+                            startDate: '2024-08-01',
+                            endDate: '2024-12-15',
+                            recruitmentStartDate: '2024-05-15',
+                            recruitmentEndDate: '2024-08-15',
+                            type: 'academic'
+                          })}
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
@@ -158,7 +187,20 @@ const PeriodsConfiguration: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => handleEditPeriod({
+                            id: '3',
+                            name: '2024.1',
+                            status: 'completed',
+                            startDate: '2024-02-05',
+                            endDate: '2024-06-30',
+                            recruitmentStartDate: '2023-10-01',
+                            recruitmentEndDate: '2024-02-28',
+                            type: 'academic'
+                          })}
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
@@ -195,7 +237,7 @@ const PeriodsConfiguration: React.FC = () => {
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                          <Button variant="ghost" size="icon" onClick={() => handleEditPeriod(period)}>
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
@@ -243,7 +285,19 @@ const PeriodsConfiguration: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => handleEditPeriod({
+                            id: '4',
+                            name: 'Vestibular 2025.1',
+                            status: 'planned',
+                            date: '2024-12-10',
+                            period: '2025.1',
+                            description: 'Prova principal do vestibular para ingressos em 2025.1',
+                            type: 'milestone'
+                          })}
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
@@ -274,7 +328,20 @@ const PeriodsConfiguration: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => handleEditPeriod({
+                            id: '5',
+                            name: 'Matrículas 2025.1',
+                            status: 'planned',
+                            startDate: '2025-01-05',
+                            endDate: '2025-01-31',
+                            description: 'Período de matrículas para calouros do primeiro semestre',
+                            type: 'milestone',
+                            period: '2025.1'
+                          })}
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
@@ -305,7 +372,19 @@ const PeriodsConfiguration: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => handleEditPeriod({
+                            id: '6',
+                            name: 'Início das aulas 2025.1',
+                            status: 'planned',
+                            date: '2025-02-03',
+                            period: '2025.1',
+                            description: 'Primeiro dia de aulas do período 2025.1',
+                            type: 'milestone'
+                          })}
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
@@ -341,7 +420,7 @@ const PeriodsConfiguration: React.FC = () => {
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                          <Button variant="ghost" size="icon" onClick={() => handleEditPeriod(milestone)}>
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
@@ -456,7 +535,7 @@ const PeriodsConfiguration: React.FC = () => {
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          <Button variant="ghost" size="icon" onClick={handleEditPeriod}>
+                          <Button variant="ghost" size="icon" onClick={() => handleEditPeriod(analysis)}>
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button variant="ghost" size="icon" className="text-destructive" onClick={handleDeletePeriod}>
@@ -474,6 +553,15 @@ const PeriodsConfiguration: React.FC = () => {
       </Tabs>
       
       <PeriodsInfo />
+      
+      {currentPeriod && (
+        <EditPeriodDialog
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+          period={currentPeriod}
+          onPeriodUpdated={handleUpdatePeriod}
+        />
+      )}
     </div>
   );
 };
