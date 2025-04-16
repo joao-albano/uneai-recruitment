@@ -56,41 +56,66 @@ const SegmentationStrategiesDialog: React.FC<SegmentationStrategiesDialogProps> 
           id: '1', 
           name: 'João Silva', 
           email: 'joao@example.com', 
+          phone: '(11) 98888-7777',
+          channel: 'whatsapp',
+          status: 'interessado',
           interactionCount: 5, 
           responseTime: 3,
-          funnelStage: 'Apresentação'
+          funnelStage: 'Apresentação',
+          createdAt: new Date(),
+          updatedAt: new Date()
         },
         { 
           id: '2', 
           name: 'Maria Souza', 
           email: 'maria@example.com', 
+          phone: '(11) 97777-6666',
+          channel: 'site',
+          status: 'novo',
           interactionCount: 1, 
           responseTime: 96,
-          funnelStage: 'Lead Gerado'
+          funnelStage: 'Lead Gerado',
+          createdAt: new Date(),
+          updatedAt: new Date()
         },
         { 
           id: '3', 
           name: 'Carlos Oliveira', 
           email: 'carlos@example.com', 
+          phone: '(11) 96666-5555',
+          channel: 'facebook',
+          status: 'contatado',
           interactionCount: 4, 
           responseTime: 12,
-          funnelStage: 'Primeiro Contato'
+          funnelStage: 'Primeiro Contato',
+          createdAt: new Date(),
+          updatedAt: new Date()
         },
         { 
           id: '4', 
           name: 'Ana Ferreira', 
           email: 'ana@example.com', 
+          phone: '(11) 95555-4444',
+          channel: 'instagram',
+          status: 'novo',
           interactionCount: 0, 
           responseTime: 120,
-          funnelStage: 'Lead Gerado'
+          funnelStage: 'Lead Gerado',
+          createdAt: new Date(),
+          updatedAt: new Date()
         },
         { 
           id: '5', 
           name: 'Pedro Santos', 
           email: 'pedro@example.com', 
+          phone: '(11) 94444-3333',
+          channel: 'whatsapp',
+          status: 'agendado',
           interactionCount: 6, 
           responseTime: 6,
-          funnelStage: 'Visita'
+          funnelStage: 'Visita',
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
       ];
       
