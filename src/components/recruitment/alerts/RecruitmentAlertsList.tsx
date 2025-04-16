@@ -18,7 +18,8 @@ const RecruitmentAlertsList: React.FC = () => {
     handleScheduleMeeting,
     handleViewDetails,
     markAlertActionTaken,
-    ScheduleConfirmationDialog
+    ScheduleConfirmationDialog,
+    AlertDetailsDialog
   } = useAlertsManagement();
 
   // Renderizar a lista de alertas baseado na aba ativa
@@ -77,8 +78,9 @@ const RecruitmentAlertsList: React.FC = () => {
         {renderAlerts()}
       </div>
       
-      {/* Renderizar o diálogo de confirmação */}
+      {/* Renderizar os diálogos */}
       <ScheduleConfirmationDialog />
+      <AlertDetailsDialog />
     </div>
   );
 };

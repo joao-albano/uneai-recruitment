@@ -25,20 +25,13 @@ const AlertCard: React.FC<AlertCardProps> = ({
   const { toast } = useToast();
   
   const handleViewDetails = () => {
+    // Chama a função para visualizar detalhes
     onViewDetails(alert.id);
-    toast({
-      title: "Visualizando detalhes",
-      description: `Detalhes do alerta para ${alert.studentName}`,
-    });
   };
   
   const handleScheduleMeeting = () => {
     if (alert.studentId) {
       onScheduleMeeting(alert.id, alert.studentId, alert.studentName);
-      toast({
-        title: "Agendamento criado",
-        description: "Um novo atendimento foi agendado. Acesse a página de Agenda para visualizar.",
-      });
     }
   };
   
@@ -88,8 +81,9 @@ const AlertCard: React.FC<AlertCardProps> = ({
               variant="outline"
               size="sm"
               onClick={handleViewDetails}
+              className="flex items-center gap-1"
             >
-              <Eye className="mr-1 h-4 w-4" /> Detalhes
+              <Eye className="h-4 w-4" /> Detalhes
             </Button>
             {!alert.actionTaken && (
               <>
@@ -100,16 +94,18 @@ const AlertCard: React.FC<AlertCardProps> = ({
                     variant="outline"
                     size="sm"
                     onClick={handleScheduleMeeting}
+                    className="flex items-center gap-1"
                   >
-                    <Calendar className="mr-1 h-4 w-4" /> Agendar
+                    <Calendar className="h-4 w-4" /> Agendar
                   </Button>
                 )}
                 <Button
                   variant="default"
                   size="sm"
                   onClick={handleResolve}
+                  className="flex items-center gap-1"
                 >
-                  <Check className="mr-1 h-4 w-4" /> Resolver
+                  <Check className="h-4 w-4" /> Resolver
                 </Button>
               </>
             )}

@@ -16,6 +16,8 @@ export const useAlertsManagement = () => {
   const navigate = useNavigate();
   const { currentProduct } = useProduct();
   const [showScheduleDialog, setShowScheduleDialog] = useState(false);
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
   const [scheduledDetails, setScheduledDetails] = useState<{
     alertId: string;
     scheduleId: string;
@@ -98,23 +100,31 @@ export const useAlertsManagement = () => {
   const handleViewDetails = (alertId: string) => {
     markAlertAsRead(alertId);
     
-    // Para o módulo de recrutamento, navegamos para a página de detalhes específica
-    if (currentProduct === 'recruitment') {
-      // Verifica se o alerta existe antes de navegar
-      const alertToView = alerts.find(a => a.id === alertId);
-      
-      if (alertToView && alertToView.studentId) {
-        // Se o alerta estiver relacionado a um lead, redirecionar para os detalhes do lead
-        navigate(`/recruitment/leads?view=${alertToView.studentId}`);
-      } else {
-        // Caso não tenha um lead específico, apenas marcar como lido
-        toast({
-          title: "Alerta visualizado",
-          description: "Este alerta foi marcado como lido."
-        });
-      }
+    // Encontrar o alerta correspondente
+    const alertToView = alerts.find(a => a.id === alertId);
+    
+    if (alertToView) {
+      setSelectedAlert(alertToView);
+      setShowDetailsDialog(true);
     } else {
-      navigate(`/students?alertId=${alertId}`);
+      toast({
+        title: "Erro",
+        description: "Alerta não encontrado",
+        variant: "destructive"
+      });
+    }
+  };
+  
+  const handleViewLeadDetails = () => {
+    if (selectedAlert?.studentId) {
+      navigate(`/recruitment/leads?view=${selectedAlert.studentId}`);
+      setShowDetailsDialog(false);
+    } else {
+      toast({
+        title: "Informação",
+        description: "Este alerta não está associado a um lead específico.",
+      });
+      setShowDetailsDialog(false);
     }
   };
 
@@ -145,6 +155,100 @@ export const useAlertsManagement = () => {
       </AlertDialog>
     );
   };
+  
+  // Componente de diálogo para exibição de detalhes do alerta
+  const AlertDetailsDialog = () => {
+    if (!showDetailsDialog || !selectedAlert) return null;
+    
+    // Determinar conteúdo específico com base no tipo de alerta
+    const getAlertTypeSpecificDetails = () => {
+      switch (selectedAlert.type) {
+        case 'campaign-performance':
+          return (
+            <div className="space-y-3 mt-4">
+              <h4 className="font-medium">Informações da Campanha:</h4>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Taxa de conversão atual: <span className="font-medium">4.8%</span></li>
+                <li>Leads gerados: <span className="font-medium">42</span></li>
+                <li>Investimento: <span className="font-medium">R$ 2.500,00</span></li>
+                <li>ROI estimado: <span className="font-medium">2.4x</span></li>
+              </ul>
+              <p className="text-sm mt-2">Considere ampliar o orçamento para aproveitar o bom desempenho.</p>
+            </div>
+          );
+        case 'lead-opportunity':
+          return (
+            <div className="space-y-3 mt-4">
+              <h4 className="font-medium">Oportunidade Identificada:</h4>
+              <p>Lead demonstrou interesse no curso de Medicina e possui alto potencial de conversão.</p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Score de qualificação: <span className="font-medium">87/100</span></li>
+                <li>Visitou o campus: <span className="font-medium">Sim</span></li>
+                <li>Histórico escolar: <span className="font-medium">Excelente</span></li>
+              </ul>
+            </div>
+          );
+        case 'stage-change':
+          return (
+            <div className="space-y-3 mt-4">
+              <h4 className="font-medium">Mudança de Estágio:</h4>
+              <p>
+                O lead mudou de <span className="font-medium">{selectedAlert.message.includes('regrediu') ? 'estágio superior' : 'estágio inferior'}</span> para <span className="font-medium">{selectedAlert.message.includes('Avaliando') ? 'Avaliando Concorrentes' : 'outro estágio'}</span>.
+              </p>
+              <h4 className="font-medium mt-4">Ações Recomendadas:</h4>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Reengajamento imediato com conteúdo personalizado</li>
+                <li>Oferecer conversa com coordenador do curso</li>
+                <li>Enviar material comparativo com concorrentes</li>
+              </ul>
+            </div>
+          );
+        default:
+          return (
+            <div className="mt-4">
+              <p>{selectedAlert.message}</p>
+            </div>
+          );
+      }
+    };
+    
+    return (
+      <AlertDialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
+        <AlertDialogContent className="sm:max-w-[550px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-xl flex items-center gap-2">
+              <AlertIcon type={selectedAlert.type} /> 
+              {getAlertTitle(selectedAlert)}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-base">
+              {selectedAlert.message || getDefaultAlertMessage(selectedAlert)}
+              {getAlertTypeSpecificDetails()}
+              
+              <div className="bg-muted p-3 rounded-md mt-6 text-xs">
+                <p>Criado em: {new Date(selectedAlert.createdAt).toLocaleDateString('pt-BR')} às {' '}
+                {new Date(selectedAlert.createdAt).toLocaleTimeString('pt-BR', {
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}</p>
+                <p>Status: {selectedAlert.actionTaken ? 'Resolvido' : 'Pendente'}</p>
+                {selectedAlert.studentId && <p>ID do lead: {selectedAlert.studentId}</p>}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex gap-2 mt-4">
+            <AlertDialogCancel onClick={() => setShowDetailsDialog(false)} className="flex-1">
+              Fechar
+            </AlertDialogCancel>
+            {selectedAlert.studentId && (
+              <AlertDialogAction onClick={handleViewLeadDetails} className="flex-1 bg-primary">
+                Ver Lead Completo
+              </AlertDialogAction>
+            )}
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    );
+  };
 
   return {
     searchTerm,
@@ -157,6 +261,7 @@ export const useAlertsManagement = () => {
     handleScheduleMeeting,
     handleViewDetails,
     markAlertActionTaken,
-    ScheduleConfirmationDialog
+    ScheduleConfirmationDialog,
+    AlertDetailsDialog
   };
 };
