@@ -9,6 +9,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import CourseDetailDialog from './CourseDetailDialog';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/components/ui/toast';
 
 const mockCoursePredictions = [
   {
@@ -88,6 +90,8 @@ const mockCoursePredictions = [
 const EnrollmentPredictionEngine: React.FC = () => {
   const [selectedCourse, setSelectedCourse] = useState(mockCoursePredictions[0]);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
   
   const getRiskColor = (risk: string) => {
     switch(risk) {
@@ -116,6 +120,30 @@ const EnrollmentPredictionEngine: React.FC = () => {
   const handleViewDetails = (course: any) => {
     setSelectedCourse(course);
     setDetailsDialogOpen(true);
+  };
+  
+  const handleCreateCampaign = () => {
+    toast({
+      title: "Iniciando criação de campanha",
+      description: "Redirecionando para o módulo de campanhas...",
+    });
+    navigate('/recruitment/campaigns?new=true&course=' + selectedCourse.name);
+  };
+  
+  const handleViewLeads = () => {
+    toast({
+      title: "Carregando leads",
+      description: "Redirecionando para análise de leads na etapa de agendamento...",
+    });
+    navigate('/recruitment/leads?filter=stage:Agendamento');
+  };
+  
+  const handleViewAnalysis = () => {
+    toast({
+      title: "Carregando análise de competitividade",
+      description: "Redirecionando para o relatório de análise competitiva...",
+    });
+    navigate('/recruitment/analytics?tab=market');
   };
   
   return (
@@ -364,7 +392,12 @@ const EnrollmentPredictionEngine: React.FC = () => {
                         <p className="text-sm text-muted-foreground mt-1">
                           Crie uma campanha direcionada para aumentar o número de leads qualificados para este curso. Considere incentivos específicos para o perfil da persona principal.
                         </p>
-                        <Button variant="secondary" size="sm" className="mt-2">
+                        <Button 
+                          variant="secondary" 
+                          size="sm" 
+                          className="mt-2"
+                          onClick={handleCreateCampaign}
+                        >
                           Criar Campanha
                         </Button>
                       </div>
@@ -379,7 +412,12 @@ const EnrollmentPredictionEngine: React.FC = () => {
                         <p className="text-sm text-muted-foreground mt-1">
                           A taxa de conversão desta etapa está abaixo da média. Considere reforçar o contato com leads nesta etapa e melhorar a qualificação.
                         </p>
-                        <Button variant="outline" size="sm" className="mt-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="mt-2"
+                          onClick={handleViewLeads}
+                        >
                           Ver Leads
                         </Button>
                       </div>
@@ -396,7 +434,12 @@ const EnrollmentPredictionEngine: React.FC = () => {
                     <p className="text-sm text-muted-foreground mt-1">
                       Compare as condições comerciais com concorrentes e identifique oportunidades de diferenciação para destacar o curso no mercado.
                     </p>
-                    <Button variant="outline" size="sm" className="mt-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="mt-2"
+                      onClick={handleViewAnalysis}
+                    >
                       Ver Análise
                     </Button>
                   </div>
