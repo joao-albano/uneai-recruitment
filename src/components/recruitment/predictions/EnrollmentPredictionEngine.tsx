@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import CourseDetailDialog from './CourseDetailDialog';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/components/ui/toast';
+import { useToast } from '@/hooks/use-toast';
 
 const mockCoursePredictions = [
   {
