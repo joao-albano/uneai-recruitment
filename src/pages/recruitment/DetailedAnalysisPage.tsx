@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -8,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, BarChart2, PieChart, LineChart, TrendingUp, Users, MapPin } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Line, ResponsiveContainer } from 'recharts';
 
 // Mock data for opportunities
 const mockOpportunities = [
@@ -109,13 +109,16 @@ const mockRecommendations = [
   },
 ];
 
+// Helper for segment bar colors
+const SEGMENT_COLORS = ["#6366F1", "#16A34A", "#F59E42"];
+
 const DetailedAnalysisPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { setCurrentProduct } = useProduct();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Use opportunities from navigation state or mock
   const { opportunities = mockOpportunities, analyticsSource = 'generic' } = 
     (location.state as { opportunities?: any[], analyticsSource?: string }) || {};
@@ -127,6 +130,8 @@ const DetailedAnalysisPage: React.FC = () => {
   // Calculate some summary/mock stats
   const totalOportunidades = opportunities.length;
   const totalImpact = opportunities.reduce((acc, op) => acc + (op.impact || 0), 0);
+
+  const sumSegments = mockSegments.reduce((acc, cur) => acc + cur.value, 0);
 
   return (
     <Layout
@@ -147,7 +152,7 @@ const DetailedAnalysisPage: React.FC = () => {
             : 'Análise de dados e métricas de recrutamento'}
         </p>
       </div>
-      
+
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Visão Geral</TabsTrigger>
@@ -155,7 +160,7 @@ const DetailedAnalysisPage: React.FC = () => {
           <TabsTrigger value="segments">Segmentação</TabsTrigger>
           <TabsTrigger value="recommendations">Recomendações</TabsTrigger>
         </TabsList>
-        
+
         {/* VISÃO GERAL */}
         <TabsContent value="overview" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -167,13 +172,13 @@ const DetailedAnalysisPage: React.FC = () => {
                 <BarChart2 className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{totalOportunidades}</div>
+                <div className="text-3xl font-extrabold">{totalOportunidades}</div>
                 <p className="text-xs text-muted-foreground">
                   +12% em relação ao mês anterior
                 </p>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
@@ -182,7 +187,7 @@ const DetailedAnalysisPage: React.FC = () => {
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
+                <div className="text-3xl font-extrabold">
                   23%
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -190,7 +195,7 @@ const DetailedAnalysisPage: React.FC = () => {
                 </p>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
@@ -199,7 +204,7 @@ const DetailedAnalysisPage: React.FC = () => {
                 <LineChart className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
+                <div className="text-3xl font-extrabold">
                   {`R$ ${totalImpact.toLocaleString('pt-BR')}`}
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -217,32 +222,31 @@ const DetailedAnalysisPage: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="flex flex-col md:flex-row gap-6">
-                <div className="flex flex-1 items-center justify-center">
-                  {/* Pie chart fake using colored circles */}
-                  <div className="flex gap-6">
-                    {mockSegments.map(seg => (
-                      <div key={seg.name} className="flex flex-col items-center">
-                        <div
-                          className="rounded-full"
-                          style={{
-                            width: 48,
-                            height: 48,
-                            background: seg.color,
-                            opacity: 0.15,
-                          }}
-                        />
-                        <div className="mt-2 text-sm font-medium">{seg.name}</div>
-                        <div className="mt-1 text-xs">{seg.value} leads</div>
+                {/* Segment Bar */}
+                <div className="flex-1 flex items-center justify-center min-w-[260px]">
+                  <div className="w-full h-8 flex overflow-hidden rounded-md border">
+                    {mockSegments.map((seg, i) => (
+                      <div
+                        key={seg.name}
+                        style={{
+                          width: `${(seg.value / sumSegments) * 100}%`,
+                          background: seg.color,
+                          opacity: 0.9
+                        }}
+                        className="flex items-center justify-center text-xs text-white font-bold transition-all"
+                        title={`${seg.name}: ${seg.value} leads`}
+                      >
+                        <span className="px-2 truncate">{seg.value > 16 ? seg.name : ''}</span>
                       </div>
                     ))}
                   </div>
                 </div>
-                <div className="flex-1 space-y-2">
+                <div className="flex-1 space-y-3">
                   {opportunities.slice(0, 3).map(op => (
-                    <div key={op.id}>
-                      <div className="font-medium">{op.title || op.name}</div>
+                    <div key={op.id} className="mb-2">
+                      <div className="font-medium text-sm">{op.title || op.name}</div>
                       <div className="text-xs text-muted-foreground">{op.description || 'Oportunidade relevante.'}</div>
-                      <Progress value={Math.min(100, (op.count / 100) * 100)} className="h-1.5 mb-1" />
+                      <Progress value={Math.min(100, (op.count / 100) * 100)} className="h-2 bg-muted mb-1" />
                     </div>
                   ))}
                 </div>
@@ -250,7 +254,7 @@ const DetailedAnalysisPage: React.FC = () => {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         {/* TENDÊNCIAS */}
         <TabsContent value="trends" className="space-y-4">
           <Card>
@@ -260,28 +264,30 @@ const DetailedAnalysisPage: React.FC = () => {
                 Evolução do interesse por categorias ao longo do tempo
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col items-center">
-              <div className="text-xs mb-2 text-muted-foreground">Mês/Ano &mdash; Total de Oportunidades</div>
-              <div className="w-full max-w-lg">
-                {/* Simula uma linha com dots */}
-                <div className="flex justify-between items-end h-32">
-                  {mockTrends.map((t, idx) => (
-                    <div key={t.month} className="flex flex-col items-center w-12">
-                      <div
-                        className="rounded-full bg-primary"
-                        style={{ width: 18, height: 18, marginBottom: `${t.oportunidade / 2}px`, transition: 'margin-bottom 0.2s' }}
-                        title={`${t.oportunidade} oportunidades`}
-                      />
-                      <span className="text-xs text-muted-foreground mt-1">{t.month}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="text-center text-xs mt-4 text-muted-foreground">Tendência geral crescente de oportunidades</div>
+            <CardContent className="w-full px-1 md:px-6">
+              {/* Gráfico de linha usando recharts */}
+              <div className="w-full h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    width={550}
+                    height={250}
+                    data={mockTrends}
+                    margin={{ top: 15, right: 40, left: 10, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip formatter={(v:any) => `${v} oportunidades`} />
+                    <Legend />
+                    <Line type="monotone" dataKey="oportunidade" name="Oportunidades" stroke="#6366F1" strokeWidth={3} activeDot={{ r: 7 }} />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
+              <div className="text-center text-xs mt-4 text-muted-foreground">Tendência geral crescente de oportunidades</div>
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         {/* SEGMENTAÇÃO */}
         <TabsContent value="segments" className="space-y-4">
           <Card>
@@ -293,14 +299,25 @@ const DetailedAnalysisPage: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {mockSegments.map(seg => (
-                  <div key={seg.name} className="p-3 border rounded-lg flex gap-3 items-center">
-                    <div className="w-10 h-10 flex items-center justify-center" style={{ background: seg.color, opacity: 0.12, borderRadius: "50%" }}>
+                {mockSegments.map((seg, idx) => (
+                  <div key={seg.name} className="border rounded-lg flex flex-col items-center bg-muted/70 p-4 gap-3 shadow-sm">
+                    <div className="w-10 h-10 flex items-center justify-center rounded-full" style={{ background: seg.color, opacity: 0.16 }}>
                       {seg.icon}
                     </div>
-                    <div>
-                      <div className="font-semibold">{seg.name}</div>
-                      <div className="text-xs">{seg.value} leads</div>
+                    <div className="font-semibold text-sm">{seg.name}</div>
+                    <div className="text-xs">{seg.value} leads</div>
+                    <div className="w-full">
+                      <div className="h-2 rounded bg-muted">
+                        <div
+                          className="h-2 rounded"
+                          style={{
+                            width: `${(seg.value / sumSegments) * 100}%`,
+                            background: seg.color,
+                            opacity: 0.9,
+                            transition: 'width 0.5s',
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -308,7 +325,7 @@ const DetailedAnalysisPage: React.FC = () => {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         {/* RECOMENDAÇÕES */}
         <TabsContent value="recommendations" className="space-y-4">
           <Card>
