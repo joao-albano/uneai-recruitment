@@ -4,10 +4,10 @@ import Layout from '@/components/layout/Layout';
 import { useProduct } from '@/context/ProductContext';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, BarChart2, PieChart, LineChart, TrendingUp, Users, MapPin } from 'lucide-react';
+import { ArrowLeft, BarChart2, PieChart, LineChart as LineChartIcon, TrendingUp, Users, MapPin } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Line, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line, ResponsiveContainer } from 'recharts';
 
 // Mock data for opportunities
 const mockOpportunities = [
@@ -201,7 +201,7 @@ const DetailedAnalysisPage: React.FC = () => {
                 <CardTitle className="text-sm font-medium">
                   Impacto Financeiro Estimado
                 </CardTitle>
-                <LineChart className="h-4 w-4 text-muted-foreground" />
+                <LineChartIcon className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-extrabold">
@@ -224,21 +224,20 @@ const DetailedAnalysisPage: React.FC = () => {
               <div className="flex flex-col md:flex-row gap-6">
                 {/* Segment Bar */}
                 <div className="flex-1 flex items-center justify-center min-w-[260px]">
-                  <div className="w-full h-8 flex overflow-hidden rounded-md border">
-                    {mockSegments.map((seg, i) => (
-                      <div
-                        key={seg.name}
-                        style={{
-                          width: `${(seg.value / sumSegments) * 100}%`,
-                          background: seg.color,
-                          opacity: 0.9
-                        }}
-                        className="flex items-center justify-center text-xs text-white font-bold transition-all"
-                        title={`${seg.name}: ${seg.value} leads`}
+                  <div className="w-full">
+                    <ResponsiveContainer width="100%" height={200}>
+                      <BarChart 
+                        data={mockSegments.map(seg => ({ name: seg.name, value: seg.value }))}
+                        layout="vertical"
+                        margin={{ top: 10, right: 10, left: 10, bottom: 10 }}
                       >
-                        <span className="px-2 truncate">{seg.value > 16 ? seg.name : ''}</span>
-                      </div>
-                    ))}
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis type="number" />
+                        <YAxis dataKey="name" type="category" />
+                        <Tooltip formatter={(value) => [`${value} leads`, 'Quantidade']} />
+                        <Bar dataKey="value" fill="#6366F1" radius={[0, 4, 4, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
                   </div>
                 </div>
                 <div className="flex-1 space-y-3">
@@ -269,15 +268,13 @@ const DetailedAnalysisPage: React.FC = () => {
               <div className="w-full h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
-                    width={550}
-                    height={250}
                     data={mockTrends}
                     margin={{ top: 15, right: 40, left: 10, bottom: 5 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />
-                    <Tooltip formatter={(v:any) => `${v} oportunidades`} />
+                    <Tooltip formatter={(v: any) => `${v} oportunidades`} />
                     <Legend />
                     <Line type="monotone" dataKey="oportunidade" name="Oportunidades" stroke="#6366F1" strokeWidth={3} activeDot={{ r: 7 }} />
                   </LineChart>
