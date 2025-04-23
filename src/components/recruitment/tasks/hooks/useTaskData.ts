@@ -1,267 +1,330 @@
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import { Task, TaskFilter, TaskAgentMetrics, TaskContact } from '@/types/recruitment/tasks';
-import { v4 as uuidv4 } from 'uuid';
-import { generateDemoTasks } from '../data/demoTasksData';
+
+// This would normally come from an API
+const mockTasks: Task[] = [
+  {
+    id: "task1",
+    leadId: "lead1",
+    lead: {
+      id: "lead1",
+      name: "João Silva",
+      email: "joao@example.com",
+      phone: "(11) 9 9999-9999",
+      course: "Engenharia",
+      location: "São Paulo",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    title: "Contatar sobre matrícula",
+    description: "Verificar interesse na matrícula para o próximo semestre",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // Amanhã
+    priority: "alta",
+    status: "pendente",
+    assignedTo: "user1",
+    assignedToName: "Carlos Atendente",
+    contactAttempts: [],
+    tags: ["matrícula", "prioritário"],
+    source: "manual"
+  },
+  {
+    id: "task2",
+    leadId: "lead2",
+    lead: {
+      id: "lead2",
+      name: "Maria Oliveira",
+      email: "maria@example.com",
+      phone: "(11) 9 8888-8888",
+      course: "Medicina",
+      location: "Rio de Janeiro",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    title: "Follow-up após visita",
+    description: "Fazer follow-up após visita ao campus",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    dueDate: new Date(Date.now() + 48 * 60 * 60 * 1000), // 2 dias
+    priority: "média",
+    status: "pendente",
+    assignedTo: "user2",
+    assignedToName: "Ana Atendente",
+    contactAttempts: [],
+    tags: ["follow-up", "visita"],
+    source: "automático"
+  }
+];
+
+// Simulação de métricas
+const mockMetrics = {
+  totalTasks: 245,
+  completedTasks: 187,
+  pendingTasks: 58,
+  highPriorityTasks: 12,
+  overdueTasks: 8,
+  agentMetrics: [
+    {
+      agentId: "user1",
+      agentName: "Carlos Atendente",
+      tasksCompleted: 42,
+      tasksPending: 5,
+      averageCompletionTime: 35, // minutos
+      conversionRate: 0.22, // 22%
+      contactAttempts: 78,
+      successfulContacts: 54
+    },
+    {
+      agentId: "user2",
+      agentName: "Ana Atendente",
+      tasksCompleted: 38,
+      tasksPending: 7,
+      averageCompletionTime: 28, // minutos
+      conversionRate: 0.18, // 18%
+      contactAttempts: 72,
+      successfulContacts: 45
+    }
+  ]
+};
 
 export const useTaskData = () => {
-  // Carregar tarefas de demonstração
-  const [tasks, setTasks] = useState<Task[]>(() => generateDemoTasks(50));
-  const [filteredTasks, setFilteredTasks] = useState<Task[]>(tasks);
-  
+  const [tasks, setTasks] = useState<Task[]>(mockTasks);
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>(mockTasks);
+  const [taskMetrics] = useState(mockMetrics);
+
   // Adicionar nova tarefa
-  const addTask = useCallback((task: Partial<Task>) => {
+  const addTask = useCallback((taskData: Partial<Task>) => {
     const newTask: Task = {
-      id: uuidv4(),
-      leadId: task.leadId || '',
-      lead: task.lead,
-      title: task.title || 'Nova Tarefa',
-      description: task.description || '',
+      id: `task${Date.now()}`,
+      leadId: taskData.leadId || "",
+      lead: taskData.lead,
+      title: taskData.title || "Nova tarefa",
+      description: taskData.description || "",
       createdAt: new Date(),
       updatedAt: new Date(),
-      dueDate: task.dueDate,
-      priority: task.priority || 'média',
-      status: task.status || 'pendente',
-      assignedTo: task.assignedTo,
-      assignedToName: task.assignedToName,
+      dueDate: taskData.dueDate,
+      priority: taskData.priority || "média",
+      status: taskData.status || "pendente",
+      assignedTo: taskData.assignedTo,
+      assignedToName: taskData.assignedToName,
       contactAttempts: [],
-      tags: task.tags || [],
-      source: task.source || 'manual'
+      tags: taskData.tags || [],
+      source: taskData.source || "manual"
     };
     
-    setTasks(prevTasks => [...prevTasks, newTask]);
+    setTasks(prev => [newTask, ...prev]);
+    setFilteredTasks(prev => [newTask, ...prev]);
+    
     return newTask;
   }, []);
-  
+
   // Atualizar tarefa existente
-  const updateTask = useCallback((task: Task) => {
-    setTasks(prevTasks => 
-      prevTasks.map(t => t.id === task.id 
-        ? { ...task, updatedAt: new Date() } 
-        : t
+  const updateTask = useCallback((updatedTask: Partial<Task>) => {
+    setTasks(prev => 
+      prev.map(task => 
+        task.id === updatedTask.id 
+          ? { ...task, ...updatedTask, updatedAt: new Date() } 
+          : task
       )
     );
-    return task;
+    
+    setFilteredTasks(prev => 
+      prev.map(task => 
+        task.id === updatedTask.id 
+          ? { ...task, ...updatedTask, updatedAt: new Date() } 
+          : task
+      )
+    );
   }, []);
-  
+
   // Excluir tarefa
   const deleteTask = useCallback((taskId: string) => {
-    setTasks(prevTasks => prevTasks.filter(t => t.id !== taskId));
+    setTasks(prev => prev.filter(task => task.id !== taskId));
+    setFilteredTasks(prev => prev.filter(task => task.id !== taskId));
   }, []);
-  
+
   // Atribuir tarefa a um atendente
   const assignTask = useCallback((taskId: string, agentId: string, agentName: string) => {
-    setTasks(prevTasks => 
-      prevTasks.map(t => t.id === taskId 
-        ? { ...t, assignedTo: agentId, assignedToName: agentName, updatedAt: new Date() } 
-        : t
+    setTasks(prev => 
+      prev.map(task => 
+        task.id === taskId 
+          ? { 
+              ...task, 
+              assignedTo: agentId, 
+              assignedToName: agentName,
+              updatedAt: new Date() 
+            } 
+          : task
+      )
+    );
+    
+    setFilteredTasks(prev => 
+      prev.map(task => 
+        task.id === taskId 
+          ? { 
+              ...task, 
+              assignedTo: agentId, 
+              assignedToName: agentName,
+              updatedAt: new Date() 
+            } 
+          : task
       )
     );
   }, []);
-  
-  // Concluir tarefa
+
+  // Concluir uma tarefa
   const completeTask = useCallback((taskId: string) => {
-    setTasks(prevTasks => 
-      prevTasks.map(t => t.id === taskId 
-        ? { 
-            ...t, 
-            status: 'concluída', 
-            completedAt: new Date(), 
-            completedBy: 'currentUser', // Substituir pelo ID do usuário atual em um ambiente real
-            updatedAt: new Date() 
-          } 
-        : t
+    setTasks(prev => 
+      prev.map(task => 
+        task.id === taskId 
+          ? { 
+              ...task, 
+              status: "concluída", 
+              completedAt: new Date(),
+              completedBy: "currentUser", // Na prática, pegar o usuário atual
+              updatedAt: new Date() 
+            } 
+          : task
+      )
+    );
+    
+    setFilteredTasks(prev => 
+      prev.map(task => 
+        task.id === taskId 
+          ? { 
+              ...task, 
+              status: "concluída", 
+              completedAt: new Date(),
+              completedBy: "currentUser", // Na prática, pegar o usuário atual
+              updatedAt: new Date() 
+            } 
+          : task
       )
     );
   }, []);
-  
-  // Registrar tentativa de contato
-  const registerContactAttempt = useCallback((taskId: string, contactAttempt: TaskContact) => {
-    setTasks(prevTasks => 
-      prevTasks.map(t => {
-        if (t.id === taskId) {
-          const newContactAttempts = [...t.contactAttempts, { ...contactAttempt, id: uuidv4() }];
-          
-          // Se for um contato bem-sucedido, marcar tarefa como concluída
-          const isSuccessful = contactAttempt.result === 'atendido';
-          
-          return {
-            ...t,
-            contactAttempts: newContactAttempts,
-            status: isSuccessful ? 'concluída' : t.status,
-            completedAt: isSuccessful ? new Date() : t.completedAt,
-            completedBy: isSuccessful ? 'currentUser' : t.completedBy, // Substituir pelo ID do usuário atual
-            updatedAt: new Date()
-          };
-        }
-        return t;
-      })
-    );
-  }, []);
-  
+
   // Distribuir tarefas para atendentes
   const distributeTasksToAgents = useCallback((taskIds: string[], config: any) => {
-    // Simulação: distribuir tarefas entre 3 agentes
-    const agents = [
-      { id: 'agent1', name: 'Ana Silva' },
-      { id: 'agent2', name: 'Carlos Mendes' },
-      { id: 'agent3', name: 'Paula Santos' }
-    ];
+    // Aqui seria implementada a lógica de distribuição
+    // baseada na configuração. Para fins de demonstração,
+    // vamos apenas simular a atribuição.
     
-    setTasks(prevTasks => 
-      prevTasks.map(t => {
-        if (taskIds.includes(t.id)) {
-          const randomAgentIndex = Math.floor(Math.random() * agents.length);
-          const agent = agents[randomAgentIndex];
-          
+    const agents = ["user1", "user2", "user3"];
+    const agentNames = ["Carlos Atendente", "Ana Atendente", "José Atendente"];
+    
+    setTasks(prev => 
+      prev.map(task => {
+        if (taskIds.includes(task.id)) {
+          const randomIndex = Math.floor(Math.random() * agents.length);
           return {
-            ...t,
-            assignedTo: agent.id,
-            assignedToName: agent.name,
+            ...task,
+            assignedTo: agents[randomIndex],
+            assignedToName: agentNames[randomIndex],
             updatedAt: new Date()
           };
         }
-        return t;
+        return task;
+      })
+    );
+    
+    setFilteredTasks(prev => 
+      prev.map(task => {
+        if (taskIds.includes(task.id)) {
+          const randomIndex = Math.floor(Math.random() * agents.length);
+          return {
+            ...task,
+            assignedTo: agents[randomIndex],
+            assignedToName: agentNames[randomIndex],
+            updatedAt: new Date()
+          };
+        }
+        return task;
       })
     );
   }, []);
-  
-  // Aplicar filtros
+
+  // Registrar tentativa de contato
+  const registerContactAttempt = useCallback((taskId: string, contactAttempt: TaskContact) => {
+    setTasks(prev => 
+      prev.map(task => {
+        if (task.id === taskId) {
+          const newContactAttempts = [...task.contactAttempts, contactAttempt];
+          return {
+            ...task,
+            contactAttempts: newContactAttempts,
+            updatedAt: new Date()
+          };
+        }
+        return task;
+      })
+    );
+    
+    setFilteredTasks(prev => 
+      prev.map(task => {
+        if (task.id === taskId) {
+          const newContactAttempts = [...task.contactAttempts, contactAttempt];
+          return {
+            ...task,
+            contactAttempts: newContactAttempts,
+            updatedAt: new Date()
+          };
+        }
+        return task;
+      })
+    );
+  }, []);
+
+  // Aplicar filtros nas tarefas
   const applyFilters = useCallback((filters: TaskFilter) => {
-    setFilteredTasks(tasks.filter(task => {
-      // Filtro de região
-      if (filters.region && filters.region.length > 0) {
-        if (!task.lead?.location) return false;
-        if (!filters.region.some(r => task.lead?.location?.includes(r))) return false;
+    let result = [...tasks];
+    
+    // Filtro por termo de busca
+    if (filters.searchTerm) {
+      const searchLower = filters.searchTerm.toLowerCase();
+      result = result.filter(task => 
+        task.title.toLowerCase().includes(searchLower) ||
+        task.description?.toLowerCase().includes(searchLower) ||
+        task.lead?.name.toLowerCase().includes(searchLower) ||
+        task.lead?.email.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    // Filtro por status
+    if (filters.status && filters.status.length > 0) {
+      result = result.filter(task => filters.status?.includes(task.status));
+    }
+    
+    // Filtro por prioridade
+    if (filters.priority && filters.priority.length > 0) {
+      result = result.filter(task => filters.priority?.includes(task.priority));
+    }
+    
+    // Filtro por atendente
+    if (filters.assignedTo && filters.assignedTo.length > 0) {
+      result = result.filter(task => 
+        task.assignedTo && filters.assignedTo?.includes(task.assignedTo)
+      );
+    }
+    
+    // Filtro por data de vencimento
+    if (filters.dueDate) {
+      if (filters.dueDate.start) {
+        result = result.filter(task => 
+          task.dueDate && new Date(task.dueDate) >= new Date(filters.dueDate!.start)
+        );
       }
-      
-      // Filtro de curso
-      if (filters.course && filters.course.length > 0) {
-        if (!task.lead?.course) return false;
-        if (!filters.course.some(c => task.lead?.course === c)) return false;
+      if (filters.dueDate.end) {
+        result = result.filter(task => 
+          task.dueDate && new Date(task.dueDate) <= new Date(filters.dueDate!.end)
+        );
       }
-      
-      // Filtro de tabulação (status do lead)
-      if (filters.tabulation && filters.tabulation.length > 0) {
-        if (!task.lead?.status) return false;
-        if (!filters.tabulation.includes(task.lead.status)) return false;
-      }
-      
-      // Filtro de fonte de captação
-      if (filters.source && filters.source.length > 0) {
-        if (!task.lead?.campaign && !task.lead?.channel) return false;
-        const leadSource = task.lead.campaign || task.lead.channel;
-        if (!filters.source.some(s => leadSource?.includes(s))) return false;
-      }
-      
-      // Filtro de data de cadastro
-      if (filters.registrationDateRange) {
-        if (!task.lead?.createdAt) return false;
-        const leadDate = new Date(task.lead.createdAt);
-        if (
-          leadDate < filters.registrationDateRange.start || 
-          leadDate > filters.registrationDateRange.end
-        ) return false;
-      }
-      
-      // Filtro de nível de interesse
-      if (filters.interestLevel && filters.interestLevel.length > 0) {
-        // Simulação: usar confidenceLevel como nível de interesse
-        if (!task.lead?.confidenceLevel) return false;
-        if (!filters.interestLevel.includes(task.lead.confidenceLevel)) return false;
-      }
-      
-      // Filtro por responsável
-      if (filters.assignedTo && filters.assignedTo.length > 0) {
-        if (!task.assignedTo) return false;
-        if (!filters.assignedTo.includes(task.assignedTo)) return false;
-      }
-      
-      // Filtro por status da tarefa
-      if (filters.status && filters.status.length > 0) {
-        if (!filters.status.includes(task.status)) return false;
-      }
-      
-      // Filtro por prioridade
-      if (filters.priority && filters.priority.length > 0) {
-        if (!filters.priority.includes(task.priority)) return false;
-      }
-      
-      // Filtro por data de vencimento
-      if (filters.dueDate) {
-        if (!task.dueDate) return false;
-        if (
-          task.dueDate < filters.dueDate.start || 
-          task.dueDate > filters.dueDate.end
-        ) return false;
-      }
-      
-      // Filtro por termo de pesquisa
-      if (filters.searchTerm && filters.searchTerm.trim() !== '') {
-        const term = filters.searchTerm.toLowerCase();
-        const matchesTitle = task.title.toLowerCase().includes(term);
-        const matchesDescription = task.description?.toLowerCase().includes(term);
-        const matchesLeadName = task.lead?.name?.toLowerCase().includes(term);
-        
-        if (!matchesTitle && !matchesDescription && !matchesLeadName) return false;
-      }
-      
-      return true;
-    }));
+    }
+    
+    setFilteredTasks(result);
   }, [tasks]);
-  
-  // Calcular métricas de tarefas
-  const taskMetrics: TaskAgentMetrics[] = useMemo(() => {
-    const agents: Record<string, TaskAgentMetrics> = {};
-    
-    // Calcular métricas para cada agente
-    tasks.forEach(task => {
-      const agentId = task.assignedTo || 'unassigned';
-      const agentName = task.assignedToName || 'Não atribuído';
-      
-      if (!agents[agentId]) {
-        agents[agentId] = {
-          agentId,
-          agentName,
-          tasksCompleted: 0,
-          tasksPending: 0,
-          averageCompletionTime: 0,
-          conversionRate: 0,
-          contactAttempts: 0,
-          successfulContacts: 0
-        };
-      }
-      
-      // Contar tarefas por status
-      if (task.status === 'concluída') {
-        agents[agentId].tasksCompleted++;
-      } else {
-        agents[agentId].tasksPending++;
-      }
-      
-      // Contar tentativas de contato
-      agents[agentId].contactAttempts += task.contactAttempts.length;
-      
-      // Contar contatos bem-sucedidos
-      agents[agentId].successfulContacts += task.contactAttempts.filter(
-        c => c.result === 'atendido'
-      ).length;
-    });
-    
-    // Calcular métricas adicionais
-    Object.values(agents).forEach(agent => {
-      // Calcular taxa de conversão (contatos bem-sucedidos / tentativas)
-      agent.conversionRate = agent.contactAttempts > 0
-        ? (agent.successfulContacts / agent.contactAttempts) * 100
-        : 0;
-        
-      // Calcular tempo médio de conclusão (simulado com valor arbitrário)
-      agent.averageCompletionTime = Math.floor(Math.random() * 30) + 10;
-    });
-    
-    return Object.values(agents);
-  }, [tasks]);
-  
+
   return {
     tasks,
     filteredTasks,
