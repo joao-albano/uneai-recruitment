@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BadgeCheck, MessageCircle, Clock, Phone, Mail, MessagesSquare } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 import { OmnichannelReportData } from './data/types';
 
 interface OmnichannelOverviewProps {
@@ -10,8 +10,6 @@ interface OmnichannelOverviewProps {
 }
 
 const OmnichannelOverview: React.FC<OmnichannelOverviewProps> = ({ data, dateRange }) => {
-  // Filtrar dados baseado no intervalo de data selecionado
-  // Na implementação real, isto seria feito com dados reais
   const filteredData = data;
   
   return (
@@ -79,51 +77,77 @@ const OmnichannelOverview: React.FC<OmnichannelOverviewProps> = ({ data, dateRan
           <CardTitle className="text-sm font-medium">Distribuição por Canal</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center">
-              <Phone className="h-4 w-4 mr-2 text-blue-500" />
-              <span>Telefone</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-40 h-2 bg-gray-200 rounded-full mr-2">
-                <div 
-                  className="h-2 bg-blue-500 rounded-full" 
-                  style={{ width: `${filteredData.channelDistribution.phone}%` }}
-                ></div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4 min-w-[180px]">
+                <div className="bg-blue-100 p-2 rounded-full">
+                  <Phone className="h-5 w-5 text-blue-500" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Telefone</p>
+                  <p className="text-sm text-muted-foreground">
+                    {filteredData.channelDistribution.phone} atendimentos
+                  </p>
+                </div>
               </div>
-              <span className="text-sm">{filteredData.channelDistribution.phone}%</span>
-            </div>
-          </div>
-          
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center">
-              <Mail className="h-4 w-4 mr-2 text-purple-500" />
-              <span>Email</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-40 h-2 bg-gray-200 rounded-full mr-2">
-                <div 
-                  className="h-2 bg-purple-500 rounded-full" 
-                  style={{ width: `${filteredData.channelDistribution.email}%` }}
-                ></div>
+              <div className="flex-1 px-4">
+                <Progress 
+                  value={filteredData.channelDistribution.phone} 
+                  className="h-3"
+                  indicatorClassName="bg-blue-500"
+                />
               </div>
-              <span className="text-sm">{filteredData.channelDistribution.email}%</span>
+              <span className="text-sm font-medium min-w-[50px] text-right">
+                {filteredData.channelDistribution.phone}%
+              </span>
             </div>
-          </div>
-          
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center">
-              <MessagesSquare className="h-4 w-4 mr-2 text-green-500" />
-              <span>WhatsApp</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-40 h-2 bg-gray-200 rounded-full mr-2">
-                <div 
-                  className="h-2 bg-green-500 rounded-full" 
-                  style={{ width: `${filteredData.channelDistribution.whatsapp}%` }}
-                ></div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4 min-w-[180px]">
+                <div className="bg-purple-100 p-2 rounded-full">
+                  <Mail className="h-5 w-5 text-purple-500" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Email</p>
+                  <p className="text-sm text-muted-foreground">
+                    {filteredData.channelDistribution.email} atendimentos
+                  </p>
+                </div>
               </div>
-              <span className="text-sm">{filteredData.channelDistribution.whatsapp}%</span>
+              <div className="flex-1 px-4">
+                <Progress 
+                  value={filteredData.channelDistribution.email} 
+                  className="h-3"
+                  indicatorClassName="bg-purple-500"
+                />
+              </div>
+              <span className="text-sm font-medium min-w-[50px] text-right">
+                {filteredData.channelDistribution.email}%
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4 min-w-[180px]">
+                <div className="bg-green-100 p-2 rounded-full">
+                  <MessagesSquare className="h-5 w-5 text-green-500" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">WhatsApp</p>
+                  <p className="text-sm text-muted-foreground">
+                    {filteredData.channelDistribution.whatsapp} atendimentos
+                  </p>
+                </div>
+              </div>
+              <div className="flex-1 px-4">
+                <Progress 
+                  value={filteredData.channelDistribution.whatsapp} 
+                  className="h-3"
+                  indicatorClassName="bg-green-500"
+                />
+              </div>
+              <span className="text-sm font-medium min-w-[50px] text-right">
+                {filteredData.channelDistribution.whatsapp}%
+              </span>
             </div>
           </div>
         </CardContent>
