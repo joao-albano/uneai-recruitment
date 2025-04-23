@@ -22,6 +22,7 @@ interface ConversationChatAreaProps {
   handleSendMessage: (message: string) => void;
   messages: any[];
   onEndConversation?: () => void;
+  isSelectedLead: boolean; // Added this missing prop
 }
 
 const ConversationChatArea: React.FC<ConversationChatAreaProps> = ({
@@ -35,7 +36,8 @@ const ConversationChatArea: React.FC<ConversationChatAreaProps> = ({
   handleOpenSettings,
   handleSendMessage,
   messages,
-  onEndConversation
+  onEndConversation,
+  isSelectedLead // Added to props destructuring
 }) => {
   // Mock do histórico para demonstração
   const mockHistory: ConversationHistory[] = [
@@ -122,7 +124,7 @@ const ConversationChatArea: React.FC<ConversationChatAreaProps> = ({
             showAnalytics={showAnalytics}
             onSendMessage={handleSendMessage}
             onOpenSettings={handleOpenSettings}
-            isSelectedLead={!!selectedConversation}
+            isSelectedLead={isSelectedLead}
             onEndConversation={onEndConversation}
           />
           
