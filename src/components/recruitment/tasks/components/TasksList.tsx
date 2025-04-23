@@ -83,8 +83,8 @@ const TasksList: React.FC<TasksListProps> = ({
     switch (status) {
       case 'pendente': return 'secondary';
       case 'em_andamento': return 'default';
-      case 'concluída': return 'success';
-      case 'agendada': return 'warning';
+      case 'concluída': return 'outline'; // Changed from 'success' to 'outline'
+      case 'agendada': return 'secondary'; // Changed from 'warning' to 'secondary'
       case 'cancelada': return 'outline';
       default: return 'secondary';
     }

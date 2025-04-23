@@ -13,7 +13,9 @@ const demoLeads = [
     location: 'São Paulo',
     channel: 'facebook',
     confidenceLevel: 'alto',
-    status: 'novo'
+    status: 'novo',
+    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 dias atrás
+    updatedAt: new Date()
   },
   { 
     id: '2', 
@@ -24,7 +26,9 @@ const demoLeads = [
     location: 'São Paulo',
     channel: 'instagram',
     confidenceLevel: 'médio',
-    status: 'contatado'
+    status: 'contatado',
+    createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000), // 14 dias atrás
+    updatedAt: new Date()
   },
   { 
     id: '3', 
@@ -35,7 +39,9 @@ const demoLeads = [
     location: 'Rio de Janeiro',
     channel: 'site',
     confidenceLevel: 'alto',
-    status: 'interessado'
+    status: 'interessado',
+    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 dias atrás
+    updatedAt: new Date()
   },
   { 
     id: '4', 
@@ -46,7 +52,9 @@ const demoLeads = [
     location: 'Belo Horizonte',
     channel: 'whatsapp',
     confidenceLevel: 'baixo',
-    status: 'nao_interessado'
+    status: 'nao_interessado',
+    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 dias atrás
+    updatedAt: new Date()
   },
   { 
     id: '5', 
@@ -57,7 +65,9 @@ const demoLeads = [
     location: 'Curitiba',
     channel: 'google',
     confidenceLevel: 'médio',
-    status: 'agendado'
+    status: 'agendado',
+    createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), // 8 dias atrás
+    updatedAt: new Date()
   },
   { 
     id: '6', 
@@ -68,7 +78,9 @@ const demoLeads = [
     location: 'Porto Alegre',
     channel: 'facebook',
     confidenceLevel: 'alto',
-    status: 'contatado'
+    status: 'contatado',
+    createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15 dias atrás
+    updatedAt: new Date()
   },
   { 
     id: '7', 
@@ -79,7 +91,9 @@ const demoLeads = [
     location: 'Recife',
     channel: 'instagram',
     confidenceLevel: 'médio',
-    status: 'novo'
+    status: 'novo',
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 dias atrás
+    updatedAt: new Date()
   },
   { 
     id: '8', 
@@ -90,7 +104,9 @@ const demoLeads = [
     location: 'Fortaleza',
     channel: 'site',
     confidenceLevel: 'baixo',
-    status: 'interessado'
+    status: 'interessado',
+    createdAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000), // 12 dias atrás
+    updatedAt: new Date()
   }
 ];
 

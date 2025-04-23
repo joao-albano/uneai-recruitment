@@ -52,7 +52,7 @@ const TasksDialogs: React.FC<TasksDialogsProps> = ({
   const [distributionConfig, setDistributionConfig] = useState({
     isAutomatic: true,
     maxTasksPerAgent: 20,
-    prioritizeCriteria: 'priority',
+    prioritizeCriteria: 'priority' as 'priority' | 'dueDate' | 'region' | 'course',
     considerExpertise: true,
     balanceLoad: true
   });
