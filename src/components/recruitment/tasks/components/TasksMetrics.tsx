@@ -88,7 +88,7 @@ const TasksMetrics: React.FC<TasksMetricsProps> = ({ metrics }) => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Taxa de Conversão</p>
-              <p className="text-xl font-bold">{averageConversionRate.toFixed(1)}%</p>
+              <p className="text-xl font-bold">{(averageConversionRate * 100).toFixed(1)}%</p>
             </div>
             <TrendingUp className="h-8 w-8 text-muted-foreground" />
           </div>
@@ -111,7 +111,7 @@ const TasksMetrics: React.FC<TasksMetricsProps> = ({ metrics }) => {
                 <div>
                   <p className="font-medium">{topPerformer.agentName}</p>
                   <p className="text-sm text-muted-foreground">
-                    {topPerformer.conversionRate.toFixed(1)}% conversão · {topPerformer.tasksCompleted} tarefas
+                    {(topPerformer.conversionRate * 100).toFixed(1)}% conversão · {topPerformer.tasksCompleted} tarefas
                   </p>
                 </div>
               </div>

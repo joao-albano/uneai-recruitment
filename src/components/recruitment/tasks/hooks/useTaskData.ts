@@ -1,6 +1,6 @@
-
 import { useState, useCallback } from 'react';
 import { Task, TaskFilter, TaskAgentMetrics, TaskContact } from '@/types/recruitment/tasks';
+import { ChannelType, LeadStatus } from '@/types/recruitment/common';
 
 // This would normally come from an API
 const mockTasks: Task[] = [
@@ -15,7 +15,9 @@ const mockTasks: Task[] = [
       course: "Engenharia",
       location: "São Paulo",
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      channel: "site" as ChannelType,
+      status: "novo" as LeadStatus
     },
     title: "Contatar sobre matrícula",
     description: "Verificar interesse na matrícula para o próximo semestre",
@@ -41,7 +43,9 @@ const mockTasks: Task[] = [
       course: "Medicina",
       location: "Rio de Janeiro",
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      channel: "facebook" as ChannelType,
+      status: "interessado" as LeadStatus
     },
     title: "Follow-up após visita",
     description: "Fazer follow-up após visita ao campus",
@@ -59,40 +63,33 @@ const mockTasks: Task[] = [
 ];
 
 // Simulação de métricas
-const mockMetrics = {
-  totalTasks: 245,
-  completedTasks: 187,
-  pendingTasks: 58,
-  highPriorityTasks: 12,
-  overdueTasks: 8,
-  agentMetrics: [
-    {
-      agentId: "user1",
-      agentName: "Carlos Atendente",
-      tasksCompleted: 42,
-      tasksPending: 5,
-      averageCompletionTime: 35, // minutos
-      conversionRate: 0.22, // 22%
-      contactAttempts: 78,
-      successfulContacts: 54
-    },
-    {
-      agentId: "user2",
-      agentName: "Ana Atendente",
-      tasksCompleted: 38,
-      tasksPending: 7,
-      averageCompletionTime: 28, // minutos
-      conversionRate: 0.18, // 18%
-      contactAttempts: 72,
-      successfulContacts: 45
-    }
-  ]
-};
+const mockAgentMetrics: TaskAgentMetrics[] = [
+  {
+    agentId: "user1",
+    agentName: "Carlos Atendente",
+    tasksCompleted: 42,
+    tasksPending: 5,
+    averageCompletionTime: 35, // minutos
+    conversionRate: 0.22, // 22%
+    contactAttempts: 78,
+    successfulContacts: 54
+  },
+  {
+    agentId: "user2",
+    agentName: "Ana Atendente",
+    tasksCompleted: 38,
+    tasksPending: 7,
+    averageCompletionTime: 28, // minutos
+    conversionRate: 0.18, // 18%
+    contactAttempts: 72,
+    successfulContacts: 45
+  }
+];
 
 export const useTaskData = () => {
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
   const [filteredTasks, setFilteredTasks] = useState<Task[]>(mockTasks);
-  const [taskMetrics] = useState(mockMetrics);
+  const [taskMetrics] = useState<TaskAgentMetrics[]>(mockAgentMetrics);
 
   // Adicionar nova tarefa
   const addTask = useCallback((taskData: Partial<Task>) => {
