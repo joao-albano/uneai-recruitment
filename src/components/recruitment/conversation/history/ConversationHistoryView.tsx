@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -7,15 +6,17 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ConversationHistory } from '../types/history';
 import { Card } from "@/components/ui/card";
+import { v4 as uuidv4 } from 'uuid';
 
 interface ConversationHistoryViewProps {
-  history: ConversationHistory[];
+  history?: ConversationHistory[];
   leadName: string;
 }
 
 const demoHistory: ConversationHistory[] = [
   {
     id: '1',
+    leadId: 'lead-001',
     channel: 'whatsapp',
     date: new Date(2024, 3, 15, 14, 30),
     agent: 'Ana Silva',
@@ -23,13 +24,32 @@ const demoHistory: ConversationHistory[] = [
     registryCode: 'INT001',
     registryDescription: 'Interesse em matrícula',
     messages: [
-      { content: "Olá, gostaria de informações sobre o curso de Administração", isFromLead: true },
-      { content: "Claro! Temos turmas nos períodos matutino e noturno. Qual seria sua preferência?", isFromLead: false },
-      { content: "Noturno, pois trabalho durante o dia", isFromLead: true }
+      { 
+        id: uuidv4(),
+        content: "Olá, gostaria de informações sobre o curso de Administração", 
+        isFromLead: true, 
+        timestamp: new Date(2024, 3, 15, 14, 25), 
+        isFromAi: false 
+      },
+      { 
+        id: uuidv4(),
+        content: "Claro! Temos turmas nos períodos matutino e noturno. Qual seria sua preferência?", 
+        isFromLead: false, 
+        timestamp: new Date(2024, 3, 15, 14, 27), 
+        isFromAi: false 
+      },
+      { 
+        id: uuidv4(),
+        content: "Noturno, pois trabalho durante o dia", 
+        isFromLead: true, 
+        timestamp: new Date(2024, 3, 15, 14, 30), 
+        isFromAi: false 
+      }
     ]
   },
   {
     id: '2',
+    leadId: 'lead-001',
     channel: 'email',
     date: new Date(2024, 3, 14, 10, 15),
     agent: 'Carlos Santos',
@@ -37,12 +57,25 @@ const demoHistory: ConversationHistory[] = [
     registryCode: 'MAT002',
     registryDescription: 'Matrícula efetivada',
     messages: [
-      { content: "Prezado(a), seguem os documentos necessários para matrícula...", isFromLead: false },
-      { content: "Recebi os documentos, obrigado!", isFromLead: true }
+      { 
+        id: uuidv4(),
+        content: "Prezado(a), seguem os documentos necessários para matrícula...", 
+        isFromLead: false, 
+        timestamp: new Date(2024, 3, 14, 10, 10), 
+        isFromAi: false 
+      },
+      { 
+        id: uuidv4(),
+        content: "Recebi os documentos, obrigado!", 
+        isFromLead: true, 
+        timestamp: new Date(2024, 3, 14, 10, 15), 
+        isFromAi: false 
+      }
     ]
   },
   {
     id: '3',
+    leadId: 'lead-001',
     channel: 'voz',
     date: new Date(2024, 3, 13, 16, 45),
     agent: 'Roberto Oliveira',
@@ -50,15 +83,16 @@ const demoHistory: ConversationHistory[] = [
     duration: 485, // duração em segundos
     registryCode: 'DUV003',
     registryDescription: 'Dúvidas sobre financiamento',
-    transcription: "Conversa sobre opções de financiamento estudantil e bolsas disponíveis. Cliente demonstrou interesse no FIES."
+    transcription: "Conversa sobre opções de financiamento estudantil e bolsas disponíveis. Cliente demonstrou interesse no FIES.",
+    messages: [] // Empty array for voice calls since we use transcription instead
   }
 ];
 
-export const ConversationHistoryView = ({ leadName }: ConversationHistoryViewProps) => {
-  // Use demo history instead of empty history
-  const whatsappHistory = demoHistory.filter(h => h.channel === 'whatsapp');
-  const emailHistory = demoHistory.filter(h => h.channel === 'email');
-  const voiceHistory = demoHistory.filter(h => h.channel === 'voz');
+export const ConversationHistoryView = ({ history, leadName }: ConversationHistoryViewProps) => {
+  const historyToUse = history?.length ? history : demoHistory;
+  const whatsappHistory = historyToUse.filter(h => h.channel === 'whatsapp');
+  const emailHistory = historyToUse.filter(h => h.channel === 'email');
+  const voiceHistory = historyToUse.filter(h => h.channel === 'voz');
 
   const renderHistoryItem = (item: ConversationHistory) => (
     <Card key={item.id} className="mb-4 p-4">
