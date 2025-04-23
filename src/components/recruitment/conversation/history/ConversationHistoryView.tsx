@@ -13,10 +13,52 @@ interface ConversationHistoryViewProps {
   leadName: string;
 }
 
-export const ConversationHistoryView = ({ history, leadName }: ConversationHistoryViewProps) => {
-  const whatsappHistory = history.filter(h => h.channel === 'whatsapp');
-  const emailHistory = history.filter(h => h.channel === 'email');
-  const voiceHistory = history.filter(h => h.channel === 'voz');
+const demoHistory: ConversationHistory[] = [
+  {
+    id: '1',
+    channel: 'whatsapp',
+    date: new Date(2024, 3, 15, 14, 30),
+    agent: 'Ana Silva',
+    status: 'completed',
+    registryCode: 'INT001',
+    registryDescription: 'Interesse em matrícula',
+    messages: [
+      { content: "Olá, gostaria de informações sobre o curso de Administração", isFromLead: true },
+      { content: "Claro! Temos turmas nos períodos matutino e noturno. Qual seria sua preferência?", isFromLead: false },
+      { content: "Noturno, pois trabalho durante o dia", isFromLead: true }
+    ]
+  },
+  {
+    id: '2',
+    channel: 'email',
+    date: new Date(2024, 3, 14, 10, 15),
+    agent: 'Carlos Santos',
+    status: 'completed',
+    registryCode: 'MAT002',
+    registryDescription: 'Matrícula efetivada',
+    messages: [
+      { content: "Prezado(a), seguem os documentos necessários para matrícula...", isFromLead: false },
+      { content: "Recebi os documentos, obrigado!", isFromLead: true }
+    ]
+  },
+  {
+    id: '3',
+    channel: 'voz',
+    date: new Date(2024, 3, 13, 16, 45),
+    agent: 'Roberto Oliveira',
+    status: 'completed',
+    duration: 485, // duração em segundos
+    registryCode: 'DUV003',
+    registryDescription: 'Dúvidas sobre financiamento',
+    transcription: "Conversa sobre opções de financiamento estudantil e bolsas disponíveis. Cliente demonstrou interesse no FIES."
+  }
+];
+
+export const ConversationHistoryView = ({ leadName }: ConversationHistoryViewProps) => {
+  // Use demo history instead of empty history
+  const whatsappHistory = demoHistory.filter(h => h.channel === 'whatsapp');
+  const emailHistory = demoHistory.filter(h => h.channel === 'email');
+  const voiceHistory = demoHistory.filter(h => h.channel === 'voz');
 
   const renderHistoryItem = (item: ConversationHistory) => (
     <Card key={item.id} className="mb-4 p-4">
@@ -52,7 +94,7 @@ export const ConversationHistoryView = ({ history, leadName }: ConversationHisto
         </div>
       </div>
       
-      <ScrollArea className="h-[200px] w-full rounded-md border bg-muted/10 p-4">
+      <ScrollArea className="h-[200px] w-full rounded-md border p-4">
         {item.channel === 'voz' ? (
           <div className="space-y-2">
             <div className="flex items-center gap-2 mb-2">
@@ -83,13 +125,13 @@ export const ConversationHistoryView = ({ history, leadName }: ConversationHisto
   );
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="h-full flex flex-col">
       <div className="flex items-center gap-2 py-3 px-4 border-b">
         <History className="h-5 w-5" />
         <h2 className="text-lg font-medium">Histórico de Atendimentos - {leadName}</h2>
       </div>
       
-      <Tabs defaultValue="whatsapp" className="flex flex-col flex-1 overflow-hidden">
+      <Tabs defaultValue="whatsapp" className="flex-1">
         <TabsList className="mx-4 mt-2 grid w-auto grid-cols-3">
           <TabsTrigger value="whatsapp">
             <MessageSquare className="h-4 w-4 mr-2" />
@@ -106,7 +148,7 @@ export const ConversationHistoryView = ({ history, leadName }: ConversationHisto
         </TabsList>
 
         <div className="flex-1 overflow-auto p-4">
-          <TabsContent value="whatsapp" className="mt-0 h-full">
+          <TabsContent value="whatsapp" className="mt-0">
             {whatsappHistory.length > 0 ? (
               whatsappHistory.map(item => renderHistoryItem(item))
             ) : (
@@ -114,7 +156,7 @@ export const ConversationHistoryView = ({ history, leadName }: ConversationHisto
             )}
           </TabsContent>
 
-          <TabsContent value="email" className="mt-0 h-full">
+          <TabsContent value="email" className="mt-0">
             {emailHistory.length > 0 ? (
               emailHistory.map(item => renderHistoryItem(item))
             ) : (
@@ -122,7 +164,7 @@ export const ConversationHistoryView = ({ history, leadName }: ConversationHisto
             )}
           </TabsContent>
 
-          <TabsContent value="voz" className="mt-0 h-full">
+          <TabsContent value="voz" className="mt-0">
             {voiceHistory.length > 0 ? (
               voiceHistory.map(item => renderHistoryItem(item))
             ) : (
