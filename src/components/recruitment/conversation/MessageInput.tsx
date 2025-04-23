@@ -1,9 +1,12 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Bot, Send } from 'lucide-react';
 import { useRegistryRules } from '@/components/rules/registry/hooks/useRegistryRules';
 import RegistrySelectionDialog from './RegistrySelectionDialog';
+import { Message } from './types';
+import { analyzeConversationForRegistry } from '@/utils/messageAnalysis';
 
 interface MessageInputProps {
   isAiMode: boolean;

@@ -75,6 +75,7 @@ const ConversationChatArea: React.FC<ConversationChatAreaProps> = ({
             showAnalytics={showAnalytics}
             onSendMessage={handleSendMessage}
             onOpenSettings={handleOpenSettings}
+            isSelectedLead={!!selectedConversation}
             onEndConversation={onEndConversation}
           />
           
