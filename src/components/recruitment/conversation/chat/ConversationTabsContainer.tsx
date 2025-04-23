@@ -1,10 +1,10 @@
 import React from 'react';
 import { Tabs } from '@/components/ui/tabs';
 import WhatsAppTab from '../WhatsAppTab';
-import ChannelTab from '../ChannelTab';
-import { ConversationHistoryView } from '../history/ConversationHistoryView';
 import ConversationTabContent from './ConversationTabContent';
 import EmailTab from '../email/EmailTab';
+import VoiceTab from '../voice/VoiceTab';
+import { ConversationHistoryView } from '../history/ConversationHistoryView';
 import { ActiveConversation } from '../types';
 
 interface ConversationTabsContainerProps {
@@ -51,12 +51,7 @@ const ConversationTabsContainer: React.FC<ConversationTabsContainerProps> = ({
       
       <EmailTab />
       
-      <ChannelTab 
-        value="voz"
-        icon="phone"
-        title="Interface de Voz"
-        description="Realize e receba chamadas diretamente da plataforma. Esta funcionalidade estará disponível em breve."
-      />
+      <VoiceTab />
 
       <ConversationHistoryView 
         leadName={selectedConversation.leadName}
