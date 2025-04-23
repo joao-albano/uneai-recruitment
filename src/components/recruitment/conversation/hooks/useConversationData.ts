@@ -17,34 +17,43 @@ export function useConversationData() {
     {
       id: '1',
       leadName: 'Maria Oliveira',
+      leadId: 'lead-1',
       leadCourse: 'Psicologia',
       lastMessage: 'Bom dia, gostaria de saber se o curso de Psicologia é reconhecido pelo MEC.',
       lastMessageTime: new Date(Date.now() - 1000 * 60 * 15),
       unreadCount: 0,
       status: 'active',
       emotion: 'interessado',
-      assignedTo: 'Juliana Oliveira'
+      assignedTo: 'Juliana Oliveira',
+      agentId: 'agent-1',
+      channel: 'whatsapp'
     },
     {
       id: '2',
       leadName: 'João Silva',
+      leadId: 'lead-2',
       leadCourse: 'Administração',
       lastMessage: 'Parece ótimo! Quando posso agendar uma visita?',
       lastMessageTime: new Date(Date.now() - 1000 * 60 * 30),
       unreadCount: 2,
-      status: 'waiting',
-      emotion: 'positivo'
+      status: 'pending',
+      emotion: 'positivo',
+      agentId: 'agent-2',
+      channel: 'whatsapp'
     },
     {
       id: '3',
       leadName: 'Pedro Souza',
+      leadId: 'lead-3',
       leadCourse: 'Direito',
       lastMessage: 'Gostaria de mais informações sobre o curso de Direito.',
       lastMessageTime: new Date(Date.now() - 1000 * 60 * 60),
       unreadCount: 0,
       status: 'active',
       emotion: 'neutro',
-      assignedTo: 'Roberto Santos'
+      assignedTo: 'Roberto Santos',
+      agentId: 'agent-3',
+      channel: 'email'
     }
   ]);
   
@@ -91,6 +100,7 @@ export function useConversationData() {
         content: `Bom dia, gostaria de saber se o curso de Psicologia é reconhecido pelo MEC.`,
         timestamp: new Date(Date.now() - 1000 * 60 * 14),
         isFromLead: true,
+        isFromAi: false,
         emotion: 'interessado',
         intent: 'informacao_curso',
       }
@@ -108,6 +118,7 @@ export function useConversationData() {
         content: `Olá, gostaria de saber mais sobre o curso de Administração. Vocês têm turmas noturnas?`,
         timestamp: new Date(Date.now() - 1000 * 60 * 34),
         isFromLead: true,
+        isFromAi: false,
         emotion: 'interessado',
         intent: 'informacao_turno',
       },
@@ -123,6 +134,7 @@ export function useConversationData() {
         content: `Sim, trabalho em horário comercial e estou procurando um curso para me especializar. O campus tem boa localização?`,
         timestamp: new Date(Date.now() - 1000 * 60 * 32),
         isFromLead: true,
+        isFromAi: false,
         emotion: 'positivo',
         intent: 'informacao_modalidade',
       },
@@ -138,6 +150,7 @@ export function useConversationData() {
         content: `Parece ótimo! Quando posso agendar uma visita?`,
         timestamp: new Date(Date.now() - 1000 * 60 * 30),
         isFromLead: true,
+        isFromAi: false,
         emotion: 'positivo',
         intent: 'agendar_visita',
       }
@@ -155,6 +168,7 @@ export function useConversationData() {
         content: `Gostaria de mais informações sobre o curso de Direito.`,
         timestamp: new Date(Date.now() - 1000 * 60 * 64),
         isFromLead: true,
+        isFromAi: false,
         emotion: 'neutro',
         intent: 'informacao_curso',
       },
@@ -225,6 +239,7 @@ export function useConversationData() {
           content: randomResponse,
           timestamp: new Date(),
           isFromLead: true,
+          isFromAi: false,
           emotion: 'positivo',
           intent: 'duvida_processo',
         };
@@ -293,12 +308,15 @@ export function useConversationData() {
     const newConversation: ActiveConversation = {
       id: newConversationId,
       leadName: leadData.name,
+      leadId: uuidv4(),
       leadCourse: leadData.course,
       lastMessage: 'Conversa iniciada',
       lastMessageTime: new Date(),
       unreadCount: 0,
-      status: 'new',
-      emotion: 'neutro'
+      status: 'active',
+      emotion: 'neutro',
+      agentId: 'ai-agent',
+      channel: 'whatsapp'
     };
 
     // Add the new conversation to the list

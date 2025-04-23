@@ -1,3 +1,4 @@
+
 import { EmotionType, IntentType, ObjectionType } from '@/types/recruitment';
 
 export interface Message {
@@ -17,15 +18,27 @@ export type ActiveConversation = {
   id: string;
   leadName: string;
   leadId: string;
+  leadCourse?: string;
   agentId: string;
   channel: 'whatsapp' | 'email' | 'voice';
-  status: 'active' | 'pending' | 'closed';
+  status: 'active' | 'pending' | 'closed' | 'new' | 'waiting';
   lastMessage: string;
   lastMessageTime: Date;
+  emotion?: string;
+  assignedTo?: string;
+  unreadCount?: number;
 };
 
 export type RegistrySelection = {
   code: string;
   description: string;
   type: 'human' | 'ai';
+};
+
+export type Agent = {
+  id: string;
+  name: string;
+  status: 'online' | 'offline' | 'busy' | 'away';
+  activeChats: number;
+  avatar?: string;
 };

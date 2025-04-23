@@ -40,8 +40,10 @@ const ActiveConversationsList: React.FC<ActiveConversationsListProps> = ({
   const getStatusBadge = (status: string) => {
     switch(status) {
       case 'active': return <Badge className="bg-green-500">Ativo</Badge>;
-      case 'waiting': return <Badge className="bg-yellow-500">Aguardando</Badge>;
+      case 'pending': return <Badge className="bg-yellow-500">Aguardando</Badge>;
       case 'closed': return <Badge className="bg-gray-500">Encerrado</Badge>;
+      case 'new': return <Badge className="bg-blue-500">Novo</Badge>;
+      case 'waiting': return <Badge className="bg-purple-500">Em espera</Badge>;
       default: return null;
     }
   };
@@ -60,7 +62,7 @@ const ActiveConversationsList: React.FC<ActiveConversationsListProps> = ({
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <span className="font-medium">{conversation.leadName}</span>
-                {conversation.unreadCount > 0 && (
+                {conversation.unreadCount && conversation.unreadCount > 0 && (
                   <Badge className="bg-primary">{conversation.unreadCount}</Badge>
                 )}
               </div>

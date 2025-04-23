@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -41,6 +42,7 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
       content: `Olá, gostaria de saber mais sobre o curso de Administração. Vocês têm turmas noturnas?`,
       timestamp: new Date(Date.now() - 1000 * 60 * 14),
       isFromLead: true,
+      isFromAi: false,
       emotion: 'interessado',
       intent: 'informacao_turno',
     },
@@ -56,6 +58,7 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
       content: `Sim, trabalho em horário comercial e estou procurando um curso para me especializar. Mas acho que o valor está um pouco alto para mim.`,
       timestamp: new Date(Date.now() - 1000 * 60 * 12),
       isFromLead: true,
+      isFromAi: false,
       emotion: 'hesitante',
       intent: 'informacao_preco',
       objection: 'preco_alto',
