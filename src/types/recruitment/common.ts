@@ -1,7 +1,14 @@
-
-// Common recruitment types that are shared across multiple domains
-
-export type LeadStatus = 'novo' | 'contatado' | 'interessado' | 'nao_interessado' | 'agendado' | 'matriculado' | 'desistente';
+export type LeadStatus = 
+  'novo' 
+  | 'contatado' 
+  | 'interessado' 
+  | 'nao_interessado' 
+  | 'agendado' 
+  | 'matriculado' 
+  | 'desistente'
+  | 'quente'      // Added
+  | 'convertido'  // Added
+  | 'perdido';    // Added
 
 export type ChannelType = 'site' | 'facebook' | 'instagram' | 'whatsapp' | 'indicacao' | 'google' | 'eventos' | 'presencial' | 'mail' | 'sms' | 'voice' | 'outros';
 
