@@ -1,22 +1,13 @@
 
-import { useState, useEffect, useCallback } from 'react';
-import { Task, TaskFilter, TaskAgentMetrics, TaskContact, ContactAttemptResult } from '@/types/recruitment/tasks';
+import { useState, useCallback, useEffect } from 'react';
+import { Task, TaskFilter, TaskContact, TaskAgentMetrics } from '@/types/recruitment/tasks';
 import { useTaskData } from './useTaskData';
 
 export const useTasksManagement = () => {
-  // Estados
-  const [activeTab, setActiveTab] = useState<string>('all');
-  const [filters, setFilters] = useState<TaskFilter>({});
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [taskDialogOpen, setTaskDialogOpen] = useState<boolean>(false);
-  const [distributionDialogOpen, setDistributionDialogOpen] = useState<boolean>(false);
-  const [contactDialogOpen, setContactDialogOpen] = useState<boolean>(false);
-  
-  // Obter dados de tarefas
-  const { 
-    tasks, 
-    filteredTasks, 
-    taskMetrics,
+  const {
+    tasks,
+    filteredTasks,
+    taskMetrics, // Este é um array de TaskAgentMetrics
     addTask,
     updateTask,
     deleteTask,
@@ -27,95 +18,145 @@ export const useTasksManagement = () => {
     applyFilters
   } = useTaskData();
   
-  // Aplicar filtros quando eles mudarem
-  useEffect(() => {
-    applyFilters(filters);
-  }, [filters, applyFilters]);
+  // Estado para a tarefa atualmente selecionada
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   
-  // Handlers
+  // Estado para filtros ativos
+  const [filters, setFilters] = useState<TaskFilter>({});
+  
+  // Estado para a aba ativa
+  const [activeTab, setActiveTab] = useState('all');
+  
+  // Estados para diálogos
+  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+  const [distributionDialogOpen, setDistributionDialogOpen] = useState(false);
+  const [contactDialogOpen, setContactDialogOpen] = useState(false);
+  
+  // Atualizar filtros quando mudar de aba
+  useEffect(() => {
+    let newFilters: TaskFilter = { ...filters };
+    
+    switch (activeTab) {
+      case 'mine':
+        newFilters = { ...newFilters, assignedTo: ['currentUser'] };
+        break;
+      case 'pending':
+        newFilters = { ...newFilters, status: ['pendente'] };
+        break;
+      case 'scheduled':
+        newFilters = { ...newFilters, status: ['agendada'] };
+        break;
+      case 'completed':
+        newFilters = { ...newFilters, status: ['concluída'] };
+        break;
+      default:
+        // Remover filtros de status e assignedTo se existirem
+        const { status, assignedTo, ...rest } = newFilters;
+        newFilters = rest;
+    }
+    
+    applyFilters(newFilters);
+    setFilters(newFilters);
+  }, [activeTab]);
+  
+  // Selecionar uma tarefa
   const handleSelectTask = useCallback((task: Task) => {
-    setSelectedTask(task);
+    setSelectedTask(prevTask => 
+      prevTask?.id === task.id ? null : task
+    );
   }, []);
   
-  const handleCreateTask = useCallback((task: Partial<Task>) => {
-    addTask(task);
-    setTaskDialogOpen(false);
+  // Criar nova tarefa
+  const handleCreateTask = useCallback((taskData: Partial<Task>) => {
+    const newTask = addTask(taskData);
+    setSelectedTask(newTask);
   }, [addTask]);
   
+  // Editar tarefa
   const handleEditTask = useCallback((task: Task) => {
     setSelectedTask(task);
     setTaskDialogOpen(true);
   }, []);
   
+  // Excluir tarefa
   const handleDeleteTask = useCallback((taskId: string) => {
     deleteTask(taskId);
-    if (selectedTask && selectedTask.id === taskId) {
-      setSelectedTask(null);
-    }
-  }, [deleteTask, selectedTask]);
+    setSelectedTask(null);
+  }, [deleteTask]);
   
-  const handleContactLead = useCallback((task: Task, method: string = 'telefone', result?: ContactAttemptResult) => {
-    setSelectedTask(task);
-    if (!result) {
-      setContactDialogOpen(true);
-    } else {
+  // Contatar lead
+  const handleContactLead = useCallback((task: Task, method?: string, result?: any) => {
+    if (method) {
+      // Registrar tentativa de contato
       const contactAttempt: Partial<TaskContact> = {
         method: method as any,
-        result,
+        result: result || 'não_atendido',
         timestamp: new Date(),
-        agentId: 'currentUser', // Substituir pelo ID do usuário atual em um ambiente real
+        agentId: 'currentUser',
+        notes: ''
       };
       
       registerContactAttempt(task.id, contactAttempt as TaskContact);
-      setContactDialogOpen(false);
+      return;
     }
+    
+    // Abrir diálogo para registrar contato
+    setSelectedTask(task);
+    setContactDialogOpen(true);
   }, [registerContactAttempt]);
   
-  const handleScheduleContact = useCallback((task: Task, scheduledDate?: Date) => {
+  // Agendar contato
+  const handleScheduleContact = useCallback((task: Task) => {
     updateTask({
       ...task,
-      status: 'agendada',
-      dueDate: scheduledDate || new Date(Date.now() + 24 * 60 * 60 * 1000) // Padrão: amanhã
+      status: 'agendada'
     });
   }, [updateTask]);
   
-  const handleCompleteTask = useCallback((taskId: string) => {
-    completeTask(taskId);
-  }, [completeTask]);
-  
-  const handleAssignTask = useCallback((taskId: string, agentId: string, agentName: string) => {
-    assignTask(taskId, agentId, agentName);
+  // Atribuir tarefa
+  const handleAssignTask = useCallback((taskId: string) => {
+    assignTask(taskId, 'currentUser', 'Usuário Atual');
   }, [assignTask]);
   
+  // Concluir tarefa
+  const handleCompleteTask = useCallback((taskId: string) => {
+    completeTask(taskId);
+    // Se a tarefa concluída for a selecionada, atualizar o selectedTask
+    setSelectedTask(prevTask => 
+      prevTask?.id === taskId 
+        ? { ...prevTask, status: 'concluída', completedAt: new Date() } 
+        : prevTask
+    );
+  }, [completeTask]);
+  
+  // Distribuir tarefas
   const handleDistributeTasks = useCallback((taskIds: string[], config: any) => {
     distributeTasksToAgents(taskIds, config);
-    setDistributionDialogOpen(false);
   }, [distributeTasksToAgents]);
   
-  const handleBulkOperations = useCallback((taskIds: string[], operation: string) => {
+  // Operações em massa
+  const handleBulkOperations = useCallback((operation: string, taskIds: string[]) => {
     switch (operation) {
-      case 'delete':
-        taskIds.forEach(id => deleteTask(id));
+      case 'assign':
+        taskIds.forEach(id => assignTask(id, 'currentUser', 'Usuário Atual'));
         break;
       case 'complete':
         taskIds.forEach(id => completeTask(id));
         break;
-      case 'schedule':
-        taskIds.forEach(id => {
-          const task = tasks.find(t => t.id === id);
-          if (task) {
-            handleScheduleContact(task);
-          }
-        });
+      case 'delete':
+        taskIds.forEach(id => deleteTask(id));
         break;
       default:
-        break;
+        console.log(`Operação não reconhecida: ${operation}`);
     }
-  }, [deleteTask, completeTask, handleScheduleContact, tasks]);
+  }, [assignTask, completeTask, deleteTask]);
   
+  // Limpar filtros
   const clearFilters = useCallback(() => {
-    setFilters({});
-  }, []);
+    const baseFilters: TaskFilter = activeTab === 'all' ? {} : filters;
+    setFilters(baseFilters);
+    applyFilters(baseFilters);
+  }, [activeTab, filters, applyFilters]);
   
   return {
     // Estados
@@ -127,7 +168,7 @@ export const useTasksManagement = () => {
     taskDialogOpen,
     distributionDialogOpen,
     contactDialogOpen,
-    taskMetrics,
+    taskMetrics, // Este é um array de TaskAgentMetrics
     
     // Ações
     setFilters,

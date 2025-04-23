@@ -7,7 +7,6 @@ import TasksList from './components/TasksList';
 import TaskDetails from './components/TaskDetails';
 import TasksMetrics from './components/TasksMetrics';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import TaskDistribution from './components/TaskDistribution';
 import TasksDialogs from './components/TasksDialogs';
 
 const TasksManagement: React.FC = () => {

@@ -1,34 +1,29 @@
 
 import React, { useState } from 'react';
 import { Task } from '@/types/recruitment/tasks';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
   TableHeader,
-  TableRow 
+  TableRow,
 } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { 
-  Phone, 
-  MessageSquare, 
-  MoreVertical, 
-  Calendar, 
-  CheckCircle,
-  AlertTriangle,
-  Clock,
-  User
+import { Badge } from '@/components/ui/badge';
+import {
+  Calendar,
+  Check,
+  MoreHorizontal,
+  Phone,
+  UserPlus,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -38,12 +33,12 @@ interface TasksListProps {
   onSelectTask: (task: Task) => void;
   onContactLead: (task: Task) => void;
   onScheduleContact: (task: Task) => void;
-  onAssignTask: (taskId: string, agentId: string, agentName: string) => void;
+  onAssignTask: (taskId: string) => void;
   onCompleteTask: (taskId: string) => void;
-  onBulkOperations: (taskIds: string[], operation: string) => void;
+  onBulkOperations: (operation: string, taskIds: string[]) => void;
 }
 
-const TasksList: React.FC<TasksListProps> = ({ 
+const TasksList: React.FC<TasksListProps> = ({
   tasks,
   onSelectTask,
   onContactLead,
@@ -54,215 +49,182 @@ const TasksList: React.FC<TasksListProps> = ({
 }) => {
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
   
-  const handleToggleSelectAll = () => {
-    if (selectedTasks.length === tasks.length) {
-      setSelectedTasks([]);
-    } else {
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
       setSelectedTasks(tasks.map(task => task.id));
+    } else {
+      setSelectedTasks([]);
     }
   };
   
-  const handleToggleSelectTask = (taskId: string) => {
-    setSelectedTasks(prev => 
-      prev.includes(taskId)
-        ? prev.filter(id => id !== taskId)
-        : [...prev, taskId]
-    );
+  const handleSelectTask = (taskId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedTasks([...selectedTasks, taskId]);
+    } else {
+      setSelectedTasks(selectedTasks.filter(id => id !== taskId));
+    }
   };
   
-  const getPriorityBadgeVariant = (priority: string) => {
+  const handleBulkAssign = () => {
+    onBulkOperations('assign', selectedTasks);
+    setSelectedTasks([]);
+  };
+  
+  const handleBulkComplete = () => {
+    onBulkOperations('complete', selectedTasks);
+    setSelectedTasks([]);
+  };
+  
+  const handleBulkDelete = () => {
+    onBulkOperations('delete', selectedTasks);
+    setSelectedTasks([]);
+  };
+  
+  const getPriorityBadge = (priority: string) => {
     switch (priority) {
-      case 'alta': return 'destructive';
-      case 'média': return 'default';
-      case 'baixa': return 'outline';
-      default: return 'secondary';
+      case 'alta':
+        return <Badge variant="destructive">Alta</Badge>;
+      case 'média':
+        return <Badge variant="default">Média</Badge>;
+      case 'baixa':
+        return <Badge variant="outline">Baixa</Badge>;
+      default:
+        return null;
     }
   };
   
-  const getStatusBadgeVariant = (status: string) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'pendente': return 'secondary';
-      case 'em_andamento': return 'default';
-      case 'concluída': return 'outline'; // Changed from 'success' to 'outline'
-      case 'agendada': return 'secondary'; // Changed from 'warning' to 'secondary'
-      case 'cancelada': return 'outline';
-      default: return 'secondary';
+      case 'pendente':
+        return <Badge variant="outline" className="bg-amber-100 text-amber-800">Pendente</Badge>;
+      case 'em_andamento':
+        return <Badge variant="outline" className="bg-blue-100 text-blue-800">Em andamento</Badge>;
+      case 'agendada':
+        return <Badge variant="outline" className="bg-purple-100 text-purple-800">Agendada</Badge>;
+      case 'concluída':
+        return <Badge variant="outline" className="bg-green-100 text-green-800">Concluída</Badge>;
+      case 'cancelada':
+        return <Badge variant="outline" className="bg-gray-100 text-gray-800">Cancelada</Badge>;
+      default:
+        return null;
     }
   };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'pendente': return <Clock className="h-4 w-4" />;
-      case 'em_andamento': return <AlertTriangle className="h-4 w-4" />;
-      case 'concluída': return <CheckCircle className="h-4 w-4" />;
-      case 'agendada': return <Calendar className="h-4 w-4" />;
-      case 'cancelada': return <AlertTriangle className="h-4 w-4" />;
-      default: return null;
-    }
-  };
-  
-  if (tasks.length === 0) {
-    return (
-      <div className="text-center py-10 border rounded-md bg-muted/10">
-        <h3 className="text-lg font-medium">Nenhuma tarefa encontrada</h3>
-        <p className="text-muted-foreground mt-1">
-          Tente ajustar os filtros ou criar uma nova tarefa
-        </p>
-      </div>
-    );
-  }
   
   return (
-    <div className="border rounded-md overflow-auto">
+    <div>
       {selectedTasks.length > 0 && (
-        <div className="bg-secondary/20 p-3 border-b flex items-center justify-between">
-          <div className="text-sm font-medium">
-            {selectedTasks.length} {selectedTasks.length === 1 ? 'tarefa selecionada' : 'tarefas selecionadas'}
-          </div>
-          <div className="flex space-x-2">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => onBulkOperations(selectedTasks, 'complete')}
-            >
-              <CheckCircle className="h-4 w-4 mr-1" />
-              Concluir
+        <div className="mb-4 p-2 bg-muted rounded-md flex items-center justify-between">
+          <span className="text-sm font-medium">
+            {selectedTasks.length} tarefas selecionadas
+          </span>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={handleBulkAssign}>
+              <UserPlus className="h-4 w-4 mr-1" /> Atribuir
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => onBulkOperations(selectedTasks, 'schedule')}
-            >
-              <Calendar className="h-4 w-4 mr-1" />
-              Agendar
+            <Button size="sm" variant="outline" onClick={handleBulkComplete}>
+              <Check className="h-4 w-4 mr-1" /> Concluir
             </Button>
-            <Button 
-              variant="destructive" 
-              size="sm"
-              onClick={() => onBulkOperations(selectedTasks, 'delete')}
-            >
+            <Button size="sm" variant="destructive" onClick={handleBulkDelete}>
               Excluir
             </Button>
           </div>
         </div>
       )}
       
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[40px]">
-              <Checkbox 
-                checked={selectedTasks.length === tasks.length && tasks.length > 0} 
-                onCheckedChange={handleToggleSelectAll}
-              />
-            </TableHead>
-            <TableHead>Tarefa</TableHead>
-            <TableHead className="hidden md:table-cell">Lead</TableHead>
-            <TableHead className="hidden md:table-cell">Vencimento</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Atribuído</TableHead>
-            <TableHead className="hidden sm:table-cell">Prioridade</TableHead>
-            <TableHead className="w-[120px]">Ações</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {tasks.map(task => (
-            <TableRow 
-              key={task.id}
-              className="cursor-pointer"
-              onClick={() => onSelectTask(task)}
-            >
-              <TableCell onClick={e => e.stopPropagation()}>
-                <Checkbox 
-                  checked={selectedTasks.includes(task.id)} 
-                  onCheckedChange={() => handleToggleSelectTask(task.id)}
-                />
-              </TableCell>
-              <TableCell>
-                <div className="font-medium">{task.title}</div>
-                <div className="text-xs text-muted-foreground truncate max-w-[200px]">
-                  {task.description || 'Sem descrição'}
-                </div>
-              </TableCell>
-              <TableCell className="hidden md:table-cell">
-                {task.lead ? (
-                  <>
-                    <div>{task.lead.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {task.lead.course || 'Sem curso'}
+      {tasks.length === 0 ? (
+        <div className="text-center py-8">
+          <p className="text-muted-foreground">Nenhuma tarefa encontrada.</p>
+        </div>
+      ) : (
+        <div className="border rounded-md overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[40px]">
+                  <Checkbox 
+                    onCheckedChange={handleSelectAll}
+                    checked={selectedTasks.length === tasks.length && tasks.length > 0}
+                  />
+                </TableHead>
+                <TableHead>Título/Lead</TableHead>
+                <TableHead className="hidden md:table-cell">Data</TableHead>
+                <TableHead className="hidden md:table-cell">Prioridade</TableHead>
+                <TableHead className="hidden md:table-cell">Status</TableHead>
+                <TableHead className="hidden md:table-cell">Atribuído</TableHead>
+                <TableHead className="w-[100px]">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {tasks.map((task) => (
+                <TableRow key={task.id}>
+                  <TableCell>
+                    <Checkbox 
+                      checked={selectedTasks.includes(task.id)}
+                      onCheckedChange={(checked) => handleSelectTask(task.id, !!checked)}
+                    />
+                  </TableCell>
+                  <TableCell
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => onSelectTask(task)}
+                  >
+                    <div>
+                      <p className="font-medium">{task.title}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {task.lead?.name || "Sem lead associado"}
+                      </p>
                     </div>
-                  </>
-                ) : (
-                  'N/A'
-                )}
-              </TableCell>
-              <TableCell className="hidden md:table-cell">
-                {task.dueDate ? (
-                  format(new Date(task.dueDate), 'dd/MM/yyyy', { locale: ptBR })
-                ) : (
-                  'Sem data'
-                )}
-              </TableCell>
-              <TableCell>
-                <Badge variant={getStatusBadgeVariant(task.status)} className="flex items-center space-x-1">
-                  {getStatusIcon(task.status)}
-                  <span className="ml-1 capitalize">
-                    {task.status.replace('_', ' ')}
-                  </span>
-                </Badge>
-              </TableCell>
-              <TableCell>
-                {task.assignedToName ? (
-                  <div className="flex items-center">
-                    <User className="h-4 w-4 mr-1 text-muted-foreground" />
-                    <span className="text-sm">{task.assignedToName}</span>
-                  </div>
-                ) : (
-                  <span className="text-muted-foreground text-sm">Não atribuído</span>
-                )}
-              </TableCell>
-              <TableCell className="hidden sm:table-cell">
-                <Badge variant={getPriorityBadgeVariant(task.priority)} className="capitalize">
-                  {task.priority}
-                </Badge>
-              </TableCell>
-              <TableCell onClick={e => e.stopPropagation()}>
-                <div className="flex space-x-1">
-                  <Button variant="ghost" size="icon" onClick={() => onContactLead(task)}>
-                    <Phone className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={() => onContactLead(task)}>
-                    <MessageSquare className="h-4 w-4" />
-                  </Button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Opções</DropdownMenuLabel>
-                      <DropdownMenuItem onClick={() => onScheduleContact(task)}>
-                        <Calendar className="h-4 w-4 mr-2" />
-                        Agendar contato
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onCompleteTask(task.id)}>
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        Marcar como concluída
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <User className="h-4 w-4 mr-2" />
-                        Atribuir
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {task.dueDate ? (
+                      <span className="whitespace-nowrap">
+                        {format(new Date(task.dueDate), 'dd/MM/yyyy', { locale: ptBR })}
+                      </span>
+                    ) : (
+                      "Sem data"
+                    )}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {getPriorityBadge(task.priority)}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {getStatusBadge(task.status)}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {task.assignedToName || "Não atribuído"}
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => onContactLead(task)}>
+                          <Phone className="mr-2 h-4 w-4" />
+                          Contatar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onScheduleContact(task)}>
+                          <Calendar className="mr-2 h-4 w-4" />
+                          Agendar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onAssignTask(task.id)}>
+                          <UserPlus className="mr-2 h-4 w-4" />
+                          Atribuir
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onCompleteTask(task.id)}>
+                          <Check className="mr-2 h-4 w-4" />
+                          Concluir
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   );
 };

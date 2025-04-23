@@ -1,25 +1,28 @@
 
 import React from 'react';
 import { Task } from '@/types/recruitment/tasks';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Phone, 
-  MessageSquare, 
-  Trash2,
-  PencilLine,
-  Calendar,
-  CheckCircle,
-  User,
-  Clock,
-  Bookmark,
-  Building,
-  MapPin
-} from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+import {
+  Calendar,
+  Check,
+  Clock,
+  Edit,
+  Phone,
+  Trash2,
+  User,
+} from 'lucide-react';
 
 interface TaskDetailsProps {
   task: Task;
@@ -30,200 +33,185 @@ interface TaskDetailsProps {
   onComplete: () => void;
 }
 
-const TaskDetails: React.FC<TaskDetailsProps> = ({ 
+const TaskDetails: React.FC<TaskDetailsProps> = ({
   task,
   onEdit,
   onDelete,
   onContactLead,
   onScheduleContact,
-  onComplete
+  onComplete,
 }) => {
-  const getPriorityColor = (priority: string) => {
+  const getPriorityBadge = (priority: string) => {
     switch (priority) {
-      case 'alta': return 'text-red-600';
-      case 'média': return 'text-amber-600';
-      case 'baixa': return 'text-green-600';
-      default: return '';
+      case 'alta':
+        return <Badge variant="destructive">Alta</Badge>;
+      case 'média':
+        return <Badge variant="default">Média</Badge>;
+      case 'baixa':
+        return <Badge variant="outline">Baixa</Badge>;
+      default:
+        return null;
     }
   };
   
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'pendente':
+        return <Badge variant="outline" className="bg-amber-100 text-amber-800">Pendente</Badge>;
+      case 'em_andamento':
+        return <Badge variant="outline" className="bg-blue-100 text-blue-800">Em andamento</Badge>;
+      case 'agendada':
+        return <Badge variant="outline" className="bg-purple-100 text-purple-800">Agendada</Badge>;
+      case 'concluída':
+        return <Badge variant="outline" className="bg-green-100 text-green-800">Concluída</Badge>;
+      case 'cancelada':
+        return <Badge variant="outline" className="bg-gray-100 text-gray-800">Cancelada</Badge>;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <Card className="h-full">
-      <CardHeader className="pb-3">
+    <Card>
+      <CardHeader>
         <div className="flex justify-between items-start">
           <div>
             <CardTitle>{task.title}</CardTitle>
             <CardDescription>
-              {task.lead ? (
-                <span>Lead: {task.lead.name}</span>
-              ) : (
-                'Tarefa sem lead associado'
-              )}
+              Criada em {format(new Date(task.createdAt), 'dd/MM/yyyy', { locale: ptBR })}
             </CardDescription>
           </div>
-          <Badge className="capitalize">
-            {task.status.replace('_', ' ')}
-          </Badge>
+          <div className="flex space-x-1">
+            {getPriorityBadge(task.priority)}
+            {getStatusBadge(task.status)}
+          </div>
         </div>
       </CardHeader>
       
       <CardContent className="space-y-4">
-        {task.description && (
+        <div>
+          <h3 className="text-sm font-medium text-muted-foreground mb-1">Descrição</h3>
+          <p>{task.description || "Sem descrição"}</p>
+        </div>
+        
+        <Separator />
+        
+        {task.lead && (
           <div>
-            <h4 className="text-sm font-medium mb-1">Descrição</h4>
-            <p className="text-sm text-muted-foreground">{task.description}</p>
+            <h3 className="text-sm font-medium text-muted-foreground mb-1">Lead</h3>
+            <div className="space-y-2">
+              <p className="font-medium">{task.lead.name}</p>
+              <div className="text-sm">
+                <p>{task.lead.email}</p>
+                <p>{task.lead.phone}</p>
+                <p>Curso: {task.lead.course}</p>
+                <p>Local: {task.lead.location}</p>
+              </div>
+            </div>
           </div>
         )}
+        
+        <Separator />
         
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <h4 className="text-sm font-medium mb-1 flex items-center">
-              <Clock className="h-4 w-4 mr-1" />
-              Criada em
-            </h4>
-            <p className="text-sm">
-              {format(new Date(task.createdAt), 'dd/MM/yyyy', { locale: ptBR })}
-            </p>
+            <h3 className="text-sm font-medium text-muted-foreground mb-1">Data de Vencimento</h3>
+            <div className="flex items-center">
+              <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+              {task.dueDate ? (
+                format(new Date(task.dueDate), 'dd/MM/yyyy', { locale: ptBR })
+              ) : (
+                "Não definida"
+              )}
+            </div>
           </div>
           
           <div>
-            <h4 className="text-sm font-medium mb-1 flex items-center">
-              <Calendar className="h-4 w-4 mr-1" />
-              Vencimento
-            </h4>
-            <p className="text-sm">
-              {task.dueDate ? 
-                format(new Date(task.dueDate), 'dd/MM/yyyy', { locale: ptBR }) : 
-                'Sem prazo'
-              }
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="text-sm font-medium mb-1 flex items-center">
-              <User className="h-4 w-4 mr-1" />
-              Responsável
-            </h4>
-            <p className="text-sm">
-              {task.assignedToName || 'Não atribuído'}
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="text-sm font-medium mb-1 flex items-center">
-              <Bookmark className="h-4 w-4 mr-1" />
-              Prioridade
-            </h4>
-            <p className={`text-sm font-medium ${getPriorityColor(task.priority)} capitalize`}>
-              {task.priority}
-            </p>
+            <h3 className="text-sm font-medium text-muted-foreground mb-1">Atribuída para</h3>
+            <div className="flex items-center">
+              <User className="h-4 w-4 mr-2 text-muted-foreground" />
+              {task.assignedToName || "Não atribuída"}
+            </div>
           </div>
         </div>
-        
-        {task.lead && (
-          <>
-            <Separator />
-            
-            <div>
-              <h4 className="text-sm font-medium mb-3">Dados do Lead</h4>
-              
-              <div className="grid grid-cols-1 gap-2">
-                <div className="flex items-start">
-                  <User className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">{task.lead.name}</p>
-                    <p className="text-xs text-muted-foreground">{task.lead.email}</p>
-                    <p className="text-xs text-muted-foreground">{task.lead.phone}</p>
-                  </div>
-                </div>
-                
-                {task.lead.course && (
-                  <div className="flex items-center">
-                    <Building className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <p className="text-sm">{task.lead.course}</p>
-                  </div>
-                )}
-                
-                {task.lead.location && (
-                  <div className="flex items-center">
-                    <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <p className="text-sm">{task.lead.location}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </>
-        )}
         
         {task.contactAttempts && task.contactAttempts.length > 0 && (
           <>
             <Separator />
             
             <div>
-              <h4 className="text-sm font-medium mb-2">Histórico de Contatos</h4>
-              
-              <div className="space-y-2">
-                {task.contactAttempts.slice(0, 3).map((contact, index) => (
-                  <div key={index} className="text-sm bg-secondary/20 p-2 rounded">
+              <h3 className="text-sm font-medium text-muted-foreground mb-1">Histórico de Contatos</h3>
+              <div className="space-y-2 max-h-40 overflow-y-auto">
+                {task.contactAttempts.map((attempt, index) => (
+                  <div key={index} className="bg-muted p-2 rounded-md text-sm">
                     <div className="flex justify-between">
-                      <span className="font-medium capitalize">{contact.method}</span>
+                      <span className="font-medium">{attempt.method}</span>
                       <span className="text-xs text-muted-foreground">
-                        {format(new Date(contact.timestamp), 'dd/MM - HH:mm', { locale: ptBR })}
+                        {format(new Date(attempt.timestamp), 'dd/MM HH:mm', { locale: ptBR })}
                       </span>
                     </div>
-                    <p className="text-xs mt-1">
-                      Resultado: <span className="capitalize">{contact.result.replace('_', ' ')}</span>
-                    </p>
-                    {contact.notes && (
-                      <p className="text-xs text-muted-foreground mt-1 italic">"{contact.notes}"</p>
-                    )}
+                    <div>Resultado: {attempt.result}</div>
+                    {attempt.notes && <div className="mt-1">{attempt.notes}</div>}
                   </div>
                 ))}
-                
-                {task.contactAttempts.length > 3 && (
-                  <p className="text-xs text-center text-muted-foreground">
-                    +{task.contactAttempts.length - 3} outros contatos não exibidos
-                  </p>
-                )}
               </div>
             </div>
           </>
         )}
       </CardContent>
       
-      <CardFooter className="flex flex-col space-y-2">
-        <div className="flex space-x-2 w-full">
-          <Button className="flex-1" onClick={onContactLead}>
-            <Phone className="h-4 w-4 mr-2" />
-            Ligar
-          </Button>
-          <Button variant="secondary" className="flex-1" onClick={onContactLead}>
-            <MessageSquare className="h-4 w-4 mr-2" />
-            WhatsApp
-          </Button>
-        </div>
+      <CardFooter className="flex flex-wrap gap-2">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={onContactLead}
+          disabled={task.status === 'concluída' || task.status === 'cancelada'}
+        >
+          <Phone className="mr-2 h-4 w-4" />
+          Contatar
+        </Button>
         
-        <div className="flex space-x-2 w-full">
-          <Button variant="outline" className="flex-1" onClick={onScheduleContact}>
-            <Calendar className="h-4 w-4 mr-2" />
-            Agendar
-          </Button>
-          <Button variant="outline" className="flex-1" onClick={onComplete}>
-            <CheckCircle className="h-4 w-4 mr-2" />
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={onScheduleContact}
+          disabled={task.status === 'concluída' || task.status === 'cancelada'}
+        >
+          <Clock className="mr-2 h-4 w-4" />
+          Agendar
+        </Button>
+        
+        {task.status !== 'concluída' && (
+          <Button 
+            variant="default" 
+            size="sm" 
+            onClick={onComplete}
+            disabled={task.status === 'cancelada'}
+          >
+            <Check className="mr-2 h-4 w-4" />
             Concluir
           </Button>
-        </div>
+        )}
         
-        <div className="flex space-x-2 w-full">
-          <Button variant="outline" onClick={onEdit} size="sm" className="flex-1">
-            <PencilLine className="h-4 w-4 mr-2" />
-            Editar
-          </Button>
-          <Button variant="outline" onClick={onDelete} size="sm" className="flex-1 text-destructive hover:text-destructive">
-            <Trash2 className="h-4 w-4 mr-2" />
-            Excluir
-          </Button>
-        </div>
+        <div className="grow" />
+        
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={onEdit}
+        >
+          <Edit className="mr-2 h-4 w-4" />
+          Editar
+        </Button>
+        
+        <Button 
+          variant="destructive" 
+          size="sm" 
+          onClick={onDelete}
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          Excluir
+        </Button>
       </CardFooter>
     </Card>
   );
