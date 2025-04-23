@@ -95,16 +95,6 @@ const VoiceTab: React.FC = () => {
           </Button>
         </div>
 
-        {/* Instruções */}
-        <div className="mt-6 p-4 bg-muted/20 rounded-lg">
-          <h3 className="font-medium mb-2">Instruções rápidas:</h3>
-          <ul className="list-disc list-inside text-sm text-muted-foreground space-y-2">
-            <li>Clique no botão do telefone para iniciar/encerrar a chamada</li>
-            <li>Use o botão do microfone para ativar/desativar seu áudio</li>
-            <li>Ajuste o volume usando o botão à direita</li>
-          </ul>
-        </div>
-
         {/* Histórico Recente */}
         <div className="flex-1">
           <h3 className="font-medium mb-4">Histórico Recente</h3>
