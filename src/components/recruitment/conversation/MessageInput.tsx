@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
-import { Bot, User, Loader2, SendHorizonal } from 'lucide-react';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Bot, Send } from 'lucide-react';
+import { useRegistryRules } from '@/components/rules/registry/hooks/useRegistryRules';
+import RegistrySelectionDialog from './RegistrySelectionDialog';
 
 interface MessageInputProps {
   isAiMode: boolean;
@@ -11,72 +12,76 @@ interface MessageInputProps {
   onEndConversation?: () => void;
 }
 
-const MessageInput: React.FC<MessageInputProps> = ({ 
+const MessageInput: React.FC<MessageInputProps> = ({
   isAiMode,
   onSendMessage,
   onEndConversation
 }) => {
   const [message, setMessage] = useState('');
-  const [isSending, setIsSending] = useState(false);
+  const [showRegistryDialog, setShowRegistryDialog] = useState(false);
+  const { rules } = useRegistryRules();
 
-  const handleSendMessage = () => {
-    if (!message.trim()) return;
-    
-    setIsSending(true);
-    
-    // Simular um delay para dar feedback visual
-    setTimeout(() => {
-      onSendMessage(message);
+  const handleSend = () => {
+    if (message.trim()) {
+      onSendMessage(message.trim());
       setMessage('');
-      setIsSending(false);
-    }, 500);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
     }
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  const handleEndWithRegistry = (code: string, description: string) => {
+    // Adiciona mensagem de sistema indicando a tabulação
+    onSendMessage(`[Sistema] Atendimento tabulado como: ${code} - ${description}`);
+    
+    if (onEndConversation) {
+      onEndConversation();
+    }
+  };
+
+  const filteredRules = rules.filter(r => r.type === (isAiMode ? 'ai' : 'human'));
+
   return (
-    <div className="relative">
-      <div className="flex items-center mb-2">
-        <Badge variant={isAiMode ? "default" : "outline"} className="mr-2">
-          {isAiMode ? (
-            <div className="flex items-center">
-              <Bot className="h-3 w-3 mr-1" />
-              <span>Atendimento IA</span>
-            </div>
-          ) : (
-            <div className="flex items-center">
-              <User className="h-3 w-3 mr-1" />
-              <span>Atendimento Humano</span>
-            </div>
-          )}
-        </Badge>
-      </div>
-      
-      <div className="flex items-end gap-2">
+    <div className="flex flex-col gap-2">
+      <div className="flex gap-2">
         <Textarea
-          placeholder="Digite sua mensagem..."
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="min-h-[80px] resize-none"
+          onChange={e => setMessage(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="Digite sua mensagem..."
+          className="flex-1"
+          rows={2}
         />
-        <Button 
-          onClick={handleSendMessage} 
-          disabled={isSending || !message.trim()}
-          className="h-10 w-10 p-0"
-        >
-          {isSending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <SendHorizonal className="h-4 w-4" />
-          )}
-        </Button>
+        <div className="flex flex-col gap-2">
+          <Button
+            size="icon"
+            onClick={handleSend}
+            disabled={!message.trim()}
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            variant="outline"
+            onClick={() => setShowRegistryDialog(true)}
+          >
+            {isAiMode ? <Bot className="h-4 w-4" /> : <span>#</span>}
+          </Button>
+        </div>
       </div>
+
+      <RegistrySelectionDialog
+        open={showRegistryDialog}
+        onClose={() => setShowRegistryDialog(false)}
+        onSelect={handleEndWithRegistry}
+        rules={filteredRules}
+        type={isAiMode ? 'ai' : 'human'}
+      />
     </div>
   );
 };
