@@ -1,11 +1,11 @@
 
 import React from 'react';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
-import WhatsAppTab from '../WhatsAppTab';
-import ChannelTab from '../ChannelTab';
-import { ConversationHistoryView } from '../history/ConversationHistoryView';
+import { Tabs } from '@/components/ui/tabs';
+import WhatsAppTab from '../../conversation/WhatsAppTab';
+import ChannelTab from '../../conversation/ChannelTab';
+import { ConversationHistoryView } from '../../conversation/history/ConversationHistoryView';
 import ConversationTabContent from './ConversationTabContent';
-import { ActiveConversation } from '../types';
+import { ActiveConversation } from '../../conversation/types';
 
 interface ConversationTabsContainerProps {
   activeChannel: 'whatsapp' | 'email' | 'voz';
@@ -32,8 +32,6 @@ const ConversationTabsContainer: React.FC<ConversationTabsContainerProps> = ({
   isSelectedLead,
   selectedConversation
 }) => {
-  // Não precisamos mais do mockHistory aqui, já está no componente ConversationHistoryView
-
   return (
     <Tabs defaultValue={activeChannel} className="flex-1 flex flex-col overflow-hidden">
       <ConversationTabContent 
@@ -65,11 +63,9 @@ const ConversationTabsContainer: React.FC<ConversationTabsContainerProps> = ({
         description="Realize e receba chamadas diretamente da plataforma. Esta funcionalidade estará disponível em breve."
       />
 
-      <TabsContent value="history" className="flex-1 overflow-hidden">
-        <ConversationHistoryView 
-          leadName={selectedConversation.leadName}
-        />
-      </TabsContent>
+      <ConversationHistoryView 
+        leadName={selectedConversation.leadName}
+      />
     </Tabs>
   );
 };
