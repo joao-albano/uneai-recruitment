@@ -124,7 +124,7 @@ const LeadSelectionForm: React.FC<LeadSelectionFormProps> = ({
               <SelectValue placeholder="Filtrar por curso" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos os cursos</SelectItem>
+              <SelectItem value="todos">Todos os cursos</SelectItem>
               {uniqueCourses.map((course) => (
                 <SelectItem key={course} value={course}>
                   {course}
@@ -143,7 +143,7 @@ const LeadSelectionForm: React.FC<LeadSelectionFormProps> = ({
               <SelectValue placeholder="Filtrar por status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos os status</SelectItem>
+              <SelectItem value="todos">Todos os status</SelectItem>
               {uniqueStatuses.map((status) => (
                 <SelectItem key={status} value={status}>
                   {status.charAt(0).toUpperCase() + status.slice(1)}
