@@ -153,6 +153,14 @@ const EmailTab: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <RegistrySelectionDialog
+        open={showRegistryDialog}
+        onClose={() => setShowRegistryDialog(false)}
+        onSelect={handleEndWithRegistry}
+        rules={rules.filter(r => r.type === 'human')}
+        type="human"
+      />
     </TabsContent>
   );
 };
