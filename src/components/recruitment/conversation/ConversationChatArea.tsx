@@ -22,7 +22,7 @@ interface ConversationChatAreaProps {
   handleSendMessage: (message: string) => void;
   messages: any[];
   onEndConversation?: () => void;
-  isSelectedLead: boolean; // Added this missing prop
+  isSelectedLead: boolean;
 }
 
 const ConversationChatArea: React.FC<ConversationChatAreaProps> = ({
@@ -37,7 +37,7 @@ const ConversationChatArea: React.FC<ConversationChatAreaProps> = ({
   handleSendMessage,
   messages,
   onEndConversation,
-  isSelectedLead // Added to props destructuring
+  isSelectedLead
 }) => {
   // Mock do histórico para demonstração
   const mockHistory: ConversationHistory[] = [
@@ -207,14 +207,14 @@ const ConversationChatArea: React.FC<ConversationChatAreaProps> = ({
             value="email"
             icon="mail"
             title="Interface de Email"
-            description="Integração de email em desenvolvimento."
+            description="Visualize e responda emails de leads diretamente da plataforma. Esta funcionalidade estará disponível em breve."
           />
           
           <ChannelTab 
             value="voz"
             icon="phone"
             title="Interface de Voz"
-            description="Integração de chamadas de voz em desenvolvimento."
+            description="Realize e receba chamadas diretamente da plataforma. Esta funcionalidade estará disponível em breve."
           />
 
           <TabsContent value="history" className="flex-1 overflow-auto">

@@ -13,8 +13,8 @@ interface MessageInputProps {
   onSendMessage: (message: string) => void;
   onEndConversation?: () => void;
   messages: Message[];
-  onOpenSettings?: () => void; // Added this prop
-  isSelectedLead?: boolean; // Made optional as it's not used in the component
+  onOpenSettings?: () => void; 
+  isSelectedLead?: boolean;
 }
 
 const MessageInput: React.FC<MessageInputProps> = ({
@@ -22,7 +22,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   onSendMessage,
   onEndConversation,
   messages,
-  onOpenSettings // Added this to destructuring
+  onOpenSettings 
 }) => {
   const [message, setMessage] = useState('');
   const [showRegistryDialog, setShowRegistryDialog] = useState(false);
