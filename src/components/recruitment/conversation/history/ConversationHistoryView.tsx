@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -95,10 +96,10 @@ export const ConversationHistoryView = ({ history, leadName }: ConversationHisto
   const voiceHistory = historyToUse.filter(h => h.channel === 'voz');
 
   const renderHistoryItem = (item: ConversationHistory) => (
-    <Card key={item.id} className="mb-4 p-4">
+    <Card key={item.id} className="mb-4 p-4 hover:bg-accent/5 transition-colors">
       <div className="flex justify-between items-start mb-4">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-1">
             <span className="font-medium text-sm text-muted-foreground">Atendente:</span>
             <span className="font-medium">{item.agent}</span>
           </div>
@@ -132,12 +133,13 @@ export const ConversationHistoryView = ({ history, leadName }: ConversationHisto
         {item.channel === 'voz' ? (
           <div className="space-y-2">
             <div className="flex items-center gap-2 mb-2">
+              <Phone className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">Duração:</span>
               <span className="text-sm">
                 {Math.floor(item.duration! / 60)}:{(item.duration! % 60).toString().padStart(2, '0')}
               </span>
             </div>
-            <p className="text-sm leading-relaxed">{item.transcription}</p>
+            <p className="text-sm leading-relaxed text-muted-foreground">{item.transcription}</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -149,6 +151,9 @@ export const ConversationHistoryView = ({ history, leadName }: ConversationHisto
                     : 'bg-primary text-primary-foreground'
                 }`}>
                   <p className="text-sm">{message.content}</p>
+                  <span className="text-xs opacity-70 mt-1 block">
+                    {format(message.timestamp, "HH:mm")}
+                  </span>
                 </div>
               </div>
             ))}
@@ -165,7 +170,7 @@ export const ConversationHistoryView = ({ history, leadName }: ConversationHisto
         <h2 className="text-lg font-medium">Histórico de Atendimentos - {leadName}</h2>
       </div>
       
-      <Tabs defaultValue="whatsapp" className="flex-1">
+      <Tabs defaultValue="whatsapp" className="flex-1 flex flex-col">
         <TabsList className="mx-4 mt-2 grid w-auto grid-cols-3">
           <TabsTrigger value="whatsapp">
             <MessageSquare className="h-4 w-4 mr-2" />
