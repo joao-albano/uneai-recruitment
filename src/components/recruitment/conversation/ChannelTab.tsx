@@ -20,16 +20,19 @@ const ChannelTab: React.FC<ChannelTabProps> = ({
   return (
     <TabsContent 
       value={value} 
-      className="flex-1 flex flex-col items-center justify-center p-4"
+      className="flex-1 flex flex-col items-center justify-start p-4 max-h-32"
     >
-      <div className="max-w-md w-full text-center space-y-4 bg-muted/50 p-6 rounded-lg">
-        <ChannelIcon icon={icon} />
-        <h3 className="text-xl font-semibold">{title}</h3>
-        <p className="text-muted-foreground mb-4">{description}</p>
-        <Button variant="outline">Configurar</Button>
+      <div className="w-full text-center space-y-2 bg-muted/30 p-4 rounded-lg">
+        <div className="flex items-center justify-center gap-2">
+          <ChannelIcon icon={icon} />
+          <h3 className="text-sm font-medium">{title}</h3>
+        </div>
+        <p className="text-xs text-muted-foreground">{description}</p>
+        <Button variant="outline" size="sm">Configurar</Button>
       </div>
     </TabsContent>
   );
 };
 
 export default ChannelTab;
+
