@@ -27,22 +27,20 @@ const WhatsAppTab: React.FC<WhatsAppTabProps> = ({
   return (
     <TabsContent 
       value="whatsapp" 
-      className="flex-1 flex flex-col p-0 overflow-hidden"
+      className="flex-1 flex flex-col overflow-hidden"
     >
       <MessagesContainer 
         messages={messages} 
         showAnalytics={showAnalytics} 
       />
-      <div className="mt-auto pt-4 px-4">
-        <MessageInput 
-          isAiMode={isAiMode}
-          onSendMessage={onSendMessage} 
-          onOpenSettings={onOpenSettings}
-          messages={messages}
-          onEndConversation={onEndConversation}
-          isSelectedLead={isSelectedLead}
-        />
-      </div>
+      <MessageInput 
+        isAiMode={isAiMode}
+        onSendMessage={onSendMessage} 
+        onOpenSettings={onOpenSettings}
+        messages={messages}
+        onEndConversation={onEndConversation}
+        isSelectedLead={isSelectedLead}
+      />
     </TabsContent>
   );
 };

@@ -83,14 +83,14 @@ export const ConversationHistoryView = ({ history, leadName }: ConversationHisto
   );
 
   return (
-    <div className="p-4">
-      <div className="flex items-center gap-2 mb-6">
+    <div className="h-full flex flex-col overflow-hidden">
+      <div className="flex items-center gap-2 py-3 px-4 border-b">
         <History className="h-5 w-5" />
-        <h2 className="text-xl font-semibold">Histórico de Atendimentos - {leadName}</h2>
+        <h2 className="text-lg font-medium">Histórico de Atendimentos - {leadName}</h2>
       </div>
       
-      <Tabs defaultValue="whatsapp" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-4">
+      <Tabs defaultValue="whatsapp" className="flex flex-col flex-1 overflow-hidden">
+        <TabsList className="mx-4 mt-2 grid w-auto grid-cols-3">
           <TabsTrigger value="whatsapp">
             <MessageSquare className="h-4 w-4 mr-2" />
             WhatsApp ({whatsappHistory.length})
@@ -105,29 +105,31 @@ export const ConversationHistoryView = ({ history, leadName }: ConversationHisto
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="whatsapp">
-          {whatsappHistory.length > 0 ? (
-            whatsappHistory.map(item => renderHistoryItem(item))
-          ) : (
-            <p className="text-center text-muted-foreground">Nenhum histórico de WhatsApp encontrado.</p>
-          )}
-        </TabsContent>
+        <div className="flex-1 overflow-auto p-4">
+          <TabsContent value="whatsapp" className="mt-0 h-full">
+            {whatsappHistory.length > 0 ? (
+              whatsappHistory.map(item => renderHistoryItem(item))
+            ) : (
+              <p className="text-center text-muted-foreground py-8">Nenhum histórico de WhatsApp encontrado.</p>
+            )}
+          </TabsContent>
 
-        <TabsContent value="email">
-          {emailHistory.length > 0 ? (
-            emailHistory.map(item => renderHistoryItem(item))
-          ) : (
-            <p className="text-center text-muted-foreground">Nenhum histórico de email encontrado.</p>
-          )}
-        </TabsContent>
+          <TabsContent value="email" className="mt-0 h-full">
+            {emailHistory.length > 0 ? (
+              emailHistory.map(item => renderHistoryItem(item))
+            ) : (
+              <p className="text-center text-muted-foreground py-8">Nenhum histórico de email encontrado.</p>
+            )}
+          </TabsContent>
 
-        <TabsContent value="voz">
-          {voiceHistory.length > 0 ? (
-            voiceHistory.map(item => renderHistoryItem(item))
-          ) : (
-            <p className="text-center text-muted-foreground">Nenhum histórico de chamadas encontrado.</p>
-          )}
-        </TabsContent>
+          <TabsContent value="voz" className="mt-0 h-full">
+            {voiceHistory.length > 0 ? (
+              voiceHistory.map(item => renderHistoryItem(item))
+            ) : (
+              <p className="text-center text-muted-foreground py-8">Nenhum histórico de chamadas encontrado.</p>
+            )}
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   );

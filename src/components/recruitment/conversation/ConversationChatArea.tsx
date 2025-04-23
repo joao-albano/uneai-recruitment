@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -39,7 +38,6 @@ const ConversationChatArea: React.FC<ConversationChatAreaProps> = ({
   onEndConversation,
   isSelectedLead
 }) => {
-  // Mock do histórico para demonstração
   const mockHistory: ConversationHistory[] = [
     {
       id: '1',
@@ -173,7 +171,7 @@ const ConversationChatArea: React.FC<ConversationChatAreaProps> = ({
       />
       
       <CardContent className="flex-1 flex flex-col p-0">
-        <Tabs defaultValue={activeChannel} className="flex-1 flex flex-col">
+        <Tabs defaultValue={activeChannel} className="flex-1 flex flex-col overflow-hidden">
           <TabsList className="mx-6 mt-2 grid grid-cols-4">
             <TabsTrigger value="whatsapp" onClick={() => setActiveChannel('whatsapp')}>
               <MessageSquare className="h-4 w-4 mr-2" />
@@ -217,7 +215,7 @@ const ConversationChatArea: React.FC<ConversationChatAreaProps> = ({
             description="Realize e receba chamadas diretamente da plataforma. Esta funcionalidade estará disponível em breve."
           />
 
-          <TabsContent value="history" className="flex-1 overflow-auto">
+          <TabsContent value="history" className="flex-1 overflow-hidden">
             <ConversationHistoryView 
               history={mockHistory}
               leadName={selectedConversation.leadName}
