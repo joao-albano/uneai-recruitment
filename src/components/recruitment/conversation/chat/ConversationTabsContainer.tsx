@@ -1,11 +1,11 @@
-
 import React from 'react';
 import { Tabs } from '@/components/ui/tabs';
-import WhatsAppTab from '../../conversation/WhatsAppTab';
-import ChannelTab from '../../conversation/ChannelTab';
-import { ConversationHistoryView } from '../../conversation/history/ConversationHistoryView';
+import WhatsAppTab from '../WhatsAppTab';
+import ChannelTab from '../ChannelTab';
+import { ConversationHistoryView } from '../history/ConversationHistoryView';
 import ConversationTabContent from './ConversationTabContent';
-import { ActiveConversation } from '../../conversation/types';
+import EmailTab from '../email/EmailTab';
+import { ActiveConversation } from '../types';
 
 interface ConversationTabsContainerProps {
   activeChannel: 'whatsapp' | 'email' | 'voz';
@@ -49,12 +49,7 @@ const ConversationTabsContainer: React.FC<ConversationTabsContainerProps> = ({
         onEndConversation={onEndConversation}
       />
       
-      <ChannelTab 
-        value="email"
-        icon="mail"
-        title="Interface de Email"
-        description="Visualize e responda emails de leads diretamente da plataforma. Esta funcionalidade estará disponível em breve."
-      />
+      <EmailTab />
       
       <ChannelTab 
         value="voz"
