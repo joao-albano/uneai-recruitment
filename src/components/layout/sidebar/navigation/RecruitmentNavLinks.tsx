@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell, Building, Phone, Calendar, Home, Settings, PhoneCall, Target, CalendarDays, FilePenLine } from 'lucide-react';
+import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell, Building, Phone, Calendar, Home, Settings, PhoneCall, Target, CalendarDays, FilePenLine, ListCheck } from 'lucide-react';
 import SidebarNavLink from '../SidebarNavLink';
 import SidebarNavigationGroup from '../SidebarNavigationGroup';
 import { useLocation } from 'react-router-dom';
@@ -20,6 +21,7 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
   const isGoalsConfigActive = location.pathname === '/recruitment/rules/goals';
   const isPeriodsConfigActive = location.pathname === '/recruitment/rules/periods';
   const isRegistryRulesActive = location.pathname === '/recruitment/rules/registry';
+  const isTasksActive = location.pathname === '/recruitment/tasks';
   
   return (
     <>
@@ -112,6 +114,13 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
           icon={MessageSquare} 
           label="Conversas" 
           collapsed={collapsed}
+        />
+        <SidebarNavLink 
+          to="/recruitment/tasks" 
+          icon={ListCheck} 
+          label="Tarefas" 
+          collapsed={collapsed}
+          isActive={isTasksActive}
         />
         <SidebarNavLink 
           to="/recruitment/schedule" 
