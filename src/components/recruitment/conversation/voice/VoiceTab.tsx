@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,7 @@ import { toast } from "sonner";
 import { useRegistryRules } from '@/components/rules/registry/hooks/useRegistryRules';
 import RegistrySelectionDialog from '../RegistrySelectionDialog';
 import { analyzeConversationForRegistry } from '@/utils/messageAnalysis';
+import { v4 as uuidv4 } from 'uuid';
 
 const VoiceTab: React.FC = () => {
   const [isCallActive, setIsCallActive] = useState(false);
@@ -50,9 +52,12 @@ const VoiceTab: React.FC = () => {
 
   const handleAutoRegistry = async () => {
     const mockMessages = [{
+      id: uuidv4(),
       content: `Chamada de voz - Duração: ${Math.floor(callDuration / 60)}:${(callDuration % 60).toString().padStart(2, '0')}`,
       type: 'voice',
-      timestamp: new Date()
+      timestamp: new Date(),
+      isFromLead: false,
+      isFromAi: false
     }];
     
     const result = await analyzeConversationForRegistry(mockMessages, rules);

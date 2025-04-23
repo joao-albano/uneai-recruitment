@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import { toast } from "sonner";
 import { useRegistryRules } from '@/components/rules/registry/hooks/useRegistryRules';
 import RegistrySelectionDialog from '../RegistrySelectionDialog';
 import { analyzeConversationForRegistry } from '@/utils/messageAnalysis';
+import { v4 as uuidv4 } from 'uuid';
 
 const EmailTab: React.FC = () => {
   const [subject, setSubject] = React.useState('');
@@ -31,9 +33,12 @@ const EmailTab: React.FC = () => {
 
   const handleAutoRegistry = async () => {
     const mockMessages = [{
+      id: uuidv4(),
       content: subject + "\n" + message,
       type: 'email',
-      timestamp: new Date()
+      timestamp: new Date(),
+      isFromLead: false,
+      isFromAi: false
     }];
     
     const result = await analyzeConversationForRegistry(mockMessages, rules);
