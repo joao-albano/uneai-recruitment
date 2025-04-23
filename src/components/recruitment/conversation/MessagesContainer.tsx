@@ -26,7 +26,14 @@ const MessagesContainer: React.FC<MessagesContainerProps> = ({ messages, showAna
       {messages.map((message) => (
         <MessageBubble 
           key={message.id} 
-          message={message} 
+          id={message.id}
+          content={message.content}
+          timestamp={message.timestamp}
+          isFromLead={message.isFromLead}
+          isFromAi={message.isFromAi}
+          emotion={message.emotion}
+          intent={message.intent}
+          objection={message.objection}
           showAnalytics={showAnalytics}
         />
       ))}
