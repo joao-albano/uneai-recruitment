@@ -1,16 +1,20 @@
-
 import React from 'react';
 import { TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Mail, Send } from 'lucide-react';
+import { Bot, Hash, Mail, Send } from 'lucide-react';
 import { toast } from "sonner";
+import { useRegistryRules } from '@/components/rules/registry/hooks/useRegistryRules';
+import RegistrySelectionDialog from '../RegistrySelectionDialog';
+import { analyzeConversationForRegistry } from '@/utils/messageAnalysis';
 
 const EmailTab: React.FC = () => {
   const [subject, setSubject] = React.useState('');
   const [message, setMessage] = React.useState('');
   const [isSending, setIsSending] = React.useState(false);
+  const [showRegistryDialog, setShowRegistryDialog] = React.useState(false);
+  const { rules } = useRegistryRules();
 
   const handleSendEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +27,28 @@ const EmailTab: React.FC = () => {
     setSubject('');
     setMessage('');
     setIsSending(false);
+  };
+
+  const handleAutoRegistry = async () => {
+    const mockMessages = [{
+      content: subject + "\n" + message,
+      type: 'email',
+      timestamp: new Date()
+    }];
+    
+    const result = await analyzeConversationForRegistry(mockMessages, rules);
+    
+    if (result) {
+      handleEndWithRegistry(result.code, result.description);
+    } else {
+      setShowRegistryDialog(true);
+    }
+  };
+
+  const handleEndWithRegistry = (code: string, description: string) => {
+    toast.info(`Email tabulado como: ${code} - ${description}`);
+    setSubject('');
+    setMessage('');
   };
 
   return (
@@ -76,11 +102,21 @@ const EmailTab: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex justify-end pt-4">
+          <div className="flex justify-end gap-2 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleAutoRegistry}
+              className="w-auto"
+            >
+              <Hash className="mr-2 h-4 w-4" />
+              Tabular
+            </Button>
+            
             <Button 
               type="submit" 
               disabled={!subject || !message || isSending}
-              className="w-full sm:w-auto"
+              className="w-auto"
             >
               <Send className="mr-2 h-4 w-4" />
               {isSending ? 'Enviando...' : 'Enviar Email'}
