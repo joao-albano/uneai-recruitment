@@ -58,13 +58,13 @@ const ConversationalAI: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full">
       <ConversationalAIHeader
         onOpenFilters={handleOpenFilters}
         onOpenSettings={handleOpenSettings}
       />
 
-      <Card className="flex-1 flex">
+      <Card className="flex-1 flex overflow-hidden">
         <ConversationSidebar
           conversations={conversations}
           agents={agents}
@@ -86,7 +86,7 @@ const ConversationalAI: React.FC = () => {
               handleSendMessage={handleSendMessage}
               messages={getSelectedMessages()}
               onEndConversation={handleEndConversation}
-              isSelectedLead={true} // Adicionei este prop para resolver o erro anterior
+              isSelectedLead={true}
             />
           ) : (
             <ConversationEmptyState

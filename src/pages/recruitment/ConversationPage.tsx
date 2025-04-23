@@ -21,7 +21,7 @@ const ConversationPage: React.FC = () => {
       sidebarCollapsed={sidebarCollapsed}
       setSidebarCollapsed={setSidebarCollapsed}
     >
-      <div className="container mx-auto py-6">
+      <div className="w-full h-full">
         <ConversationalAI />
       </div>
     </Layout>
