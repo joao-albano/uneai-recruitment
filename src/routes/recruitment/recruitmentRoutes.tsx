@@ -1,3 +1,4 @@
+
 import { ReactNode } from "react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoutes";
 import { ProductGuard } from "@/components/auth/ProductGuard";
@@ -22,7 +23,7 @@ import DialingRulesPage from "@/pages/recruitment/DialingRulesPage";
 import GoalsConfigPage from "@/pages/recruitment/GoalsConfigPage";
 import PeriodsConfigPage from "@/pages/recruitment/PeriodsConfigPage";
 import RecruitmentUserGuidePage from "@/pages/RecruitmentUserGuidePage";
-import RegistryRulesPage from "@/pages/recruitment/RegistryRulesPage";
+import RegistryRulesPage from "@/pages/recruitment/rules/RegistryRulesPage";
 
 interface RouteConfig {
   path: string;
