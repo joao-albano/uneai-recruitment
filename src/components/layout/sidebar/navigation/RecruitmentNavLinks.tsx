@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell, Building, Phone, Calendar, Home, Settings, PhoneCall, Target, CalendarDays } from 'lucide-react';
+import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell, Building, Phone, Calendar, Home, Settings, PhoneCall, Target, CalendarDays, FilePenLine } from 'lucide-react';
 import SidebarNavLink from '../SidebarNavLink';
 import SidebarNavigationGroup from '../SidebarNavigationGroup';
 import { useLocation } from 'react-router-dom';
@@ -12,7 +11,6 @@ interface RecruitmentNavLinksProps {
 const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) => {
   const location = useLocation();
   
-  // Check current path to determine which link should be active
   const isHomeActive = location.pathname === '/recruitment/home';
   const isDashboardActive = location.pathname === '/recruitment' || location.pathname === '/recruitment/dashboard';
   const isAnalyticsActive = location.pathname === '/recruitment/analytics';
@@ -21,10 +19,10 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
   const isDialingRulesActive = location.pathname === '/recruitment/rules/dialing';
   const isGoalsConfigActive = location.pathname === '/recruitment/rules/goals';
   const isPeriodsConfigActive = location.pathname === '/recruitment/rules/periods';
+  const isRegistryRulesActive = location.pathname === '/recruitment/rules/registry';
   
   return (
     <>
-      {/* Grupo de Navegação */}
       <SidebarNavigationGroup title="Navegação" collapsed={collapsed} defaultOpen={false}>
         <SidebarNavLink 
           to="/recruitment/home" 
@@ -63,7 +61,6 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
         />
       </SidebarNavigationGroup>
       
-      {/* Grupo de Gestão */}
       <SidebarNavigationGroup title="Gestão" collapsed={collapsed} defaultOpen={false}>
         <SidebarNavLink 
           to="/recruitment/leads" 
@@ -103,7 +100,6 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
         />
       </SidebarNavigationGroup>
       
-      {/* Grupo de Atendimento */}
       <SidebarNavigationGroup title="Atendimento" collapsed={collapsed} defaultOpen={false}>
         <SidebarNavLink 
           to="/recruitment/alerts" 
@@ -125,7 +121,6 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
         />
       </SidebarNavigationGroup>
 
-      {/* Grupo de Regras */}
       <SidebarNavigationGroup title="Regras" collapsed={collapsed} defaultOpen={false}>
         <SidebarNavLink 
           to="/recruitment/rules/dialing" 
@@ -133,6 +128,13 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
           label="Discagem" 
           collapsed={collapsed}
           isActive={isDialingRulesActive}
+        />
+        <SidebarNavLink 
+          to="/recruitment/rules/registry" 
+          icon={FilePenLine} 
+          label="Tabulação" 
+          collapsed={collapsed}
+          isActive={isRegistryRulesActive}
         />
         <SidebarNavLink 
           to="/recruitment/rules/goals" 

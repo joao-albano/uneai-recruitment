@@ -22,6 +22,7 @@ import DialingRulesPage from "@/pages/recruitment/DialingRulesPage";
 import GoalsConfigPage from "@/pages/recruitment/GoalsConfigPage";
 import PeriodsConfigPage from "@/pages/recruitment/PeriodsConfigPage";
 import RecruitmentUserGuidePage from "@/pages/RecruitmentUserGuidePage";
+import RegistryRulesPage from "@/pages/recruitment/RegistryRulesPage";
 
 interface RouteConfig {
   path: string;
@@ -205,6 +206,16 @@ export const recruitmentRoutes: RouteConfig[] = [
       <ProtectedRoute>
         <ProductGuard allowedProduct="recruitment" redirectTo="/hub">
           <RecruitmentUserGuidePage />
+        </ProductGuard>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/rules/registry",
+    element: (
+      <ProtectedRoute>
+        <ProductGuard allowedProduct="recruitment" redirectTo="/hub">
+          <RegistryRulesPage />
         </ProductGuard>
       </ProtectedRoute>
     )
