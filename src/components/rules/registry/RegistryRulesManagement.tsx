@@ -3,6 +3,7 @@ import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, Bot } from 'lucide-react';
 import RegistryRulesList from './RegistryRulesList';
+import RegistryRulesStats from './RegistryRulesStats';
 import { useRegistryRules } from './hooks/useRegistryRules';
 
 const RegistryRulesManagement: React.FC = () => {
@@ -10,6 +11,8 @@ const RegistryRulesManagement: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <RegistryRulesStats />
+      
       <Tabs defaultValue="human" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-8">
           <TabsTrigger value="human" className="flex items-center gap-2">
