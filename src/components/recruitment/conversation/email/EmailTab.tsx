@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Bot, Hash, Mail, Send } from 'lucide-react';
+import { Mail, Send } from 'lucide-react';
 import { toast } from "sonner";
 import { useRegistryRules } from '@/components/rules/registry/hooks/useRegistryRules';
 import RegistrySelectionDialog from '../RegistrySelectionDialog';
@@ -26,8 +25,7 @@ const EmailTab: React.FC = () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     toast.success("Email enviado com sucesso!");
-    setSubject('');
-    setMessage('');
+    handleAutoRegistry(); // Automatically trigger registry after sending
     setIsSending(false);
   };
 
@@ -108,16 +106,6 @@ const EmailTab: React.FC = () => {
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleAutoRegistry}
-              className="w-auto"
-            >
-              <Hash className="mr-2 h-4 w-4" />
-              Tabular
-            </Button>
-            
             <Button 
               type="submit" 
               disabled={!subject || !message || isSending}
