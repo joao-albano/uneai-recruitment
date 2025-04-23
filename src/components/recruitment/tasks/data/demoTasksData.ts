@@ -1,5 +1,6 @@
 import { Task } from '@/types/recruitment/tasks';
 import { ChannelType } from '@/types/recruitment/common';
+import { LeadStatus } from '@/types/recruitment/leads'; // Import LeadStatus
 import { v4 as uuidv4 } from 'uuid';
 
 // Dados fictícios para simular leads
@@ -13,7 +14,7 @@ const demoLeads = [
     location: 'São Paulo',
     channel: 'facebook' as ChannelType,
     confidenceLevel: 'alto',
-    status: 'novo',
+    status: 'novo' as LeadStatus, // Cast to LeadStatus
     createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 dias atrás
     updatedAt: new Date()
   },
@@ -26,7 +27,7 @@ const demoLeads = [
     location: 'São Paulo',
     channel: 'instagram' as ChannelType,
     confidenceLevel: 'médio',
-    status: 'contatado',
+    status: 'contatado' as LeadStatus, // Cast to LeadStatus
     createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000), // 14 dias atrás
     updatedAt: new Date()
   },
@@ -39,7 +40,7 @@ const demoLeads = [
     location: 'Rio de Janeiro',
     channel: 'site' as ChannelType,
     confidenceLevel: 'alto',
-    status: 'interessado',
+    status: 'interessado' as LeadStatus,
     createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 dias atrás
     updatedAt: new Date()
   },
@@ -52,7 +53,7 @@ const demoLeads = [
     location: 'Belo Horizonte',
     channel: 'whatsapp' as ChannelType,
     confidenceLevel: 'baixo',
-    status: 'nao_interessado',
+    status: 'nao_interessado' as LeadStatus,
     createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 dias atrás
     updatedAt: new Date()
   },
@@ -65,7 +66,7 @@ const demoLeads = [
     location: 'Curitiba',
     channel: 'google' as ChannelType,
     confidenceLevel: 'médio',
-    status: 'agendado',
+    status: 'agendado' as LeadStatus,
     createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), // 8 dias atrás
     updatedAt: new Date()
   },
@@ -78,7 +79,7 @@ const demoLeads = [
     location: 'Porto Alegre',
     channel: 'facebook' as ChannelType,
     confidenceLevel: 'alto',
-    status: 'contatado',
+    status: 'contatado' as LeadStatus,
     createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15 dias atrás
     updatedAt: new Date()
   },
@@ -91,7 +92,7 @@ const demoLeads = [
     location: 'Recife',
     channel: 'instagram' as ChannelType,
     confidenceLevel: 'médio',
-    status: 'novo',
+    status: 'novo' as LeadStatus,
     createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 dias atrás
     updatedAt: new Date()
   },
@@ -104,7 +105,7 @@ const demoLeads = [
     location: 'Fortaleza',
     channel: 'site' as ChannelType,
     confidenceLevel: 'baixo',
-    status: 'interessado',
+    status: 'interessado' as LeadStatus,
     createdAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000), // 12 dias atrás
     updatedAt: new Date()
   }
