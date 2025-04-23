@@ -32,7 +32,7 @@ const ConversationTabsContainer: React.FC<ConversationTabsContainerProps> = ({
   isSelectedLead,
   selectedConversation
 }) => {
-  const mockHistory = [] // Move your mock history here if needed
+  // Não precisamos mais do mockHistory aqui, já está no componente ConversationHistoryView
 
   return (
     <Tabs defaultValue={activeChannel} className="flex-1 flex flex-col overflow-hidden">
@@ -67,7 +67,6 @@ const ConversationTabsContainer: React.FC<ConversationTabsContainerProps> = ({
 
       <TabsContent value="history" className="flex-1 overflow-hidden">
         <ConversationHistoryView 
-          history={mockHistory}
           leadName={selectedConversation.leadName}
         />
       </TabsContent>

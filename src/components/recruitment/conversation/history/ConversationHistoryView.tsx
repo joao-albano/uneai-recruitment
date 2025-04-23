@@ -164,13 +164,13 @@ export const ConversationHistoryView = ({ history, leadName }: ConversationHisto
   );
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col overflow-hidden">
       <div className="flex items-center gap-2 py-3 px-4 border-b">
         <History className="h-5 w-5" />
         <h2 className="text-lg font-medium">Histórico de Atendimentos - {leadName}</h2>
       </div>
       
-      <Tabs defaultValue="whatsapp" className="flex-1 flex flex-col">
+      <Tabs defaultValue="whatsapp" className="flex-1 flex flex-col overflow-hidden">
         <TabsList className="mx-4 mt-2 grid w-auto grid-cols-3">
           <TabsTrigger value="whatsapp">
             <MessageSquare className="h-4 w-4 mr-2" />
@@ -187,7 +187,7 @@ export const ConversationHistoryView = ({ history, leadName }: ConversationHisto
         </TabsList>
 
         <div className="flex-1 overflow-auto p-4">
-          <TabsContent value="whatsapp" className="mt-0">
+          <TabsContent value="whatsapp" className="mt-0 h-full">
             {whatsappHistory.length > 0 ? (
               whatsappHistory.map(item => renderHistoryItem(item))
             ) : (
@@ -195,7 +195,7 @@ export const ConversationHistoryView = ({ history, leadName }: ConversationHisto
             )}
           </TabsContent>
 
-          <TabsContent value="email" className="mt-0">
+          <TabsContent value="email" className="mt-0 h-full">
             {emailHistory.length > 0 ? (
               emailHistory.map(item => renderHistoryItem(item))
             ) : (
@@ -203,7 +203,7 @@ export const ConversationHistoryView = ({ history, leadName }: ConversationHisto
             )}
           </TabsContent>
 
-          <TabsContent value="voz" className="mt-0">
+          <TabsContent value="voz" className="mt-0 h-full">
             {voiceHistory.length > 0 ? (
               voiceHistory.map(item => renderHistoryItem(item))
             ) : (
