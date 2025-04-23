@@ -32,6 +32,7 @@ const ConversationInterface: React.FC<ConversationInterfaceProps> = ({
     newConversationOpen,
     setNewConversationOpen,
     messages,
+    setMessages,  // Added this line to include setMessages from the hook
     handleSendMessage,
     handleCreateNewConversation
   } = useConversationState();

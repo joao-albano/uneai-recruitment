@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Message } from '../types';
 import { toast } from "sonner";
+import { EmotionType, IntentType } from '@/types/recruitment';
 
 export const useConversationState = () => {
   const [activeChannel, setActiveChannel] = useState<'whatsapp' | 'email' | 'voz'>('whatsapp');
@@ -55,7 +56,7 @@ export const useConversationState = () => {
   const handleSendMessage = (message: string) => {
     if (!message.trim()) return;
     
-    const newMessage = {
+    const newMessage: Message = {
       id: Date.now().toString(),
       content: message,
       timestamp: new Date(),
@@ -67,14 +68,14 @@ export const useConversationState = () => {
     
     if (isAiMode) {
       setTimeout(() => {
-        const aiResponse = {
+        const aiResponse: Message = {
           id: (Date.now() + 1).toString(),
           content: "Estou analisando sua mensagem. Como posso ajudar mais em relação ao curso de Administração?",
           timestamp: new Date(),
           isFromLead: true,
           isFromAi: false,
-          emotion: 'neutro',
-          intent: 'duvida_processo',
+          emotion: 'neutro' as EmotionType,
+          intent: 'duvida_processo' as IntentType,
         };
         
         setMessages(prev => [...prev, aiResponse]);
