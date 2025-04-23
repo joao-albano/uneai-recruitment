@@ -13,13 +13,16 @@ interface MessageInputProps {
   onSendMessage: (message: string) => void;
   onEndConversation?: () => void;
   messages: Message[];
+  onOpenSettings?: () => void; // Added this prop
+  isSelectedLead?: boolean; // Made optional as it's not used in the component
 }
 
 const MessageInput: React.FC<MessageInputProps> = ({
   isAiMode,
   onSendMessage,
   onEndConversation,
-  messages
+  messages,
+  onOpenSettings // Added this to destructuring
 }) => {
   const [message, setMessage] = useState('');
   const [showRegistryDialog, setShowRegistryDialog] = useState(false);
@@ -44,6 +47,15 @@ const MessageInput: React.FC<MessageInputProps> = ({
     
     if (onEndConversation) {
       onEndConversation();
+    }
+  };
+
+  // Using onOpenSettings when available
+  const handleSettingsClick = () => {
+    if (onOpenSettings) {
+      onOpenSettings();
+    } else {
+      setShowRegistryDialog(true);
     }
   };
 
@@ -81,7 +93,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
           <Button
             size="icon"
             variant="outline"
-            onClick={isAiMode ? handleAutoRegistry : () => setShowRegistryDialog(true)}
+            onClick={isAiMode ? handleAutoRegistry : handleSettingsClick}
           >
             {isAiMode ? <Bot className="h-4 w-4" /> : <span>#</span>}
           </Button>
