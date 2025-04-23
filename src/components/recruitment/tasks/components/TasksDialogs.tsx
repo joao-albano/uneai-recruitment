@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -73,7 +73,7 @@ const TasksDialogs: React.FC<TasksDialogsProps> = ({
   });
   
   // Resetar formulário de tarefa quando o diálogo abre/fecha
-  React.useEffect(() => {
+  useEffect(() => {
     if (taskDialogOpen) {
       setTaskFormData(selectedTask || {
         title: '',
@@ -132,13 +132,13 @@ const TasksDialogs: React.FC<TasksDialogsProps> = ({
             </DialogDescription>
           </DialogHeader>
           
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-            <TabsList className="grid grid-cols-2">
+          <Tabs defaultValue="task-info" value={activeTab} onValueChange={setActiveTab} className="mt-4">
+            <TabsList className="grid grid-cols-2 w-full">
               <TabsTrigger value="task-info">Informações da Tarefa</TabsTrigger>
               <TabsTrigger value="lead-selection">Seleção de Leads</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="task-info" className="mt-4">
+            <TabsContent value="task-info" className="mt-4 space-y-4">
               <TaskForm 
                 formData={taskFormData}
                 onFormChange={setTaskFormData}
