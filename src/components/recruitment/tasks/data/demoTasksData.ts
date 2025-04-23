@@ -1,5 +1,5 @@
-
 import { Task } from '@/types/recruitment/tasks';
+import { ChannelType } from '@/types/recruitment/common';
 import { v4 as uuidv4 } from 'uuid';
 
 // Dados fictícios para simular leads
@@ -11,7 +11,7 @@ const demoLeads = [
     phone: '(11) 98765-4321',
     course: 'Administração',
     location: 'São Paulo',
-    channel: 'facebook',
+    channel: 'facebook' as ChannelType,
     confidenceLevel: 'alto',
     status: 'novo',
     createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 dias atrás
@@ -24,7 +24,7 @@ const demoLeads = [
     phone: '(11) 98765-4322',
     course: 'Direito',
     location: 'São Paulo',
-    channel: 'instagram',
+    channel: 'instagram' as ChannelType,
     confidenceLevel: 'médio',
     status: 'contatado',
     createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000), // 14 dias atrás
@@ -37,7 +37,7 @@ const demoLeads = [
     phone: '(21) 98765-4323',
     course: 'Medicina',
     location: 'Rio de Janeiro',
-    channel: 'site',
+    channel: 'site' as ChannelType,
     confidenceLevel: 'alto',
     status: 'interessado',
     createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 dias atrás
@@ -50,7 +50,7 @@ const demoLeads = [
     phone: '(31) 98765-4324',
     course: 'Engenharia Civil',
     location: 'Belo Horizonte',
-    channel: 'whatsapp',
+    channel: 'whatsapp' as ChannelType,
     confidenceLevel: 'baixo',
     status: 'nao_interessado',
     createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 dias atrás
@@ -63,7 +63,7 @@ const demoLeads = [
     phone: '(41) 98765-4325',
     course: 'Psicologia',
     location: 'Curitiba',
-    channel: 'google',
+    channel: 'google' as ChannelType,
     confidenceLevel: 'médio',
     status: 'agendado',
     createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), // 8 dias atrás
@@ -76,7 +76,7 @@ const demoLeads = [
     phone: '(51) 98765-4326',
     course: 'Ciência da Computação',
     location: 'Porto Alegre',
-    channel: 'facebook',
+    channel: 'facebook' as ChannelType,
     confidenceLevel: 'alto',
     status: 'contatado',
     createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15 dias atrás
@@ -89,7 +89,7 @@ const demoLeads = [
     phone: '(81) 98765-4327',
     course: 'Marketing',
     location: 'Recife',
-    channel: 'instagram',
+    channel: 'instagram' as ChannelType,
     confidenceLevel: 'médio',
     status: 'novo',
     createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 dias atrás
@@ -102,7 +102,7 @@ const demoLeads = [
     phone: '(85) 98765-4328',
     course: 'Nutrição',
     location: 'Fortaleza',
-    channel: 'site',
+    channel: 'site' as ChannelType,
     confidenceLevel: 'baixo',
     status: 'interessado',
     createdAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000), // 12 dias atrás
