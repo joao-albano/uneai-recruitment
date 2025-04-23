@@ -1,22 +1,15 @@
-
 import React from 'react';
-import { TabsContent } from '@/components/ui/tabs';
+import { TabsContent } from "@/components/ui/tabs";
 import MessagesContainer from './MessagesContainer';
 import MessageInput from './MessageInput';
-import { Message } from './types';
-import { RefreshCw, Settings } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { toast } from "sonner";
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface WhatsAppTabProps {
-  messages: Message[];
+  messages: any[];
   isAiMode: boolean;
   showAnalytics: boolean;
   onSendMessage: (message: string) => void;
-  onOpenSettings?: () => void;
-  isSelectedLead?: boolean;
-  leadId?: string;
+  onOpenSettings: () => void;
+  isSelectedLead: boolean;
   onEndConversation?: () => void;
 }
 
@@ -26,63 +19,25 @@ const WhatsAppTab: React.FC<WhatsAppTabProps> = ({
   showAnalytics,
   onSendMessage,
   onOpenSettings,
-  isSelectedLead = true,
-  leadId,
+  isSelectedLead,
   onEndConversation
 }) => {
-  const handleEndConversation = () => {
-    if (onEndConversation) {
-      onEndConversation();
-    } else {
-      toast.success("Atendimento encerrado com sucesso!");
-    }
-  };
-
   return (
-    <TabsContent value="whatsapp" className="flex-1 flex flex-col p-0 m-0 h-full">
-      <div className="flex items-center justify-end p-2 border-b">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0"
-          onClick={() => window.location.reload()}
-          title="Atualizar conversa"
-        >
-          <RefreshCw className="h-4 w-4" />
-        </Button>
-        
-        {onOpenSettings && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={onOpenSettings}
-            title="Configurações da conversa"
-          >
-            <Settings className="h-4 w-4" />
-          </Button>
-        )}
-      </div>
-
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <ScrollArea className="flex-1">
-          <MessagesContainer 
-            messages={messages}
-            showAnalytics={showAnalytics}
-            leadId={leadId}
-          />
-        </ScrollArea>
-      </div>
+    <TabsContent value="whatsapp" className="flex-1 flex flex-col">
+      <MessagesContainer
+        messages={messages}
+        showAnalytics={showAnalytics}
+        leadId={isSelectedLead ? 'current-lead' : undefined}
+      />
       
-      {isSelectedLead && (
-        <div className="p-2 border-t bg-background">
-          <MessageInput 
-            isAiMode={isAiMode}
-            onSendMessage={onSendMessage}
-            onEndConversation={handleEndConversation}
-          />
-        </div>
-      )}
+      <div className="p-4 border-t">
+        <MessageInput
+          isAiMode={isAiMode}
+          onSendMessage={onSendMessage}
+          onEndConversation={onEndConversation}
+          messages={messages}
+        />
+      </div>
     </TabsContent>
   );
 };

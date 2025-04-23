@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,12 +9,14 @@ interface MessageInputProps {
   isAiMode: boolean;
   onSendMessage: (message: string) => void;
   onEndConversation?: () => void;
+  messages: Message[];
 }
 
 const MessageInput: React.FC<MessageInputProps> = ({
   isAiMode,
   onSendMessage,
-  onEndConversation
+  onEndConversation,
+  messages
 }) => {
   const [message, setMessage] = useState('');
   const [showRegistryDialog, setShowRegistryDialog] = useState(false);
@@ -35,12 +36,21 @@ const MessageInput: React.FC<MessageInputProps> = ({
     }
   };
 
-  const handleEndWithRegistry = (code: string, description: string) => {
-    // Adiciona mensagem de sistema indicando a tabulação
+  const handleEndWithRegistry = async (code: string, description: string) => {
     onSendMessage(`[Sistema] Atendimento tabulado como: ${code} - ${description}`);
     
     if (onEndConversation) {
       onEndConversation();
+    }
+  };
+
+  const handleAutoRegistry = async () => {
+    const result = await analyzeConversationForRegistry(messages, rules);
+    
+    if (result) {
+      handleEndWithRegistry(result.code, result.description);
+    } else {
+      setShowRegistryDialog(true);
     }
   };
 
@@ -68,7 +78,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
           <Button
             size="icon"
             variant="outline"
-            onClick={() => setShowRegistryDialog(true)}
+            onClick={isAiMode ? handleAutoRegistry : () => setShowRegistryDialog(true)}
           >
             {isAiMode ? <Bot className="h-4 w-4" /> : <span>#</span>}
           </Button>
