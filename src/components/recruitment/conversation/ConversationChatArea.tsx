@@ -70,12 +70,87 @@ const ConversationChatArea: React.FC<ConversationChatAreaProps> = ({
     {
       id: '2',
       leadId: selectedConversation?.leadId || '',
+      channel: 'whatsapp',
+      date: new Date(2024, 2, 20, 16, 45),
+      agent: 'Maria Santos',
+      status: 'completed',
+      registryCode: 'AGD',
+      registryDescription: 'Agendamento Realizado',
+      messages: [
+        {
+          id: '3',
+          content: 'Qual o valor da mensalidade do curso?',
+          timestamp: new Date(2024, 2, 20, 16, 45),
+          isFromLead: true,
+          isFromAi: false
+        },
+        {
+          id: '4',
+          content: 'Temos várias opções de bolsas e descontos. Podemos agendar uma visita para apresentar todas as possibilidades?',
+          timestamp: new Date(2024, 2, 20, 16, 46),
+          isFromLead: false,
+          isFromAi: true
+        }
+      ]
+    },
+    {
+      id: '3',
+      leadId: selectedConversation?.leadId || '',
+      channel: 'email',
+      date: new Date(2024, 2, 18, 10, 0),
+      agent: 'Ana Oliveira',
+      status: 'completed',
+      registryCode: 'DOC',
+      registryDescription: 'Documentação Enviada',
+      messages: [
+        {
+          id: '5',
+          content: 'Prezada Maria, segue em anexo a documentação necessária para matrícula e informações sobre as formas de pagamento.',
+          timestamp: new Date(2024, 2, 18, 10, 0),
+          isFromLead: false,
+          isFromAi: false
+        }
+      ]
+    },
+    {
+      id: '4',
+      leadId: selectedConversation?.leadId || '',
+      channel: 'email',
+      date: new Date(2024, 2, 19, 15, 20),
+      agent: 'Carlos Mendes',
+      status: 'completed',
+      registryCode: 'BLS',
+      registryDescription: 'Bolsa Solicitada',
+      messages: [
+        {
+          id: '6',
+          content: 'Recebemos sua solicitação de bolsa de estudos. Em breve entraremos em contato para dar continuidade ao processo.',
+          timestamp: new Date(2024, 2, 19, 15, 20),
+          isFromLead: false,
+          isFromAi: false
+        }
+      ]
+    },
+    {
+      id: '5',
+      leadId: selectedConversation?.leadId || '',
       channel: 'voz',
       date: new Date(2024, 2, 16, 10, 0),
       agent: 'Maria Oliveira',
       status: 'completed',
-      duration: 360, // 6 minutos
-      transcription: 'Lead demonstrou interesse no curso de Psicologia e solicitou informações sobre bolsas de estudo.',
+      duration: 360,
+      transcription: 'Lead demonstrou interesse no curso de Psicologia e solicitou informações sobre bolsas de estudo. Agendada visita para próxima semana.',
+      messages: []
+    },
+    {
+      id: '6',
+      leadId: selectedConversation?.leadId || '',
+      channel: 'voz',
+      date: new Date(2024, 2, 21, 14, 30),
+      agent: 'Pedro Santos',
+      status: 'completed',
+      duration: 480,
+      transcription: 'Realizada apresentação detalhada do curso, infraestrutura e laboratórios. Lead demonstrou forte interesse em iniciar o processo de matrícula.',
       messages: []
     }
   ];
