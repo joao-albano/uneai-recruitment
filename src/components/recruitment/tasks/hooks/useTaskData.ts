@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { Task, TaskFilter, TaskAgentMetrics, TaskContact } from '@/types/recruitment/tasks';
 import { ChannelType, LeadStatus } from '@/types/recruitment/common';
@@ -30,7 +31,8 @@ const mockTasks: Task[] = [
     assignedToName: "Carlos Atendente",
     contactAttempts: [],
     tags: ["matrícula", "prioritário"],
-    source: "manual"
+    source: "manual",
+    selectedLeadIds: ["lead1"]
   },
   {
     id: "task2",
@@ -58,7 +60,48 @@ const mockTasks: Task[] = [
     assignedToName: "Ana Atendente",
     contactAttempts: [],
     tags: ["follow-up", "visita"],
-    source: "automático"
+    source: "automático",
+    selectedLeadIds: ["lead2"]
+  }
+];
+
+// Mock leads para simulação
+const mockLeads = [
+  {
+    id: "lead1",
+    name: "João Silva",
+    email: "joao@example.com",
+    phone: "(11) 9 9999-9999",
+    course: "Engenharia",
+    location: "São Paulo",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    channel: "site" as ChannelType,
+    status: "novo" as LeadStatus
+  },
+  {
+    id: "lead2",
+    name: "Maria Oliveira",
+    email: "maria@example.com",
+    phone: "(11) 9 8888-8888",
+    course: "Medicina",
+    location: "Rio de Janeiro",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    channel: "facebook" as ChannelType,
+    status: "interessado" as LeadStatus
+  },
+  {
+    id: "lead3",
+    name: "Pedro Santos",
+    email: "pedro@example.com",
+    phone: "(11) 9 7777-7777",
+    course: "Direito",
+    location: "São Paulo",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    channel: "instagram" as ChannelType,
+    status: "quente" as LeadStatus
   }
 ];
 
@@ -91,12 +134,30 @@ export const useTaskData = () => {
   const [filteredTasks, setFilteredTasks] = useState<Task[]>(mockTasks);
   const [taskMetrics] = useState<TaskAgentMetrics[]>(mockAgentMetrics);
 
+  // Função para buscar lead por ID
+  const findLeadById = useCallback((leadId: string) => {
+    return mockLeads.find(lead => lead.id === leadId);
+  }, []);
+
   // Adicionar nova tarefa
   const addTask = useCallback((taskData: Partial<Task>) => {
+    // Garantir que temos um lead principal para compatibilidade
+    const mainLeadId = taskData.selectedLeadIds && taskData.selectedLeadIds.length > 0 
+      ? taskData.selectedLeadIds[0] 
+      : "";
+    
+    const mainLead = findLeadById(mainLeadId);
+    
+    // Obter todos os leads selecionados
+    const selectedLeads = (taskData.selectedLeadIds || [])
+      .map(id => findLeadById(id))
+      .filter(lead => lead !== undefined);
+    
     const newTask: Task = {
       id: `task${Date.now()}`,
-      leadId: taskData.leadId || "",
-      lead: taskData.lead,
+      leadId: mainLeadId, // Mantemos leadId para compatibilidade
+      lead: mainLead, // Lead principal para compatibilidade
+      leads: selectedLeads as any[], // Todos os leads selecionados
       title: taskData.title || "Nova tarefa",
       description: taskData.description || "",
       createdAt: new Date(),
@@ -108,21 +169,39 @@ export const useTaskData = () => {
       assignedToName: taskData.assignedToName,
       contactAttempts: [],
       tags: taskData.tags || [],
-      source: taskData.source || "manual"
+      source: taskData.source || "manual",
+      selectedLeadIds: taskData.selectedLeadIds || []
     };
     
     setTasks(prev => [newTask, ...prev]);
     setFilteredTasks(prev => [newTask, ...prev]);
     
     return newTask;
-  }, []);
+  }, [findLeadById]);
 
   // Atualizar tarefa existente
   const updateTask = useCallback((updatedTask: Partial<Task>) => {
+    // Se houver alteração nos leads selecionados, atualizar os objetos lead
+    let updatedTaskWithLeads = { ...updatedTask };
+    
+    if (updatedTask.selectedLeadIds) {
+      const selectedLeads = updatedTask.selectedLeadIds
+        .map(id => findLeadById(id))
+        .filter(lead => lead !== undefined);
+      
+      updatedTaskWithLeads = {
+        ...updatedTaskWithLeads,
+        leads: selectedLeads as any[],
+        // Se houver leads, definir o primeiro como o principal
+        lead: selectedLeads.length > 0 ? selectedLeads[0] : undefined,
+        leadId: selectedLeads.length > 0 ? selectedLeads[0]?.id : ""
+      };
+    }
+    
     setTasks(prev => 
       prev.map(task => 
         task.id === updatedTask.id 
-          ? { ...task, ...updatedTask, updatedAt: new Date() } 
+          ? { ...task, ...updatedTaskWithLeads, updatedAt: new Date() } 
           : task
       )
     );
@@ -130,11 +209,11 @@ export const useTaskData = () => {
     setFilteredTasks(prev => 
       prev.map(task => 
         task.id === updatedTask.id 
-          ? { ...task, ...updatedTask, updatedAt: new Date() } 
+          ? { ...task, ...updatedTaskWithLeads, updatedAt: new Date() } 
           : task
       )
     );
-  }, []);
+  }, [findLeadById]);
 
   // Excluir tarefa
   const deleteTask = useCallback((taskId: string) => {

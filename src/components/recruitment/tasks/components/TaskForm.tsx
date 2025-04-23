@@ -11,12 +11,8 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Button } from '@/components/ui/button';
-import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 
 interface TaskFormProps {
   formData: Partial<Task>;
@@ -45,6 +41,10 @@ const TaskForm: React.FC<TaskFormProps> = ({
   
   const handleDueDateChange = (date: Date | undefined) => {
     onFormChange({ ...formData, dueDate: date });
+  };
+  
+  const handleSelectedLeadIdsChange = (value: string[]) => {
+    onFormChange({ ...formData, selectedLeadIds: value });
   };
   
   return (
@@ -110,30 +110,12 @@ const TaskForm: React.FC<TaskFormProps> = ({
       
       <div className="grid gap-2">
         <Label htmlFor="dueDate">Data de vencimento</Label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              id="dueDate"
-              variant="outline"
-              className="w-full justify-start text-left font-normal"
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {formData.dueDate ? (
-                format(new Date(formData.dueDate), 'dd/MM/yyyy', { locale: ptBR })
-              ) : (
-                <span>Selecione uma data</span>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <Calendar
-              mode="single"
-              selected={formData.dueDate ? new Date(formData.dueDate) : undefined}
-              onSelect={handleDueDateChange}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
+        <DatePicker
+          date={formData.dueDate ? new Date(formData.dueDate) : undefined}
+          setDate={handleDueDateChange}
+          placeholder="Selecione uma data"
+          className="w-full"
+        />
       </div>
     </div>
   );

@@ -6,12 +6,15 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Task, TaskContact } from '@/types/recruitment/tasks';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TaskForm from './TaskForm';
 import TaskDistribution from './TaskDistribution';
 import ContactForm from './ContactForm';
+import LeadSelectionForm from './LeadSelectionForm';
 
 interface TasksDialogsProps {
   taskDialogOpen: boolean;
@@ -38,6 +41,8 @@ const TasksDialogs: React.FC<TasksDialogsProps> = ({
   onDistributeTasks,
   onContactSave
 }) => {
+  const [activeTab, setActiveTab] = useState('task-info');
+  
   // Estado para o formulário de tarefa
   const [taskFormData, setTaskFormData] = useState<Partial<Task>>(
     selectedTask || {
@@ -45,6 +50,7 @@ const TasksDialogs: React.FC<TasksDialogsProps> = ({
       description: '',
       priority: 'média',
       status: 'pendente',
+      selectedLeadIds: []
     }
   );
   
@@ -74,7 +80,9 @@ const TasksDialogs: React.FC<TasksDialogsProps> = ({
         description: '',
         priority: 'média',
         status: 'pendente',
+        selectedLeadIds: []
       });
+      setActiveTab('task-info');
     }
   }, [taskDialogOpen, selectedTask]);
   
@@ -100,28 +108,56 @@ const TasksDialogs: React.FC<TasksDialogsProps> = ({
     }
     setContactDialogOpen(false);
   };
+
+  const handleLeadSelectionChange = (selectedLeadIds: string[]) => {
+    setTaskFormData(prev => ({
+      ...prev,
+      selectedLeadIds
+    }));
+  };
   
   return (
     <>
       {/* Diálogo para criação/edição de tarefa */}
       <Dialog open={taskDialogOpen} onOpenChange={setTaskDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {selectedTask ? 'Editar Tarefa' : 'Nova Tarefa'}
             </DialogTitle>
+            <DialogDescription>
+              {selectedTask 
+                ? "Edite os detalhes da tarefa e os leads associados." 
+                : "Crie uma nova tarefa e selecione os leads que serão contatados."}
+            </DialogDescription>
           </DialogHeader>
           
-          <TaskForm 
-            formData={taskFormData}
-            onFormChange={setTaskFormData}
-          />
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
+            <TabsList className="grid grid-cols-2">
+              <TabsTrigger value="task-info">Informações da Tarefa</TabsTrigger>
+              <TabsTrigger value="lead-selection">Seleção de Leads</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="task-info" className="mt-4">
+              <TaskForm 
+                formData={taskFormData}
+                onFormChange={setTaskFormData}
+              />
+            </TabsContent>
+            
+            <TabsContent value="lead-selection" className="mt-4">
+              <LeadSelectionForm
+                selectedLeadIds={taskFormData.selectedLeadIds || []}
+                onSelectionChange={handleLeadSelectionChange}
+              />
+            </TabsContent>
+          </Tabs>
           
-          <DialogFooter>
+          <DialogFooter className="mt-6">
             <Button variant="outline" onClick={() => setTaskDialogOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleTaskSave}>
+            <Button onClick={handleTaskSave} disabled={(taskFormData.selectedLeadIds || []).length === 0}>
               {selectedTask ? 'Salvar Alterações' : 'Criar Tarefa'}
             </Button>
           </DialogFooter>
@@ -133,6 +169,9 @@ const TasksDialogs: React.FC<TasksDialogsProps> = ({
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>Distribuir Tarefas</DialogTitle>
+            <DialogDescription>
+              Configure como as tarefas serão distribuídas entre os atendentes.
+            </DialogDescription>
           </DialogHeader>
           
           <TaskDistribution 
@@ -158,6 +197,9 @@ const TasksDialogs: React.FC<TasksDialogsProps> = ({
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>Registrar Contato</DialogTitle>
+            <DialogDescription>
+              Registre uma tentativa de contato com este lead.
+            </DialogDescription>
           </DialogHeader>
           
           <ContactForm 

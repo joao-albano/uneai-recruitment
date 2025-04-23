@@ -54,6 +54,9 @@ export interface Task {
   source: 'manual' | 'automático';
   completedAt?: Date;
   completedBy?: string;
+  // Campo para armazenar múltiplos leads associados a uma tarefa
+  selectedLeadIds?: string[];
+  leads?: LeadData[];
 }
 
 export interface TaskFilter {

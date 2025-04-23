@@ -1,28 +1,13 @@
 
 import React from 'react';
 import { Task } from '@/types/recruitment/tasks';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import {
-  Calendar,
-  Check,
-  Clock,
-  Edit,
-  Phone,
-  Trash2,
-  User,
-} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { format } from 'date-fns';
+import { Calendar, Phone, Edit, Trash2, CheckCircle2 } from 'lucide-react';
+import LeadList from './LeadList';
 
 interface TaskDetailsProps {
   task: Task;
@@ -39,179 +24,161 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({
   onDelete,
   onContactLead,
   onScheduleContact,
-  onComplete,
+  onComplete
 }) => {
-  const getPriorityBadge = (priority: string) => {
-    switch (priority) {
-      case 'alta':
-        return <Badge variant="destructive">Alta</Badge>;
-      case 'média':
-        return <Badge variant="default">Média</Badge>;
-      case 'baixa':
-        return <Badge variant="outline">Baixa</Badge>;
-      default:
-        return null;
-    }
-  };
-  
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'pendente':
-        return <Badge variant="outline" className="bg-amber-100 text-amber-800">Pendente</Badge>;
-      case 'em_andamento':
-        return <Badge variant="outline" className="bg-blue-100 text-blue-800">Em andamento</Badge>;
-      case 'agendada':
-        return <Badge variant="outline" className="bg-purple-100 text-purple-800">Agendada</Badge>;
-      case 'concluída':
-        return <Badge variant="outline" className="bg-green-100 text-green-800">Concluída</Badge>;
-      case 'cancelada':
-        return <Badge variant="outline" className="bg-gray-100 text-gray-800">Cancelada</Badge>;
-      default:
-        return null;
-    }
+  // Determinar a cor do badge de prioridade
+  const priorityColor = {
+    alta: 'bg-red-50 text-red-700 border-red-300',
+    média: 'bg-yellow-50 text-yellow-700 border-yellow-300',
+    baixa: 'bg-green-50 text-green-700 border-green-300'
   };
 
+  // Determinar a cor do badge de status
+  const statusColor = {
+    pendente: 'bg-blue-50 text-blue-700 border-blue-300',
+    em_andamento: 'bg-purple-50 text-purple-700 border-purple-300',
+    concluída: 'bg-green-50 text-green-700 border-green-300',
+    agendada: 'bg-indigo-50 text-indigo-700 border-indigo-300',
+    cancelada: 'bg-gray-50 text-gray-700 border-gray-300'
+  };
+
+  // Verificar se a tarefa tem leads associados
+  const hasLeads = task.leads && task.leads.length > 0;
+  // Se não houver leads associados mas houver um lead principal
+  const leadsList = hasLeads ? task.leads : (task.lead ? [task.lead] : []);
+  
   return (
     <Card>
       <CardHeader>
-        <div className="flex justify-between items-start">
-          <div>
-            <CardTitle>{task.title}</CardTitle>
-            <CardDescription>
-              Criada em {format(new Date(task.createdAt), 'dd/MM/yyyy', { locale: ptBR })}
-            </CardDescription>
-          </div>
-          <div className="flex space-x-1">
-            {getPriorityBadge(task.priority)}
-            {getStatusBadge(task.status)}
-          </div>
+        <div className="flex items-center justify-between mb-2">
+          <Badge variant="outline" className={priorityColor[task.priority]}>
+            Prioridade: {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
+          </Badge>
+          <Badge variant="outline" className={statusColor[task.status]}>
+            {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
+          </Badge>
         </div>
+        <CardTitle>{task.title}</CardTitle>
+        <CardDescription>
+          {task.assignedToName ? `Atribuído a: ${task.assignedToName}` : 'Não atribuído'}
+        </CardDescription>
       </CardHeader>
-      
-      <CardContent className="space-y-4">
-        <div>
-          <h3 className="text-sm font-medium text-muted-foreground mb-1">Descrição</h3>
-          <p>{task.description || "Sem descrição"}</p>
-        </div>
-        
-        <Separator />
-        
-        {task.lead && (
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-1">Lead</h3>
-            <div className="space-y-2">
-              <p className="font-medium">{task.lead.name}</p>
-              <div className="text-sm">
-                <p>{task.lead.email}</p>
-                <p>{task.lead.phone}</p>
-                <p>Curso: {task.lead.course}</p>
-                <p>Local: {task.lead.location}</p>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        <Separator />
-        
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-1">Data de Vencimento</h3>
-            <div className="flex items-center">
-              <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-              {task.dueDate ? (
-                format(new Date(task.dueDate), 'dd/MM/yyyy', { locale: ptBR })
-              ) : (
-                "Não definida"
-              )}
-            </div>
-          </div>
+
+      <CardContent>
+        <Tabs defaultValue="details" className="w-full">
+          <TabsList className="grid grid-cols-2">
+            <TabsTrigger value="details">Detalhes</TabsTrigger>
+            <TabsTrigger value="leads">Leads ({leadsList.length})</TabsTrigger>
+          </TabsList>
           
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-1">Atribuída para</h3>
-            <div className="flex items-center">
-              <User className="h-4 w-4 mr-2 text-muted-foreground" />
-              {task.assignedToName || "Não atribuída"}
+          <TabsContent value="details" className="space-y-4 mt-4">
+            <div>
+              <h4 className="text-sm font-medium mb-1">Descrição</h4>
+              <p className="text-sm text-muted-foreground">{task.description || 'Sem descrição'}</p>
             </div>
-          </div>
-        </div>
-        
-        {task.contactAttempts && task.contactAttempts.length > 0 && (
-          <>
-            <Separator />
+            
+            {task.dueDate && (
+              <div className="flex items-start">
+                <Calendar className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground" />
+                <div>
+                  <h4 className="text-sm font-medium">Data de vencimento</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {format(new Date(task.dueDate), 'dd/MM/yyyy')}
+                  </p>
+                </div>
+              </div>
+            )}
+            
+            {task.tags && task.tags.length > 0 && (
+              <div>
+                <h4 className="text-sm font-medium mb-1">Tags</h4>
+                <div className="flex flex-wrap gap-1">
+                  {task.tags.map(tag => (
+                    <Badge key={tag} variant="secondary">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
             
             <div>
-              <h3 className="text-sm font-medium text-muted-foreground mb-1">Histórico de Contatos</h3>
-              <div className="space-y-2 max-h-40 overflow-y-auto">
-                {task.contactAttempts.map((attempt, index) => (
-                  <div key={index} className="bg-muted p-2 rounded-md text-sm">
-                    <div className="flex justify-between">
-                      <span className="font-medium">{attempt.method}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {format(new Date(attempt.timestamp), 'dd/MM HH:mm', { locale: ptBR })}
-                      </span>
+              <h4 className="text-sm font-medium mb-1">Tentativas de Contato</h4>
+              {task.contactAttempts.length > 0 ? (
+                <div className="space-y-2">
+                  {task.contactAttempts.map((attempt, index) => (
+                    <div key={index} className="text-sm p-2 border rounded-md">
+                      <p className="font-medium">
+                        {format(new Date(attempt.timestamp), 'dd/MM/yyyy HH:mm')}
+                      </p>
+                      <p>Método: {attempt.method}</p>
+                      <p>Resultado: {attempt.result}</p>
+                      {attempt.notes && <p>Notas: {attempt.notes}</p>}
                     </div>
-                    <div>Resultado: {attempt.result}</div>
-                    {attempt.notes && <div className="mt-1">{attempt.notes}</div>}
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Nenhuma tentativa de contato registrada</p>
+              )}
             </div>
-          </>
-        )}
+          </TabsContent>
+          
+          <TabsContent value="leads" className="mt-4">
+            <LeadList leads={leadsList} />
+          </TabsContent>
+        </Tabs>
       </CardContent>
-      
-      <CardFooter className="flex flex-wrap gap-2">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={onContactLead}
-          disabled={task.status === 'concluída' || task.status === 'cancelada'}
-        >
-          <Phone className="mr-2 h-4 w-4" />
-          Contatar
-        </Button>
-        
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={onScheduleContact}
-          disabled={task.status === 'concluída' || task.status === 'cancelada'}
-        >
-          <Clock className="mr-2 h-4 w-4" />
-          Agendar
-        </Button>
-        
+
+      <CardFooter className="flex flex-col gap-2">
         {task.status !== 'concluída' && (
-          <Button 
-            variant="default" 
-            size="sm" 
-            onClick={onComplete}
-            disabled={task.status === 'cancelada'}
-          >
-            <Check className="mr-2 h-4 w-4" />
-            Concluir
-          </Button>
+          <div className="grid grid-cols-2 gap-2 w-full">
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              onClick={onContactLead}
+            >
+              <Phone className="h-4 w-4 mr-2" />
+              Contatar
+            </Button>
+            <Button 
+              variant="outline" 
+              className="w-full"
+              onClick={onScheduleContact}
+            >
+              <Calendar className="h-4 w-4 mr-2" />
+              Agendar
+            </Button>
+          </div>
         )}
         
-        <div className="grow" />
-        
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={onEdit}
-        >
-          <Edit className="mr-2 h-4 w-4" />
-          Editar
-        </Button>
-        
-        <Button 
-          variant="destructive" 
-          size="sm" 
-          onClick={onDelete}
-        >
-          <Trash2 className="mr-2 h-4 w-4" />
-          Excluir
-        </Button>
+        <div className="grid grid-cols-3 gap-2 w-full">
+          {task.status !== 'concluída' && (
+            <Button 
+              variant="default" 
+              className="w-full"
+              onClick={onComplete}
+            >
+              <CheckCircle2 className="h-4 w-4 mr-2" />
+              Concluir
+            </Button>
+          )}
+          <Button 
+            variant="outline" 
+            className="w-full"
+            onClick={onEdit}
+          >
+            <Edit className="h-4 w-4 mr-2" />
+            Editar
+          </Button>
+          <Button 
+            variant="destructive" 
+            className="w-full"
+            onClick={onDelete}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Excluir
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );
