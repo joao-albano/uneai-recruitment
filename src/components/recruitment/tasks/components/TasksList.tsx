@@ -21,19 +21,20 @@ const TasksList: React.FC<TasksListProps> = ({
   onSelectTask,
   onContactLead,
   onScheduleContact,
-  onCompleteTask,
-  onViewContactHistory
+  onViewContactHistory,
+  onCompleteTask
 }) => {
   return (
     <Table>
       <TableHeader>
-        <TableRow className="border-b border-muted hover:bg-transparent">
-          <TableHead className="py-4 font-semibold text-muted-foreground">Título</TableHead>
-          <TableHead className="font-semibold text-muted-foreground">Prioridade</TableHead>
-          <TableHead className="font-semibold text-muted-foreground">Status</TableHead>
-          <TableHead className="font-semibold text-muted-foreground">Atribuído a</TableHead>
-          <TableHead className="font-semibold text-muted-foreground">Data de Vencimento</TableHead>
-          <TableHead className="text-right font-semibold text-muted-foreground">Ações</TableHead>
+        <TableRow className="border-b border-border hover:bg-transparent">
+          <TableHead className="w-[250px]">Lead</TableHead>
+          <TableHead className="w-[250px]">Tarefa</TableHead>
+          <TableHead className="w-[120px]">Status</TableHead>
+          <TableHead className="w-[120px]">Prioridade</TableHead>
+          <TableHead className="w-[120px]">Vencimento</TableHead>
+          <TableHead className="w-[120px]">Atendente</TableHead>
+          <TableHead className="w-[150px] text-right">Ações</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -50,7 +51,7 @@ const TasksList: React.FC<TasksListProps> = ({
         ))}
         {tasks.length === 0 && (
           <TableRow>
-            <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
+            <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
               Nenhuma tarefa encontrada.
             </TableCell>
           </TableRow>
