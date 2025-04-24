@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Task } from '@/types/recruitment/tasks';
 import { LeadData } from '@/types/recruitment/leads';
@@ -37,7 +36,6 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   onScheduleContact,
   onComplete,
 }) => {
-  // Return null early if task is not available
   if (!task) return null;
 
   const priorityColor = {
@@ -54,19 +52,23 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
     cancelada: 'bg-gray-50 text-gray-700 border-gray-300'
   };
 
-  const hasLeads = task.leads && task.leads.length > 0;
+  const hasLeads = task?.leads && task.leads.length > 0;
   const leadsList = hasLeads ? task.leads : (task.lead ? [task.lead] : []);
 
-  // Handle closing of dialog safely
-  const handleOpenChange = (isOpen: boolean) => {
-    // Chame onOpenChange apenas se o valor for diferente do atual
-    if (isOpen !== open) {
-      onOpenChange(isOpen);
+  const handleContactLead = (lead: LeadData) => {
+    if (onContactLead) {
+      onContactLead(lead);
+    }
+  };
+
+  const handleScheduleLead = (lead: LeadData) => {
+    if (onScheduleContact) {
+      onScheduleContact(lead);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center justify-between mb-2">
@@ -144,8 +146,8 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
           <TabsContent value="leads" className="mt-4">
             <LeadList 
               leads={leadsList} 
-              onContactLead={onContactLead}
-              onScheduleLead={onScheduleContact}
+              onContactLead={handleContactLead}
+              onScheduleLead={handleScheduleLead}
             />
           </TabsContent>
         </Tabs>
