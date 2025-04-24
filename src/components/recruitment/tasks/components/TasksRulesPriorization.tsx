@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,8 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
-import { Plus, Trash2, Edit } from 'lucide-react';
+import { Plus, Trash2, Edit, Link } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { PriorizationFactorSelector, allFactors } from './factors/PriorizationFactors';
 
 interface PriorizationRule {
   id: string;
@@ -18,16 +20,25 @@ interface PriorizationRule {
     weight: number;
   }[];
   isActive: boolean;
+  appliesTo?: {
+    stageId?: string;
+    stageName?: string;
+  };
+  linkedFromGenerationRules?: string[];
 }
 
 interface TasksRulesPriorizationProps {
   rules: PriorizationRule[];
   onUpdateRules: (rules: PriorizationRule[]) => void;
+  funnelStages?: { id: string; name: string }[];
+  generationRules?: { id: string; name: string; linkedPriorizationRules?: string[] }[];
 }
 
 const TasksRulesPriorization: React.FC<TasksRulesPriorizationProps> = ({
   rules,
-  onUpdateRules
+  onUpdateRules,
+  funnelStages = [],
+  generationRules = []
 }) => {
   const [localRules, setLocalRules] = useState<PriorizationRule[]>(rules);
   const [newRuleName, setNewRuleName] = useState('');
@@ -40,6 +51,10 @@ const TasksRulesPriorization: React.FC<TasksRulesPriorizationProps> = ({
       factor: string;
       weight: number;
     }[];
+    appliesTo?: {
+      stageId?: string;
+      stageName?: string;
+    };
   }>({
     name: '',
     weight: 5,
@@ -48,7 +63,18 @@ const TasksRulesPriorization: React.FC<TasksRulesPriorizationProps> = ({
   });
   
   const handleSave = () => {
-    onUpdateRules(localRules);
+    const updatedRules = localRules.map(rule => {
+      const linkedFromRules = generationRules
+        .filter(genRule => genRule.linkedPriorizationRules?.includes(rule.id))
+        .map(genRule => genRule.id);
+      
+      return {
+        ...rule,
+        linkedFromGenerationRules: linkedFromRules
+      };
+    });
+    
+    onUpdateRules(updatedRules);
   };
   
   const handleToggleRule = (id: string) => {
@@ -80,6 +106,7 @@ const TasksRulesPriorization: React.FC<TasksRulesPriorizationProps> = ({
       weight: 5,
       factors: [],
       isActive: true,
+      appliesTo: {}
     };
     
     setLocalRules([...localRules, newRule]);
@@ -92,7 +119,8 @@ const TasksRulesPriorization: React.FC<TasksRulesPriorizationProps> = ({
       name: rule.name,
       weight: rule.weight,
       isActive: rule.isActive,
-      factors: [...rule.factors]
+      factors: [...rule.factors],
+      appliesTo: rule.appliesTo || {}
     });
   };
 
@@ -111,7 +139,8 @@ const TasksRulesPriorization: React.FC<TasksRulesPriorizationProps> = ({
               name: editFormData.name,
               weight: editFormData.weight,
               isActive: editFormData.isActive,
-              factors: editFormData.factors
+              factors: editFormData.factors,
+              appliesTo: editFormData.appliesTo
             } 
           : rule
       )
@@ -132,7 +161,7 @@ const TasksRulesPriorization: React.FC<TasksRulesPriorizationProps> = ({
     
     const newFactor = {
       factor: '',
-      weight: 1
+      weight: 3
     };
     
     setEditFormData({
@@ -162,6 +191,29 @@ const TasksRulesPriorization: React.FC<TasksRulesPriorizationProps> = ({
       ...editFormData,
       factors: updatedFactors
     });
+  };
+
+  const handleStageChange = (stageId: string) => {
+    const stage = funnelStages.find(s => s.id === stageId);
+    
+    setEditFormData({
+      ...editFormData,
+      appliesTo: {
+        stageId,
+        stageName: stage?.name
+      }
+    });
+  };
+
+  const getFactorName = (factorId: string) => {
+    const factor = allFactors.find(f => f.id === factorId);
+    return factor ? factor.name : factorId;
+  };
+
+  const getLinkedGenerationRules = (ruleId: string) => {
+    return generationRules.filter(rule => 
+      rule.linkedPriorizationRules?.includes(ruleId)
+    );
   };
   
   return (
@@ -203,6 +255,31 @@ const TasksRulesPriorization: React.FC<TasksRulesPriorizationProps> = ({
                         </Button>
                       </div>
                     </div>
+
+                    {funnelStages.length > 0 && (
+                      <div>
+                        <Label className="mb-2 block">Aplicar a etapa</Label>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          <Badge 
+                            variant="outline" 
+                            className={`cursor-pointer ${!editFormData.appliesTo?.stageId ? 'bg-primary text-primary-foreground' : ''}`}
+                            onClick={() => handleEditFormChange('appliesTo', {})}
+                          >
+                            Todas as etapas
+                          </Badge>
+                          {funnelStages.map(stage => (
+                            <Badge 
+                              key={stage.id}
+                              variant={editFormData.appliesTo?.stageId === stage.id ? 'default' : 'outline'}
+                              className="cursor-pointer"
+                              onClick={() => handleStageChange(stage.id)}
+                            >
+                              {stage.name}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     
                     <div>
                       <Label>
@@ -225,34 +302,34 @@ const TasksRulesPriorization: React.FC<TasksRulesPriorizationProps> = ({
                           Nenhum fator adicionado
                         </p>
                       ) : (
-                        editFormData.factors.map((factor, idx) => (
-                          <div key={idx} className="flex items-center gap-2 mb-2">
-                            <Input
-                              value={factor.factor}
-                              onChange={(e) => handleFactorChange(idx, 'factor', e.target.value)}
-                              placeholder="Nome do fator"
-                              className="flex-1"
-                            />
-                            <div className="flex flex-col w-32">
-                              <Label className="text-xs">Peso: {factor.weight}</Label>
-                              <Slider
-                                value={[factor.weight]}
-                                min={1}
-                                max={5}
-                                step={1}
-                                onValueChange={(value) => handleFactorChange(idx, 'weight', value[0])}
+                        <ScrollArea className="h-[200px] pr-4">
+                          {editFormData.factors.map((factor, idx) => (
+                            <div key={idx} className="flex items-center gap-2 mb-4">
+                              <PriorizationFactorSelector
+                                value={factor.factor}
+                                onChange={(value) => handleFactorChange(idx, 'factor', value)}
                               />
+                              <div className="flex flex-col w-32">
+                                <Label className="text-xs">Peso: {factor.weight}</Label>
+                                <Slider
+                                  value={[factor.weight]}
+                                  min={1}
+                                  max={5}
+                                  step={1}
+                                  onValueChange={(value) => handleFactorChange(idx, 'factor', value[0])}
+                                />
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-destructive"
+                                onClick={() => handleDeleteFactor(idx)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
                             </div>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-destructive"
-                              onClick={() => handleDeleteFactor(idx)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        ))
+                          ))}
+                        </ScrollArea>
                       )}
                       
                       <Button
@@ -274,6 +351,11 @@ const TasksRulesPriorization: React.FC<TasksRulesPriorizationProps> = ({
                         <Badge variant={rule.isActive ? 'default' : 'outline'}>
                           {rule.isActive ? 'Ativo' : 'Inativo'}
                         </Badge>
+                        {rule.appliesTo?.stageName && (
+                          <Badge variant="secondary">
+                            Etapa: {rule.appliesTo.stageName}
+                          </Badge>
+                        )}
                       </div>
                       <div className="flex items-center gap-2">
                         <Button
@@ -318,7 +400,7 @@ const TasksRulesPriorization: React.FC<TasksRulesPriorizationProps> = ({
                       <div className="space-y-2">
                         {rule.factors.map((factor, idx) => (
                           <div key={idx} className="flex items-center justify-between">
-                            <span>{factor.factor}</span>
+                            <span>{getFactorName(factor.factor)}</span>
                             <span>Peso: {factor.weight}</span>
                           </div>
                         ))}
@@ -329,6 +411,29 @@ const TasksRulesPriorization: React.FC<TasksRulesPriorizationProps> = ({
                         )}
                       </div>
                     </div>
+                    
+                    {getLinkedGenerationRules(rule.id).length > 0 && (
+                      <div className="mt-3">
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <Link className="h-3.5 w-3.5" />
+                          <span>Regras de geração vinculadas:</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {getLinkedGenerationRules(rule.id).map(genRule => (
+                            <Tooltip key={genRule.id}>
+                              <TooltipTrigger>
+                                <Badge variant="secondary" className="text-xs">
+                                  {genRule.name}
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-xs">Regra de geração: {genRule.name}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </>
                 )}
               </div>

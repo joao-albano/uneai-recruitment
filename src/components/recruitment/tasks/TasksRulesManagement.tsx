@@ -14,6 +14,7 @@ const TasksRulesManagement: React.FC = () => {
     distributionRules,
     priorizationRules,
     generationRules,
+    funnelStages,
     updateDistributionRules,
     updatePriorizationRules,
     updateGenerationRules
@@ -45,6 +46,7 @@ const TasksRulesManagement: React.FC = () => {
               <TasksRulesGeneration 
                 rules={generationRules} 
                 onUpdateRules={updateGenerationRules} 
+                priorizationRules={priorizationRules.map(rule => ({ id: rule.id, name: rule.name }))}
               />
             </TabsContent>
             
@@ -52,6 +54,12 @@ const TasksRulesManagement: React.FC = () => {
               <TasksRulesPriorization 
                 rules={priorizationRules} 
                 onUpdateRules={updatePriorizationRules} 
+                funnelStages={funnelStages}
+                generationRules={generationRules.map(rule => ({
+                  id: rule.id,
+                  name: rule.name,
+                  linkedPriorizationRules: rule.linkedPriorizationRules
+                }))}
               />
             </TabsContent>
             

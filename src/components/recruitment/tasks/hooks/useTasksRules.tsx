@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { TasksDistributionConfig } from '@/types/recruitment/tasks';
 import { useToast } from '@/components/ui/use-toast';
+import { FunnelStage } from '@/types/recruitment';
 
 // Types for rules
 interface GenerationRule {
@@ -15,6 +16,7 @@ interface GenerationRule {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  linkedPriorizationRules?: string[];
 }
 
 interface PriorizationRule {
@@ -26,7 +28,20 @@ interface PriorizationRule {
     weight: number;
   }[];
   isActive: boolean;
+  appliesTo?: {
+    stageId?: string;
+    stageName?: string;
+  };
+  linkedFromGenerationRules?: string[];
 }
+
+// Dados de exemplo para etapas do funil
+const mockFunnelStages: { id: string; name: string }[] = [
+  { id: 'stage1', name: 'Contato Inicial' },
+  { id: 'stage2', name: 'Agendamento' },
+  { id: 'stage3', name: 'Visita' },
+  { id: 'stage4', name: 'Matrícula' }
+];
 
 // Mock initial data
 const initialDistributionRules: TasksDistributionConfig = {
@@ -40,22 +55,25 @@ const initialDistributionRules: TasksDistributionConfig = {
 const initialPriorizationRules: PriorizationRule[] = [
   {
     id: '1',
-    name: 'Lead Quente',
-    weight: 10,
+    name: 'Etapas Avançadas',
+    weight: 8,
     factors: [
-      { factor: 'interesse', weight: 5 },
-      { factor: 'interacoes_recentes', weight: 3 },
-      { factor: 'campanha_paga', weight: 2 }
+      { factor: 'etapa_funil', weight: 5 },
+      { factor: 'tempo_etapa', weight: 3 },
     ],
-    isActive: true
+    isActive: true,
+    appliesTo: {
+      stageId: 'stage3',
+      stageName: 'Visita'
+    }
   },
   {
     id: '2',
-    name: 'Data limite próxima',
-    weight: 8,
+    name: 'Proximidade ao Prazo',
+    weight: 7,
     factors: [
-      { factor: 'data_limite', weight: 5 },
-      { factor: 'dias_restantes', weight: 3 }
+      { factor: 'prazo_matricula', weight: 5 },
+      { factor: 'sla', weight: 4 }
     ],
     isActive: true
   }
@@ -71,7 +89,8 @@ const initialGenerationRules: GenerationRule[] = [
     ],
     isActive: true,
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    linkedPriorizationRules: ['1']
   },
   {
     id: '2',
@@ -82,7 +101,8 @@ const initialGenerationRules: GenerationRule[] = [
     ],
     isActive: true,
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    linkedPriorizationRules: ['2']
   }
 ];
 
@@ -91,6 +111,7 @@ export const useTasksRules = () => {
   const [distributionRules, setDistributionRules] = useState<TasksDistributionConfig>(initialDistributionRules);
   const [priorizationRules, setPriorizationRules] = useState<PriorizationRule[]>(initialPriorizationRules);
   const [generationRules, setGenerationRules] = useState<GenerationRule[]>(initialGenerationRules);
+  const [funnelStages] = useState(mockFunnelStages);
 
   // Update distribution rules
   const updateDistributionRules = (newRules: Partial<TasksDistributionConfig>) => {
@@ -110,73 +131,27 @@ export const useTasksRules = () => {
     });
   };
 
-  // Add new priorization rule
-  const addPriorizationRule = (newRule: Omit<PriorizationRule, 'id'>) => {
-    const rule = { ...newRule, id: `p-${Date.now()}` };
-    setPriorizationRules(prev => [...prev, rule]);
-    toast({
-      title: "Regra de priorização adicionada",
-      description: "A nova regra de priorização foi adicionada com sucesso.",
-    });
-  };
-
-  // Delete priorization rule
-  const deletePriorizationRule = (id: string) => {
-    setPriorizationRules(prev => prev.filter(rule => rule.id !== id));
-    toast({
-      title: "Regra de priorização removida",
-      description: "A regra de priorização foi removida com sucesso.",
-    });
-  };
-
   // Update generation rules
   const updateGenerationRules = (newRules: GenerationRule[]) => {
     setGenerationRules(newRules);
+    
+    // Atualizar as relações com as regras de priorização
+    const updatedPriorizationRules = priorizationRules.map(prRule => {
+      const linkedFromRules = newRules.filter(genRule => 
+        genRule.linkedPriorizationRules?.includes(prRule.id)
+      ).map(genRule => genRule.id);
+      
+      return {
+        ...prRule,
+        linkedFromGenerationRules: linkedFromRules
+      };
+    });
+    
+    setPriorizationRules(updatedPriorizationRules);
+    
     toast({
       title: "Regras de geração atualizadas",
       description: "As regras de geração de tarefas foram atualizadas com sucesso.",
-    });
-  };
-
-  // Add new generation rule
-  const addGenerationRule = (newRule: Omit<GenerationRule, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const rule = { 
-      ...newRule, 
-      id: `g-${Date.now()}`,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    setGenerationRules(prev => [...prev, rule]);
-    toast({
-      title: "Regra de geração adicionada",
-      description: "A nova regra de geração foi adicionada com sucesso.",
-    });
-  };
-
-  // Delete generation rule
-  const deleteGenerationRule = (id: string) => {
-    setGenerationRules(prev => prev.filter(rule => rule.id !== id));
-    toast({
-      title: "Regra de geração removida",
-      description: "A regra de geração foi removida com sucesso.",
-    });
-  };
-
-  // Toggle rule status
-  const toggleRuleStatus = (id: string, type: 'generation' | 'priorization') => {
-    if (type === 'generation') {
-      setGenerationRules(prev => prev.map(rule => 
-        rule.id === id ? { ...rule, isActive: !rule.isActive, updatedAt: new Date() } : rule
-      ));
-    } else {
-      setPriorizationRules(prev => prev.map(rule => 
-        rule.id === id ? { ...rule, isActive: !rule.isActive } : rule
-      ));
-    }
-    
-    toast({
-      title: "Status da regra alterado",
-      description: `A regra foi ${type === 'generation' ? 'geração' : 'priorização'} foi atualizada com sucesso.`,
     });
   };
 
@@ -184,13 +159,9 @@ export const useTasksRules = () => {
     distributionRules,
     priorizationRules,
     generationRules,
+    funnelStages,
     updateDistributionRules,
     updatePriorizationRules,
-    addPriorizationRule,
-    deletePriorizationRule,
-    updateGenerationRules,
-    addGenerationRule,
-    deleteGenerationRule,
-    toggleRuleStatus
+    updateGenerationRules
   };
 };

@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { Trash2, Plus, Edit } from 'lucide-react';
+import { Trash2, Plus, Edit, Link } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   Select,
   SelectContent,
@@ -25,16 +26,19 @@ interface GenerationRule {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  linkedPriorizationRules?: string[];
 }
 
 interface TasksRulesGenerationProps {
   rules: GenerationRule[];
   onUpdateRules: (rules: GenerationRule[]) => void;
+  priorizationRules?: { id: string, name: string }[];
 }
 
 const TasksRulesGeneration: React.FC<TasksRulesGenerationProps> = ({
   rules,
-  onUpdateRules
+  onUpdateRules,
+  priorizationRules = []
 }) => {
   const [localRules, setLocalRules] = useState<GenerationRule[]>(rules);
   const [newRuleName, setNewRuleName] = useState('');
@@ -47,10 +51,12 @@ const TasksRulesGeneration: React.FC<TasksRulesGenerationProps> = ({
       operator: string;
       value: string | number | boolean | string[];
     }[];
+    linkedPriorizationRules?: string[];
   }>({
     name: '',
     isActive: true,
-    conditions: []
+    conditions: [],
+    linkedPriorizationRules: []
   });
   
   const handleSave = () => {
@@ -92,7 +98,8 @@ const TasksRulesGeneration: React.FC<TasksRulesGenerationProps> = ({
     setEditFormData({
       name: rule.name,
       isActive: rule.isActive,
-      conditions: [...rule.conditions]
+      conditions: [...rule.conditions],
+      linkedPriorizationRules: rule.linkedPriorizationRules || []
     });
   };
 
@@ -111,6 +118,7 @@ const TasksRulesGeneration: React.FC<TasksRulesGenerationProps> = ({
               name: editFormData.name,
               isActive: editFormData.isActive,
               conditions: editFormData.conditions,
+              linkedPriorizationRules: editFormData.linkedPriorizationRules,
               updatedAt: new Date() 
             } 
           : rule
@@ -162,6 +170,20 @@ const TasksRulesGeneration: React.FC<TasksRulesGenerationProps> = ({
     setEditFormData({
       ...editFormData,
       conditions: updatedConditions
+    });
+  };
+
+  const handleTogglePriorizationRule = (priorizationRuleId: string) => {
+    setEditFormData(prev => {
+      const currentLinkedRules = prev.linkedPriorizationRules || [];
+      const isAlreadyLinked = currentLinkedRules.includes(priorizationRuleId);
+      
+      return {
+        ...prev,
+        linkedPriorizationRules: isAlreadyLinked 
+          ? currentLinkedRules.filter(id => id !== priorizationRuleId)
+          : [...currentLinkedRules, priorizationRuleId]
+      };
     });
   };
   
@@ -231,6 +253,9 @@ const TasksRulesGeneration: React.FC<TasksRulesGenerationProps> = ({
                                   <SelectItem value="status">Status</SelectItem>
                                   <SelectItem value="curso">Curso</SelectItem>
                                   <SelectItem value="interesse">Nível de interesse</SelectItem>
+                                  <SelectItem value="etapa_funil">Etapa do funil</SelectItem>
+                                  <SelectItem value="regiao">Região</SelectItem>
+                                  <SelectItem value="origem">Canal de origem</SelectItem>
                                 </SelectContent>
                               </Select>
                               
@@ -279,6 +304,29 @@ const TasksRulesGeneration: React.FC<TasksRulesGenerationProps> = ({
                           Adicionar Condição
                         </Button>
                       </div>
+
+                      {priorizationRules.length > 0 && (
+                        <div className="mt-4">
+                          <Label className="mb-2 block">Regras de Priorização Vinculadas</Label>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {priorizationRules.map(priorizationRule => (
+                              <Badge 
+                                key={priorizationRule.id}
+                                variant={editFormData.linkedPriorizationRules?.includes(priorizationRule.id) 
+                                  ? "default" 
+                                  : "outline"}
+                                className="cursor-pointer"
+                                onClick={() => handleTogglePriorizationRule(priorizationRule.id)}
+                              >
+                                {priorizationRule.name}
+                              </Badge>
+                            ))}
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            Clique nas regras para vincular ou desvincular
+                          </p>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <>
@@ -328,6 +376,29 @@ const TasksRulesGeneration: React.FC<TasksRulesGenerationProps> = ({
                           </p>
                         )}
                       </div>
+
+                      {rule.linkedPriorizationRules && rule.linkedPriorizationRules.length > 0 && (
+                        <div className="mt-3">
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <Link className="h-3.5 w-3.5" />
+                            <span>Vinculado a:</span>
+                          </div>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {rule.linkedPriorizationRules.map(ruleId => {
+                              const linkedRule = priorizationRules.find(r => r.id === ruleId);
+                              return (
+                                <Badge 
+                                  key={ruleId}
+                                  variant="secondary"
+                                  className="text-xs"
+                                >
+                                  {linkedRule?.name || 'Regra desconhecida'}
+                                </Badge>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                       
                       <div className="mt-2 text-xs text-muted-foreground">
                         Atualizado em: {new Date(rule.updatedAt).toLocaleString()}
