@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -245,10 +244,10 @@ const TasksRulesGeneration: React.FC<TasksRulesGenerationProps> = ({
                                 <SelectContent>
                                   <SelectItem value="=">=</SelectItem>
                                   <SelectItem value="!=">!=</SelectItem>
-                                  <SelectItem value=">">></SelectItem>
-                                  <SelectItem value="<"><</SelectItem>
-                                  <SelectItem value=">=">>=</SelectItem>
-                                  <SelectItem value="<="><=</SelectItem>
+                                  <SelectItem value=">">&gt;</SelectItem>
+                                  <SelectItem value="<">&lt;</SelectItem>
+                                  <SelectItem value=">=">&gt;=</SelectItem>
+                                  <SelectItem value="<=">&lt;=</SelectItem>
                                 </SelectContent>
                               </Select>
                               
