@@ -46,6 +46,12 @@ export const predefinedFactors = {
 // Flatten para pesquisa
 export const allFactors = Object.values(predefinedFactors).flat();
 
+// Add the getFactorName function
+export const getFactorName = (factorId: string): string => {
+  const factor = allFactors.find(f => f.id === factorId);
+  return factor ? factor.name : factorId;
+};
+
 interface PriorizationFactorSelectorProps {
   value: string;
   onChange: (value: string) => void;

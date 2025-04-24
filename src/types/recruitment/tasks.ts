@@ -97,3 +97,20 @@ export interface TasksDistributionConfig {
   considerExpertise: boolean;
   balanceLoad: boolean;
 }
+
+// Add the PriorizationRule interface
+export interface PriorizationRule {
+  id: string;
+  name: string;
+  weight: number;
+  factors: {
+    factor: string;
+    weight: number;
+  }[];
+  isActive: boolean;
+  appliesTo?: {
+    stageId?: string;
+    stageName?: string;
+  };
+  linkedFromGenerationRules?: string[];
+}
