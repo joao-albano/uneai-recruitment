@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Task } from '@/types/recruitment/tasks';
 import { Button } from '@/components/ui/button';
@@ -13,7 +12,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { MoreHorizontal, Phone, Calendar, Check } from 'lucide-react';
+import { Phone, Calendar, Check, MoreHorizontal } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import ContactScheduleDialog from './ContactScheduleDialog';
 
 interface TasksListProps {
   tasks: Task[];
@@ -42,6 +42,15 @@ const TasksList: React.FC<TasksListProps> = ({
   onBulkOperations
 }) => {
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
+  const [dialogConfig, setDialogConfig] = useState<{
+    open: boolean;
+    type: 'contact' | 'schedule';
+    selectedTask: Task | null;
+  }>({
+    open: false,
+    type: 'contact',
+    selectedTask: null
+  });
   
   // Status colors for badges
   const statusColors = {
@@ -59,7 +68,6 @@ const TasksList: React.FC<TasksListProps> = ({
     baixa: 'bg-green-100 text-green-800 border-green-300',
   };
 
-  // Toggle task selection
   const toggleTaskSelection = (taskId: string) => {
     setSelectedTaskIds(prev => {
       if (prev.includes(taskId)) {
@@ -70,7 +78,6 @@ const TasksList: React.FC<TasksListProps> = ({
     });
   };
   
-  // Select all or none
   const toggleSelectAll = () => {
     if (selectedTaskIds.length === tasks.length) {
       setSelectedTaskIds([]);
@@ -79,7 +86,14 @@ const TasksList: React.FC<TasksListProps> = ({
     }
   };
 
-  // Get lead info display
+  const handleDialogConfirm = (data: any) => {
+    if (dialogConfig.type === 'contact') {
+      onContactLead(dialogConfig.selectedTask!);
+    } else {
+      onScheduleContact(dialogConfig.selectedTask!);
+    }
+  };
+
   const getLeadDisplayInfo = (task: Task) => {
     if (task.leads && task.leads.length > 0) {
       const leadCount = task.leads.length;
@@ -110,7 +124,9 @@ const TasksList: React.FC<TasksListProps> = ({
     <div className="space-y-4">
       {selectedTaskIds.length > 0 && (
         <div className="flex justify-between items-center bg-accent/20 px-4 py-2 rounded-md">
-          <span className="text-sm font-medium">{selectedTaskIds.length} item(s) selecionado(s)</span>
+          <span className="text-sm font-medium">
+            {selectedTaskIds.length} item(s) selecionado(s)
+          </span>
           <div className="flex space-x-2">
             <Button 
               size="sm" 
@@ -146,7 +162,7 @@ const TasksList: React.FC<TasksListProps> = ({
               <TableHead className="w-[100px]">Prioridade</TableHead>
               <TableHead className="w-[120px]">Status</TableHead>
               <TableHead className="w-[150px]">Atribuído</TableHead>
-              <TableHead className="w-[100px] text-right">Ações</TableHead>
+              <TableHead className="w-[120px] text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           
@@ -204,37 +220,62 @@ const TasksList: React.FC<TasksListProps> = ({
                   </div>
                 </TableCell>
                 <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Abrir menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-[160px]">
-                      <DropdownMenuItem onClick={() => onContactLead(task)}>
-                        <Phone className="h-4 w-4 mr-2" />
-                        Contatar
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onScheduleContact(task)}>
-                        <Calendar className="h-4 w-4 mr-2" />
-                        Agendar
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      {task.status !== 'concluída' && (
-                        <DropdownMenuItem onClick={() => onCompleteTask(task.id)}>
-                          <Check className="h-4 w-4 mr-2" />
-                          Concluir
-                        </DropdownMenuItem>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <div className="flex justify-end gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8"
+                      onClick={() => setDialogConfig({
+                        open: true,
+                        type: 'contact',
+                        selectedTask: task
+                      })}
+                    >
+                      <Phone className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8"
+                      onClick={() => setDialogConfig({
+                        open: true,
+                        type: 'schedule',
+                        selectedTask: task
+                      })}
+                    >
+                      <Calendar className="h-4 w-4" />
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Abrir menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-[160px]">
+                        {task.status !== 'concluída' && (
+                          <DropdownMenuItem onClick={() => onCompleteTask(task.id)}>
+                            <Check className="h-4 w-4 mr-2" />
+                            Concluir
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
+
+      <ContactScheduleDialog 
+        open={dialogConfig.open}
+        onOpenChange={(open) => setDialogConfig(prev => ({ ...prev, open }))}
+        task={dialogConfig.selectedTask}
+        type={dialogConfig.type}
+        onConfirm={handleDialogConfirm}
+      />
     </div>
   );
 };
