@@ -1,11 +1,9 @@
-
 import React from 'react';
 import { useTasksManagement } from './hooks/useTasksManagement';
 import TasksHeader from './components/TasksHeader';
 import TasksFilters from './components/TasksFilters';
 import TasksList from './components/TasksList';
 import TaskDetails from './components/TaskDetails';
-import TasksMetrics from './components/TasksMetrics';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TasksDialogs from './components/TasksDialogs';
 
@@ -139,9 +137,7 @@ const TasksManagement: React.FC = () => {
                 onScheduleContact={() => handleScheduleContact(selectedTask)}
                 onComplete={() => handleCompleteTask(selectedTask.id)}
               />
-            ) : (
-              <TasksMetrics metrics={taskMetrics} />
-            )}
+            ) : null}
           </div>
         </div>
       </Tabs>
