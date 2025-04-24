@@ -67,7 +67,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {isActive ? (
         <Button 
           className="w-full bg-blue-600 hover:bg-blue-700 text-white" 
-          onClick={() => window.open('https://preview--une-ai-escuta.lovable.app', '_blank', 'noopener,noreferrer')}
+          onClick={() => window.open('https://preview--une-ai-escuta.lovable.app/escuta-emocional', '_blank', 'noopener,noreferrer')}
         >
           Acessar <ExternalLink className="ml-2 h-4 w-4" />
         </Button>
