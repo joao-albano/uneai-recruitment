@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { LeadData } from '@/types/recruitment/leads';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -153,14 +154,14 @@ const LeadSelectionForm: React.FC<LeadSelectionFormProps> = ({
       
       <div className="grid grid-cols-1 gap-2">
         <div className="flex gap-2">
-          <div className="flex-1">
+          <div className="flex-1 relative">
             <Input
               placeholder="Buscar por nome, email ou telefone"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full"
-              leftIcon={<Search className="h-4 w-4" />}
+              className="w-full pl-9"
             />
+            <Search className="h-4 w-4 absolute left-3 top-3 text-gray-500" />
           </div>
           {Object.values([searchTerm, selectedFunnel, selectedStage, selectedSubStage, selectedCourse, selectedRegion, selectedModality]).some(Boolean) && (
             <Button 
