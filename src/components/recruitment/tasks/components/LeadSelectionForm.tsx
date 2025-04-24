@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { LeadData } from '@/types/recruitment/leads';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -12,7 +11,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Filter, Search, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // Dados mockados para demonstração
 const mockLeads: LeadData[] = [
@@ -53,7 +53,7 @@ const LeadSelectionForm: React.FC<LeadSelectionFormProps> = ({
   selectedLeadIds,
   onSelectionChange
 }) => {
-  const [leads, setLeads] = useState<LeadData[]>(mockLeads);
+  const [leads, setLeads] = useState<LeadData[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFunnel, setSelectedFunnel] = useState<string>('');
   const [selectedStage, setSelectedStage] = useState<string>('');
@@ -61,13 +61,19 @@ const LeadSelectionForm: React.FC<LeadSelectionFormProps> = ({
   const [selectedCourse, setSelectedCourse] = useState<string>('');
   const [selectedRegion, setSelectedRegion] = useState<string>('');
   const [selectedModality, setSelectedModality] = useState<string>('');
+  const [hasAppliedFilters, setHasAppliedFilters] = useState(false);
   
   const uniqueCourses = Array.from(new Set(mockLeads.map(lead => lead.course))).filter(Boolean) as string[];
   const regions = ['Norte', 'Sul', 'Leste', 'Oeste', 'Centro'];
   const modalities = ['Presencial', 'EAD', 'Híbrido'];
-  
+
   // Filtrar leads com base nos critérios
   useEffect(() => {
+    if (!selectedFunnel && !hasAppliedFilters) {
+      setLeads([]);
+      return;
+    }
+
     let filteredLeads = [...mockLeads];
     
     if (searchTerm) {
@@ -79,17 +85,17 @@ const LeadSelectionForm: React.FC<LeadSelectionFormProps> = ({
     }
     
     if (selectedFunnel) {
-      // Aplicar filtro de funil (simulado)
+      // Simular filtro por funil
       filteredLeads = filteredLeads.filter(lead => true);
     }
     
     if (selectedStage) {
-      // Aplicar filtro de etapa (simulado)
+      // Simular filtro por etapa
       filteredLeads = filteredLeads.filter(lead => true);
     }
     
     if (selectedSubStage) {
-      // Aplicar filtro de sub-etapa (simulado)
+      // Simular filtro por sub-etapa
       filteredLeads = filteredLeads.filter(lead => true);
     }
     
@@ -98,17 +104,17 @@ const LeadSelectionForm: React.FC<LeadSelectionFormProps> = ({
     }
     
     if (selectedRegion) {
-      // Aplicar filtro de região (simulado)
+      // Simular filtro por região
       filteredLeads = filteredLeads.filter(lead => true);
     }
     
     if (selectedModality) {
-      // Aplicar filtro de modalidade (simulado)
+      // Simular filtro por modalidade
       filteredLeads = filteredLeads.filter(lead => true);
     }
     
     setLeads(filteredLeads);
-  }, [searchTerm, selectedFunnel, selectedStage, selectedSubStage, selectedCourse, selectedRegion, selectedModality]);
+  }, [searchTerm, selectedFunnel, selectedStage, selectedSubStage, selectedCourse, selectedRegion, selectedModality, hasAppliedFilters]);
   
   // Manipular a seleção de leads
   const handleLeadToggle = (leadId: string) => {
@@ -137,181 +143,217 @@ const LeadSelectionForm: React.FC<LeadSelectionFormProps> = ({
     setSelectedCourse('');
     setSelectedRegion('');
     setSelectedModality('');
+    setHasAppliedFilters(false);
+  };
+
+  // Aplicar filtros
+  const handleApplyFilters = () => {
+    if (selectedFunnel) {
+      setHasAppliedFilters(true);
+    }
   };
   
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-medium">Selecionar Leads</h3>
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={handleSelectAll}
-        >
-          {selectedLeadIds.length === leads.length ? 'Desmarcar Todos' : 'Selecionar Todos'}
-        </Button>
-      </div>
-      
-      <div className="grid grid-cols-1 gap-2">
-        <div className="flex gap-2">
-          <div className="flex-1 relative">
-            <Input
-              placeholder="Buscar por nome, email ou telefone"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9"
-            />
-            <Search className="h-4 w-4 absolute left-3 top-3 text-gray-500" />
-          </div>
-          {Object.values([searchTerm, selectedFunnel, selectedStage, selectedSubStage, selectedCourse, selectedRegion, selectedModality]).some(Boolean) && (
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={handleClearFilters}
+      <div className="grid grid-cols-1 gap-4">
+        <div className="space-y-4">
+          <div className="grid grid-cols-3 gap-2">
+            <Select
+              value={selectedFunnel}
+              onValueChange={setSelectedFunnel}
             >
-              <X className="h-4 w-4 mr-2" />
-              Limpar Filtros
+              <SelectTrigger>
+                <SelectValue placeholder="Selecionar Funil *" />
+              </SelectTrigger>
+              <SelectContent>
+                {funnels.map((funnel) => (
+                  <SelectItem key={funnel.id} value={funnel.id}>
+                    {funnel.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            <Select
+              value={selectedStage}
+              onValueChange={setSelectedStage}
+              disabled={!selectedFunnel}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecionar Etapa" />
+              </SelectTrigger>
+              <SelectContent>
+                {stages
+                  .filter(stage => stage.funnelId === selectedFunnel)
+                  .map((stage) => (
+                    <SelectItem key={stage.id} value={stage.id}>
+                      {stage.name}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+            
+            <Select
+              value={selectedSubStage}
+              onValueChange={setSelectedSubStage}
+              disabled={!selectedStage}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecionar Sub-etapa" />
+              </SelectTrigger>
+              <SelectContent>
+                {subStages
+                  .filter(subStage => subStage.stageId === selectedStage)
+                  .map((subStage) => (
+                    <SelectItem key={subStage.id} value={subStage.id}>
+                      {subStage.name}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-muted-foreground">* Selecione pelo menos o funil para visualizar os leads</p>
+            <Button 
+              variant="secondary"
+              size="sm"
+              onClick={handleApplyFilters}
+              disabled={!selectedFunnel}
+            >
+              Aplicar Filtros
             </Button>
-          )}
-        </div>
-        
-        <div className="grid grid-cols-3 gap-2">
-          <Select
-            value={selectedFunnel}
-            onValueChange={setSelectedFunnel}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecionar Funil" />
-            </SelectTrigger>
-            <SelectContent>
-              {funnels.map((funnel) => (
-                <SelectItem key={funnel.id} value={funnel.id}>
-                  {funnel.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          <Select
-            value={selectedStage}
-            onValueChange={setSelectedStage}
-            disabled={!selectedFunnel}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecionar Etapa" />
-            </SelectTrigger>
-            <SelectContent>
-              {stages
-                .filter(stage => stage.funnelId === selectedFunnel)
-                .map((stage) => (
-                  <SelectItem key={stage.id} value={stage.id}>
-                    {stage.name}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
-          
-          <Select
-            value={selectedSubStage}
-            onValueChange={setSelectedSubStage}
-            disabled={!selectedStage}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecionar Sub-etapa" />
-            </SelectTrigger>
-            <SelectContent>
-              {subStages
-                .filter(subStage => subStage.stageId === selectedStage)
-                .map((subStage) => (
-                  <SelectItem key={subStage.id} value={subStage.id}>
-                    {subStage.name}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="grid grid-cols-3 gap-2">
-          <Select
-            value={selectedCourse}
-            onValueChange={setSelectedCourse}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecionar Curso" />
-            </SelectTrigger>
-            <SelectContent>
-              {uniqueCourses.map((course) => (
-                <SelectItem key={course} value={course}>
-                  {course}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          <Select
-            value={selectedRegion}
-            onValueChange={setSelectedRegion}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecionar Região" />
-            </SelectTrigger>
-            <SelectContent>
-              {regions.map((region) => (
-                <SelectItem key={region} value={region}>
-                  {region}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          <Select
-            value={selectedModality}
-            onValueChange={setSelectedModality}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecionar Modalidade" />
-            </SelectTrigger>
-            <SelectContent>
-              {modalities.map((modality) => (
-                <SelectItem key={modality} value={modality}>
-                  {modality}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      
-      <ScrollArea className="h-[300px] border rounded-md p-2">
-        <div className="space-y-2">
-          {leads.length > 0 ? (
-            leads.map((lead) => (
-              <div key={lead.id} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id={`lead-${lead.id}`} 
-                    checked={selectedLeadIds.includes(lead.id)}
-                    onCheckedChange={() => handleLeadToggle(lead.id)}
-                  />
-                  <div>
-                    <p className="font-medium">{lead.name}</p>
-                    <p className="text-sm text-gray-500">{lead.course} • {lead.email}</p>
-                  </div>
-                </div>
+          </div>
+
+          {hasAppliedFilters && (
+            <>
+              <div className="grid grid-cols-3 gap-2">
+                <Select
+                  value={selectedCourse}
+                  onValueChange={setSelectedCourse}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecionar Curso" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {uniqueCourses.map((course) => (
+                      <SelectItem key={course} value={course}>
+                        {course}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <Select
+                  value={selectedRegion}
+                  onValueChange={setSelectedRegion}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecionar Região" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {regions.map((region) => (
+                      <SelectItem key={region} value={region}>
+                        {region}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <Select
+                  value={selectedModality}
+                  onValueChange={setSelectedModality}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecionar Modalidade" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {modalities.map((modality) => (
+                      <SelectItem key={modality} value={modality}>
+                        {modality}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-            ))
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-gray-500">Nenhum lead encontrado com os filtros selecionados.</p>
-            </div>
+
+              <div className="flex gap-2">
+                <div className="flex-1 relative">
+                  <Input
+                    placeholder="Buscar por nome, email ou telefone"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-9"
+                  />
+                  <Search className="h-4 w-4 absolute left-3 top-3 text-gray-500" />
+                </div>
+                {Object.values([searchTerm, selectedFunnel, selectedStage, selectedSubStage, selectedCourse, selectedRegion, selectedModality]).some(Boolean) && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={handleClearFilters}
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Limpar Filtros
+                  </Button>
+                )}
+              </div>
+            </>
           )}
         </div>
-      </ScrollArea>
-      
-      <div className="flex justify-between items-center">
-        <p className="text-sm text-gray-500">
-          {selectedLeadIds.length} lead(s) selecionado(s) de {leads.length}
-        </p>
+
+        {hasAppliedFilters && (
+          <>
+            <Alert>
+              <AlertDescription>
+                Para este filtro você tem {leads.length} leads para trabalhar
+              </AlertDescription>
+            </Alert>
+
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-medium">Selecionar Leads</h3>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleSelectAll}
+              >
+                {selectedLeadIds.length === leads.length ? 'Desmarcar Todos' : 'Selecionar Todos'}
+              </Button>
+            </div>
+            
+            <ScrollArea className="h-[300px] border rounded-md p-2">
+              <div className="space-y-2">
+                {leads.length > 0 ? (
+                  leads.map((lead) => (
+                    <div key={lead.id} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={`lead-${lead.id}`} 
+                          checked={selectedLeadIds.includes(lead.id)}
+                          onCheckedChange={() => handleLeadToggle(lead.id)}
+                        />
+                        <div>
+                          <p className="font-medium">{lead.name}</p>
+                          <p className="text-sm text-gray-500">{lead.course} • {lead.email}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500">Nenhum lead encontrado com os filtros selecionados.</p>
+                  </div>
+                )}
+              </div>
+            </ScrollArea>
+            
+            <div className="flex justify-between items-center">
+              <p className="text-sm text-gray-500">
+                {selectedLeadIds.length} lead(s) selecionado(s) de {leads.length}
+              </p>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
