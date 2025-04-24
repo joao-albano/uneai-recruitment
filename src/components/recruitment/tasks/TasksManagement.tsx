@@ -40,14 +40,14 @@ const TasksManagement: React.FC = () => {
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
   
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full">
       <TasksHeader
         onCreateTask={() => setTaskDialogOpen(true)}
       />
       
       <TasksMetrics metrics={taskMetrics} />
       
-      <Card className="p-4">
+      <Card className="p-4 w-full max-w-full">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full md:w-auto">
             <TabsList>
