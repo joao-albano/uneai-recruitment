@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -316,7 +317,7 @@ const TasksRulesPriorization: React.FC<TasksRulesPriorizationProps> = ({
                                   min={1}
                                   max={5}
                                   step={1}
-                                  onValueChange={(value) => handleFactorChange(idx, 'factor', value[0])}
+                                  onValueChange={(value) => handleFactorChange(idx, 'weight', value[0])}
                                 />
                               </div>
                               <Button
