@@ -253,6 +253,7 @@ const TasksRulesGeneration: React.FC<TasksRulesGenerationProps> = ({
                                   <SelectItem value="status">Status</SelectItem>
                                   <SelectItem value="curso">Curso</SelectItem>
                                   <SelectItem value="interesse">Nível de interesse</SelectItem>
+                                  <SelectItem value="funil">Funil</SelectItem>
                                   <SelectItem value="etapa_funil">Etapa do funil</SelectItem>
                                   <SelectItem value="regiao">Região</SelectItem>
                                   <SelectItem value="origem">Canal de origem</SelectItem>
