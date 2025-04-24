@@ -48,12 +48,16 @@ export const useRuleEditor = () => {
   const handleAddFactor = () => {
     setEditFormData({
       ...editFormData,
-      factors: [...(editFormData.factors || []), { factor: 'etapa_funil', weight: 3 }]
+      factors: [...(Array.isArray(editFormData.factors) ? editFormData.factors : []), { factor: 'etapa_funil', weight: 3 }]
     });
   };
 
   const handleDeleteFactor = (index: number) => {
-    const updatedFactors = [...(editFormData.factors || [])];
+    if (!Array.isArray(editFormData.factors)) {
+      return;
+    }
+    
+    const updatedFactors = [...editFormData.factors];
     updatedFactors.splice(index, 1);
     
     setEditFormData({
@@ -63,7 +67,11 @@ export const useRuleEditor = () => {
   };
 
   const handleFactorChange = (index: number, field: string, value: any) => {
-    const updatedFactors = [...(editFormData.factors || [])];
+    if (!Array.isArray(editFormData.factors)) {
+      return;
+    }
+    
+    const updatedFactors = [...editFormData.factors];
     if (updatedFactors[index]) {
       updatedFactors[index] = {
         ...updatedFactors[index],

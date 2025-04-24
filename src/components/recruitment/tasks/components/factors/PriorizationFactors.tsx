@@ -48,6 +48,9 @@ export const allFactors = Object.values(predefinedFactors).flat();
 
 // Função para obter o nome do fator
 export const getFactorName = (factorId: string): string => {
+  // Ensure factorId is a valid string
+  if (!factorId) return 'Fator Desconhecido';
+  
   const factor = allFactors.find(f => f.id === factorId);
   return factor ? factor.name : factorId;
 };
@@ -69,40 +72,43 @@ export const PriorizationFactorSelector: React.FC<PriorizationFactorSelectorProp
           role="combobox"
           aria-expanded={open}
           className="w-full justify-between"
+          type="button"
         >
           {selectedFactor ? selectedFactor.name : "Selecionar fator..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0">
+      <PopoverContent className="w-[300px] p-0" side="bottom" align="start">
         <Command>
           <CommandInput placeholder="Buscar fator..." className="h-9" />
           <CommandEmpty>Nenhum fator encontrado.</CommandEmpty>
-          {Object.entries(predefinedFactors).map(([category, factors]) => (
-            <CommandGroup key={category} heading={category}>
-              {factors.map((factor) => (
-                <CommandItem
-                  key={factor.id}
-                  value={factor.id}
-                  onSelect={() => {
-                    onChange(factor.id);
-                    setOpen(false);
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === factor.id ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  <div className="flex flex-col">
-                    <span>{factor.name}</span>
-                    <span className="text-xs text-muted-foreground">{factor.description}</span>
-                  </div>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          ))}
+          <div className="max-h-[300px] overflow-auto">
+            {Object.entries(predefinedFactors).map(([category, factors]) => (
+              <CommandGroup key={category} heading={category}>
+                {factors.map((factor) => (
+                  <CommandItem
+                    key={factor.id}
+                    value={factor.id}
+                    onSelect={() => {
+                      onChange(factor.id);
+                      setOpen(false);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        value === factor.id ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    <div className="flex flex-col">
+                      <span>{factor.name}</span>
+                      <span className="text-xs text-muted-foreground">{factor.description}</span>
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            ))}
+          </div>
         </Command>
       </PopoverContent>
     </Popover>
