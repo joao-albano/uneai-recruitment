@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -13,6 +14,7 @@ import TasksMetrics from './components/TasksMetrics';
 
 const TasksManagement: React.FC = () => {
   const [contactHistoryOpen, setContactHistoryOpen] = useState(false);
+  const [selectedTaskForHistory, setSelectedTaskForHistory] = useState<string | null>(null);
   
   const {
     filteredTasks,
@@ -45,9 +47,12 @@ const TasksManagement: React.FC = () => {
   const handleOpenContactHistory = (taskId: string) => {
     const task = filteredTasks.find(t => t.id === taskId);
     if (task) {
+      setSelectedTaskForHistory(taskId);
       setContactHistoryOpen(true);
     }
   };
+
+  const currentTaskForHistory = filteredTasks.find(t => t.id === selectedTaskForHistory);
 
   return (
     <div className="space-y-6 w-full">
@@ -129,11 +134,11 @@ const TasksManagement: React.FC = () => {
         onAssignTask={handleAssignTask}
       />
       
-      {selectedTask && (
+      {currentTaskForHistory && (
         <ContactHistoryDialog
           open={contactHistoryOpen}
           onOpenChange={setContactHistoryOpen}
-          contacts={selectedTask.contactAttempts}
+          contacts={currentTaskForHistory.contactAttempts || []}
         />
       )}
     </div>
