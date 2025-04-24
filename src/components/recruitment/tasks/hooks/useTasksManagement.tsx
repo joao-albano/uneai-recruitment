@@ -1,23 +1,13 @@
 
-import { useState, useCallback } from 'react';
-import { useTaskData } from './useTaskData';
-import { Task, TaskFilter } from '@/types/recruitment/tasks';
+import { useState, useCallback, useEffect } from 'react';
+import { Task, TaskFilter, TaskContact, TaskAgentMetrics } from '@/types/recruitment/tasks';
 import { LeadData } from '@/types/recruitment/leads';
+import { useTaskData } from './useTaskData';
 import { useToast } from '@/components/ui/use-toast';
 
 export const useTasksManagement = () => {
-  // Estado local do hook
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [filters, setFilters] = useState<TaskFilter>({});
-  const [activeTab, setActiveTab] = useState('all');
-  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
-  const [distributionDialogOpen, setDistributionDialogOpen] = useState(false);
-  const [contactDialogOpen, setContactDialogOpen] = useState(false);
-  
-  // Hook para toasts
   const { toast } = useToast();
   
-  // Hook para operações de tarefas
   const {
     tasks,
     filteredTasks,
@@ -32,38 +22,58 @@ export const useTasksManagement = () => {
     applyFilters
   } = useTaskData();
   
+  // Estado local do hook
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [filters, setFilters] = useState<TaskFilter>({});
+  const [activeTab, setActiveTab] = useState('all');
+  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+  const [distributionDialogOpen, setDistributionDialogOpen] = useState(false);
+  const [contactDialogOpen, setContactDialogOpen] = useState(false);
+  
+  // Atualizar filtros quando mudar de aba
+  useEffect(() => {
+    let newFilters: TaskFilter = { ...filters };
+    
+    switch (activeTab) {
+      case 'mine':
+        newFilters = { ...newFilters, assignedTo: ['currentUser'] };
+        break;
+      case 'pending':
+        newFilters = { ...newFilters, status: ['pendente'] };
+        break;
+      case 'scheduled':
+        newFilters = { ...newFilters, status: ['agendada'] };
+        break;
+      case 'completed':
+        newFilters = { ...newFilters, status: ['concluída'] };
+        break;
+      default:
+        // Remover filtros de status e assignedTo se existirem
+        const { status, assignedTo, ...rest } = newFilters;
+        newFilters = rest;
+    }
+    
+    applyFilters(newFilters);
+    setFilters(newFilters);
+  }, [activeTab]);
+  
   // Selecionar uma tarefa
   const handleSelectTask = useCallback((task: Task | null) => {
     setSelectedTask(task);
   }, []);
   
-  // Limpar filtros
-  const clearFilters = useCallback(() => {
-    setFilters({});
-    applyFilters({});
-  }, [applyFilters]);
-  
-  // Criar nova tarefa ou atualizar existente
+  // Criar nova tarefa
   const handleCreateTask = useCallback((taskData: Partial<Task>) => {
-    // Verificar se é uma atualização ou criação
-    if (taskData.id) {
-      // Atualização
-      updateTask(taskData);
-      toast({
-        title: "Tarefa atualizada",
-        description: "A tarefa foi atualizada com sucesso.",
-      });
-    } else {
-      // Criação
-      const createdTask = addTask(taskData);
-      toast({
-        title: "Tarefa criada",
-        description: "A nova tarefa foi criada com sucesso.",
-      });
-    }
-  }, [addTask, updateTask, toast]);
+    const newTask = addTask(taskData);
+    setSelectedTask(newTask);
+    
+    toast({
+      title: "Tarefa criada",
+      description: "A nova tarefa foi criada com sucesso.",
+    });
+  }, [addTask, toast]);
   
-  // Editar tarefa existente
+  // Editar tarefa
   const handleEditTask = useCallback((task: Task) => {
     setSelectedTask(task);
     setTaskDialogOpen(true);
@@ -72,7 +82,8 @@ export const useTasksManagement = () => {
   // Excluir tarefa
   const handleDeleteTask = useCallback((taskId: string) => {
     deleteTask(taskId);
-    setSelectedTask(null); // Limpar seleção
+    setSelectedTask(null);
+    
     toast({
       title: "Tarefa excluída",
       description: "A tarefa foi excluída com sucesso.",
@@ -81,7 +92,7 @@ export const useTasksManagement = () => {
   
   // Contatar lead
   const handleContactLead = useCallback((task: Task, method?: string, result?: any) => {
-    if (!task.id) return;
+    if (!task || !task.id) return;
     
     // Simular uma tentativa de contato
     const contactId = `contact-${Date.now()}`;
@@ -117,22 +128,43 @@ export const useTasksManagement = () => {
   
   // Agendar contato
   const handleScheduleContact = useCallback((task: Task) => {
-    // Aqui seria implementada a lógica para agendar um contato
+    if (!task || !task.id) return;
+    
+    updateTask({
+      ...task,
+      status: 'agendada'
+    });
+    
+    // Atualizar a tarefa selecionada para refletir o novo status
+    if (selectedTask && selectedTask.id === task.id) {
+      setSelectedTask(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          status: 'agendada'
+        };
+      });
+    }
+    
     toast({
       title: "Contato agendado",
       description: "O contato foi agendado com sucesso.",
     });
-  }, [toast]);
+  }, [updateTask, selectedTask, toast]);
   
   // Concluir tarefa
   const handleCompleteTask = useCallback((taskId: string) => {
+    if (!taskId) return;
+    
     completeTask(taskId);
-    if (selectedTask?.id === taskId) {
-      // Atualizar tarefa selecionada
+    
+    // Se a tarefa concluída for a selecionada, atualizar o selectedTask
+    if (selectedTask && selectedTask.id === taskId) {
       setSelectedTask(prev => 
         prev ? { ...prev, status: 'concluída', completedAt: new Date() } : null
       );
     }
+    
     toast({
       title: "Tarefa concluída",
       description: "A tarefa foi marcada como concluída.",
@@ -141,7 +173,10 @@ export const useTasksManagement = () => {
   
   // Atribuir tarefa
   const handleAssignTask = useCallback((taskId: string, agentId: string, agentName: string) => {
+    if (!taskId) return;
+    
     assignTask(taskId, agentId, agentName);
+    
     toast({
       title: "Tarefa atribuída",
       description: `A tarefa foi atribuída para ${agentName}.`,
@@ -151,6 +186,7 @@ export const useTasksManagement = () => {
   // Distribuir tarefas
   const handleDistributeTasks = useCallback((taskIds: string[], config: any) => {
     distributeTasksToAgents(taskIds, config);
+    
     toast({
       title: "Tarefas distribuídas",
       description: "As tarefas foram distribuídas com sucesso.",
@@ -178,6 +214,12 @@ export const useTasksManagement = () => {
         break;
     }
   }, [deleteTask, completeTask, toast]);
+  
+  // Limpar filtros
+  const clearFilters = useCallback(() => {
+    setFilters({});
+    applyFilters({});
+  }, [applyFilters]);
   
   return {
     tasks,

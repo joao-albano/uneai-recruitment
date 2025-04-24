@@ -45,7 +45,6 @@ const TasksManagement: React.FC = () => {
   const handleLeadContact = (lead: LeadData) => {
     if (selectedTask) {
       handleContactLead(selectedTask, 'telefone');
-      setContactDialogOpen(true);
     }
   };
 

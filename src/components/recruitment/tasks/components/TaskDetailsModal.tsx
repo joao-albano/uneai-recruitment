@@ -7,10 +7,11 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Phone, Edit, Trash2, CheckCircle2 } from 'lucide-react';
+import { Calendar, Edit, Trash2, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import LeadList from './LeadList';
@@ -68,9 +69,9 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             </Badge>
           </div>
           <DialogTitle className="text-xl font-semibold">{task.title}</DialogTitle>
-          <p className="text-muted-foreground">
+          <DialogDescription>
             {task.assignedToName ? `Atribuído a: ${task.assignedToName}` : 'Não atribuído'}
-          </p>
+          </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="details" className="w-full mt-4">
