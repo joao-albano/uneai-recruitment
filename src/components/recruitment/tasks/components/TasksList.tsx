@@ -57,9 +57,9 @@ const TasksList: React.FC<TasksListProps> = ({
       case 'em_andamento':
         return <Badge variant="secondary">Em Andamento</Badge>;
       case 'concluída':
-        return <Badge variant="success">Concluída</Badge>;
+        return <Badge variant="default">Concluída</Badge>;
       case 'agendada':
-        return <Badge variant="info">Agendada</Badge>;
+        return <Badge variant="secondary">Agendada</Badge>;
       case 'cancelada':
         return <Badge variant="destructive">Cancelada</Badge>;
       default:
@@ -72,7 +72,7 @@ const TasksList: React.FC<TasksListProps> = ({
       case 'alta':
         return <Badge variant="destructive">Alta</Badge>;
       case 'média':
-        return <Badge variant="warning">Média</Badge>;
+        return <Badge variant="default">Média</Badge>;
       case 'baixa':
         return <Badge variant="outline">Baixa</Badge>;
       default:
