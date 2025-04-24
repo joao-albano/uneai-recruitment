@@ -10,4 +10,4 @@ export * from './reengagement';
 export * from './opportunities';
 export * from './campus';
 export * from './registry';
-export * from './tasks'; // Adicionando exportação dos tipos de tarefas
+

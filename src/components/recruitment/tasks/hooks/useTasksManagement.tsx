@@ -1,6 +1,6 @@
 
 import { useState, useCallback, useEffect } from 'react';
-import { Task, TaskFilter, TaskContact, TaskAgentMetrics } from '@/types/recruitment/tasks';
+import { Task, TaskFilter, TaskContact, TaskAgentMetrics, ContactMethod } from '@/types/recruitment/tasks';
 import { LeadData } from '@/types/recruitment/leads';
 import { useTaskData } from './useTaskData';
 import { useToast } from '@/components/ui/use-toast';
@@ -95,12 +95,12 @@ export const useTasksManagement = () => {
   }, [deleteTask, toast]);
   
   // Contatar lead
-  const handleContactLead = useCallback((task: Task, method?: string, result?: any) => {
+  const handleContactLead = useCallback((task: Task, method?: ContactMethod, result?: any) => {
     if (!task || !task.id) return;
     
     // Simular uma tentativa de contato
     const contactId = `contact-${Date.now()}`;
-    const contactData = {
+    const contactData: TaskContact = {
       id: contactId,
       taskId: task.id,
       method: method || 'telefone',
