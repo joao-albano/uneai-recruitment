@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -7,11 +6,14 @@ import TasksList from './components/TasksList';
 import TasksKanban from './components/TasksKanban';
 import TasksFilterPanel from './components/TasksFilterPanel';
 import TasksDialogs from './components/TasksDialogs';
+import ContactHistoryDialog from './components/ContactHistoryDialog';
 import { useTasksManagement } from './hooks/useTasksManagement';
 import { ListChecks, Kanban } from 'lucide-react';
 import TasksMetrics from './components/TasksMetrics';
 
 const TasksManagement: React.FC = () => {
+  const [contactHistoryOpen, setContactHistoryOpen] = useState(false);
+  
   const {
     filteredTasks,
     selectedTask,
@@ -40,6 +42,13 @@ const TasksManagement: React.FC = () => {
   
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
   
+  const handleOpenContactHistory = (taskId: string) => {
+    const task = filteredTasks.find(t => t.id === taskId);
+    if (task) {
+      setContactHistoryOpen(true);
+    }
+  };
+
   return (
     <div className="space-y-6 w-full">
       <TasksHeader />
@@ -92,6 +101,7 @@ const TasksManagement: React.FC = () => {
               onScheduleContact={handleScheduleContact}
               onCompleteTask={handleCompleteTask}
               onBulkOperations={handleBulkOperations}
+              onViewContactHistory={handleOpenContactHistory}
             />
           ) : (
             <TasksKanban 
@@ -101,6 +111,7 @@ const TasksManagement: React.FC = () => {
               onDeleteTask={handleDeleteTask}
               onContactLead={handleContactLead}
               onCompleteTask={handleCompleteTask}
+              onViewContactHistory={handleOpenContactHistory}
             />
           )}
         </div>
@@ -117,6 +128,14 @@ const TasksManagement: React.FC = () => {
         onContactLead={handleContactLead}
         onAssignTask={handleAssignTask}
       />
+      
+      {selectedTask && (
+        <ContactHistoryDialog
+          open={contactHistoryOpen}
+          onOpenChange={setContactHistoryOpen}
+          contacts={selectedTask.contactAttempts}
+        />
+      )}
     </div>
   );
 };
