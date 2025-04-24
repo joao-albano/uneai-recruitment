@@ -82,7 +82,7 @@ const LeadList: React.FC<LeadListProps> = ({
                 variant="outline" 
                 size="sm" 
                 className="w-full"
-                onClick={() => onContactLead?.(lead)}
+                onClick={() => onContactLead && onContactLead(lead)}
               >
                 <Phone className="h-4 w-4 mr-2" />
                 Contatar
@@ -91,7 +91,7 @@ const LeadList: React.FC<LeadListProps> = ({
                 variant="outline" 
                 size="sm" 
                 className="w-full"
-                onClick={() => onScheduleLead?.(lead)}
+                onClick={() => onScheduleLead && onScheduleLead(lead)}
               >
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Agendar

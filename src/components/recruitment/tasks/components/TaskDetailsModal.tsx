@@ -54,6 +54,9 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
   const hasLeads = task.leads && task.leads.length > 0;
   const leadsList = hasLeads ? task.leads : (task.lead ? [task.lead] : []);
+  
+  // Use the first lead for the actions in the main buttons if available
+  const primaryLead = leadsList.length > 0 ? leadsList[0] : null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -146,7 +149,8 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
               <Button 
                 variant="outline" 
                 className="w-full" 
-                onClick={onContactLead}
+                onClick={() => primaryLead && onContactLead(primaryLead)}
+                disabled={!primaryLead}
               >
                 <Phone className="h-4 w-4 mr-2" />
                 Contatar
@@ -154,7 +158,8 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
               <Button 
                 variant="outline" 
                 className="w-full"
-                onClick={onScheduleContact}
+                onClick={() => primaryLead && onScheduleContact(primaryLead)}
+                disabled={!primaryLead}
               >
                 <Calendar className="h-4 w-4 mr-2" />
                 Agendar
