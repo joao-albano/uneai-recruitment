@@ -96,11 +96,24 @@ export const useTasksManagement = () => {
     };
     
     registerContactAttempt(task.id, contactData);
+    
+    // Atualizar a tarefa selecionada para refletir a nova tentativa de contato
+    if (selectedTask && selectedTask.id === task.id) {
+      setSelectedTask(prev => {
+        if (!prev) return null;
+        const updatedContactAttempts = [...(prev.contactAttempts || []), contactData];
+        return {
+          ...prev,
+          contactAttempts: updatedContactAttempts
+        };
+      });
+    }
+    
     toast({
       title: "Contato registrado",
       description: `Contato por ${method || 'telefone'} registrado com sucesso.`,
     });
-  }, [registerContactAttempt, toast]);
+  }, [registerContactAttempt, selectedTask, toast]);
   
   // Agendar contato
   const handleScheduleContact = useCallback((task: Task) => {

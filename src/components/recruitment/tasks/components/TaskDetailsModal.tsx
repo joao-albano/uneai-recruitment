@@ -54,9 +54,6 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
   const hasLeads = task.leads && task.leads.length > 0;
   const leadsList = hasLeads ? task.leads : (task.lead ? [task.lead] : []);
-  
-  // Use the first lead for the actions in the main buttons if available
-  const primaryLead = leadsList.length > 0 ? leadsList[0] : null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -115,7 +112,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             
             <div>
               <h4 className="text-sm font-medium mb-1">Tentativas de Contato</h4>
-              {task.contactAttempts.length > 0 ? (
+              {task.contactAttempts && task.contactAttempts.length > 0 ? (
                 <div className="space-y-2">
                   {task.contactAttempts.map((attempt, index) => (
                     <div key={index} className="text-sm p-2 border rounded-md">
@@ -144,29 +141,6 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
         </Tabs>
 
         <div className="flex flex-col gap-2 mt-6">
-          {task.status !== 'concluída' && (
-            <div className="grid grid-cols-2 gap-2 w-full">
-              <Button 
-                variant="outline" 
-                className="w-full" 
-                onClick={() => primaryLead && onContactLead(primaryLead)}
-                disabled={!primaryLead}
-              >
-                <Phone className="h-4 w-4 mr-2" />
-                Contatar
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={() => primaryLead && onScheduleContact(primaryLead)}
-                disabled={!primaryLead}
-              >
-                <Calendar className="h-4 w-4 mr-2" />
-                Agendar
-              </Button>
-            </div>
-          )}
-          
           <div className="grid grid-cols-3 gap-2 w-full">
             {task.status !== 'concluída' && (
               <Button 

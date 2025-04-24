@@ -41,6 +41,7 @@ const TasksManagement: React.FC = () => {
     clearFilters
   } = useTasksManagement();
   
+  // Handlers para interação com leads
   const handleLeadContact = (lead: LeadData) => {
     if (selectedTask) {
       handleContactLead(selectedTask, 'telefone');
