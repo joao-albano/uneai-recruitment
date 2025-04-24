@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Plus } from 'lucide-react';
 import { PriorizationFactorSelector } from '../factors/PriorizationFactors';
 
 interface RuleEditFormProps {
@@ -119,10 +119,12 @@ const RuleEditForm: React.FC<RuleEditFormProps> = ({
           <ScrollArea className="h-[200px] pr-4">
             {factors.map((factor, idx) => (
               <div key={idx} className="flex items-center gap-2 mb-4">
-                <PriorizationFactorSelector
-                  value={factor.factor}
-                  onChange={(value) => handleFactorChange(idx, 'factor', value)}
-                />
+                <div className="flex-grow">
+                  <PriorizationFactorSelector
+                    value={factor.factor || ''}
+                    onChange={(value) => handleFactorChange(idx, 'factor', value)}
+                  />
+                </div>
                 <div className="flex flex-col w-32">
                   <Label className="text-xs">Peso: {factor.weight}</Label>
                   <Slider
@@ -138,6 +140,7 @@ const RuleEditForm: React.FC<RuleEditFormProps> = ({
                   size="icon"
                   className="text-destructive"
                   onClick={() => handleDeleteFactor(idx)}
+                  type="button"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -151,7 +154,9 @@ const RuleEditForm: React.FC<RuleEditFormProps> = ({
           size="sm"
           className="mt-2"
           onClick={handleAddFactor}
+          type="button"
         >
+          <Plus className="h-4 w-4 mr-1" />
           Adicionar Fator
         </Button>
       </div>

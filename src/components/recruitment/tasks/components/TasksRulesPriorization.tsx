@@ -50,6 +50,11 @@ const TasksRulesPriorization: React.FC<TasksRulesPriorizationProps> = ({
   const handleEditSave = () => {
     if (!editingRuleId) return;
     
+    // Ensure factors is an array
+    const validatedFactors = Array.isArray(editFormData.factors) 
+      ? editFormData.factors 
+      : [];
+    
     const updatedRules = localRules.map(rule => 
       rule.id === editingRuleId 
         ? { 
@@ -57,7 +62,7 @@ const TasksRulesPriorization: React.FC<TasksRulesPriorizationProps> = ({
             name: editFormData.name,
             weight: editFormData.weight,
             isActive: editFormData.isActive,
-            factors: editFormData.factors,
+            factors: validatedFactors,
             appliesTo: editFormData.appliesTo
           } 
         : rule
@@ -128,6 +133,7 @@ const TasksRulesPriorization: React.FC<TasksRulesPriorizationProps> = ({
                   variant="outline"
                   onClick={handleAddRule}
                   className="flex items-center gap-1"
+                  type="button"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Adicionar</span>

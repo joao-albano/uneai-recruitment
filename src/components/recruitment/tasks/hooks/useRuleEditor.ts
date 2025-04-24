@@ -29,6 +29,7 @@ export const useRuleEditor = () => {
       name: rule.name,
       weight: rule.weight,
       isActive: rule.isActive,
+      // Ensure factors is an array even if it's undefined or null
       factors: Array.isArray(rule.factors) ? [...rule.factors] : [],
       appliesTo: rule.appliesTo || {}
     });
@@ -39,31 +40,35 @@ export const useRuleEditor = () => {
   };
 
   const handleEditFormChange = (field: string, value: any) => {
-    setEditFormData({
-      ...editFormData,
+    setEditFormData(prev => ({
+      ...prev,
       [field]: value
-    });
+    }));
   };
 
   const handleAddFactor = () => {
-    setEditFormData({
-      ...editFormData,
-      factors: [...(Array.isArray(editFormData.factors) ? editFormData.factors : []), { factor: 'etapa_funil', weight: 3 }]
-    });
+    setEditFormData(prev => ({
+      ...prev,
+      factors: [...(Array.isArray(prev.factors) ? prev.factors : []), { factor: 'etapa_funil', weight: 3 }]
+    }));
   };
 
   const handleDeleteFactor = (index: number) => {
     if (!Array.isArray(editFormData.factors)) {
+      setEditFormData(prev => ({
+        ...prev,
+        factors: []
+      }));
       return;
     }
     
     const updatedFactors = [...editFormData.factors];
     updatedFactors.splice(index, 1);
     
-    setEditFormData({
-      ...editFormData,
+    setEditFormData(prev => ({
+      ...prev,
       factors: updatedFactors
-    });
+    }));
   };
 
   const handleFactorChange = (index: number, field: string, value: any) => {
@@ -72,17 +77,21 @@ export const useRuleEditor = () => {
     }
     
     const updatedFactors = [...editFormData.factors];
-    if (updatedFactors[index]) {
-      updatedFactors[index] = {
-        ...updatedFactors[index],
-        [field]: value
-      };
-      
-      setEditFormData({
-        ...editFormData,
-        factors: updatedFactors
-      });
+    
+    // Ensure the factor exists at this index
+    if (!updatedFactors[index]) {
+      updatedFactors[index] = { factor: '', weight: 3 };
     }
+    
+    updatedFactors[index] = {
+      ...updatedFactors[index],
+      [field]: value
+    };
+      
+    setEditFormData(prev => ({
+      ...prev,
+      factors: updatedFactors
+    }));
   };
 
   return {

@@ -17,7 +17,8 @@ export const usePriorizationRules = (
   const [newRuleName, setNewRuleName] = useState('');
 
   const handleSave = () => {
-    const updatedRules = localRules.map(rule => {
+    // Ensure all rules have valid factors arrays before saving
+    const validatedRules = localRules.map(rule => {
       const linkedFromRules = generationRules
         .filter(genRule => genRule.linkedPriorizationRules?.includes(rule.id))
         .map(genRule => genRule.id);
@@ -30,7 +31,7 @@ export const usePriorizationRules = (
       };
     });
     
-    onUpdateRules(updatedRules);
+    onUpdateRules(validatedRules);
   };
 
   const handleToggleRule = (id: string) => {

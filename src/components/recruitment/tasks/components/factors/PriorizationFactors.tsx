@@ -73,6 +73,10 @@ export const PriorizationFactorSelector: React.FC<PriorizationFactorSelectorProp
           aria-expanded={open}
           className="w-full justify-between"
           type="button"
+          onClick={(e) => {
+            e.preventDefault(); // Prevent form submission
+            setOpen(!open);
+          }}
         >
           {selectedFactor ? selectedFactor.name : "Selecionar fator..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -89,8 +93,8 @@ export const PriorizationFactorSelector: React.FC<PriorizationFactorSelectorProp
                   <CommandItem
                     key={factor.id}
                     value={factor.id}
-                    onSelect={() => {
-                      onChange(factor.id);
+                    onSelect={(currentValue) => {
+                      onChange(currentValue);
                       setOpen(false);
                     }}
                   >
