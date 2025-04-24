@@ -1,122 +1,73 @@
 
 import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TaskAgentMetrics } from '@/types/recruitment/tasks';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import {
-  BarChart3,
-  TrendingUp,
-  Clock,
-  CheckCircle
-} from 'lucide-react';
+import { CheckCheck, Clock, BarChart, Phone } from 'lucide-react';
 
 interface TasksMetricsProps {
   metrics: TaskAgentMetrics[];
 }
 
 const TasksMetrics: React.FC<TasksMetricsProps> = ({ metrics }) => {
-  const totalTasks = metrics.reduce((acc, agent) => 
-    acc + agent.tasksCompleted + agent.tasksPending, 0);
-  
-  const totalCompleted = metrics.reduce((acc, agent) => 
-    acc + agent.tasksCompleted, 0);
-  
-  const totalPending = metrics.reduce((acc, agent) => 
-    acc + agent.tasksPending, 0);
-  
-  const averageCompletionTime = metrics.length > 0
-    ? metrics.reduce((acc, agent) => 
-        acc + agent.averageCompletionTime, 0) / metrics.length
-    : 0;
-  
-  const averageConversionRate = metrics.length > 0
-    ? metrics.reduce((acc, agent) => 
-        acc + agent.conversionRate, 0) / metrics.length
-    : 0;
-  
-  const topPerformer = metrics.length > 0
-    ? metrics.reduce((best, current) => 
-        current.conversionRate > best.conversionRate ? current : best, metrics[0])
-    : null;
+  // Calcular métricas agregadas
+  const totalTasksCompleted = metrics.reduce((sum, agent) => sum + agent.tasksCompleted, 0);
+  const totalTasksPending = metrics.reduce((sum, agent) => sum + agent.tasksPending, 0);
+  const avgCompletionTime = metrics.reduce((sum, agent) => sum + agent.averageCompletionTime, 0) / metrics.length;
+  const totalContactAttempts = metrics.reduce((sum, agent) => sum + agent.contactAttempts, 0);
   
   return (
-    <div className="space-y-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg">Métricas de Tarefas</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Tarefas Concluídas</CardTitle>
+          <CheckCheck className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">
-                  Taxa de Conclusão
-                </p>
-                <div className="text-2xl font-bold">
-                  {totalTasks > 0 
-                    ? Math.round((totalCompleted / totalTasks) * 100) 
-                    : 0}%
-                </div>
-              </div>
-              <BarChart3 className="h-8 w-8 text-muted-foreground" />
-            </div>
-            
-            <Progress 
-              value={totalTasks > 0 ? (totalCompleted / totalTasks) * 100 : 0} 
-              className="h-2"
-            />
-            
-            <div className="grid grid-cols-2 gap-4 pt-2">
-              <div className="flex flex-col">
-                <span className="text-sm text-muted-foreground">Concluídas</span>
-                <span className="text-xl font-bold">{totalCompleted}</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-sm text-muted-foreground">Pendentes</span>
-                <span className="text-xl font-bold">{totalPending}</span>
-              </div>
-            </div>
-          </div>
+          <div className="text-2xl font-bold">{totalTasksCompleted}</div>
+          <p className="text-xs text-muted-foreground">
+            {totalTasksPending} pendentes
+          </p>
         </CardContent>
       </Card>
-      
+
       <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg">Desempenho</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Tempo Médio</CardTitle>
+          <Clock className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Taxa de Conversão</p>
-              <p className="text-xl font-bold">{(averageConversionRate * 100).toFixed(1)}%</p>
-            </div>
-            <TrendingUp className="h-8 w-8 text-muted-foreground" />
+        <CardContent>
+          <div className="text-2xl font-bold">{avgCompletionTime.toFixed(0)} min</div>
+          <p className="text-xs text-muted-foreground">
+            por tarefa concluída
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Taxa de Conversão</CardTitle>
+          <BarChart className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">
+            {(metrics.reduce((sum, agent) => sum + agent.conversionRate, 0) / metrics.length * 100).toFixed(1)}%
           </div>
-          
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Tempo Médio de Conclusão</p>
-              <p className="text-xl font-bold">{Math.round(averageCompletionTime)} min</p>
-            </div>
-            <Clock className="h-8 w-8 text-muted-foreground" />
-          </div>
-          
-          {topPerformer && (
-            <div className="border-t pt-3 mt-3">
-              <p className="text-sm text-muted-foreground">Melhor Performance</p>
-              <div className="flex items-center mt-1">
-                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center mr-3">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                </div>
-                <div>
-                  <p className="font-medium">{topPerformer.agentName}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {(topPerformer.conversionRate * 100).toFixed(1)}% conversão · {topPerformer.tasksCompleted} tarefas
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
+          <p className="text-xs text-muted-foreground">
+            média entre atendentes
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Contatos Realizados</CardTitle>
+          <Phone className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{totalContactAttempts}</div>
+          <p className="text-xs text-muted-foreground">
+            {metrics.reduce((sum, agent) => sum + agent.successfulContacts, 0)} bem-sucedidos
+          </p>
         </CardContent>
       </Card>
     </div>

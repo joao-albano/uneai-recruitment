@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell, Building, Phone, Calendar, Home, Settings, PhoneCall, Target, CalendarDays, FilePenLine } from 'lucide-react';
+import { BarChart, UserPlus, LineChart, CalendarCheck, Users, MapPin, MessageSquare, Upload, Bell, Building, Phone, Calendar, Home, Settings, PhoneCall, Target, CalendarDays, FilePenLine, ListTodo, ListChecks } from 'lucide-react';
 import SidebarNavLink from '../SidebarNavLink';
 import SidebarNavigationGroup from '../SidebarNavigationGroup';
 import { useLocation } from 'react-router-dom';
@@ -21,6 +21,8 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
   const isGoalsConfigActive = location.pathname === '/recruitment/rules/goals';
   const isPeriodsConfigActive = location.pathname === '/recruitment/rules/periods';
   const isRegistryRulesActive = location.pathname === '/recruitment/rules/registry';
+  const isTasksRulesActive = location.pathname === '/recruitment/rules/tasks';
+  const isTaskListActive = location.pathname === '/recruitment/task-list';
   
   return (
     <>
@@ -120,6 +122,13 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
           label="Agenda" 
           collapsed={collapsed}
         />
+        <SidebarNavLink 
+          to="/recruitment/task-list" 
+          icon={ListChecks} 
+          label="Lista Tarefas" 
+          collapsed={collapsed}
+          isActive={isTaskListActive}
+        />
       </SidebarNavigationGroup>
 
       <SidebarNavigationGroup title="Regras" collapsed={collapsed} defaultOpen={false}>
@@ -136,6 +145,13 @@ const RecruitmentNavLinks: React.FC<RecruitmentNavLinksProps> = ({ collapsed }) 
           label="Tabulação" 
           collapsed={collapsed}
           isActive={isRegistryRulesActive}
+        />
+        <SidebarNavLink 
+          to="/recruitment/rules/tasks" 
+          icon={ListTodo} 
+          label="Tarefas" 
+          collapsed={collapsed}
+          isActive={isTasksRulesActive}
         />
         <SidebarNavLink 
           to="/recruitment/rules/goals" 

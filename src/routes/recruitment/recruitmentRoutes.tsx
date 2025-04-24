@@ -1,4 +1,3 @@
-
 import { ReactNode } from "react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoutes";
 import { ProductGuard } from "@/components/auth/ProductGuard";
@@ -24,6 +23,8 @@ import GoalsConfigPage from "@/pages/recruitment/GoalsConfigPage";
 import PeriodsConfigPage from "@/pages/recruitment/PeriodsConfigPage";
 import RecruitmentUserGuidePage from "@/pages/RecruitmentUserGuidePage";
 import RegistryRulesPage from "@/pages/recruitment/rules/RegistryRulesPage";
+import TasksRulesPage from "@/pages/recruitment/rules/TasksRulesPage";
+import TasksListPage from "@/pages/recruitment/TasksListPage";
 
 interface RouteConfig {
   path: string;
@@ -217,6 +218,26 @@ export const recruitmentRoutes: RouteConfig[] = [
       <ProtectedRoute>
         <ProductGuard allowedProduct="recruitment" redirectTo="/hub">
           <RegistryRulesPage />
+        </ProductGuard>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/rules/tasks",
+    element: (
+      <ProtectedRoute>
+        <ProductGuard allowedProduct="recruitment" redirectTo="/hub">
+          <TasksRulesPage />
+        </ProductGuard>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/recruitment/task-list",
+    element: (
+      <ProtectedRoute>
+        <ProductGuard allowedProduct="recruitment" redirectTo="/hub">
+          <TasksListPage />
         </ProductGuard>
       </ProtectedRoute>
     )
