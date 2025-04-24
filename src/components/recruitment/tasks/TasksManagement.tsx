@@ -20,6 +20,7 @@ const TasksManagement: React.FC = () => {
     taskDialogOpen,
     contactDialogOpen,
     taskMetrics,
+    totalContactAttempts,
     
     setFilters,
     setActiveTab,
@@ -43,7 +44,10 @@ const TasksManagement: React.FC = () => {
     <div className="space-y-6 w-full">
       <TasksHeader />
       
-      <TasksMetrics metrics={taskMetrics} />
+      <TasksMetrics 
+        metrics={taskMetrics} 
+        totalContactAttempts={totalContactAttempts}
+      />
       
       <Card className="p-4 w-full max-w-full">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">

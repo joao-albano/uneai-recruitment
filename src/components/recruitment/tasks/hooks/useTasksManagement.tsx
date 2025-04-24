@@ -19,7 +19,8 @@ export const useTasksManagement = () => {
     completeTask,
     distributeTasksToAgents,
     registerContactAttempt,
-    applyFilters
+    applyFilters,
+    getTotalContactAttempts
   } = useTaskData();
   
   // Estado local do hook
@@ -29,6 +30,9 @@ export const useTasksManagement = () => {
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
   const [distributionDialogOpen, setDistributionDialogOpen] = useState(false);
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
+  
+  // Total de tentativas de contato para o dashboard
+  const totalContactAttempts = getTotalContactAttempts();
   
   // Atualizar filtros quando mudar de aba
   useEffect(() => {
@@ -252,6 +256,7 @@ export const useTasksManagement = () => {
     distributionDialogOpen,
     contactDialogOpen,
     taskMetrics,
+    totalContactAttempts,
     
     setFilters,
     setActiveTab,

@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { Task, TaskFilter, TaskAgentMetrics, TaskContact } from '@/types/recruitment/tasks';
 import { ChannelType, LeadStatus } from '@/types/recruitment/common';
@@ -104,12 +105,20 @@ const mockLeads = [
   }
 ];
 
-// Simulação de métricas - Adjusting the metrics to match the mocked data
+// Mock contact attempts history for visualization
+const mockContactAttempts = [
+  { leadId: "lead1", count: 35 },
+  { leadId: "lead2", count: 42 },
+  { leadId: "lead3", count: 23 },
+  { leadId: "other", count: 50 } // For other leads not in the current mockLeads
+];
+
+// Simulação de métricas - Atualizado para refletir tarefas completadas
 const mockAgentMetrics: TaskAgentMetrics[] = [
   {
     agentId: "user1",
     agentName: "Carlos Atendente",
-    tasksCompleted: 0,
+    tasksCompleted: 1, // Marcamos uma tarefa como concluída
     tasksPending: 1,
     averageCompletionTime: 35,
     conversionRate: 0.20,
@@ -131,7 +140,7 @@ const mockAgentMetrics: TaskAgentMetrics[] = [
 export const useTaskData = () => {
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
   const [filteredTasks, setFilteredTasks] = useState<Task[]>(mockTasks);
-  const [taskMetrics] = useState<TaskAgentMetrics[]>(mockAgentMetrics);
+  const [taskMetrics, setTaskMetrics] = useState<TaskAgentMetrics[]>(mockAgentMetrics);
 
   // Função para buscar lead por ID
   const findLeadById = useCallback((leadId: string) => {
@@ -175,6 +184,9 @@ export const useTaskData = () => {
     setTasks(prev => [newTask, ...prev]);
     setFilteredTasks(prev => [newTask, ...prev]);
     
+    // Atualizar métricas ao adicionar uma nova tarefa
+    updateTaskMetrics();
+    
     return newTask;
   }, [findLeadById]);
 
@@ -212,12 +224,18 @@ export const useTaskData = () => {
           : task
       )
     );
+    
+    // Atualizar métricas quando uma tarefa for atualizada
+    updateTaskMetrics();
   }, [findLeadById]);
 
   // Excluir tarefa
   const deleteTask = useCallback((taskId: string) => {
     setTasks(prev => prev.filter(task => task.id !== taskId));
     setFilteredTasks(prev => prev.filter(task => task.id !== taskId));
+    
+    // Atualizar métricas quando uma tarefa for excluída
+    updateTaskMetrics();
   }, []);
 
   // Atribuir tarefa a um atendente
@@ -247,6 +265,9 @@ export const useTaskData = () => {
           : task
       )
     );
+    
+    // Atualizar métricas quando uma tarefa for atribuída
+    updateTaskMetrics();
   }, []);
 
   // Concluir uma tarefa
@@ -278,7 +299,39 @@ export const useTaskData = () => {
           : task
       )
     );
+    
+    // Atualizar métricas quando uma tarefa for concluída
+    updateTaskMetrics();
   }, []);
+
+  // Atualizar métricas de tarefas
+  const updateTaskMetrics = useCallback(() => {
+    const updatedMetrics = [...taskMetrics];
+    
+    // Contar tarefas completadas e pendentes para cada agente
+    tasks.forEach(task => {
+      const agentIndex = updatedMetrics.findIndex(metric => metric.agentId === task.assignedTo);
+      if (agentIndex !== -1) {
+        // Resetamos primeiro
+        updatedMetrics[agentIndex].tasksCompleted = 0;
+        updatedMetrics[agentIndex].tasksPending = 0;
+      }
+    });
+    
+    // Agora contamos novamente baseado no estado atual
+    tasks.forEach(task => {
+      const agentIndex = updatedMetrics.findIndex(metric => metric.agentId === task.assignedTo);
+      if (agentIndex !== -1) {
+        if (task.status === "concluída") {
+          updatedMetrics[agentIndex].tasksCompleted += 1;
+        } else if (task.status === "pendente") {
+          updatedMetrics[agentIndex].tasksPending += 1;
+        }
+      }
+    });
+    
+    setTaskMetrics(updatedMetrics);
+  }, [tasks, taskMetrics]);
 
   // Distribuir tarefas para atendentes
   const distributeTasksToAgents = useCallback((taskIds: string[], config: any) => {
@@ -287,7 +340,7 @@ export const useTaskData = () => {
     // vamos apenas simular a atribuição.
     
     const agents = ["user1", "user2", "user3"];
-    const agentNames = ["Carlos Atendente", "Ana Atendente", "José Atendente"];
+    const agentNames = ["Carlos Atendente", "Carlos Atendente", "José Atendente"];
     
     setTasks(prev => 
       prev.map(task => {
@@ -318,6 +371,9 @@ export const useTaskData = () => {
         return task;
       })
     );
+    
+    // Atualizar métricas após distribuição
+    updateTaskMetrics();
   }, []);
 
   // Registrar tentativa de contato
@@ -349,7 +405,25 @@ export const useTaskData = () => {
         return task;
       })
     );
-  }, []);
+    
+    // Atualizar métricas para refletir a nova tentativa de contato
+    const updatedMetrics = [...taskMetrics];
+    const taskIndex = tasks.findIndex(task => task.id === taskId);
+    
+    if (taskIndex !== -1) {
+      const agentId = tasks[taskIndex].assignedTo;
+      const agentIndex = updatedMetrics.findIndex(metric => metric.agentId === agentId);
+      
+      if (agentIndex !== -1) {
+        updatedMetrics[agentIndex].contactAttempts += 1;
+        if (contactAttempt.result === "atendido") {
+          updatedMetrics[agentIndex].successfulContacts += 1;
+        }
+      }
+    }
+    
+    setTaskMetrics(updatedMetrics);
+  }, [tasks, taskMetrics]);
 
   // Aplicar filtros nas tarefas
   const applyFilters = useCallback((filters: TaskFilter) => {
@@ -400,6 +474,16 @@ export const useTaskData = () => {
     setFilteredTasks(result);
   }, [tasks]);
 
+  // Executar updateTaskMetrics na montagem do componente
+  useState(() => {
+    updateTaskMetrics();
+  });
+
+  // Total de tentativas de contato (150) para exibir no dashboard
+  const getTotalContactAttempts = useCallback(() => {
+    return mockContactAttempts.reduce((sum, item) => sum + item.count, 0);
+  }, []);
+
   return {
     tasks,
     filteredTasks,
@@ -411,6 +495,7 @@ export const useTaskData = () => {
     completeTask,
     distributeTasksToAgents,
     registerContactAttempt,
-    applyFilters
+    applyFilters,
+    getTotalContactAttempts
   };
 };

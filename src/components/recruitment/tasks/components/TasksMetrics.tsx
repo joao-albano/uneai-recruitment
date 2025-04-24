@@ -5,13 +5,13 @@ import { TaskAgentMetrics } from '@/types/recruitment/tasks';
 
 interface TasksMetricsProps {
   metrics: TaskAgentMetrics[];
+  totalContactAttempts?: number;
 }
 
-const TasksMetrics: React.FC<TasksMetricsProps> = ({ metrics }) => {
+const TasksMetrics: React.FC<TasksMetricsProps> = ({ metrics, totalContactAttempts = 0 }) => {
   // Calculate summary metrics
   const totalTasksCompleted = metrics.reduce((sum, agent) => sum + agent.tasksCompleted, 0);
   const totalTasksPending = metrics.reduce((sum, agent) => sum + agent.tasksPending, 0);
-  const totalContactAttempts = metrics.reduce((sum, agent) => sum + agent.contactAttempts, 0);
   const totalSuccessfulContacts = metrics.reduce((sum, agent) => sum + agent.successfulContacts, 0);
   const averageConversionRate = metrics.length > 0 
     ? metrics.reduce((sum, agent) => sum + agent.conversionRate, 0) / metrics.length
