@@ -42,7 +42,7 @@ const RecruitmentSchedulePage: React.FC = () => {
       sidebarCollapsed={sidebarCollapsed}
       setSidebarCollapsed={setSidebarCollapsed}
     >
-      <div className="container mx-auto py-6">
+      <div className="container mx-auto px-4 py-6 w-full max-w-full">
         <RecruitmentScheduleView 
           showAddDialog={showAddDialog}
           setShowAddDialog={setShowAddDialog}
