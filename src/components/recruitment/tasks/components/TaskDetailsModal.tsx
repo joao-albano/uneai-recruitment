@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Task } from '@/types/recruitment/tasks';
 import { LeadData } from '@/types/recruitment/leads';
@@ -56,13 +57,13 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const leadsList = hasLeads ? task.leads : (task.lead ? [task.lead] : []);
 
   const handleContactLead = (lead: LeadData) => {
-    if (onContactLead) {
+    if (onContactLead && lead) {
       onContactLead(lead);
     }
   };
 
   const handleScheduleLead = (lead: LeadData) => {
-    if (onScheduleContact) {
+    if (onScheduleContact && lead) {
       onScheduleContact(lead);
     }
   };

@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Task } from '@/types/recruitment/tasks';
+import { LeadData } from '@/types/recruitment/leads';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -13,8 +14,8 @@ interface TaskDetailsProps {
   task: Task;
   onEdit: () => void;
   onDelete: () => void;
-  onContactLead: () => void;
-  onScheduleContact: () => void;
+  onContactLead: (lead?: LeadData) => void;
+  onScheduleContact: (lead?: LeadData) => void;
   onComplete: () => void;
 }
 
@@ -48,12 +49,12 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({
   const leadsList = hasLeads ? task.leads : (task.lead ? [task.lead] : []);
   
   // Handlers para os botões da lista de leads
-  const handleContactLead = (lead) => {
-    onContactLead();
+  const handleContactLead = (lead: LeadData) => {
+    onContactLead(lead);
   };
   
-  const handleScheduleLead = (lead) => {
-    onScheduleContact();
+  const handleScheduleLead = (lead: LeadData) => {
+    onScheduleContact(lead);
   };
   
   return (
@@ -148,7 +149,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({
             <Button 
               variant="outline" 
               className="w-full" 
-              onClick={onContactLead}
+              onClick={() => onContactLead()}
             >
               <Phone className="h-4 w-4 mr-2" />
               Contatar
@@ -156,7 +157,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({
             <Button 
               variant="outline" 
               className="w-full"
-              onClick={onScheduleContact}
+              onClick={() => onScheduleContact()}
             >
               <Calendar className="h-4 w-4 mr-2" />
               Agendar

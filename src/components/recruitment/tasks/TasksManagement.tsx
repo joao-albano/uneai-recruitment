@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useTasksManagement } from './hooks/useTasksManagement';
 import TasksHeader from './components/TasksHeader';
@@ -42,13 +41,13 @@ const TasksManagement: React.FC = () => {
   } = useTasksManagement();
   
   // Handlers para interação com leads
-  const handleLeadContact = (lead: LeadData) => {
+  const handleLeadContact = (lead?: LeadData) => {
     if (selectedTask) {
       handleContactLead(selectedTask, 'telefone');
     }
   };
 
-  const handleLeadSchedule = (lead: LeadData) => {
+  const handleLeadSchedule = (lead?: LeadData) => {
     if (selectedTask) {
       handleScheduleContact(selectedTask);
     }
@@ -57,7 +56,6 @@ const TasksManagement: React.FC = () => {
   // Handler seguro para fechar o modal
   const handleModalClose = (open: boolean) => {
     if (!open) {
-      // Se estiver fechando o modal, defina selectedTask como null
       handleSelectTask(null);
     }
   };
@@ -173,7 +171,6 @@ const TasksManagement: React.FC = () => {
         </Tabs>
       </div>
       
-      {/* Use null-check para garantir que selectedTask realmente existe antes de passar props */}
       <TaskDetailsModal
         task={selectedTask}
         open={!!selectedTask}
