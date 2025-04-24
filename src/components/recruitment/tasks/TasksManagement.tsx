@@ -40,14 +40,14 @@ const TasksManagement: React.FC = () => {
   } = useTasksManagement();
   
   return (
-    <div className="container mx-auto px-4 md:px-8 lg:px-12 py-4 md:py-6 lg:py-8 max-w-screen-2xl">
+    <div className="container mx-auto px-4 md:px-6 lg:px-8 py-6 max-w-[1400px]">
       <TasksHeader 
         onCreateTask={() => setTaskDialogOpen(true)} 
         onDistributeTasks={() => setDistributionDialogOpen(true)}
         metrics={taskMetrics}
       />
       
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="all">Todas as Tarefas</TabsTrigger>
           <TabsTrigger value="mine">Minhas Tarefas</TabsTrigger>
@@ -64,81 +64,66 @@ const TasksManagement: React.FC = () => {
           />
         </div>
         
-        <div className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <TabsContent value="all" className="m-0">
-              <TasksList 
-                tasks={filteredTasks} 
-                onSelectTask={handleSelectTask} 
-                onContactLead={handleContactLead}
-                onScheduleContact={handleScheduleContact}
-                onAssignTask={handleAssignTask}
-                onCompleteTask={handleCompleteTask}
-                onBulkOperations={handleBulkOperations}
-              />
-            </TabsContent>
-            
-            <TabsContent value="mine" className="m-0">
-              <TasksList 
-                tasks={filteredTasks.filter(task => task.assignedTo === 'currentUser')} 
-                onSelectTask={handleSelectTask}
-                onContactLead={handleContactLead}
-                onScheduleContact={handleScheduleContact}
-                onAssignTask={handleAssignTask}
-                onCompleteTask={handleCompleteTask}
-                onBulkOperations={handleBulkOperations}
-              />
-            </TabsContent>
-            
-            <TabsContent value="pending" className="m-0">
-              <TasksList 
-                tasks={filteredTasks.filter(task => task.status === 'pendente')} 
-                onSelectTask={handleSelectTask}
-                onContactLead={handleContactLead}
-                onScheduleContact={handleScheduleContact}
-                onAssignTask={handleAssignTask}
-                onCompleteTask={handleCompleteTask}
-                onBulkOperations={handleBulkOperations}
-              />
-            </TabsContent>
-            
-            <TabsContent value="scheduled" className="m-0">
-              <TasksList 
-                tasks={filteredTasks.filter(task => task.status === 'agendada')} 
-                onSelectTask={handleSelectTask}
-                onContactLead={handleContactLead}
-                onScheduleContact={handleScheduleContact}
-                onAssignTask={handleAssignTask}
-                onCompleteTask={handleCompleteTask}
-                onBulkOperations={handleBulkOperations}
-              />
-            </TabsContent>
-            
-            <TabsContent value="completed" className="m-0">
-              <TasksList 
-                tasks={filteredTasks.filter(task => task.status === 'concluída')} 
-                onSelectTask={handleSelectTask}
-                onContactLead={handleContactLead}
-                onScheduleContact={handleScheduleContact}
-                onAssignTask={handleAssignTask}
-                onCompleteTask={handleCompleteTask}
-                onBulkOperations={handleBulkOperations}
-              />
-            </TabsContent>
-          </div>
+        <div className="mt-4">
+          <TabsContent value="all" className="m-0">
+            <TasksList 
+              tasks={filteredTasks} 
+              onSelectTask={handleSelectTask} 
+              onContactLead={handleContactLead}
+              onScheduleContact={handleScheduleContact}
+              onAssignTask={handleAssignTask}
+              onCompleteTask={handleCompleteTask}
+              onBulkOperations={handleBulkOperations}
+            />
+          </TabsContent>
           
-          <div className="lg:col-span-1">
-            {selectedTask ? (
-              <TaskDetails 
-                task={selectedTask} 
-                onEdit={() => handleEditTask(selectedTask)} 
-                onDelete={() => handleDeleteTask(selectedTask.id)}
-                onContactLead={() => handleContactLead(selectedTask)}
-                onScheduleContact={() => handleScheduleContact(selectedTask)}
-                onComplete={() => handleCompleteTask(selectedTask.id)}
-              />
-            ) : null}
-          </div>
+          <TabsContent value="mine" className="m-0">
+            <TasksList 
+              tasks={filteredTasks.filter(task => task.assignedTo === 'currentUser')} 
+              onSelectTask={handleSelectTask}
+              onContactLead={handleContactLead}
+              onScheduleContact={handleScheduleContact}
+              onAssignTask={handleAssignTask}
+              onCompleteTask={handleCompleteTask}
+              onBulkOperations={handleBulkOperations}
+            />
+          </TabsContent>
+          
+          <TabsContent value="pending" className="m-0">
+            <TasksList 
+              tasks={filteredTasks.filter(task => task.status === 'pendente')} 
+              onSelectTask={handleSelectTask}
+              onContactLead={handleContactLead}
+              onScheduleContact={handleScheduleContact}
+              onAssignTask={handleAssignTask}
+              onCompleteTask={handleCompleteTask}
+              onBulkOperations={handleBulkOperations}
+            />
+          </TabsContent>
+          
+          <TabsContent value="scheduled" className="m-0">
+            <TasksList 
+              tasks={filteredTasks.filter(task => task.status === 'agendada')} 
+              onSelectTask={handleSelectTask}
+              onContactLead={handleContactLead}
+              onScheduleContact={handleScheduleContact}
+              onAssignTask={handleAssignTask}
+              onCompleteTask={handleCompleteTask}
+              onBulkOperations={handleBulkOperations}
+            />
+          </TabsContent>
+          
+          <TabsContent value="completed" className="m-0">
+            <TasksList 
+              tasks={filteredTasks.filter(task => task.status === 'concluída')} 
+              onSelectTask={handleSelectTask}
+              onContactLead={handleContactLead}
+              onScheduleContact={handleScheduleContact}
+              onAssignTask={handleAssignTask}
+              onCompleteTask={handleCompleteTask}
+              onBulkOperations={handleBulkOperations}
+            />
+          </TabsContent>
         </div>
       </Tabs>
       

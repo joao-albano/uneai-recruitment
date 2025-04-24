@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { TaskAgentMetrics } from '@/types/recruitment/tasks';
@@ -55,74 +54,74 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/50 dark:to-blue-800/50 border-blue-200">
           <CardHeader>
             <CardTitle className="text-lg flex items-center justify-between">
               Métricas de Tarefas
-              <CheckCircle className="h-5 w-5 text-muted-foreground" />
+              <CheckCircle className="h-5 w-5 text-blue-600" />
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Taxa de Conclusão</span>
-                <span className="font-bold">{completionRate}%</span>
+                <span className="text-sm text-blue-700 dark:text-blue-300">Taxa de Conclusão</span>
+                <span className="font-bold text-blue-800 dark:text-blue-200">{completionRate}%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Concluídas</span>
-                <span className="font-bold">{totalCompleted}</span>
+                <span className="text-sm text-blue-700 dark:text-blue-300">Concluídas</span>
+                <span className="font-bold text-blue-800 dark:text-blue-200">{totalCompleted}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Pendentes</span>
-                <span className="font-bold">{totalPending}</span>
+                <span className="text-sm text-blue-700 dark:text-blue-300">Pendentes</span>
+                <span className="font-bold text-blue-800 dark:text-blue-200">{totalPending}</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/50 dark:to-purple-800/50 border-purple-200">
           <CardHeader>
             <CardTitle className="text-lg flex items-center justify-between">
               Desempenho
-              <TrendingUp className="h-5 w-5 text-muted-foreground" />
+              <TrendingUp className="h-5 w-5 text-purple-600" />
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Taxa de Conversão</span>
-                <span className="font-bold">{(averageConversionRate * 100).toFixed(1)}%</span>
+                <span className="text-sm text-purple-700 dark:text-purple-300">Taxa de Conversão</span>
+                <span className="font-bold text-purple-800 dark:text-purple-200">{(averageConversionRate * 100).toFixed(1)}%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Tempo Médio</span>
-                <span className="font-bold">{Math.round(averageCompletionTime)} min</span>
+                <span className="text-sm text-purple-700 dark:text-purple-300">Tempo Médio</span>
+                <span className="font-bold text-purple-800 dark:text-purple-200">{Math.round(averageCompletionTime)} min</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/50 dark:to-green-800/50 border-green-200">
           <CardHeader>
             <CardTitle className="text-lg flex items-center justify-between">
               Melhor Performance
-              <Clock className="h-5 w-5 text-muted-foreground" />
+              <Clock className="h-5 w-5 text-green-600" />
             </CardTitle>
           </CardHeader>
           <CardContent>
             {topPerformer ? (
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Nome</span>
-                  <span className="font-bold">{topPerformer.agentName}</span>
+                  <span className="text-sm text-green-700 dark:text-green-300">Nome</span>
+                  <span className="font-bold text-green-800 dark:text-green-200">{topPerformer.agentName}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Conversão</span>
-                  <span className="font-bold">{(topPerformer.conversionRate * 100).toFixed(1)}%</span>
+                  <span className="text-sm text-green-700 dark:text-green-300">Conversão</span>
+                  <span className="font-bold text-green-800 dark:text-green-200">{(topPerformer.conversionRate * 100).toFixed(1)}%</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Tarefas</span>
-                  <span className="font-bold">{topPerformer.tasksCompleted}</span>
+                  <span className="text-sm text-green-700 dark:text-green-300">Tarefas</span>
+                  <span className="font-bold text-green-800 dark:text-green-200">{topPerformer.tasksCompleted}</span>
                 </div>
               </div>
             ) : (
