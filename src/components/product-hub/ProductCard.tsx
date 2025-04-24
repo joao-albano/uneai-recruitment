@@ -68,10 +68,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <Button 
           className="w-full bg-blue-600 hover:bg-blue-700 text-white" 
           onClick={() => window.open('https://preview--une-ai-escuta.lovable.app', '_blank', 'noopener,noreferrer')}
-          // Add external link icon
-          iconRight={<ExternalLink className="ml-2 h-4 w-4" />}
         >
-          Acessar
+          Acessar <ExternalLink className="ml-2 h-4 w-4" />
         </Button>
       ) : (
         <Button 
