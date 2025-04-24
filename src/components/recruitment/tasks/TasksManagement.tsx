@@ -57,6 +57,7 @@ const TasksManagement: React.FC = () => {
   // Handler seguro para fechar o modal
   const handleModalClose = (open: boolean) => {
     if (!open) {
+      // Se estiver fechando o modal, defina selectedTask como null
       handleSelectTask(null);
     }
   };
@@ -172,6 +173,7 @@ const TasksManagement: React.FC = () => {
         </Tabs>
       </div>
       
+      {/* Use null-check para garantir que selectedTask realmente existe antes de passar props */}
       <TaskDetailsModal
         task={selectedTask}
         open={!!selectedTask}

@@ -59,11 +59,9 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
   // Handle closing of dialog safely
   const handleOpenChange = (isOpen: boolean) => {
-    if (!isOpen) {
-      // When dialog is closing
-      onOpenChange(false);
-    } else {
-      onOpenChange(true);
+    // Chame onOpenChange apenas se o valor for diferente do atual
+    if (isOpen !== open) {
+      onOpenChange(isOpen);
     }
   };
 
