@@ -23,7 +23,6 @@ const TasksListPage: React.FC = () => {
       setSidebarCollapsed={setSidebarCollapsed}
     >
       <div className="container mx-auto px-4 py-6 w-full max-w-full">
-        <h1 className="text-2xl font-bold mb-6">Lista de Tarefas</h1>
         <TasksManagement />
       </div>
     </Layout>
