@@ -47,6 +47,15 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({
   // Se não houver leads associados mas houver um lead principal
   const leadsList = hasLeads ? task.leads : (task.lead ? [task.lead] : []);
   
+  // Handlers para os botões da lista de leads
+  const handleContactLead = (lead) => {
+    onContactLead();
+  };
+  
+  const handleScheduleLead = (lead) => {
+    onScheduleContact();
+  };
+  
   return (
     <Card>
       <CardHeader>
@@ -124,7 +133,11 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({
           </TabsContent>
           
           <TabsContent value="leads" className="mt-4">
-            <LeadList leads={leadsList} />
+            <LeadList 
+              leads={leadsList} 
+              onContactLead={handleContactLead}
+              onScheduleLead={handleScheduleLead}
+            />
           </TabsContent>
         </Tabs>
       </CardContent>
