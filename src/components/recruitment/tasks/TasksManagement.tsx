@@ -55,6 +55,13 @@ const TasksManagement: React.FC = () => {
     }
   };
 
+  // Handler seguro para fechar o modal
+  const handleModalClose = (open: boolean) => {
+    if (!open) {
+      handleSelectTask(null);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 md:px-6 lg:px-8 py-6">
       <TasksHeader 
@@ -148,12 +155,12 @@ const TasksManagement: React.FC = () => {
       <TaskDetailsModal
         task={selectedTask}
         open={!!selectedTask}
-        onOpenChange={(open) => !open && handleSelectTask(null)}
-        onEdit={() => handleEditTask(selectedTask!)}
-        onDelete={() => handleDeleteTask(selectedTask!.id)}
+        onOpenChange={handleModalClose}
+        onEdit={() => selectedTask && handleEditTask(selectedTask)}
+        onDelete={() => selectedTask && handleDeleteTask(selectedTask.id)}
         onContactLead={handleLeadContact}
         onScheduleContact={handleLeadSchedule}
-        onComplete={() => handleCompleteTask(selectedTask!.id)}
+        onComplete={() => selectedTask && handleCompleteTask(selectedTask.id)}
       />
       
       <TasksDialogs
