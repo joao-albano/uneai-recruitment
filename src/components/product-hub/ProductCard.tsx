@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { ExternalLink } from 'lucide-react';
 
 interface ProductCardProps {
   id: string;
@@ -66,7 +67,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {isActive ? (
         <Button 
           className="w-full bg-blue-600 hover:bg-blue-700 text-white" 
-          onClick={() => onNavigate(id)}
+          onClick={() => window.open('https://preview--une-ai-escuta.lovable.app', '_blank', 'noopener,noreferrer')}
+          // Add external link icon
+          iconRight={<ExternalLink className="ml-2 h-4 w-4" />}
         >
           Acessar
         </Button>
