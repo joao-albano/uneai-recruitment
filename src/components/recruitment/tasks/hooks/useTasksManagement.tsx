@@ -75,12 +75,16 @@ export const useTasksManagement = () => {
   
   // Editar tarefa
   const handleEditTask = useCallback((task: Task) => {
+    if (!task) return;
+    
     setSelectedTask(task);
     setTaskDialogOpen(true);
   }, []);
   
   // Excluir tarefa
   const handleDeleteTask = useCallback((taskId: string) => {
+    if (!taskId) return;
+    
     deleteTask(taskId);
     setSelectedTask(null);
     
@@ -172,7 +176,7 @@ export const useTasksManagement = () => {
   }, [completeTask, selectedTask, toast]);
   
   // Atribuir tarefa
-  const handleAssignTask = useCallback((taskId: string, agentId: string, agentName: string) => {
+  const handleAssignTask = useCallback((taskId: string, agentId: string = 'currentUser', agentName: string = 'Usuário Atual') => {
     if (!taskId) return;
     
     assignTask(taskId, agentId, agentName);
@@ -185,6 +189,8 @@ export const useTasksManagement = () => {
   
   // Distribuir tarefas
   const handleDistributeTasks = useCallback((taskIds: string[], config: any) => {
+    if (!taskIds || taskIds.length === 0) return;
+    
     distributeTasksToAgents(taskIds, config);
     
     toast({
@@ -195,6 +201,8 @@ export const useTasksManagement = () => {
   
   // Operações em massa
   const handleBulkOperations = useCallback((operation: string, selectedIds: string[]) => {
+    if (!selectedIds || selectedIds.length === 0) return;
+    
     switch (operation) {
       case 'delete':
         selectedIds.forEach(id => deleteTask(id));

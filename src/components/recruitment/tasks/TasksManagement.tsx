@@ -61,6 +61,27 @@ const TasksManagement: React.FC = () => {
     }
   };
 
+  // Handler seguro para editar
+  const handleTaskEdit = () => {
+    if (selectedTask) {
+      handleEditTask(selectedTask);
+    }
+  };
+  
+  // Handler seguro para excluir
+  const handleTaskDelete = () => {
+    if (selectedTask && selectedTask.id) {
+      handleDeleteTask(selectedTask.id);
+    }
+  };
+  
+  // Handler seguro para completar
+  const handleTaskComplete = () => {
+    if (selectedTask && selectedTask.id) {
+      handleCompleteTask(selectedTask.id);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 md:px-6 lg:px-8 py-6">
       <TasksHeader 
@@ -155,11 +176,11 @@ const TasksManagement: React.FC = () => {
         task={selectedTask}
         open={!!selectedTask}
         onOpenChange={handleModalClose}
-        onEdit={() => selectedTask && handleEditTask(selectedTask)}
-        onDelete={() => selectedTask && handleDeleteTask(selectedTask.id)}
+        onEdit={handleTaskEdit}
+        onDelete={handleTaskDelete}
         onContactLead={handleLeadContact}
         onScheduleContact={handleLeadSchedule}
-        onComplete={() => selectedTask && handleCompleteTask(selectedTask.id)}
+        onComplete={handleTaskComplete}
       />
       
       <TasksDialogs

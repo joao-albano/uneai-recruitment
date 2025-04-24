@@ -37,6 +37,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   onScheduleContact,
   onComplete,
 }) => {
+  // Return null early if task is not available
   if (!task) return null;
 
   const priorityColor = {
@@ -56,8 +57,18 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const hasLeads = task.leads && task.leads.length > 0;
   const leadsList = hasLeads ? task.leads : (task.lead ? [task.lead] : []);
 
+  // Handle closing of dialog safely
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      // When dialog is closing
+      onOpenChange(false);
+    } else {
+      onOpenChange(true);
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center justify-between mb-2">
