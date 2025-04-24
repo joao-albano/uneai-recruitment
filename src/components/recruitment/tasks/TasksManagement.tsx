@@ -41,9 +41,7 @@ const TasksManagement: React.FC = () => {
   
   return (
     <div className="space-y-6 w-full">
-      <TasksHeader
-        onCreateTask={() => setTaskDialogOpen(true)}
-      />
+      <TasksHeader />
       
       <TasksMetrics metrics={taskMetrics} />
       
