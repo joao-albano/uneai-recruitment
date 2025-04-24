@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Task, TaskFilter, TaskAgentMetrics, TaskContact } from '@/types/recruitment/tasks';
 import { ChannelType, LeadStatus } from '@/types/recruitment/common';
 
@@ -25,7 +25,7 @@ const mockTasks: Task[] = [
     updatedAt: new Date(),
     dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // Amanhã
     priority: "alta",
-    status: "pendente",
+    status: "concluída", // Changed to completed for demo
     assignedTo: "user1",
     assignedToName: "Carlos Atendente",
     contactAttempts: [],
@@ -225,12 +225,12 @@ const mockContactAttempts = [
   { leadId: "other", count: 50 } // For other leads not in the current mockLeads
 ];
 
-// Simulação de métricas - Atualizado para refletir tarefas completadas
+// Updated initial metrics to show at least one task completed
 const mockAgentMetrics: TaskAgentMetrics[] = [
   {
     agentId: "user1",
     agentName: "Carlos Atendente",
-    tasksCompleted: 1, // Marcamos uma tarefa como concluída
+    tasksCompleted: 1,
     tasksPending: 1,
     averageCompletionTime: 35,
     conversionRate: 0.20,
@@ -412,37 +412,55 @@ export const useTaskData = () => {
       )
     );
     
-    // Atualizar métricas quando uma tarefa for concluída
-    updateTaskMetrics();
-  }, []);
+    // Find the task to get the assigned agent
+    const task = tasks.find(t => t.id === taskId);
+    if (task && task.assignedTo) {
+      setTaskMetrics(prev => 
+        prev.map(metric => 
+          metric.agentId === task.assignedTo 
+            ? {
+                ...metric,
+                tasksCompleted: metric.tasksCompleted + 1,
+                tasksPending: metric.tasksPending > 0 ? metric.tasksPending - 1 : 0
+              }
+            : metric
+        )
+      );
+    }
+  }, [tasks]);
 
   // Atualizar métricas de tarefas
   const updateTaskMetrics = useCallback(() => {
     const updatedMetrics = [...taskMetrics];
     
-    // Contar tarefas completadas e pendentes para cada agente
+    // Initialize counts
+    const completedCounts: Record<string, number> = {};
+    const pendingCounts: Record<string, number> = {};
+    
+    updatedMetrics.forEach(metric => {
+      completedCounts[metric.agentId] = 0;
+      pendingCounts[metric.agentId] = 0;
+    });
+    
+    // Count completed and pending tasks for each agent
     tasks.forEach(task => {
-      const agentIndex = updatedMetrics.findIndex(metric => metric.agentId === task.assignedTo);
-      if (agentIndex !== -1) {
-        // Resetamos primeiro
-        updatedMetrics[agentIndex].tasksCompleted = 0;
-        updatedMetrics[agentIndex].tasksPending = 0;
+      if (!task.assignedTo) return;
+      
+      if (task.status === "concluída") {
+        completedCounts[task.assignedTo] = (completedCounts[task.assignedTo] || 0) + 1;
+      } else if (task.status === "pendente") {
+        pendingCounts[task.assignedTo] = (pendingCounts[task.assignedTo] || 0) + 1;
       }
     });
     
-    // Agora contamos novamente baseado no estado atual
-    tasks.forEach(task => {
-      const agentIndex = updatedMetrics.findIndex(metric => metric.agentId === task.assignedTo);
-      if (agentIndex !== -1) {
-        if (task.status === "concluída") {
-          updatedMetrics[agentIndex].tasksCompleted += 1;
-        } else if (task.status === "pendente") {
-          updatedMetrics[agentIndex].tasksPending += 1;
-        }
-      }
-    });
+    // Update metrics
+    const newMetrics = updatedMetrics.map(metric => ({
+      ...metric,
+      tasksCompleted: completedCounts[metric.agentId] || 0,
+      tasksPending: pendingCounts[metric.agentId] || 0
+    }));
     
-    setTaskMetrics(updatedMetrics);
+    setTaskMetrics(newMetrics);
   }, [tasks, taskMetrics]);
 
   // Distribuir tarefas para atendentes
@@ -587,9 +605,9 @@ export const useTaskData = () => {
   }, [tasks]);
 
   // Executar updateTaskMetrics na montagem do componente
-  useState(() => {
+  useEffect(() => {
     updateTaskMetrics();
-  });
+  }, []);
 
   // Total de tentativas de contato (150) para exibir no dashboard
   const getTotalContactAttempts = useCallback(() => {
