@@ -1,18 +1,17 @@
-
 import React, { useState, useEffect } from 'react';
 import { LeadData } from '@/types/recruitment/leads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Filter, Search, X } from 'lucide-react';
 
 // Dados mockados para demonstração
 const mockLeads: LeadData[] = [
@@ -26,6 +25,24 @@ const mockLeads: LeadData[] = [
   { id: 'lead8', name: 'Juliana Costa', email: 'juliana@example.com', phone: '(11) 91098-7654', channel: 'facebook', status: 'perdido', course: 'Pedagogia', createdAt: new Date(), updatedAt: new Date() },
 ];
 
+// Mock data for filters
+const funnels = [
+  { id: 'funnel1', name: 'Funil Principal' },
+  { id: 'funnel2', name: 'Funil Secundário' },
+];
+
+const stages = [
+  { id: 'stage1', name: 'Primeiro Contato', funnelId: 'funnel1' },
+  { id: 'stage2', name: 'Negociação', funnelId: 'funnel1' },
+  { id: 'stage3', name: 'Matrícula', funnelId: 'funnel2' },
+];
+
+const subStages = [
+  { id: 'sub1', name: 'Interesse Inicial', stageId: 'stage1' },
+  { id: 'sub2', name: 'Agendamento', stageId: 'stage1' },
+  { id: 'sub3', name: 'Documentação', stageId: 'stage2' },
+];
+
 interface LeadSelectionFormProps {
   selectedLeadIds: string[];
   onSelectionChange: (selectedIds: string[]) => void;
@@ -37,12 +54,16 @@ const LeadSelectionForm: React.FC<LeadSelectionFormProps> = ({
 }) => {
   const [leads, setLeads] = useState<LeadData[]>(mockLeads);
   const [searchTerm, setSearchTerm] = useState('');
-  const [courseFilter, setCourseFilter] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [selectedFunnel, setSelectedFunnel] = useState<string>('');
+  const [selectedStage, setSelectedStage] = useState<string>('');
+  const [selectedSubStage, setSelectedSubStage] = useState<string>('');
+  const [selectedCourse, setSelectedCourse] = useState<string>('');
+  const [selectedRegion, setSelectedRegion] = useState<string>('');
+  const [selectedModality, setSelectedModality] = useState<string>('');
   
-  // Extrair cursos e status únicos para os filtros
   const uniqueCourses = Array.from(new Set(mockLeads.map(lead => lead.course))).filter(Boolean) as string[];
-  const uniqueStatuses = Array.from(new Set(mockLeads.map(lead => lead.status))).filter(Boolean) as string[];
+  const regions = ['Norte', 'Sul', 'Leste', 'Oeste', 'Centro'];
+  const modalities = ['Presencial', 'EAD', 'Híbrido'];
   
   // Filtrar leads com base nos critérios
   useEffect(() => {
@@ -56,16 +77,37 @@ const LeadSelectionForm: React.FC<LeadSelectionFormProps> = ({
       );
     }
     
-    if (courseFilter) {
-      filteredLeads = filteredLeads.filter(lead => lead.course === courseFilter);
+    if (selectedFunnel) {
+      // Aplicar filtro de funil (simulado)
+      filteredLeads = filteredLeads.filter(lead => true);
     }
     
-    if (statusFilter) {
-      filteredLeads = filteredLeads.filter(lead => lead.status === statusFilter);
+    if (selectedStage) {
+      // Aplicar filtro de etapa (simulado)
+      filteredLeads = filteredLeads.filter(lead => true);
+    }
+    
+    if (selectedSubStage) {
+      // Aplicar filtro de sub-etapa (simulado)
+      filteredLeads = filteredLeads.filter(lead => true);
+    }
+    
+    if (selectedCourse) {
+      filteredLeads = filteredLeads.filter(lead => lead.course === selectedCourse);
+    }
+    
+    if (selectedRegion) {
+      // Aplicar filtro de região (simulado)
+      filteredLeads = filteredLeads.filter(lead => true);
+    }
+    
+    if (selectedModality) {
+      // Aplicar filtro de modalidade (simulado)
+      filteredLeads = filteredLeads.filter(lead => true);
     }
     
     setLeads(filteredLeads);
-  }, [searchTerm, courseFilter, statusFilter]);
+  }, [searchTerm, selectedFunnel, selectedStage, selectedSubStage, selectedCourse, selectedRegion, selectedModality]);
   
   // Manipular a seleção de leads
   const handleLeadToggle = (leadId: string) => {
@@ -88,8 +130,12 @@ const LeadSelectionForm: React.FC<LeadSelectionFormProps> = ({
   // Limpar filtros
   const handleClearFilters = () => {
     setSearchTerm('');
-    setCourseFilter('');
-    setStatusFilter('');
+    setSelectedFunnel('');
+    setSelectedStage('');
+    setSelectedSubStage('');
+    setSelectedCourse('');
+    setSelectedRegion('');
+    setSelectedModality('');
   };
   
   return (
@@ -105,26 +151,94 @@ const LeadSelectionForm: React.FC<LeadSelectionFormProps> = ({
         </Button>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-        <div>
-          <Input
-            placeholder="Buscar por nome, email ou telefone"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full"
-          />
+      <div className="grid grid-cols-1 gap-2">
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <Input
+              placeholder="Buscar por nome, email ou telefone"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full"
+              leftIcon={<Search className="h-4 w-4" />}
+            />
+          </div>
+          {Object.values([searchTerm, selectedFunnel, selectedStage, selectedSubStage, selectedCourse, selectedRegion, selectedModality]).some(Boolean) && (
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={handleClearFilters}
+            >
+              <X className="h-4 w-4 mr-2" />
+              Limpar Filtros
+            </Button>
+          )}
         </div>
         
-        <div>
+        <div className="grid grid-cols-3 gap-2">
           <Select
-            value={courseFilter}
-            onValueChange={setCourseFilter}
+            value={selectedFunnel}
+            onValueChange={setSelectedFunnel}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Filtrar por curso" />
+              <SelectValue placeholder="Selecionar Funil" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todos">Todos os cursos</SelectItem>
+              {funnels.map((funnel) => (
+                <SelectItem key={funnel.id} value={funnel.id}>
+                  {funnel.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          <Select
+            value={selectedStage}
+            onValueChange={setSelectedStage}
+            disabled={!selectedFunnel}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Selecionar Etapa" />
+            </SelectTrigger>
+            <SelectContent>
+              {stages
+                .filter(stage => stage.funnelId === selectedFunnel)
+                .map((stage) => (
+                  <SelectItem key={stage.id} value={stage.id}>
+                    {stage.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+          
+          <Select
+            value={selectedSubStage}
+            onValueChange={setSelectedSubStage}
+            disabled={!selectedStage}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Selecionar Sub-etapa" />
+            </SelectTrigger>
+            <SelectContent>
+              {subStages
+                .filter(subStage => subStage.stageId === selectedStage)
+                .map((subStage) => (
+                  <SelectItem key={subStage.id} value={subStage.id}>
+                    {subStage.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="grid grid-cols-3 gap-2">
+          <Select
+            value={selectedCourse}
+            onValueChange={setSelectedCourse}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Selecionar Curso" />
+            </SelectTrigger>
+            <SelectContent>
               {uniqueCourses.map((course) => (
                 <SelectItem key={course} value={course}>
                   {course}
@@ -132,36 +246,39 @@ const LeadSelectionForm: React.FC<LeadSelectionFormProps> = ({
               ))}
             </SelectContent>
           </Select>
-        </div>
-        
-        <div>
+          
           <Select
-            value={statusFilter}
-            onValueChange={setStatusFilter}
+            value={selectedRegion}
+            onValueChange={setSelectedRegion}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Filtrar por status" />
+              <SelectValue placeholder="Selecionar Região" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todos">Todos os status</SelectItem>
-              {uniqueStatuses.map((status) => (
-                <SelectItem key={status} value={status}>
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
+              {regions.map((region) => (
+                <SelectItem key={region} value={region}>
+                  {region}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          <Select
+            value={selectedModality}
+            onValueChange={setSelectedModality}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Selecionar Modalidade" />
+            </SelectTrigger>
+            <SelectContent>
+              {modalities.map((modality) => (
+                <SelectItem key={modality} value={modality}>
+                  {modality}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
-      </div>
-      
-      <div className="flex justify-end">
-        <Button 
-          variant="ghost" 
-          size="sm"
-          onClick={handleClearFilters}
-        >
-          Limpar Filtros
-        </Button>
       </div>
       
       <ScrollArea className="h-[300px] border rounded-md p-2">
@@ -179,11 +296,6 @@ const LeadSelectionForm: React.FC<LeadSelectionFormProps> = ({
                     <p className="font-medium">{lead.name}</p>
                     <p className="text-sm text-gray-500">{lead.course} • {lead.email}</p>
                   </div>
-                </div>
-                <div className="text-sm text-gray-500">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize bg-gray-100">
-                    {lead.status}
-                  </span>
                 </div>
               </div>
             ))
