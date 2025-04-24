@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { Task, TaskFilter, TaskAgentMetrics, TaskContact } from '@/types/recruitment/tasks';
 import { ChannelType, LeadStatus } from '@/types/recruitment/common';
@@ -57,7 +56,7 @@ const mockTasks: Task[] = [
     priority: "média",
     status: "pendente",
     assignedTo: "user2",
-    assignedToName: "Ana Atendente",
+    assignedToName: "Carlos Atendente",
     contactAttempts: [],
     tags: ["follow-up", "visita"],
     source: "automático",
@@ -105,25 +104,25 @@ const mockLeads = [
   }
 ];
 
-// Simulação de métricas
+// Simulação de métricas - Adjusting the metrics to match the mocked data
 const mockAgentMetrics: TaskAgentMetrics[] = [
   {
     agentId: "user1",
     agentName: "Carlos Atendente",
-    tasksCompleted: 42,
-    tasksPending: 5,
-    averageCompletionTime: 35, // minutos
-    conversionRate: 0.22, // 22%
+    tasksCompleted: 0,
+    tasksPending: 1,
+    averageCompletionTime: 35,
+    conversionRate: 0.20,
     contactAttempts: 78,
     successfulContacts: 54
   },
   {
     agentId: "user2",
-    agentName: "Ana Atendente",
-    tasksCompleted: 38,
-    tasksPending: 7,
-    averageCompletionTime: 28, // minutos
-    conversionRate: 0.18, // 18%
+    agentName: "Carlos Atendente",
+    tasksCompleted: 0,
+    tasksPending: 1,
+    averageCompletionTime: 28,
+    conversionRate: 0.20,
     contactAttempts: 72,
     successfulContacts: 45
   }
