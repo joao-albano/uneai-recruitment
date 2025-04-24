@@ -60,26 +60,43 @@ export const useTasksManagement = () => {
   // Selecionar uma tarefa
   const handleSelectTask = useCallback((task: Task | null) => {
     setSelectedTask(task);
+    if (task) {
+      setTaskDialogOpen(true);
+    }
   }, []);
   
   // Criar nova tarefa
   const handleCreateTask = useCallback((taskData: Partial<Task>) => {
     const newTask = addTask(taskData);
-    setSelectedTask(newTask);
     
     toast({
       title: "Tarefa criada",
       description: "A nova tarefa foi criada com sucesso.",
     });
+    
+    return newTask;
   }, [addTask, toast]);
   
   // Editar tarefa
   const handleEditTask = useCallback((task: Task) => {
     if (!task) return;
     
-    setSelectedTask(task);
-    setTaskDialogOpen(true);
-  }, []);
+    if (task.id) {
+      // Importante: preservar o status atual da tarefa se ela foi arrastada no Kanban
+      updateTask(task);
+      
+      // Atualizar o selectedTask para refletir as mudanças
+      setSelectedTask(task);
+      
+      toast({
+        title: "Tarefa atualizada",
+        description: "A tarefa foi atualizada com sucesso.",
+      });
+    } else {
+      setSelectedTask(task);
+      setTaskDialogOpen(true);
+    }
+  }, [updateTask, toast]);
   
   // Excluir tarefa
   const handleDeleteTask = useCallback((taskId: string) => {
@@ -105,7 +122,7 @@ export const useTasksManagement = () => {
       taskId: task.id,
       method: method || 'telefone',
       timestamp: new Date(),
-      result: result || 'não_atendido',
+      result: result?.result || 'não_atendido',
       agentId: 'currentUser',
       notes: result?.notes || ''
     };
@@ -134,20 +151,16 @@ export const useTasksManagement = () => {
   const handleScheduleContact = useCallback((task: Task) => {
     if (!task || !task.id) return;
     
-    updateTask({
+    const updatedTask = {
       ...task,
-      status: 'agendada'
-    });
+      status: 'agendada' as const
+    };
+    
+    updateTask(updatedTask);
     
     // Atualizar a tarefa selecionada para refletir o novo status
     if (selectedTask && selectedTask.id === task.id) {
-      setSelectedTask(prev => {
-        if (!prev) return null;
-        return {
-          ...prev,
-          status: 'agendada'
-        };
-      });
+      setSelectedTask(updatedTask);
     }
     
     toast({

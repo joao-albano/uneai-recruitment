@@ -65,6 +65,10 @@ const TasksKanban: React.FC<TasksKanbanProps> = ({
     // Extract the task ID from draggable ID
     const taskId = draggableId.replace('task-', '');
     
+    // Find the task that was dragged
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+    
     // Map destination droppable ID to status
     const statusMap: Record<string, 'pendente' | 'em_andamento' | 'agendada' | 'concluída'> = {
       'pendente': 'pendente',
@@ -73,17 +77,16 @@ const TasksKanban: React.FC<TasksKanbanProps> = ({
       'concluida': 'concluída'
     };
     
+    // Update task with new status
+    const newStatus = statusMap[destination.droppableId];
+    const updatedTask = { ...task, status: newStatus };
+    
     // If destination is "concluida", mark task as completed
     if (destination.droppableId === 'concluida') {
       onCompleteTask(taskId);
     } else {
-      // Find the task
-      const task = tasks.find(t => t.id === taskId);
-      if (task) {
-        // Update status
-        const updatedTask = { ...task, status: statusMap[destination.droppableId] };
-        onEditTask(updatedTask);
-      }
+      // Update the task with new status
+      onEditTask(updatedTask);
     }
   };
 
