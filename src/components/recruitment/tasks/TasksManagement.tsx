@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useTasksManagement } from './hooks/useTasksManagement';
 import TasksHeader from './components/TasksHeader';
@@ -6,6 +7,7 @@ import TasksList from './components/TasksList';
 import TaskDetailsModal from './components/TaskDetailsModal';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TasksDialogs from './components/TasksDialogs';
+import { LeadData } from '@/types/recruitment/leads';
 
 const TasksManagement: React.FC = () => {
   const {
@@ -39,6 +41,19 @@ const TasksManagement: React.FC = () => {
     clearFilters
   } = useTasksManagement();
   
+  const handleLeadContact = (lead: LeadData) => {
+    if (selectedTask) {
+      handleContactLead(selectedTask, 'telefone');
+      setContactDialogOpen(true);
+    }
+  };
+
+  const handleLeadSchedule = (lead: LeadData) => {
+    if (selectedTask) {
+      handleScheduleContact(selectedTask);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 md:px-6 lg:px-8 py-6">
       <TasksHeader 
@@ -135,8 +150,8 @@ const TasksManagement: React.FC = () => {
         onOpenChange={(open) => !open && handleSelectTask(null)}
         onEdit={() => handleEditTask(selectedTask!)}
         onDelete={() => handleDeleteTask(selectedTask!.id)}
-        onContactLead={() => handleContactLead(selectedTask!)}
-        onScheduleContact={() => handleScheduleContact(selectedTask!)}
+        onContactLead={handleLeadContact}
+        onScheduleContact={handleLeadSchedule}
         onComplete={() => handleCompleteTask(selectedTask!.id)}
       />
       

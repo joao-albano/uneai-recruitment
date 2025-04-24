@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Task } from '@/types/recruitment/tasks';
+import { LeadData } from '@/types/recruitment/leads';
 import {
   Dialog,
   DialogContent,
@@ -20,8 +21,8 @@ interface TaskDetailsModalProps {
   onOpenChange: (open: boolean) => void;
   onEdit: () => void;
   onDelete: () => void;
-  onContactLead: () => void;
-  onScheduleContact: () => void;
+  onContactLead: (lead: LeadData) => void;
+  onScheduleContact: (lead: LeadData) => void;
   onComplete: () => void;
 }
 
@@ -131,7 +132,11 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
           </TabsContent>
           
           <TabsContent value="leads" className="mt-4">
-            <LeadList leads={leadsList} />
+            <LeadList 
+              leads={leadsList} 
+              onContactLead={onContactLead}
+              onScheduleLead={onScheduleContact}
+            />
           </TabsContent>
         </Tabs>
 
@@ -192,4 +197,3 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 };
 
 export default TaskDetailsModal;
-
