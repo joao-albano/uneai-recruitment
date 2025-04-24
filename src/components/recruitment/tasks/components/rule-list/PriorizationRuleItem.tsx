@@ -27,7 +27,7 @@ const PriorizationRuleItem: React.FC<PriorizationRuleItemProps> = ({
   onWeightChange,
   linkedGenerationRules
 }) => {
-  // Garantir que rule.factors é sempre um array
+  // Ensure that rule.factors is always an array
   const factors = Array.isArray(rule.factors) ? rule.factors : [];
   
   return (
@@ -85,13 +85,12 @@ const PriorizationRuleItem: React.FC<PriorizationRuleItemProps> = ({
       <div>
         <Label className="mb-2 block">Fatores</Label>
         <div className="space-y-2">
-          {factors.map((factor, idx) => (
+          {factors.length > 0 ? factors.map((factor, idx) => (
             <div key={idx} className="flex items-center justify-between">
               <span>{getFactorName(factor.factor)}</span>
               <span>Peso: {factor.weight}</span>
             </div>
-          ))}
-          {factors.length === 0 && (
+          )) : (
             <p className="text-sm text-muted-foreground">
               Nenhum fator adicionado
             </p>

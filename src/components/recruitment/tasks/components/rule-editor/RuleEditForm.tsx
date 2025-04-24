@@ -45,7 +45,7 @@ const RuleEditForm: React.FC<RuleEditFormProps> = ({
   handleStageChange,
   funnelStages
 }) => {
-  // Garantir que editFormData.factors é sempre um array válido
+  // Ensure factors is always a valid array
   const factors = Array.isArray(editFormData.factors) ? editFormData.factors : [];
   
   return (

@@ -57,7 +57,7 @@ interface PriorizationFactorSelectorProps {
   onChange: (value: string) => void;
 }
 
-export const PriorizationFactorSelector = ({ value, onChange }: PriorizationFactorSelectorProps) => {
+export const PriorizationFactorSelector: React.FC<PriorizationFactorSelectorProps> = ({ value, onChange }) => {
   const [open, setOpen] = React.useState(false);
   const selectedFactor = allFactors.find(factor => factor.id === value);
 

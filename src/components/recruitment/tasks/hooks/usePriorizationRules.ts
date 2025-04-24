@@ -7,7 +7,7 @@ export const usePriorizationRules = (
   onUpdateRules: (rules: PriorizationRule[]) => void,
   generationRules: { id: string; name: string; linkedPriorizationRules?: string[] }[] = []
 ) => {
-  // Garante que todas as regras iniciais tenham um array factors válido
+  // Ensure all initial rules have valid factors arrays
   const validatedInitialRules = initialRules.map(rule => ({
     ...rule,
     factors: Array.isArray(rule.factors) ? rule.factors : []
@@ -24,7 +24,7 @@ export const usePriorizationRules = (
       
       return {
         ...rule,
-        // Garantir que factors é sempre um array válido
+        // Ensure factors is always a valid array
         factors: Array.isArray(rule.factors) ? rule.factors : [],
         linkedFromGenerationRules: linkedFromRules
       };
@@ -60,7 +60,7 @@ export const usePriorizationRules = (
       id: `rule-${Date.now()}`,
       name: newRuleName,
       weight: 5,
-      factors: [],
+      factors: [], // Initialize with empty array
       isActive: true,
       appliesTo: {}
     };

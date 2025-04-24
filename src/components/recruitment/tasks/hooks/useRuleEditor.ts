@@ -29,7 +29,7 @@ export const useRuleEditor = () => {
       name: rule.name,
       weight: rule.weight,
       isActive: rule.isActive,
-      factors: rule.factors ? [...rule.factors] : [],
+      factors: Array.isArray(rule.factors) ? [...rule.factors] : [],
       appliesTo: rule.appliesTo || {}
     });
   };
@@ -46,11 +46,9 @@ export const useRuleEditor = () => {
   };
 
   const handleAddFactor = () => {
-    // Garantir que temos uma estrutura de fatores válida antes de adicionar
-    const currentFactors = editFormData.factors || [];
     setEditFormData({
       ...editFormData,
-      factors: [...currentFactors, { factor: 'etapa_funil', weight: 3 }]
+      factors: [...(editFormData.factors || []), { factor: 'etapa_funil', weight: 3 }]
     });
   };
 
@@ -65,7 +63,6 @@ export const useRuleEditor = () => {
   };
 
   const handleFactorChange = (index: number, field: string, value: any) => {
-    // Garantir que temos uma estrutura de fatores válida antes de modificar
     const updatedFactors = [...(editFormData.factors || [])];
     if (updatedFactors[index]) {
       updatedFactors[index] = {
