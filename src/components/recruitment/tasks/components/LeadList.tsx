@@ -20,6 +20,22 @@ const LeadList: React.FC<LeadListProps> = ({ leads, onContactLead, onScheduleLea
     );
   }
 
+  const handleContactClick = (lead: LeadData, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onContactLead) {
+      onContactLead(lead);
+    }
+  };
+
+  const handleScheduleClick = (lead: LeadData, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onScheduleLead) {
+      onScheduleLead(lead);
+    }
+  };
+
   return (
     <div className="border rounded-md">
       <Table>
@@ -45,14 +61,16 @@ const LeadList: React.FC<LeadListProps> = ({ leads, onContactLead, onScheduleLea
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => onContactLead(lead)}
+                    onClick={(e) => handleContactClick(lead, e)}
+                    title="Contatar lead"
                   >
                     <Phone className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => onScheduleLead(lead)}
+                    onClick={(e) => handleScheduleClick(lead, e)}
+                    title="Agendar contato"
                   >
                     <Calendar className="h-4 w-4" />
                   </Button>
