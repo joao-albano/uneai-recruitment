@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Task } from '@/types/recruitment/tasks';
 import { Button } from '@/components/ui/button';
@@ -109,6 +110,11 @@ const TasksList: React.FC<TasksListProps> = ({
     return "Sem lead associado";
   };
 
+  // Handle row click to select a task
+  const handleRowClick = (task: Task) => {
+    onSelectTask(task);
+  };
+
   if (tasks.length === 0) {
     return (
       <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
@@ -171,7 +177,7 @@ const TasksList: React.FC<TasksListProps> = ({
               <TableRow 
                 key={task.id}
                 className="cursor-pointer hover:bg-accent/5 transition-colors"
-                onClick={() => onSelectTask(task)}
+                onClick={() => handleRowClick(task)}
               >
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <Checkbox 
@@ -225,11 +231,14 @@ const TasksList: React.FC<TasksListProps> = ({
                       variant="ghost" 
                       size="icon" 
                       className="h-8 w-8"
-                      onClick={() => setDialogConfig({
-                        open: true,
-                        type: 'contact',
-                        selectedTask: task
-                      })}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDialogConfig({
+                          open: true,
+                          type: 'contact',
+                          selectedTask: task
+                        });
+                      }}
                     >
                       <Phone className="h-4 w-4" />
                     </Button>
@@ -237,24 +246,37 @@ const TasksList: React.FC<TasksListProps> = ({
                       variant="ghost" 
                       size="icon" 
                       className="h-8 w-8"
-                      onClick={() => setDialogConfig({
-                        open: true,
-                        type: 'schedule',
-                        selectedTask: task
-                      })}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDialogConfig({
+                          open: true,
+                          type: 'schedule',
+                          selectedTask: task
+                        });
+                      }}
                     >
                       <Calendar className="h-4 w-4" />
                     </Button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <MoreHorizontal className="h-4 w-4" />
                           <span className="sr-only">Abrir menu</span>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-[160px]">
                         {task.status !== 'concluída' && (
-                          <DropdownMenuItem onClick={() => onCompleteTask(task.id)}>
+                          <DropdownMenuItem 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onCompleteTask(task.id);
+                            }}
+                          >
                             <Check className="h-4 w-4 mr-2" />
                             Concluir
                           </DropdownMenuItem>
