@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { Task, TaskFilter, TaskAgentMetrics, TaskContact } from '@/types/recruitment/tasks';
 import { ChannelType, LeadStatus } from '@/types/recruitment/common';
@@ -62,6 +61,93 @@ const mockTasks: Task[] = [
     tags: ["follow-up", "visita"],
     source: "automático",
     selectedLeadIds: ["lead2"]
+  },
+  {
+    id: "task3",
+    leadId: "lead3",
+    lead: {
+      id: "lead3",
+      name: "Pedro Santos",
+      email: "pedro@example.com",
+      phone: "(11) 97777-7777",
+      course: "Direito",
+      location: "São Paulo",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      channel: "instagram" as ChannelType,
+      status: "quente" as LeadStatus
+    },
+    title: "Enviar material sobre curso",
+    description: "Enviar material detalhado sobre o curso de Direito",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    dueDate: new Date(Date.now() + 72 * 60 * 60 * 1000),
+    priority: "média",
+    status: "pendente",
+    assignedTo: "user1",
+    assignedToName: "Carlos Atendente",
+    contactAttempts: [],
+    tags: ["material", "direito"],
+    source: "manual",
+    selectedLeadIds: ["lead3"]
+  },
+  {
+    id: "task4",
+    leadId: "lead4",
+    lead: {
+      id: "lead4",
+      name: "Ana Silva",
+      email: "ana@example.com",
+      phone: "(11) 96666-6666",
+      course: "Medicina",
+      location: "Rio de Janeiro",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      channel: "whatsapp" as ChannelType,
+      status: "quente" as LeadStatus
+    },
+    title: "Agendar visita ao campus",
+    description: "Marcar visita para conhecer as instalações da faculdade",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    dueDate: new Date(Date.now() + 96 * 60 * 60 * 1000),
+    priority: "alta",
+    status: "pendente",
+    assignedTo: "user2",
+    assignedToName: "Carlos Atendente",
+    contactAttempts: [],
+    tags: ["visita", "medicina"],
+    source: "automático",
+    selectedLeadIds: ["lead4"]
+  },
+  {
+    id: "task5",
+    leadId: "lead5",
+    lead: {
+      id: "lead5",
+      name: "Mariana Costa",
+      email: "mariana@example.com",
+      phone: "(11) 95555-5555",
+      course: "Engenharia",
+      location: "São Paulo",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      channel: "site" as ChannelType,
+      status: "novo" as LeadStatus
+    },
+    title: "Follow-up pós evento",
+    description: "Contato após participação na feira de profissões",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    dueDate: new Date(Date.now() + 120 * 60 * 60 * 1000),
+    priority: "média",
+    status: "pendente",
+    assignedTo: "user2",
+    assignedToName: "Carlos Atendente",
+    contactAttempts: [],
+    tags: ["evento", "follow-up"],
+    source: "manual",
+    selectedLeadIds: ["lead5"]
   }
 ];
 
@@ -102,6 +188,30 @@ const mockLeads = [
     updatedAt: new Date(),
     channel: "instagram" as ChannelType,
     status: "quente" as LeadStatus
+  },
+  {
+    id: "lead4",
+    name: "Ana Silva",
+    email: "ana@example.com",
+    phone: "(11) 9 6666-6666",
+    course: "Medicina",
+    location: "Rio de Janeiro",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    channel: "whatsapp" as ChannelType,
+    status: "quente" as LeadStatus
+  },
+  {
+    id: "lead5",
+    name: "Mariana Costa",
+    email: "mariana@example.com",
+    phone: "(11) 9 5555-5555",
+    course: "Engenharia",
+    location: "São Paulo",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    channel: "site" as ChannelType,
+    status: "novo" as LeadStatus
   }
 ];
 
@@ -110,6 +220,8 @@ const mockContactAttempts = [
   { leadId: "lead1", count: 35 },
   { leadId: "lead2", count: 42 },
   { leadId: "lead3", count: 23 },
+  { leadId: "lead4", count: 45 },
+  { leadId: "lead5", count: 30 },
   { leadId: "other", count: 50 } // For other leads not in the current mockLeads
 ];
 
