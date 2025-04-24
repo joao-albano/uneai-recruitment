@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { Task } from '@/types/recruitment/tasks';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Phone, MessageSquare, CheckCircle, Clock, MoreHorizontal } from 'lucide-react';
+import { Phone, MessageSquare, CheckCircle, Clock, MoreHorizontal, History } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +21,7 @@ interface TasksKanbanProps {
   onDeleteTask: (taskId: string) => void;
   onContactLead: (task: Task, method: 'telefone' | 'whatsapp') => void;
   onCompleteTask: (taskId: string) => void;
+  onViewContactHistory: (taskId: string) => void;
 }
 
 const TasksKanban: React.FC<TasksKanbanProps> = ({
@@ -30,7 +30,8 @@ const TasksKanban: React.FC<TasksKanbanProps> = ({
   onEditTask,
   onDeleteTask,
   onContactLead,
-  onCompleteTask
+  onCompleteTask,
+  onViewContactHistory
 }) => {
   // Group tasks by status
   const pendingTasks = tasks.filter(task => task.status === 'pendente');
@@ -171,6 +172,17 @@ const TasksKanban: React.FC<TasksKanbanProps> = ({
                   }}
                 >
                   <MessageSquare className="h-3 w-3" />
+                </Button>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-7 w-7" 
+                  onClick={(e) => { 
+                    e.stopPropagation(); 
+                    onViewContactHistory(task.id);
+                  }}
+                >
+                  <History className="h-3 w-3" />
                 </Button>
                 <Button 
                   size="icon" 
