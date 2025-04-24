@@ -7,7 +7,13 @@ export const usePriorizationRules = (
   onUpdateRules: (rules: PriorizationRule[]) => void,
   generationRules: { id: string; name: string; linkedPriorizationRules?: string[] }[] = []
 ) => {
-  const [localRules, setLocalRules] = useState<PriorizationRule[]>(initialRules);
+  // Garante que todas as regras iniciais tenham um array factors válido
+  const validatedInitialRules = initialRules.map(rule => ({
+    ...rule,
+    factors: Array.isArray(rule.factors) ? rule.factors : []
+  }));
+  
+  const [localRules, setLocalRules] = useState<PriorizationRule[]>(validatedInitialRules);
   const [newRuleName, setNewRuleName] = useState('');
 
   const handleSave = () => {
@@ -18,6 +24,8 @@ export const usePriorizationRules = (
       
       return {
         ...rule,
+        // Garantir que factors é sempre um array válido
+        factors: Array.isArray(rule.factors) ? rule.factors : [],
         linkedFromGenerationRules: linkedFromRules
       };
     });

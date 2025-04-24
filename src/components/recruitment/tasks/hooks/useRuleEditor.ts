@@ -29,7 +29,7 @@ export const useRuleEditor = () => {
       name: rule.name,
       weight: rule.weight,
       isActive: rule.isActive,
-      factors: [...rule.factors],
+      factors: rule.factors ? [...rule.factors] : [],
       appliesTo: rule.appliesTo || {}
     });
   };
@@ -46,14 +46,16 @@ export const useRuleEditor = () => {
   };
 
   const handleAddFactor = () => {
+    // Garantir que temos uma estrutura de fatores válida antes de adicionar
+    const currentFactors = editFormData.factors || [];
     setEditFormData({
       ...editFormData,
-      factors: [...editFormData.factors, { factor: '', weight: 3 }]
+      factors: [...currentFactors, { factor: 'etapa_funil', weight: 3 }]
     });
   };
 
   const handleDeleteFactor = (index: number) => {
-    const updatedFactors = [...editFormData.factors];
+    const updatedFactors = [...(editFormData.factors || [])];
     updatedFactors.splice(index, 1);
     
     setEditFormData({
@@ -63,16 +65,19 @@ export const useRuleEditor = () => {
   };
 
   const handleFactorChange = (index: number, field: string, value: any) => {
-    const updatedFactors = [...editFormData.factors];
-    updatedFactors[index] = {
-      ...updatedFactors[index],
-      [field]: value
-    };
-    
-    setEditFormData({
-      ...editFormData,
-      factors: updatedFactors
-    });
+    // Garantir que temos uma estrutura de fatores válida antes de modificar
+    const updatedFactors = [...(editFormData.factors || [])];
+    if (updatedFactors[index]) {
+      updatedFactors[index] = {
+        ...updatedFactors[index],
+        [field]: value
+      };
+      
+      setEditFormData({
+        ...editFormData,
+        factors: updatedFactors
+      });
+    }
   };
 
   return {

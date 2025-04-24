@@ -11,7 +11,19 @@ import { Trash2 } from 'lucide-react';
 import { PriorizationFactorSelector } from '../factors/PriorizationFactors';
 
 interface RuleEditFormProps {
-  editFormData: any;
+  editFormData: {
+    name: string;
+    weight: number;
+    isActive: boolean;
+    factors: {
+      factor: string;
+      weight: number;
+    }[];
+    appliesTo?: {
+      stageId?: string;
+      stageName?: string;
+    };
+  };
   handleEditFormChange: (field: string, value: any) => void;
   handleEditCancel: () => void;
   handleEditSave: () => void;
@@ -33,6 +45,9 @@ const RuleEditForm: React.FC<RuleEditFormProps> = ({
   handleStageChange,
   funnelStages
 }) => {
+  // Garantir que editFormData.factors é sempre um array válido
+  const factors = Array.isArray(editFormData.factors) ? editFormData.factors : [];
+  
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -96,13 +111,13 @@ const RuleEditForm: React.FC<RuleEditFormProps> = ({
       
       <div>
         <Label className="mb-2 block">Fatores</Label>
-        {editFormData.factors.length === 0 ? (
+        {factors.length === 0 ? (
           <p className="text-sm text-muted-foreground mb-2">
             Nenhum fator adicionado
           </p>
         ) : (
           <ScrollArea className="h-[200px] pr-4">
-            {editFormData.factors.map((factor: any, idx: number) => (
+            {factors.map((factor, idx) => (
               <div key={idx} className="flex items-center gap-2 mb-4">
                 <PriorizationFactorSelector
                   value={factor.factor}
