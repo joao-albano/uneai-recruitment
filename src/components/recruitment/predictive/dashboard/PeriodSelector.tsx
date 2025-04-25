@@ -5,7 +5,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 interface PeriodSelectorProps {
   selectedPeriod: string;
   onPeriodChange: (period: string) => void;
-  periods: string[];
+  periods?: string[];
 }
 
 const PeriodSelector: React.FC<PeriodSelectorProps> = ({ 

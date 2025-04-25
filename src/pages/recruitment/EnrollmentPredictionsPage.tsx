@@ -34,7 +34,7 @@ const EnrollmentPredictionsPage: React.FC = () => {
           </p>
         </div>
         
-        <Tabs defaultValue="dashboard">
+        <Tabs defaultValue="dashboard" value={selectedPeriod} onValueChange={setSelectedPeriod}>
           <TabsList className="mb-6">
             <TabsTrigger value="dashboard" className="gap-2">
               <PanelTop className="h-4 w-4" />
@@ -51,7 +51,7 @@ const EnrollmentPredictionsPage: React.FC = () => {
           </TabsList>
           
           <TabsContent value="dashboard" className="m-0">
-            <StrategicDecisionDashboard />
+            <StrategicDecisionDashboard selectedPeriod={selectedPeriod} />
           </TabsContent>
           
           <TabsContent value="predictions" className="m-0">
