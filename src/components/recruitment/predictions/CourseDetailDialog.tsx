@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Dialog,
@@ -22,6 +21,14 @@ import {
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+const leadDistributionData = [
+  { name: 'Contato Inicial', leads: 76 },
+  { name: 'Agendamento', leads: 42 },
+  { name: 'Visita', leads: 28 },
+  { name: 'Matrícula', leads: 18 }
+];
 
 interface CourseDetailDialogProps {
   open: boolean;
@@ -120,13 +127,19 @@ const CourseDetailDialog: React.FC<CourseDetailDialogProps> = ({
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base">Distribuição de Leads</CardTitle>
                 </CardHeader>
-                <CardContent className="h-[250px] flex items-center justify-center border rounded-md">
-                  <div className="text-center">
-                    <BarChart3 className="h-16 w-16 mx-auto text-muted-foreground" />
-                    <p className="text-muted-foreground mt-2">
-                      Visualização de gráfico em desenvolvimento
-                    </p>
-                  </div>
+                <CardContent className="h-[250px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={leadDistributionData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} />
+                      <YAxis />
+                      <Tooltip 
+                        formatter={(value) => [`${value} leads`, 'Quantidade']}
+                        labelFormatter={(label) => `Etapa: ${label}`}
+                      />
+                      <Bar dataKey="leads" fill="#8b5cf6" />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </CardContent>
               </Card>
               
