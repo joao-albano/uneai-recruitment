@@ -91,11 +91,9 @@ const overallStats = {
     low: coursePredictions.filter(c => c.risk === 'baixo').length
   }
 };
-
 interface StrategicDecisionDashboardProps {
   selectedPeriod: string;
 }
-
 const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
   selectedPeriod
 }) => {
@@ -104,14 +102,12 @@ const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
   const {
     toast
   } = useToast();
-
   const getProgressColor = (percent: number) => {
     if (percent >= 95) return 'bg-green-500';
     if (percent >= 85) return 'bg-green-400';
     if (percent >= 70) return 'bg-amber-500';
     return 'bg-red-500';
   };
-
   const getRiskBadge = (risk: string) => {
     switch (risk) {
       case 'baixo':
@@ -124,7 +120,6 @@ const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
         return <Badge variant="outline">Desconhecido</Badge>;
     }
   };
-
   const getTrendBadge = (trend: string) => {
     switch (trend) {
       case 'aumento':
@@ -145,13 +140,11 @@ const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
         return <Badge variant="outline">Desconhecido</Badge>;
     }
   };
-
   const handleViewDetails = (course: any) => {
     setSelectedCourse(course);
     setDetailsDialogOpen(true);
   };
-
-  return <div className="space-y-6">
+  return <div className="space-y-6 my-[15px]">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Dashboard Estratégico</h1>
@@ -160,10 +153,7 @@ const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <PeriodSelector 
-            selectedPeriod={selectedPeriod} 
-            onPeriodChange={() => {}} 
-          />
+          <PeriodSelector selectedPeriod={selectedPeriod} onPeriodChange={() => {}} />
         </div>
       </div>
 
@@ -372,5 +362,4 @@ const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
       <CourseDetailsDialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen} course={selectedCourse} />
     </div>;
 };
-
 export default StrategicDecisionDashboard;
