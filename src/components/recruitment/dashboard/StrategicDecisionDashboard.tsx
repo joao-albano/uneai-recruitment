@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +9,95 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import CourseDetailsDialog from './CourseDetailsDialog';
 import { useToast } from '@/components/ui/use-toast';
 import PeriodSelector from '../predictive/dashboard/PeriodSelector';
+import { ChannelConversionChart } from '../predictive/charts/ChannelConversionChart';
+import { ChannelDistributionChart } from '../predictive/charts/ChannelDistributionChart';
+
+// Dados fictícios de demonstração
+const coursePredictions = [{
+  name: 'Administração',
+  target: 180,
+  predicted: 162,
+  confidence: 'alta',
+  risk: 'médio',
+  trend: 'estável',
+  actions: ['Reforçar campanha no Google Ads', 'Aumentar desconto para matrículas antecipadas'],
+  metrics: {
+    conversionRate: 16.2,
+    leadCount: 520,
+    costPerLead: 45.8
+  }
+}, {
+  name: 'Direito',
+  target: 220,
+  predicted: 245,
+  confidence: 'alta',
+  risk: 'baixo',
+  trend: 'aumento',
+  actions: ['Manter estratégia atual', 'Considerar expansão de turma'],
+  metrics: {
+    conversionRate: 22.5,
+    leadCount: 680,
+    costPerLead: 38.2
+  }
+}, {
+  name: 'Engenharia Civil',
+  target: 120,
+  predicted: 78,
+  confidence: 'média',
+  risk: 'alto',
+  trend: 'queda',
+  actions: ['Criar campanha específica para o curso', 'Revisar processo de qualificação de leads', 'Oferecer bônus de matrícula'],
+  metrics: {
+    conversionRate: 9.8,
+    leadCount: 320,
+    costPerLead: 52.6
+  }
+}, {
+  name: 'Medicina',
+  target: 100,
+  predicted: 95,
+  confidence: 'alta',
+  risk: 'baixo',
+  trend: 'estável',
+  actions: ['Manter estratégia atual', 'Destacar diferencial dos laboratórios'],
+  metrics: {
+    conversionRate: 25.4,
+    leadCount: 230,
+    costPerLead: 85.3
+  }
+}, {
+  name: 'Psicologia',
+  target: 160,
+  predicted: 142,
+  confidence: 'média',
+  risk: 'médio',
+  trend: 'estável',
+  actions: ['Reforçar campanhas nas redes sociais', 'Promover depoimentos de alunos'],
+  metrics: {
+    conversionRate: 18.1,
+    leadCount: 470,
+    costPerLead: 40.2
+  }
+}];
+
+// Estatísticas gerais
+const overallStats = {
+  totalTarget: coursePredictions.reduce((acc, course) => acc + course.target, 0),
+  totalPredicted: coursePredictions.reduce((acc, course) => acc + course.predicted, 0),
+  totalLeads: coursePredictions.reduce((acc, course) => acc + course.metrics.leadCount, 0),
+  averageConversion: coursePredictions.reduce((acc, course) => acc + course.metrics.conversionRate, 0) / coursePredictions.length,
+  daysUntilEnd: 45,
+  confidence: 'alta',
+  riskDistribution: {
+    high: coursePredictions.filter(c => c.risk === 'alto').length,
+    medium: coursePredictions.filter(c => c.risk === 'médio').length,
+    low: coursePredictions.filter(c => c.risk === 'baixo').length
+  }
+};
+
+interface StrategicDecisionDashboardProps {
+  selectedPeriod: string;
+}
 
 const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
   selectedPeriod
