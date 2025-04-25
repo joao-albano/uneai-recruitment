@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
   BarChart, PieChart, CheckCircle, AlertTriangle, 
-  AlertCircle, Clock, Download, ChevronRight, 
+  AlertCircle, Clock, ChevronRight, 
   Target, ArrowUp, ArrowDown, TrendingUp, TrendingDown
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
@@ -117,10 +117,13 @@ const overallStats = {
   }
 };
 
-const StrategicDecisionDashboard: React.FC = () => {
-  const [selectedPeriod, setSelectedPeriod] = React.useState('2024.2');
-  const [selectedCourse, setSelectedCourse] = React.useState<any | null>(null);
+interface StrategicDecisionDashboardProps {
+  selectedPeriod: string;
+}
+
+const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({ selectedPeriod }) => {
   const [detailsDialogOpen, setDetailsDialogOpen] = React.useState(false);
+  const [selectedCourse, setSelectedCourse] = React.useState<any | null>(null);
   const { toast } = useToast();
   
   const getProgressColor = (percent: number) => {
@@ -185,17 +188,13 @@ const StrategicDecisionDashboard: React.FC = () => {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Tabs value={selectedPeriod} onValueChange={setSelectedPeriod}>
+          <Tabs value={selectedPeriod} onValueChange={() => {}}>
             <TabsList>
               <TabsTrigger value="2023.2">2023.2</TabsTrigger>
               <TabsTrigger value="2024.1">2024.1</TabsTrigger>
               <TabsTrigger value="2024.2">2024.2</TabsTrigger>
             </TabsList>
           </Tabs>
-          <Button variant="outline" className="gap-2">
-            <Download className="h-4 w-4" />
-            Exportar
-          </Button>
         </div>
       </div>
 
