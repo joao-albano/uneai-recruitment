@@ -55,7 +55,7 @@ const FunnelManagement: React.FC = () => {
   const stages = selectedFunnel?.stages || [];
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="w-full py-6 space-y-6">
       <FunnelHeader 
         onConfigClick={handleConfigClick}
         onNewStageClick={handleNewStageClick}
