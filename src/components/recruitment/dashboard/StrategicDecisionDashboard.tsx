@@ -2,105 +2,79 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  BarChart, PieChart, CheckCircle, AlertTriangle, 
-  AlertCircle, Clock, ChevronRight, 
-  Target, ArrowUp, ArrowDown, TrendingUp, TrendingDown
-} from 'lucide-react';
+import { BarChart, PieChart, CheckCircle, AlertTriangle, AlertCircle, Clock, ChevronRight, Target, ArrowUp, ArrowDown, TrendingUp, TrendingDown } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import CourseDetailsDialog from './CourseDetailsDialog';
 import { useToast } from '@/components/ui/use-toast';
 
 // Dados fictícios de demonstração
-const coursePredictions = [
-  { 
-    name: 'Administração', 
-    target: 180, 
-    predicted: 162, 
-    confidence: 'alta',
-    risk: 'médio',
-    trend: 'estável',
-    actions: [
-      'Reforçar campanha no Google Ads',
-      'Aumentar desconto para matrículas antecipadas'
-    ],
-    metrics: {
-      conversionRate: 16.2,
-      leadCount: 520,
-      costPerLead: 45.8
-    }
-  },
-  { 
-    name: 'Direito', 
-    target: 220, 
-    predicted: 245, 
-    confidence: 'alta',
-    risk: 'baixo',
-    trend: 'aumento',
-    actions: [
-      'Manter estratégia atual',
-      'Considerar expansão de turma'
-    ],
-    metrics: {
-      conversionRate: 22.5,
-      leadCount: 680,
-      costPerLead: 38.2
-    }
-  },
-  { 
-    name: 'Engenharia Civil', 
-    target: 120, 
-    predicted: 78, 
-    confidence: 'média',
-    risk: 'alto',
-    trend: 'queda',
-    actions: [
-      'Criar campanha específica para o curso',
-      'Revisar processo de qualificação de leads',
-      'Oferecer bônus de matrícula'
-    ],
-    metrics: {
-      conversionRate: 9.8,
-      leadCount: 320,
-      costPerLead: 52.6
-    }
-  },
-  { 
-    name: 'Medicina', 
-    target: 100, 
-    predicted: 95, 
-    confidence: 'alta',
-    risk: 'baixo',
-    trend: 'estável',
-    actions: [
-      'Manter estratégia atual',
-      'Destacar diferencial dos laboratórios'
-    ],
-    metrics: {
-      conversionRate: 25.4,
-      leadCount: 230,
-      costPerLead: 85.3
-    }
-  },
-  { 
-    name: 'Psicologia', 
-    target: 160, 
-    predicted: 142, 
-    confidence: 'média',
-    risk: 'médio',
-    trend: 'estável',
-    actions: [
-      'Reforçar campanhas nas redes sociais',
-      'Promover depoimentos de alunos'
-    ],
-    metrics: {
-      conversionRate: 18.1,
-      leadCount: 470,
-      costPerLead: 40.2
-    }
-  },
-];
+const coursePredictions = [{
+  name: 'Administração',
+  target: 180,
+  predicted: 162,
+  confidence: 'alta',
+  risk: 'médio',
+  trend: 'estável',
+  actions: ['Reforçar campanha no Google Ads', 'Aumentar desconto para matrículas antecipadas'],
+  metrics: {
+    conversionRate: 16.2,
+    leadCount: 520,
+    costPerLead: 45.8
+  }
+}, {
+  name: 'Direito',
+  target: 220,
+  predicted: 245,
+  confidence: 'alta',
+  risk: 'baixo',
+  trend: 'aumento',
+  actions: ['Manter estratégia atual', 'Considerar expansão de turma'],
+  metrics: {
+    conversionRate: 22.5,
+    leadCount: 680,
+    costPerLead: 38.2
+  }
+}, {
+  name: 'Engenharia Civil',
+  target: 120,
+  predicted: 78,
+  confidence: 'média',
+  risk: 'alto',
+  trend: 'queda',
+  actions: ['Criar campanha específica para o curso', 'Revisar processo de qualificação de leads', 'Oferecer bônus de matrícula'],
+  metrics: {
+    conversionRate: 9.8,
+    leadCount: 320,
+    costPerLead: 52.6
+  }
+}, {
+  name: 'Medicina',
+  target: 100,
+  predicted: 95,
+  confidence: 'alta',
+  risk: 'baixo',
+  trend: 'estável',
+  actions: ['Manter estratégia atual', 'Destacar diferencial dos laboratórios'],
+  metrics: {
+    conversionRate: 25.4,
+    leadCount: 230,
+    costPerLead: 85.3
+  }
+}, {
+  name: 'Psicologia',
+  target: 160,
+  predicted: 142,
+  confidence: 'média',
+  risk: 'médio',
+  trend: 'estável',
+  actions: ['Reforçar campanhas nas redes sociais', 'Promover depoimentos de alunos'],
+  metrics: {
+    conversionRate: 18.1,
+    leadCount: 470,
+    costPerLead: 40.2
+  }
+}];
 
 // Estatísticas gerais
 const overallStats = {
@@ -116,70 +90,60 @@ const overallStats = {
     low: coursePredictions.filter(c => c.risk === 'baixo').length
   }
 };
-
 interface StrategicDecisionDashboardProps {
   selectedPeriod: string;
 }
-
-const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({ selectedPeriod }) => {
+const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
+  selectedPeriod
+}) => {
   const [detailsDialogOpen, setDetailsDialogOpen] = React.useState(false);
   const [selectedCourse, setSelectedCourse] = React.useState<any | null>(null);
-  const { toast } = useToast();
-  
+  const {
+    toast
+  } = useToast();
   const getProgressColor = (percent: number) => {
     if (percent >= 95) return 'bg-green-500';
     if (percent >= 85) return 'bg-green-400';
     if (percent >= 70) return 'bg-amber-500';
     return 'bg-red-500';
   };
-  
   const getRiskBadge = (risk: string) => {
-    switch(risk) {
-      case 'baixo': 
+    switch (risk) {
+      case 'baixo':
         return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Baixo risco</Badge>;
-      case 'médio': 
+      case 'médio':
         return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200">Médio risco</Badge>;
-      case 'alto': 
+      case 'alto':
         return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Alto risco</Badge>;
       default:
         return <Badge variant="outline">Desconhecido</Badge>;
     }
   };
-  
   const getTrendBadge = (trend: string) => {
-    switch(trend) {
-      case 'aumento': 
-        return (
-          <Badge className="bg-green-100 text-green-800 hover:bg-green-200 gap-1">
+    switch (trend) {
+      case 'aumento':
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200 gap-1">
             <TrendingUp className="h-3 w-3" />
             Em alta
-          </Badge>
-        );
-      case 'queda': 
-        return (
-          <Badge className="bg-red-100 text-red-800 hover:bg-red-200 gap-1">
+          </Badge>;
+      case 'queda':
+        return <Badge className="bg-red-100 text-red-800 hover:bg-red-200 gap-1">
             <TrendingDown className="h-3 w-3" />
             Em queda
-          </Badge>
-        );
-      case 'estável': 
-        return (
-          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
+          </Badge>;
+      case 'estável':
+        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
             Estável
-          </Badge>
-        );
+          </Badge>;
       default:
         return <Badge variant="outline">Desconhecido</Badge>;
     }
   };
-
   const handleViewDetails = (course: any) => {
     setSelectedCourse(course);
     setDetailsDialogOpen(true);
   };
-  
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Dashboard Estratégico</h1>
@@ -189,11 +153,7 @@ const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
         </div>
         <div className="flex items-center gap-3">
           <Tabs value={selectedPeriod} onValueChange={() => {}}>
-            <TabsList>
-              <TabsTrigger value="2023.2">2023.2</TabsTrigger>
-              <TabsTrigger value="2024.1">2024.1</TabsTrigger>
-              <TabsTrigger value="2024.2">2024.2</TabsTrigger>
-            </TabsList>
+            
           </Tabs>
         </div>
       </div>
@@ -213,26 +173,16 @@ const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
                 </div>
               </div>
               <div className="text-right">
-                <div className={`text-lg font-medium ${
-                  (overallStats.totalPredicted / overallStats.totalTarget) >= 0.9 
-                    ? 'text-green-600' 
-                    : (overallStats.totalPredicted / overallStats.totalTarget) >= 0.7
-                    ? 'text-amber-600'
-                    : 'text-red-600'
-                }`}>
-                  {((overallStats.totalPredicted / overallStats.totalTarget) * 100).toFixed(1)}%
+                <div className={`text-lg font-medium ${overallStats.totalPredicted / overallStats.totalTarget >= 0.9 ? 'text-green-600' : overallStats.totalPredicted / overallStats.totalTarget >= 0.7 ? 'text-amber-600' : 'text-red-600'}`}>
+                  {(overallStats.totalPredicted / overallStats.totalTarget * 100).toFixed(1)}%
                 </div>
                 <div className="text-xs text-muted-foreground">da meta total</div>
               </div>
             </div>
-            <Progress 
-              value={(overallStats.totalPredicted / overallStats.totalTarget) * 100} 
-              className={`h-2 mt-2 ${getProgressColor((overallStats.totalPredicted / overallStats.totalTarget) * 100)}`} 
-            />
+            <Progress value={overallStats.totalPredicted / overallStats.totalTarget * 100} className={`h-2 mt-2 ${getProgressColor(overallStats.totalPredicted / overallStats.totalTarget * 100)}`} />
             <div className="mt-2 flex items-center gap-2">
               <Badge className="bg-blue-100 text-blue-800">
-                {overallStats.confidence === 'alta' ? 'Alta confiança' : 
-                 overallStats.confidence === 'média' ? 'Média confiança' : 'Baixa confiança'}
+                {overallStats.confidence === 'alta' ? 'Alta confiança' : overallStats.confidence === 'média' ? 'Média confiança' : 'Baixa confiança'}
               </Badge>
               <div className="text-xs text-muted-foreground ml-auto flex items-center gap-1">
                 <Clock className="h-3 w-3" />
@@ -319,8 +269,7 @@ const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
         </CardHeader>
         <CardContent>
           <div className="border rounded-md divide-y">
-            {coursePredictions.map((course, index) => (
-              <div key={index} className="p-4 hover:bg-muted/50 transition-colors">
+            {coursePredictions.map((course, index) => <div key={index} className="p-4 hover:bg-muted/50 transition-colors">
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <div className="font-medium flex items-center gap-2">
@@ -331,25 +280,17 @@ const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
                       </div>
                     </div>
                     <div className="text-sm text-muted-foreground mt-1">
-                      {course.predicted} de {course.target} matrículas previstas ({((course.predicted / course.target) * 100).toFixed(1)}%)
+                      {course.predicted} de {course.target} matrículas previstas ({(course.predicted / course.target * 100).toFixed(1)}%)
                     </div>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="gap-1"
-                    onClick={() => handleViewDetails(course)}
-                  >
+                  <Button variant="outline" size="sm" className="gap-1" onClick={() => handleViewDetails(course)}>
                     <span>Detalhes</span>
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
                 
                 <div className="mt-2">
-                  <Progress 
-                    value={(course.predicted / course.target) * 100}
-                    className={`h-2 ${getProgressColor((course.predicted / course.target) * 100)}`}
-                  />
+                  <Progress value={course.predicted / course.target * 100} className={`h-2 ${getProgressColor(course.predicted / course.target * 100)}`} />
                 </div>
                 
                 <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-y-2 gap-x-4">
@@ -370,16 +311,13 @@ const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
                 <div className="mt-4 space-y-2">
                   <div className="text-sm font-medium">Ações sugeridas:</div>
                   <ul className="space-y-1">
-                    {course.actions.map((action, idx) => (
-                      <li key={idx} className="text-sm flex items-start gap-2">
+                    {course.actions.map((action, idx) => <li key={idx} className="text-sm flex items-start gap-2">
                         <Target className="h-4 w-4 mt-0.5 shrink-0" />
                         <span>{action}</span>
-                      </li>
-                    ))}
+                      </li>)}
                   </ul>
                 </div>
-              </div>
-            ))}
+              </div>)}
           </div>
         </CardContent>
       </Card>
@@ -422,13 +360,7 @@ const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
       </div>
       
       {/* Course Details Dialog */}
-      <CourseDetailsDialog 
-        open={detailsDialogOpen} 
-        onOpenChange={setDetailsDialogOpen} 
-        course={selectedCourse} 
-      />
-    </div>
-  );
+      <CourseDetailsDialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen} course={selectedCourse} />
+    </div>;
 };
-
 export default StrategicDecisionDashboard;
