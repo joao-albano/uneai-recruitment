@@ -26,7 +26,7 @@ const EnrollmentPredictionsPage: React.FC = () => {
       sidebarCollapsed={sidebarCollapsed}
       setSidebarCollapsed={setSidebarCollapsed}
     >
-      <div className="container mx-auto py-6">
+      <div className="px-2 py-4 md:px-4 lg:px-6">
         <div className="mb-6">
           <h1 className="text-3xl font-bold">Previsão de Matrículas</h1>
           <p className="text-muted-foreground">
