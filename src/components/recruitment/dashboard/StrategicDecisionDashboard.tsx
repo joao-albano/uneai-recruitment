@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,8 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import CourseDetailsDialog from './CourseDetailsDialog';
 import { useToast } from '@/components/ui/use-toast';
 import PeriodSelector from '../predictive/dashboard/PeriodSelector';
-import { ChannelConversionChart } from '../predictive/charts/ChannelConversionChart';
-import { ChannelDistributionChart } from '../predictive/charts/ChannelDistributionChart';
 
 // Dados fictícios de demonstração
 const coursePredictions = [{
@@ -102,8 +99,8 @@ interface StrategicDecisionDashboardProps {
 const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
   selectedPeriod
 }) => {
-  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState<any | null>(null);
+  const [detailsDialogOpen, setDetailsDialogOpen] = React.useState(false);
+  const [selectedCourse, setSelectedCourse] = React.useState<any | null>(null);
   const {
     toast
   } = useToast();
@@ -343,8 +340,13 @@ const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
               Taxa de conversão segmentada por canal de captação
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ChannelConversionChart />
+          <CardContent className="h-[300px] flex items-center justify-center border rounded-md">
+            <div className="text-center">
+              <BarChart className="h-16 w-16 mx-auto text-muted-foreground" />
+              <p className="text-muted-foreground mt-2">
+                Visualização de gráfico em desenvolvimento
+              </p>
+            </div>
           </CardContent>
         </Card>
         
@@ -355,8 +357,13 @@ const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
               Distribuição de leads por curso e estágio no funil
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ChannelDistributionChart />
+          <CardContent className="h-[300px] flex items-center justify-center border rounded-md">
+            <div className="text-center">
+              <PieChart className="h-16 w-16 mx-auto text-muted-foreground" />
+              <p className="text-muted-foreground mt-2">
+                Visualização de gráfico em desenvolvimento
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>
