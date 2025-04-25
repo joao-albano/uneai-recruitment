@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import CourseDetailsDialog from './CourseDetailsDialog';
 import { useToast } from '@/components/ui/use-toast';
+import PeriodSelector from '../predictive/dashboard/PeriodSelector';
 
 // Dados fictícios de demonstração
 const coursePredictions = [{
@@ -90,9 +91,11 @@ const overallStats = {
     low: coursePredictions.filter(c => c.risk === 'baixo').length
   }
 };
+
 interface StrategicDecisionDashboardProps {
   selectedPeriod: string;
 }
+
 const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
   selectedPeriod
 }) => {
@@ -101,12 +104,14 @@ const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
   const {
     toast
   } = useToast();
+
   const getProgressColor = (percent: number) => {
     if (percent >= 95) return 'bg-green-500';
     if (percent >= 85) return 'bg-green-400';
     if (percent >= 70) return 'bg-amber-500';
     return 'bg-red-500';
   };
+
   const getRiskBadge = (risk: string) => {
     switch (risk) {
       case 'baixo':
@@ -119,6 +124,7 @@ const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
         return <Badge variant="outline">Desconhecido</Badge>;
     }
   };
+
   const getTrendBadge = (trend: string) => {
     switch (trend) {
       case 'aumento':
@@ -139,10 +145,12 @@ const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
         return <Badge variant="outline">Desconhecido</Badge>;
     }
   };
+
   const handleViewDetails = (course: any) => {
     setSelectedCourse(course);
     setDetailsDialogOpen(true);
   };
+
   return <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -152,9 +160,10 @@ const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Tabs value={selectedPeriod} onValueChange={() => {}}>
-            
-          </Tabs>
+          <PeriodSelector 
+            selectedPeriod={selectedPeriod} 
+            onPeriodChange={() => {}} 
+          />
         </div>
       </div>
 
@@ -363,4 +372,5 @@ const StrategicDecisionDashboard: React.FC<StrategicDecisionDashboardProps> = ({
       <CourseDetailsDialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen} course={selectedCourse} />
     </div>;
 };
+
 export default StrategicDecisionDashboard;
