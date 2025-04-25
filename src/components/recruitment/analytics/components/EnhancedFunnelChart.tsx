@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowDown, Users, Calendar, Building, Check } from 'lucide-react';
@@ -88,12 +87,36 @@ const EnhancedFunnelChart: React.FC<EnhancedFunnelChartProps> = ({ data }) => {
         );
       })}
       
-      <div className="pt-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-sm text-muted-foreground">
-              <p className="font-medium mb-2">Conversão total do funil:</p>
-              <p>Leads gerados para matrículas: <span className="font-bold">{((sortedData[sortedData.length - 1].count / sortedData[0].count) * 100).toFixed(1)}%</span></p>
+      <div className="pt-6">
+        <Card className="border-t-4 border-t-blue-500">
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold text-gray-900">Conversão Total do Funil</h3>
+                <span className="text-2xl font-bold text-blue-600">
+                  {((sortedData[sortedData.length - 1].count / sortedData[0].count) * 100).toFixed(1)}%
+                </span>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-sm text-gray-600">
+                  <span>Leads gerados para matrículas</span>
+                  <span>{sortedData[0].count} → {sortedData[sortedData.length - 1].count} leads</span>
+                </div>
+                
+                <div className="w-full bg-gray-100 rounded-full h-2.5">
+                  <div 
+                    className="bg-blue-500 h-2.5 rounded-full transition-all duration-500" 
+                    style={{ 
+                      width: `${(sortedData[sortedData.length - 1].count / sortedData[0].count) * 100}%` 
+                    }}
+                  />
+                </div>
+                
+                <p className="text-sm text-gray-500 mt-2">
+                  {`${sortedData[0].stage} → ${sortedData[sortedData.length - 1].stage}`}
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>
