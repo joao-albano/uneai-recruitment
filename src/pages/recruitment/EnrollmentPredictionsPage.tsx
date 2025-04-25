@@ -35,7 +35,7 @@ const EnrollmentPredictionsPage: React.FC = () => {
         </div>
         
         <Tabs defaultValue="dashboard" className="mb-6">
-          <TabsList>
+          <TabsList className="mb-4">
             <TabsTrigger value="dashboard" className="gap-2">
               <PanelTop className="h-4 w-4" />
               Dashboard Estratégico
@@ -50,15 +50,15 @@ const EnrollmentPredictionsPage: React.FC = () => {
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="dashboard" className="m-0">
+          <TabsContent value="dashboard" className="mt-4">
             <StrategicDecisionDashboard selectedPeriod={selectedPeriod} />
           </TabsContent>
           
-          <TabsContent value="predictions" className="m-0">
+          <TabsContent value="predictions" className="mt-4">
             <EnrollmentPredictionEngine />
           </TabsContent>
           
-          <TabsContent value="metrics" className="m-0">
+          <TabsContent value="metrics" className="mt-4">
             <ModelPerformanceMetrics selectedPeriod={selectedPeriod} />
           </TabsContent>
         </Tabs>
