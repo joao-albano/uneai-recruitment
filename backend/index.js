@@ -27,6 +27,8 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // Import das rotas
 const dashboardRoutes = require('./src/api/routes/dashboard.routes');
 const authRoutes = require('./src/api/routes/auth.routes');
+const webhookRoutes = require('./src/api/routes/webhook.routes');
+const whatsappRoutes = require('./src/api/routes/whatsapp.routes');
 
 // Basic route
 app.get('/', (req, res) => {
@@ -50,6 +52,12 @@ app.use('/api/auth', authRoutes);
 
 // --- Dashboard Routes ---
 app.use('/api/dashboard', dashboardRoutes);
+
+// --- Webhook Routes ---
+app.use('/webhook', webhookRoutes);
+
+// --- WhatsApp Routes ---
+app.use('/api/whatsapp', whatsappRoutes);
 
 // --- Recruitment Metrics Endpoints ---
 app.get('/api/recruitment/metrics/total-leads', async (req, res) => {
