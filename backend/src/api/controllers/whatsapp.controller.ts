@@ -20,26 +20,64 @@ export const createWhatsAppInstance = async (req: Request, res: Response): Promi
       return;
     }
 
-    // Generate a unique instance ID
-    const instanceId = `instance_${Date.now()}`;
+    // Usa o organization_id como instance_id
+    const instanceId = organizationId;
     const instanceName = `WhatsApp_${organizationId}`;
 
-    // Create instance record in database
-    const { data, error } = await supabase
+    // Verifica se já existe uma instância para esta organização
+    const { data: existingInstance, error: checkError } = await supabase
       .from('whatsapp_instances')
-      .insert({
-        organization_id: organizationId,
-        instance_id: instanceId,
-        instance_name: instanceName,
-        status: 'connecting'
-      })
-      .select()
+      .select('*')
+      .eq('organization_id', organizationId)
       .single();
 
-    if (error) {
-      console.error('Error creating WhatsApp instance:', error);
-      res.status(500).json({ error: 'Failed to create WhatsApp instance' });
+    if (checkError && checkError.code !== 'PGRST116') { // PGRST116 é o código para "não encontrado"
+      console.error('Error checking existing instance:', checkError);
+      res.status(500).json({ error: 'Failed to check existing WhatsApp instance' });
       return;
+    }
+
+    let instance;
+    if (existingInstance) {
+      // Atualiza a instância existente
+      const { data: updatedInstance, error: updateError } = await supabase
+        .from('whatsapp_instances')
+        .update({
+          instance_name: instanceName,
+          status: 'connecting',
+          updated_at: new Date().toISOString()
+        })
+        .eq('organization_id', organizationId)
+        .select()
+        .single();
+
+      if (updateError) {
+        console.error('Error updating WhatsApp instance:', updateError);
+        res.status(500).json({ error: 'Failed to update WhatsApp instance' });
+        return;
+      }
+
+      instance = updatedInstance;
+    } else {
+      // Cria uma nova instância
+      const { data: newInstance, error: createError } = await supabase
+        .from('whatsapp_instances')
+        .insert({
+          organization_id: organizationId,
+          instance_id: instanceId,
+          instance_name: instanceName,
+          status: 'connecting'
+        })
+        .select()
+        .single();
+
+      if (createError) {
+        console.error('Error creating WhatsApp instance:', createError);
+        res.status(500).json({ error: 'Failed to create WhatsApp instance' });
+        return;
+      }
+
+      instance = newInstance;
     }
 
     // In a real implementation, you would integrate with WhatsApp API here
@@ -50,9 +88,9 @@ export const createWhatsAppInstance = async (req: Request, res: Response): Promi
       success: true,
       qrcode: mockQRCode,
       instance: {
-        id: instanceId,
-        name: instanceName,
-        status: 'connecting'
+        id: instance.instance_id,
+        name: instance.instance_name,
+        status: instance.status
       }
     });
   } catch (err) {
@@ -121,6 +159,25 @@ export const sendTextMessage = async (req: Request, res: Response): Promise<void
       return;
     }
 
+    // Verifica se a instância existe e está conectada
+    const { data: instance, error: instanceError } = await supabase
+      .from('whatsapp_instances')
+      .select('*')
+      .eq('instance_id', instanceId)
+      .eq('status', 'connected')
+      .single();
+
+    if (instanceError || !instance) {
+      res.status(404).json({ error: 'WhatsApp instance not found or not connected' });
+      return;
+    }
+
+    console.log('Sending message to Evolution API:', {
+      url: `${evolutionUrl}/message/sendText/${instanceId}`,
+      number,
+      text
+    });
+
     const response = await fetch(`${evolutionUrl}/message/sendText/${instanceId}`, {
       method: 'POST',
       headers: {
@@ -139,6 +196,7 @@ export const sendTextMessage = async (req: Request, res: Response): Promise<void
 
     if (!response.ok) {
       const errorData = await response.json();
+      console.error('Evolution API error:', errorData);
       res.status(response.status).json(errorData);
       return;
     }

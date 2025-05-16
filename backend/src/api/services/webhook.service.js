@@ -30,11 +30,11 @@ class WebhookService {
       const phoneNumber = payload.data.key.remoteJid.split('@')[0];
       console.log('Processing message from phone number:', phoneNumber);
 
-      // Find the WhatsApp instance by instanceId
+      // Find the WhatsApp instance by instance (que agora é o organization_id)
       const { data: instance, error: instanceError } = await supabase
         .from('whatsapp_instances')
         .select('id, organization_id')
-        .eq('instance_id', payload.data.instanceId)
+        .eq('instance_id', payload.instance)
         .single();
 
       if (instanceError) {
