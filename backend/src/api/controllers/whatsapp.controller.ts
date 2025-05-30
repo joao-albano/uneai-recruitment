@@ -7,6 +7,7 @@ interface SendTextMessageRequest {
   text: string;
   delay?: number;
   message?: string;
+  agentId?: string;
 }
 
 interface EvolutionCreateInstanceRequest {
@@ -384,7 +385,7 @@ export const sendTextMessage = async (req: Request, res: Response): Promise<void
   try {
     console.log('[WhatsApp] Corpo da requisição recebida:', req.body);
     const { instanceId } = req.params;
-    const { number, text, delay = 1200, message } = req.body as SendTextMessageRequest;
+    const { number, text, delay = 1200, message, agentId } = req.body as SendTextMessageRequest;
 
     if (!instanceId || !number || !text) {
       console.log('[WhatsApp] Faltam parâmetros obrigatórios:', { instanceId, number, text });
@@ -412,6 +413,41 @@ export const sendTextMessage = async (req: Request, res: Response): Promise<void
       console.log('[WhatsApp] Instância não encontrada ou não conectada:', { instanceId, instanceError });
       res.status(404).json({ error: 'WhatsApp instance not found or not connected' });
       return;
+    }
+
+    // Find or create contact for this phone number
+    let contactId = null;
+    const normalizedPhone = number.replace(/\D/g, '');
+    
+    const { data: existingContact, error: contactError } = await supabase
+      .from('whatsapp_contacts')
+      .select('id')
+      .eq('phone', normalizedPhone)
+      .eq('organization_id', instance.organization_id)
+      .single();
+
+    if (existingContact) {
+      contactId = existingContact.id;
+    } else {
+      // Create a new contact if none exists
+      const { data: newContact, error: createContactError } = await supabase
+        .from('whatsapp_contacts')
+        .insert({
+          organization_id: instance.organization_id,
+          instance_id: instance.id,
+          phone: normalizedPhone,
+          conversation_status: 'active',
+          ai_active: false,
+          is_archived: false
+        })
+        .select('id')
+        .single();
+
+      if (createContactError) {
+        console.error('[WhatsApp] Erro ao criar contato:', createContactError);
+      } else {
+        contactId = newContact?.id;
+      }
     }
 
     // Usar apenas variáveis de ambiente
@@ -468,6 +504,32 @@ export const sendTextMessage = async (req: Request, res: Response): Promise<void
       console.error('[WhatsApp] Evolution API retornou erro:', responseBody);
       res.status(response.status).json(responseBody);
       return;
+    }
+
+    // Save the message to database if contactId was found/created and message sent successfully
+    if (contactId) {
+      console.log('[WhatsApp] Salvando mensagem enviada pelo painel...');
+      
+      const messageData = {
+        contact_id: contactId,
+        organization_id: instance.organization_id,
+        message: text,
+        direction: 'outbound',
+        sent_at: new Date().toISOString(),
+        status: 'sent',
+        is_ai_response: false,
+        agent_id: agentId || null // Save the agent who sent the message
+      };
+
+      const { error: saveError } = await supabase
+        .from('whatsapp_messages')
+        .insert(messageData);
+
+      if (saveError) {
+        console.error('[WhatsApp] Erro ao salvar mensagem:', saveError);
+      } else {
+        console.log('[WhatsApp] Mensagem salva com sucesso - enviada pelo painel');
+      }
     }
 
     res.json(responseBody);
