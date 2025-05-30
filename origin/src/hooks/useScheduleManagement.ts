@@ -1,0 +1,140 @@
+
+import { useState, useCallback } from 'react';
+import { useData } from '@/context/DataContext';
+import { useToast } from '@/hooks/use-toast';
+import { Schedule } from '@/types/schedule';
+
+export const useScheduleManagement = () => {
+  const { students, schedules, addSchedule, updateScheduleStatus, updateSchedule } = useData();
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [scheduleToEdit, setScheduleToEdit] = useState<Schedule | null>(null);
+  const { toast } = useToast();
+  
+  // Filtra estudantes sem agendamentos
+  const studentsWithoutSchedules = students.filter(student => {
+    return !schedules.some(
+      schedule => 
+        schedule.studentId === student.id && 
+        schedule.status === 'scheduled'
+    );
+  });
+  
+  // Handler para submissão de novo agendamento
+  const handleScheduleSubmit = useCallback((formData: FormData) => {
+    const studentId = formData.get('studentId') as string;
+    const date = formData.get('date') as string;
+    const time = formData.get('time') as string;
+    const notes = formData.get('notes') as string;
+    const agentName = formData.get('agentName') as string;
+    
+    const student = students.find(s => s.id === studentId);
+    if (!student) return;
+    
+    const [year, month, day] = date.split('-').map(Number);
+    const [hours, minutes] = time.split(':').map(Number);
+    const scheduleDate = new Date(year, month - 1, day, hours, minutes);
+    
+    const newSchedule = {
+      id: `schedule-${Date.now()}`,
+      studentId,
+      studentName: student.name,
+      date: scheduleDate,
+      agentName: agentName || 'Coord. Mariana', // Usar o valor do formulário ou padrão
+      status: 'scheduled' as const,
+      notes,
+    };
+    
+    addSchedule(newSchedule);
+    
+    toast({
+      title: 'Atendimento agendado',
+      description: `Agendado para ${scheduleDate.toLocaleDateString()} às ${scheduleDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`
+    });
+    
+    setShowAddDialog(false);
+  }, [students, addSchedule, toast]);
+  
+  // Handler para edição de agendamento
+  const handleEditScheduleSubmit = useCallback((formData: FormData) => {
+    if (!scheduleToEdit) return;
+    
+    const date = formData.get('date') as string;
+    const time = formData.get('time') as string;
+    const notes = formData.get('notes') as string;
+    const agentName = formData.get('agentName') as string;
+    
+    const [year, month, day] = date.split('-').map(Number);
+    const [hours, minutes] = time.split(':').map(Number);
+    const scheduleDate = new Date(year, month - 1, day, hours, minutes);
+    
+    const updatedSchedule = {
+      ...scheduleToEdit,
+      date: scheduleDate,
+      notes,
+      agentName: agentName || scheduleToEdit.agentName
+    };
+    
+    updateSchedule(updatedSchedule);
+    
+    toast({
+      title: 'Atendimento atualizado',
+      description: `Agendamento de ${updatedSchedule.studentName} atualizado com sucesso.`
+    });
+    
+    setShowEditDialog(false);
+    setScheduleToEdit(null);
+  }, [scheduleToEdit, updateSchedule, toast]);
+  
+  // Iniciar edição de agendamento
+  const startEditSchedule = useCallback((schedule: Schedule) => {
+    setScheduleToEdit({
+      ...schedule,
+      date: new Date(schedule.date)
+    });
+    setShowEditDialog(true);
+  }, []);
+  
+  // Fechar diálogo de edição - função melhorada
+  const closeEditDialog = useCallback(() => {
+    setShowEditDialog(false);
+    // Importante: adicionar um pequeno atraso para evitar problemas de estado
+    setTimeout(() => {
+      setScheduleToEdit(null);
+    }, 100);
+  }, []);
+  
+  // Marcar agendamento como concluído
+  const markCompleted = useCallback((id: string) => {
+    updateScheduleStatus(id, 'completed');
+    toast({
+      title: 'Atendimento concluído',
+      description: 'O atendimento foi marcado como concluído com sucesso.'
+    });
+  }, [updateScheduleStatus, toast]);
+  
+  // Cancelar agendamento
+  const cancelSchedule = useCallback((id: string) => {
+    updateScheduleStatus(id, 'canceled');
+    toast({
+      title: 'Atendimento cancelado',
+      description: 'O atendimento foi cancelado com sucesso.'
+    });
+  }, [updateScheduleStatus, toast]);
+
+  return {
+    students,
+    studentsWithoutSchedules,
+    schedules,
+    showAddDialog,
+    setShowAddDialog,
+    showEditDialog,
+    setShowEditDialog: closeEditDialog,
+    scheduleToEdit,
+    handleScheduleSubmit,
+    handleEditScheduleSubmit,
+    startEditSchedule,
+    markCompleted,
+    cancelSchedule
+  };
+};

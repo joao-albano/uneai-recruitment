@@ -1,0 +1,17 @@
+name: Check Pending Leads
+
+on:
+  schedule:
+    # Executa a cada 6 horas (às 00:00, 06:00, 12:00, 18:00 UTC)
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Permite execução manual
+
+jobs:
+  check-leads:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Edge Function
+        run: |
+          curl -X POST "https://kyjmfinhleizpxqedeku.supabase.co/functions/v1/check-pending-leads" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json" 
